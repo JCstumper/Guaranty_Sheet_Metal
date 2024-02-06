@@ -4,9 +4,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Page</title>
+    <style>
+        /* Style for inventory items */
+        .inventory-item {
+            margin-bottom: 20px;
+        }
+
+        .item-name {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .current-inventory {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+        }
+
+        .quantity-input {
+            width: 40px;
+            text-align: center;
+            margin: 0 10px;
+        }
+    </style>
 </head>
 <body>
     <h1>Welcome to the Home Page!</h1>
-    <p>This is the content of your home page. You can customize it as needed.</p>
+
+    <!-- Inventory Items -->
+    <div class="inventory-item">
+        <span class="item-name">Item 1:</span>
+        <span class="current-inventory" id="current-inventory-1">Current Inventory: 50</span>
+        <div class="quantity-control">
+            <button onclick="decrementQuantity(1)">-</button>
+            <input type="number" class="quantity-input" id="quantity1" value="1">
+            <button onclick="incrementQuantity(1)">+</button>
+            <button onclick="addQuantity(1)">Add</button>
+            <button onclick="subtractQuantity(1)">Subtract</button>
+        </div>
+    </div>
+
+    <!-- Repeat similar structure for other items -->
+
+    <div class="inventory-item">
+        <span class="item-name">Item 2:</span>
+        <span class="current-inventory" id="current-inventory-2">Current Inventory: 100</span>
+        <div class="quantity-control">
+            <button onclick="decrementQuantity(2)">-</button>
+            <input type="number" class="quantity-input" id="quantity2" value="1">
+            <button onclick="incrementQuantity(2)">+</button>
+            <button onclick="addQuantity(2)">Add</button>
+            <button onclick="subtractQuantity(2)">Subtract</button>
+        </div>
+    </div>
+
+
+    <!-- Repeat similar structure for other items -->
+
+    <script src="inventory.js"></script>
 </body>
 </html>
