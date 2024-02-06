@@ -16,7 +16,7 @@ form.addEventListener('submit', function (event) {
     console.log('Entered Password:', password);
 
     // Check if the entered credentials are valid
-    if (username === 'wittko1400' && password === 'lumpypillow1400') {
+    if (username === 'username' && password === 'password') {
         console.log('Credentials are valid. Redirecting to home page...');
         // If the credentials are valid, redirect to the home page
         window.location.href = 'home.html';
