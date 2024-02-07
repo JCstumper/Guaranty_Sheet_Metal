@@ -4,68 +4,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Page</title>
-    <style>
-        /* Style for inventory items */
-        /* I am logging this for branch checkouts*/
-        .inventory-item {
-            margin-bottom: 20px;
-        }
-
-        .item-name {
-            font-weight: bold;
-            display: block;
-            margin-bottom: 10px;
-        }
-
-        .current-inventory {
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
-
-        .quantity-control {
-            display: flex;
-            align-items: center;
-        }
-
-        .quantity-input {
-            width: 40px;
-            text-align: center;
-            margin: 0 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="home.css">
 </head>
 <body>
     <h1>Welcome to the Home Page!</h1>
 
-    <!-- Inventory Items -->
-    <div class="inventory-item">
-        <span class="item-name">Item 1:</span>
-        <span class="current-inventory" id="current-inventory-1">Current Inventory: 50</span>
-        <div class="quantity-control">
-            <button onclick="decrementQuantity(1)">-</button>
-            <input type="number" class="quantity-input" id="quantity1" value="1">
-            <button onclick="incrementQuantity(1)">+</button>
-            <button onclick="addQuantity(1)">Add</button>
-            <button onclick="subtractQuantity(1)">Subtract</button>
+    <!-- Inventory Items Container -->
+    <div class="inventory-container">
+
+        <!-- Inventory Item 1 -->
+        <div class="inventory-item">
+            <span class="item-name">Item 1:</span>
+            <span class="current-inventory" id="current-inventory-1">Current Inventory: 50</span>
+            <div class="quantity-control">
+                <button onclick="decrementQuantity(1)">-</button>
+                <input type="number" class="quantity-input" id="quantity1" value="1">
+                <button onclick="incrementQuantity(1)">+</button>
+                <button onclick="addQuantity(1)">Add</button>
+                <button onclick="subtractQuantity(1)">Subtract</button>
+            </div>
         </div>
+
+        <!-- Inventory Item 2 -->
+        <div class="inventory-item">
+            <span class="item-name">Item 2:</span>
+            <span class="current-inventory" id="current-inventory-2">Current Inventory: 100</span>
+            <div class="quantity-control">
+                <button onclick="decrementQuantity(2)">-</button>
+                <input type="number" class="quantity-input" id="quantity2" value="1">
+                <button onclick="incrementQuantity(2)">+</button>
+                <button onclick="addQuantity(2)">Add</button>
+                <button onclick="subtractQuantity(2)">Subtract</button>
+            </div>
+        </div>
+
+        <!-- Inventory Item 3 -->
+        <div class="inventory-item">
+            <span class="item-name">Item 3:</span>
+            <span class="current-inventory" id="current-inventory-3">Current Inventory: 75</span>
+            <div class="quantity-control">
+                <button onclick="decrementQuantity(3)">-</button>
+                <input type="number" class="quantity-input" id="quantity3" value="1">
+                <button onclick="incrementQuantity(3)">+</button>
+                <button onclick="addQuantity(3)">Add</button>
+                <button onclick="subtractQuantity(3)">Subtract</button>
+            </div>
+        </div>
+
+        <!-- Inventory Item 4 -->
+        <div class="inventory-item">
+            <span class="item-name">Item 4:</span>
+            <span class="current-inventory" id="current-inventory-4">Current Inventory: 120</span>
+            <div class="quantity-control">
+                <button onclick="decrementQuantity(4)">-</button>
+                <input type="number" class="quantity-input" id="quantity4" value="1">
+                <button onclick="incrementQuantity(4)">+</button>
+                <button onclick="addQuantity(4)">Add</button>
+                <button onclick="subtractQuantity(4)">Subtract</button>
+            </div>
+        </div>
+
     </div>
 
-    <!-- Repeat similar structure for other items -->
-
-    <div class="inventory-item">
-        <span class="item-name">Item 2:</span>
-        <span class="current-inventory" id="current-inventory-2">Current Inventory: 100</span>
-        <div class="quantity-control">
-            <button onclick="decrementQuantity(2)">-</button>
-            <input type="number" class="quantity-input" id="quantity2" value="1">
-            <button onclick="incrementQuantity(2)">+</button>
-            <button onclick="addQuantity(2)">Add</button>
-            <button onclick="subtractQuantity(2)">Subtract</button>
-        </div>
-    </div>
-
-
-    <!-- Repeat similar structure for other items -->
 
     <script src="inventory.js"></script>
 </body>
