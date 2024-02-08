@@ -5,8 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Page</title>
     <link rel="stylesheet" href="home.css">
+    <style>
+        /* Style for the "Back to Dashboard" button */
+        .back-to-dashboard {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
+    <!-- "Back to Dashboard" button -->
+    <button class="back-to-dashboard" onclick="goToDashboard()">Back to Dashboard</button>
+
     <h1>Welcome to the Home Page!</h1>
 
     <!-- Inventory Items Container -->
@@ -66,7 +83,13 @@
 
     </div>
 
-
     <script src="inventory.js"></script>
+
+    <script>
+        // Function to navigate back to the dashboard
+        function goToDashboard() {
+            window.location.href = 'dashboard.html';
+        }
+    </script>
 </body>
 </html>
