@@ -1,14 +1,14 @@
 {
   "files": {
-    "main.css": "/Guaranty_Sheet_Metal/static/css/main.040ebad0.css",
+    "main.css": "/Guaranty_Sheet_Metal/static/css/main.b8e8a76c.css",
     "main.js": "/Guaranty_Sheet_Metal/static/js/main.860c501e.js",
     "static/media/logo.png": "/Guaranty_Sheet_Metal/static/media/logo.a8f6846b04690eefa5ce.png",
     "index.html": "/Guaranty_Sheet_Metal/index.html",
-    "main.040ebad0.css.map": "/Guaranty_Sheet_Metal/static/css/main.040ebad0.css.map",
+    "main.b8e8a76c.css.map": "/Guaranty_Sheet_Metal/static/css/main.b8e8a76c.css.map",
     "main.860c501e.js.map": "/Guaranty_Sheet_Metal/static/js/main.860c501e.js.map"
   },
   "entrypoints": [
-    "static/css/main.040ebad0.css",
+    "static/css/main.b8e8a76c.css",
     "static/js/main.860c501e.js"
   ]
 }
