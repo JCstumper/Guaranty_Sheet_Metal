@@ -1,18 +1,17 @@
 {
   "files": {
-    "main.css": "/guaranty_sheet_metal/static/css/main.435d5fe5.chunk.css",
-    "main.js": "/guaranty_sheet_metal/static/js/main.26948cee.chunk.js",
-    "main.js.map": "/guaranty_sheet_metal/static/js/main.26948cee.chunk.js.map",
-    "runtime~main.js": "/guaranty_sheet_metal/static/js/runtime~main.5d7cd58d.js",
-    "runtime~main.js.map": "/guaranty_sheet_metal/static/js/runtime~main.5d7cd58d.js.map",
-    "static/js/2.a71b1702.chunk.js": "/guaranty_sheet_metal/static/js/2.a71b1702.chunk.js",
-    "static/js/2.a71b1702.chunk.js.map": "/guaranty_sheet_metal/static/js/2.a71b1702.chunk.js.map",
-    "static/js/3.a29efab2.chunk.js": "/guaranty_sheet_metal/static/js/3.a29efab2.chunk.js",
-    "static/js/3.a29efab2.chunk.js.map": "/guaranty_sheet_metal/static/js/3.a29efab2.chunk.js.map",
+    "main.css": "/guaranty_sheet_metal/static/css/main.5ecd60fb.chunk.css",
+    "main.js": "/guaranty_sheet_metal/static/js/main.c234b8ba.chunk.js",
+    "main.js.map": "/guaranty_sheet_metal/static/js/main.c234b8ba.chunk.js.map",
+    "runtime~main.js": "/guaranty_sheet_metal/static/js/runtime~main.b84a107b.js",
+    "runtime~main.js.map": "/guaranty_sheet_metal/static/js/runtime~main.b84a107b.js.map",
+    "static/js/2.a2b181a3.chunk.js": "/guaranty_sheet_metal/static/js/2.a2b181a3.chunk.js",
+    "static/js/2.a2b181a3.chunk.js.map": "/guaranty_sheet_metal/static/js/2.a2b181a3.chunk.js.map",
+    "static/js/3.1b3c587a.chunk.js": "/guaranty_sheet_metal/static/js/3.1b3c587a.chunk.js",
+    "static/js/3.1b3c587a.chunk.js.map": "/guaranty_sheet_metal/static/js/3.1b3c587a.chunk.js.map",
     "index.html": "/guaranty_sheet_metal/index.html",
-    "precache-manifest.c57fef26016ffa87bd7c606cdb16c0f5.js": "/guaranty_sheet_metal/precache-manifest.c57fef26016ffa87bd7c606cdb16c0f5.js",
+    "precache-manifest.a193d54878bf57040922e4c766765af3.js": "/guaranty_sheet_metal/precache-manifest.a193d54878bf57040922e4c766765af3.js",
     "service-worker.js": "/guaranty_sheet_metal/service-worker.js",
-    "static/css/main.435d5fe5.chunk.css.map": "/guaranty_sheet_metal/static/css/main.435d5fe5.chunk.css.map",
-    "static/media/logo.svg": "/guaranty_sheet_metal/static/media/logo.06e73328.svg"
+    "static/css/main.5ecd60fb.chunk.css.map": "/guaranty_sheet_metal/static/css/main.5ecd60fb.chunk.css.map"
   }
 }
