@@ -1,0 +1,20 @@
+    .team-container {
+        text-align: center;
+    }
+    
+    .member {
+        margin: 20px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        display: inline-block;
+        width: calc(100% / 3 - 40px); /* Example of making 3 columns */
+    }
+    
+    .member h3 {
+        color: #333;
+    }
+    
+    .member p {
+        color: #666;
+    }
