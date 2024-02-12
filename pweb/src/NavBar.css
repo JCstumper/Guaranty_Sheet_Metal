@@ -1,9 +1,10 @@
 .navbar {
-    background-color: #5e5e5e;
+    background-color: #526e41;
+    border-bottom: 2px solid white;
     padding: 0.5rem;
     display: flex;
     align-items: center;
-    /* justify-content: space-between; */
+    justify-content: space-between;
 }
 
 .navbar-logo {
@@ -12,8 +13,6 @@
 
 .navbar-links {
     display: flex;
-    justify-content: center;
-    flex-grow: 1;
 }
 
 .nav-link {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './NavBar.css'; // Make sure to create this CSS file
-import logo from './logo.png'; // Update the path to where you store your logo image
+import './NavBar.css';
+import logo from './logo.png';
 
 function NavBar() {
     return (

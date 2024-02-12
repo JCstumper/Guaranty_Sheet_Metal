@@ -5,16 +5,18 @@
     .member {
         margin: 20px;
         padding: 10px;
-        border: 1px solid #ccc;
+        border: 2px solid #ffffff;
         border-radius: 8px;
         display: inline-block;
-        width: calc(100% / 3 - 40px); /* Example of making 3 columns */
+        width: calc(100% / 3 - 40px);
+        background-color: #2f3e46;
+        color: #ffffff;
     }
     
     .member h3 {
-        color: #333;
+        color: #ffffff;
     }
     
     .member p {
-        color: #666;
+        color: #bebebe;
     }

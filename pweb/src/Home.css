@@ -1,0 +1,27 @@
+.home-container {
+    text-align: center;
+}
+
+.section {
+    margin: 20px auto;
+    padding: 10px;
+    border: 2px solid #ffffff;
+    border-radius: 8px;
+    width: 80%;
+    box-sizing: border-box;
+    background-color: #2f3e46;
+    color: #ffffff;
+}
+
+.section h3 {
+    color: #ffffff;
+}
+
+.section p {
+    color: #bebebe;
+}
+
+.section li {
+    color: #bebebe;
+    text-align: left;
+}

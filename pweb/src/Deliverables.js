@@ -1,11 +1,21 @@
 import React from 'react';
+import './Deliverables.css';
 
 function Deliverables() {
   return (
-    <div>
-      <h2>Project Deliverables</h2>
-      <p>Here you'll find links to our presentations, documents, and source code.</p>
-      {/* Link to your GitHub repository or include a markdown readme component here */}
+    <div className="deliverables-container">
+      <div className="deliverable">
+        <h3>Sprint 1 Deliverable</h3>
+        <p>Description or links related to Sprint 1 deliverable...</p>
+      </div>
+      <div className="deliverable">
+        <h3>Sprint 2 Deliverable</h3>
+        <p>Description or links related to Sprint 2 deliverable...</p>
+      </div>
+      <div className="deliverable">
+        <h3>Sprint 3 Deliverable</h3>
+        <p>Description or links related to Sprint 3 deliverable...</p>
+      </div>
     </div>
   );
 }

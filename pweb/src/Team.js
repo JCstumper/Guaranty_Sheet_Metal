@@ -1,5 +1,5 @@
 import React from 'react';
-import './Team.css'; // Assuming you might want to add some custom styles
+import './Team.css';
 
 function Team() {
     return (
