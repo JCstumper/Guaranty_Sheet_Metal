@@ -1,15 +1,13 @@
 {
   "files": {
-    "main.css": "/Guaranty_Sheet_Metal/static/css/main.1502eea5.chunk.css",
-    "main.js": "/Guaranty_Sheet_Metal/static/js/main.1a4e8ad9.chunk.js",
-    "main.js.map": "/Guaranty_Sheet_Metal/static/js/main.1a4e8ad9.chunk.js.map",
-    "runtime~main.js": "/Guaranty_Sheet_Metal/static/js/runtime~main.7c2789a9.js",
-    "runtime~main.js.map": "/Guaranty_Sheet_Metal/static/js/runtime~main.7c2789a9.js.map",
-    "static/js/2.2642a3d9.chunk.js": "/Guaranty_Sheet_Metal/static/js/2.2642a3d9.chunk.js",
-    "static/js/2.2642a3d9.chunk.js.map": "/Guaranty_Sheet_Metal/static/js/2.2642a3d9.chunk.js.map",
+    "main.css": "/Guaranty_Sheet_Metal/static/css/main.9aabcb0e.css",
+    "main.js": "/Guaranty_Sheet_Metal/static/js/main.c009dd73.js",
     "index.html": "/Guaranty_Sheet_Metal/index.html",
-    "precache-manifest.79a965ad42c86895c920f4408c59c650.js": "/Guaranty_Sheet_Metal/precache-manifest.79a965ad42c86895c920f4408c59c650.js",
-    "service-worker.js": "/Guaranty_Sheet_Metal/service-worker.js",
-    "static/css/main.1502eea5.chunk.css.map": "/Guaranty_Sheet_Metal/static/css/main.1502eea5.chunk.css.map"
-  }
+    "main.9aabcb0e.css.map": "/Guaranty_Sheet_Metal/static/css/main.9aabcb0e.css.map",
+    "main.c009dd73.js.map": "/Guaranty_Sheet_Metal/static/js/main.c009dd73.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.9aabcb0e.css",
+    "static/js/main.c009dd73.js"
+  ]
 }
