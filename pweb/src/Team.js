@@ -37,9 +37,15 @@ function Team() {
             </div>
 
             <div className="member">
+                <img src={`${process.env.PUBLIC_URL}/brandon.jpeg`} alt="Brandon Bejarano Profile Picture" className="profile-pic"/>   
                 <h3>Brandon Bejarano</h3>
-                <p>Bio of Brandon Bejarano...</p>
-                {/* Add more details or a photo if needed */}
+                <p><strong>Hometown:</strong> Alabaster, AL</p>
+                <p><strong>Contact:</strong> <a href="mailto:babejaranorincon@crimson.ua.edu">babejaranorincon@crimson.ua.edu</a>, <a href="tel:+12052677887">205 267 7887</a></p>
+                <p>Hello, I'm Brandon Bejarano and I am the first in my family to pursue a college degree. Currently, I am studying Computer Science at the University of Alabama, where I am learning the wonders of coding and digital innovation.</p>
+            
+                <p>Beyond the screen, I find comfort and joy in physical activities. Whether it's lifting weights at the gym, hitting the pavement for a run, or exploring nature through hikes, I thrive on the sense of accomplishment that comes pushing my limits.</p>
+
+                <p>However, what really drives me is the opportunity to give back to my family. Their unwavering support and sacrifices have shaped me into who I am today. Whether it's helping around the house, offering guidance, or simply being there when they need me, I enjoy every moment with them and will always be grateful for the amazing opportunity they gave me to pursue my education.</p>
             </div>
         </div>
     );
