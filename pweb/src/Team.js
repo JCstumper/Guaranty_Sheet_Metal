@@ -19,9 +19,13 @@ function Team() {
             </div>
 
             <div className="member">
+                <img src={`${process.env.PUBLIC_URL}/masonpfp.jpg`} alt="Mason Wittkofski Profile Picture" className="profile-pic" />
                 <h3>Mason Wittkofski</h3>
-                <p>Bio of Mason Wittkofski...</p>
-                {/* Add more details or a photo if needed */}
+                <p><strong>Hometown:</strong> Minooka, Illinois</p>
+                <p><strong>Contact:</strong> <a href="mailto:mjwittkofski@crimson.ua.edu">mjwittkofski@crimson.ua.edu</a>, <a href="tel:+18159784333">815 978 4333</a></p>
+                <p>Hey, I'm Mason Wittkofski, a student at the University of Alabama pursuing a bachelor's degree in Computer Science. I'm excited to continue on my path to the professional world of software engineering.</p>
+
+                <p>On my own time, I enjoy watching a multitude of sports, playing video games, and doing some light cooking. Professionally I hope to climb the ranks of software engineering as quickly as possible and learn as much as I can.</p>
             </div>
 
             <div className="member">
