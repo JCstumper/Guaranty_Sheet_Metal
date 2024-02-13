@@ -29,9 +29,13 @@ function Team() {
             </div>
 
             <div className="member">
+                <img src={`${process.env.PUBLIC_URL}/Michalpfp.jpg`} alt="Michal Zajac Profile Picture" className="profile-pic" />
                 <h3>Michal Zajac</h3>
-                <p>Bio of Michal Zajac...</p>
-                {/* Add more details or a photo if needed */}
+                <p><strong>Hometown:</strong> Palos Heights, Illinois</p>
+                <p><strong>Contact:</strong> <a href="mailto:mpzajac@crimson.ua.edu">mpzajac@crimson.ua.edu</a>, <a href="tel:+17084153771">708 415 3771</a></p>
+                <p> My name is Michal Zajac and I am a Computer Science + MBA student at the University of Alabama. </p>
+
+                <p> I enjoy socializing with new people and friends along with playing soccer. I like to learn new things and create new experiences. I plan on using my technical and communications skillset to become a business leader in the CS field.</p>
             </div>
 
             <div className="member">
