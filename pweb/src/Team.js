@@ -4,9 +4,10 @@ import './Team.css';
 function Team() {
     return (
         <div className="team-container">
-            <h2>Team Members</h2>
+            <h2 className="team-title">Team Members</h2>
 
             <div className="member">
+                <img src={`${process.env.PUBLIC_URL}/carneypfp.jpg`} alt="Jacob Carney Profile Picture" className="profile-pic"/>
                 <h3>Jacob Carney</h3>
                 <p><strong>Hometown:</strong> Mount Airy, Maryland</p>
                 <p><strong>Contact:</strong> <a href="mailto:jmcarney@crimson.ua.edu">jmcarney@crimson.ua.edu</a>, <a href="tel:+14432891370">443 289 1370</a></p>

@@ -15,7 +15,7 @@ function Home() {
       </div>
       <div className="section">
         <h3>Github Link</h3>
-        <a href="https://github.com/JCstumper/Guaranty_Sheet_Metal">Guaranty Sheet Metal Developement Github</a>
+        <a href="https://github.com/JCstumper/Guaranty_Sheet_Metal" className="github-button">Guaranty Sheet Metal Development GitHub</a>
       </div>
     </div>
   );
