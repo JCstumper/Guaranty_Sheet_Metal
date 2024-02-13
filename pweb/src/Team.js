@@ -32,8 +32,15 @@ function Team() {
 
             <div className="member">
                 <h3>Waleed Kambal</h3>
-                <p>Bio of Waleed Kambal...</p>
-                {/* Add more details or a photo if needed */}
+                <img src={`${process.env.PUBLIC_URL}/wkpfp.jpeg`} alt="Waleed Kambal Profile Picture" className="profile-pic"/>
+                <p><strong>Hometown:</strong> Madison, AL</p>
+                <p><strong>Contact:</strong> <a href="mailto:wmkambal@crimson.ua.edu">wmkambal@crimson.ua.edu</a>, <a href="tel:+12564687782">256 468 7782</a></p>
+                <p> My name is Waleed Kambal, known as Wally, and I like to explore new places and try new foods whenever I can.</p>
+
+                <p> More often than I would like to admit, I prefer spending my free time trying to workout, playing games, or trying to learn and research the newest tech on the market.</p>
+
+    
+                
             </div>
 
             <div className="member">
