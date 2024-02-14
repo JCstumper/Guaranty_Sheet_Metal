@@ -1,19 +1,20 @@
 import React from 'react';
 
-// Define the props for each list item
+// Extend the ListItemProps with children of type ReactNode (optional)
 interface ListItemProps {
   title: string;
   description?: string; // Optional description
   icon?: JSX.Element; // Optional icon, assuming you use something like FontAwesome
+  children?: React.ReactNode; // Add children as an optional prop
 }
 
-const ListItem: React.FC<ListItemProps> = ({ title, description, icon }) => {
+const ListItem: React.FC<ListItemProps> = ({ title, children }) => {
   return (
     <div className="list-item">
-      {icon && <div className="list-icon">{icon}</div>}
       <div className="list-content">
         <h3>{title}</h3>
-        {description && <p>{description}</p>}
+        {/* Conditionally render children if they are provided */}
+        {children}
       </div>
     </div>
   );
