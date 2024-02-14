@@ -1,8 +1,7 @@
-import React from 'react';
 
-const header = () => (
+const Header = () => (
   <div>
-    <img src={'gsm-header.jpg'} style={{ width: 100, height: 'auto' }} />
+    <img src={'gsm-header.jpg'} style={{ width: 200, height: '500' }} />
   </div>
 );
-export default header;
+export default Header;
