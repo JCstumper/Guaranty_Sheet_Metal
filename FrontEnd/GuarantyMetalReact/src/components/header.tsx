@@ -1,9 +1,8 @@
-
-import myImage from 'gsm-header.jpg'; // Adjust the path as necessary
+import React from 'react';
 
 const header = () => (
   <div>
-    <img src={myImage}/>
+    <img src={'gsm-header.jpg'} style={{ width: 100, height: 'auto' }} />
   </div>
 );
 export default header;
