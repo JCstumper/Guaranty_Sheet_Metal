@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const pool = require("./database");
+const pool = require("../express-node-rest-api/database");
 const PORT = process.env.PORT || 5000;
 
 app.use(express.json()); // => req.body
