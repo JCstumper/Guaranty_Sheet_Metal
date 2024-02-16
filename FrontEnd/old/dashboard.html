@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>Welcome to the Dashboard!</h1>
+    <p>Please select an option:</p>
+    <button onclick="goToHome()">Go to Home</button>
+    <button onclick="goToOrdersReceived()">Enter Received Order</button>
+    <button onclick="goToOrdersOutgoing()">Enter Outgoing Order</button>
+
+    <script>
+        function goToHome() {
+            window.location.href = 'home.html';
+        }
+
+        function goToOrdersReceived() {
+            window.location.href = 'ordersReceived.html';
+        }
+
+        function goToOrdersOutgoing() {
+            window.location.href = 'ordersOutgoing.html';
+        }
+    </script>
+</body>
+</html>

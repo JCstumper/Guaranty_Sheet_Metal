@@ -1,0 +1,53 @@
+    .team-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center; /* Centers the member boxes */
+        text-align: center; /* Centers the text of the title */
+        padding: 20px; /* Adds some spacing around the container */
+    }
+
+    .team-title {
+        padding: 10px; /* Adds vertical padding for better visual separation */
+        background-color: #526e41; /* Example background color that matches your theme */
+        color: #ffffff; /* Light text color for contrast against the background */
+        font-size: 24px; /* Larger font size for prominence */
+        font-weight: bold; /* Bold font weight to make the title stand out */
+        border-radius: 8px; /* Optional: adds rounded corners for a softer look */
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        text-align: center;
+        width: 100%; /* Ensures the title spans the full width */
+        margin-bottom: 20px; /* Adds some space between the title and the boxes */
+        border: 3px solid white;
+    }
+
+    .profile-pic {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px; /* Keeps corners rounded */
+        display: block;
+        margin: 0 auto;
+        object-fit: cover;
+        max-height: 150px; /* Adjust this as needed */
+        border: 3px solid white; /* Adds a white border around the picture */
+    }
+    
+    .member {
+        text-align: center;
+        margin: 20px;
+        padding: 10px;
+        border: 2px solid #ffffff;
+        border-radius: 8px;
+        display: inline-block;
+        vertical-align: top;
+        width: calc(100% / 3 - 40px);
+        background-color: #2f3e46;
+        color: #ffffff;
+    }
+    
+    .member h3 {
+        color: #ffffff;
+    }
+    
+    .member p {
+        color: #bebebe;
+    }

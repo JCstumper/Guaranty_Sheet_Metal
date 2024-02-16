@@ -5,13 +5,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Page</title>
     <link rel="stylesheet" href="home.css">
+    <style>
+        /* Style for the "Back to Dashboard" button */
+        .back-to-dashboard {
+            position: absolute;
+            top: 20px;
+            right: 150px; /* Adjusted position */
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Style for the "Edit Inventory" button */
+        .edit-inventory {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Hide the quantity control buttons by default */
+        .quantity-control button {
+            display: none;
+        }
+
+        /* Show the quantity control buttons when in edit mode */
+        .edit-mode .quantity-control button {
+            display: inline-block;
+        }
+
+        /* Hide the quantity input box by default */
+        .quantity-control .quantity-input {
+            display: none;
+        }
+
+        /* Show the quantity input box when in edit mode */
+        .edit-mode .quantity-control .quantity-input {
+            display: inline-block;
+        }
+    </style>
 </head>
 <body>
+    <!-- "Back to Dashboard" button -->
+    <button class="back-to-dashboard" onclick="goToDashboard()">Back to Dashboard</button>
+
+    <!-- "Edit Inventory" button -->
+    <button class="edit-inventory" onclick="toggleEditMode()">Edit Inventory</button>
+
     <h1>Welcome to the Home Page!</h1>
 
     <!-- Inventory Items Container -->
     <div class="inventory-container">
-
         <!-- Inventory Item 1 -->
         <div class="inventory-item">
             <span class="item-name">Item 1:</span>
@@ -63,10 +115,23 @@
                 <button onclick="subtractQuantity(4)">Subtract</button>
             </div>
         </div>
-
     </div>
 
-
     <script src="inventory.js"></script>
+
+    <script>
+        // Function to toggle edit mode for all items
+        function toggleEditMode() {
+            const inventoryItems = document.querySelectorAll('.inventory-item');
+            inventoryItems.forEach(item => {
+                item.classList.toggle('edit-mode');
+            });
+        }
+
+        // Function to navigate back to the dashboard
+        function goToDashboard() {
+            window.location.href = 'dashboard.html';
+        }
+    </script>
 </body>
 </html>
