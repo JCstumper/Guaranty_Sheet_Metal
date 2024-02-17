@@ -1,0 +1,10 @@
+
+.logo {
+    height: 50px; /* Or your preferred size */
+    transition: transform 0.2s; /* Smooth transition for hover effect */
+  }
+  
+  .logo:hover {
+    transform: scale(1.1); /* Slightly enlarge the logo on hover */
+  }
+  
