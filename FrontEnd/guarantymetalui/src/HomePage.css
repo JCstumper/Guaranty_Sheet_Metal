@@ -1,17 +1,21 @@
-.header-image {
+.sidebar-image {
   width: 207px;
   height: 70px;
   margin-top: 25px;
-  margin-left: 150px;
+  margin-left: 20px;
   transition: transform 0.3s ease, opacity 0.3s ease; /* Smooth transition for transform and opacity */
 }
 
-.header-container { 
+.sidebar-container { 
   display: flex;
-  align-items: center;
+  width: 250px;
+  height: 100vh; /* Full height of the viewport */
+  align-items: left;
+  background-color: #d1cecebd;
+  flex-direction: column;
+  position: fixed; /* Fixed position to the left of the screen */
 }
 
-.header-image:hover {
-  transform: scale(1.1); /* Slightly enlarge the image */
+.sidebar-image:hover {
   opacity: 0.7; /* Slightly reduce the opacity */
 }
