@@ -6,7 +6,7 @@ app.use(express.json());
 
 const authRoute = require("./routes/jwtAuth");
 
-app.use(express.static(path.join(__dirname, '..', 'FrontEnd', 'public')));
+// app.use(express.static(path.join(__dirname, '..', 'FrontEnd', 'public')));
 
 // app.get('*', (req, res) => {
 //     res.sendFile(path.join(__dirname, '..', 'FrontEnd', 'public', 'login.html'));
