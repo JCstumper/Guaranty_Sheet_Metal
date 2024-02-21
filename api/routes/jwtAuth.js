@@ -13,7 +13,7 @@ router.post("/register", validInfo, async(req, res) => {
 
         //2. check if user exist (if user exist throw error)
 
-        const user = await pool.query("SELECT * FROM users WHERE username = $1 AND email = $2", [username, email]);
+        const user = await pool.query("SELECT * FROM users WHERE username = $1", [username]);
 
         if (user.rows.length !== 0) {
             return res.status(401).send("User already exists"); //401 means that the user is Unauthenticated

@@ -13,29 +13,29 @@ services:
     volumes:
       - mydbdata:/var/lib/postgresql/data
 
-  api:
-    build:
-      context: ./api
-      dockerfile: Dockerfile
-    environment:
-      DB_HOST: db
-      DB_USER: admin
-      DB_PASSWORD: Guaranty123
-      DB_NAME: GuarantyDatabase
-      DB_PORT: 5432
-    ports:
-      - "3000:3000"
-    depends_on:
-      - db
+  # api:
+  #   build:
+  #     context: ./api
+  #     dockerfile: Dockerfile
+  #   environment:
+  #     DB_HOST: db
+  #     DB_USER: admin
+  #     DB_PASSWORD: Guaranty123
+  #     DB_NAME: GuarantyDatabase
+  #     DB_PORT: 5432
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - db
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "8080:80"
-    depends_on:
-      - api
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8080:80"
+  #   depends_on:
+  #     - api
 
 volumes:
   mydbdata:

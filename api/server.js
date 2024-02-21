@@ -1,21 +1,16 @@
 require('dotenv').config();
-const path = require('path'); // Add this line to import the path module
 const express = require('express');
 const app = express();
 app.use(express.json());
 
 const authRoute = require("./routes/jwtAuth");
-
-// app.use(express.static(path.join(__dirname, '..', 'FrontEnd', 'public')));
-
-// app.get('*', (req, res) => {
-//     res.sendFile(path.join(__dirname, '..', 'FrontEnd', 'public', 'login.html'));
-//   });
+const dashRoute = require("./routes/dashboard");
   
 const cors = require('cors');
 app.use(cors());
 
 app.use("/auth", authRoute);
+app.use("/dashboard", dashRoute);
 
 // Error handling for if an endpoint is not found
 app.use((req, res, next) => {
