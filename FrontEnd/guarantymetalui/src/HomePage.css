@@ -30,5 +30,11 @@
   justify-content: center; /* Center content horizontally */
   align-items: center; /* Center content vertically */
   cursor: pointer;
-  margin-top: 50px;
+  margin-left: 90px;
+  margin-top: 300px;
+}
+
+.Account:hover
+{
+  opacity: 0.7; /* Slightly reduce the opacity */
 }
