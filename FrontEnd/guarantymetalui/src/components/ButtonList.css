@@ -5,11 +5,11 @@
   width: fit-content; /* Or specify a width */
   padding-left: 60px;
   gap: 50px;
-  margin-top: 80px;
+  margin-top: 150px;
 }
 
   
-  .list-button {
+.list-button {
     /* Style for each button */
     margin: 5px;
     background-color: #d1cece17;
@@ -20,7 +20,7 @@
     font-size: 14px;
     font-weight: 500;
     letter-spacing: 1px;
-  }
+}
   
   .list-button:hover {
     /* Hover state style */
@@ -29,9 +29,5 @@
       };  
 
 
-      .dash-image 
-      {
-        width: 10px;
-        height: 10px;
-      }
+  
   

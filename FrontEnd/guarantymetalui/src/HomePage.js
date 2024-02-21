@@ -1,10 +1,15 @@
 import React from 'react';
 import './HomePage.css'; // Make sure to import the CSS file
 import logo from "./pictures/logo.png"
-import dashboard from "./pictures/das.png"
+import account from "./pictures/testacc.png"
 import ButtonList from './components/ButtonList';
 
-const buttons = [<img src={dashboard} alt="dashboard" className='dash-image'/> , 'PRODUCTS', 'GALLERY', 'SERVICES', 'CONTACT US']; // Add more button labels as needed
+const buttons = ['DASH', 
+                'INVENTORY', 
+                'ORDERS', 
+                'CUSTOMERS', 
+                <img src= {account} alt="Person" className= "Account" style={{ width: '100%', height: 'auto' }}/>
+                ] // Add more button labels as needed
 
 const Sidebar = () => {
     return (
@@ -14,7 +19,7 @@ const Sidebar = () => {
         </a>
         <ButtonList buttons={buttons} />
       {
-        
+
       }
       </sidebar>
     );

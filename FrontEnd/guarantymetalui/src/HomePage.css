@@ -19,3 +19,16 @@
 .sidebar-image:hover {
   opacity: 0.7; /* Slightly reduce the opacity */
 }
+
+.Account
+{
+   width: 50px; /* Set both width and height to the same value */
+  height: 50px;
+  border-radius: 50%; /* This makes the button circular */
+  border: none;
+  display: flex;
+  justify-content: center; /* Center content horizontally */
+  align-items: center; /* Center content vertically */
+  cursor: pointer;
+  margin-top: 50px;
+}
