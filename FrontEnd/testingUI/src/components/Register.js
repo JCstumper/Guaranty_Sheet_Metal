@@ -33,9 +33,13 @@ const Register = ({setAuth}) => {
 
             // console.log(parseRes);
 
-            localStorage.setItem("token", parseRes.token);
+            // localStorage.setItem("token", parseRes.token);
 
             setAuth(true);
+
+            setTimeout(() => {
+                window.location.href = "/login";
+            }, 1000);
 
 
         } catch (err) {

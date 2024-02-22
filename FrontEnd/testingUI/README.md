@@ -43,9 +43,9 @@ Executing this command will allow us to use the `uuid_generate_v4()` function, w
 
     CREATE TABLE users(
         user_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-        user_name VARCHAR(255) NOT NULL,
-        user_email VARCHAR(255) NOT NULL,
-        user_password VARCHAR(255) NOT NULL
+        username VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        password VARCHAR(255) NOT NULL
     );
 
 This will create the `users` table within the database.
