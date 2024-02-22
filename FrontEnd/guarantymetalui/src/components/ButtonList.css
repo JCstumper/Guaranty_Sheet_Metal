@@ -28,6 +28,10 @@
     color: #aaaaaaaa;
       };  
 
-
+      .list-button.list-button.active {
+        background-color: #4CAF50; /* Example active color */
+        color: white;
+      }
+       
   
   
