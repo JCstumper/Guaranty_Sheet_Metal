@@ -20,18 +20,17 @@
     font-size: 14px;
     font-weight: 500;
     letter-spacing: 1px;
+    text-decoration: none;
 }
   
   .list-button:hover {
     /* Hover state style */
     transition: color 0.3s ease;
     color: #aaaaaaaa;
-      };  
+    text-decoration: none;
+  };  
 
-      .list-button.list-button.active {
-        background-color: #4CAF50; /* Example active color */
-        color: white;
-      }
-       
-  
-  
+  .list-button.list-button.active {
+    background-color: #4CAF50; /* Example active color */
+    color: white;
+  }

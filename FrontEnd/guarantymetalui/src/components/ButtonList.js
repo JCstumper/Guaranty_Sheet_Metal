@@ -1,22 +1,26 @@
 import React from 'react';
 import './ButtonList.css'; // Styles for the buttons
+import { Link } from 'react-router-dom';
 
 const ButtonList = ({ buttons, activeTab, setActiveTab }) => {
+  const buttonPaths = {
+    DASH: '/dashboard',
+    INVENTORY: '/inventory',
+    ORDERS: '/orders',
+    CUSTOMERS: '/customers',
+  };
+
   return (
     <div className="button-list">
       {buttons.map((button) => {
-        // Check if this button is the active tab
         const isActive = button === activeTab;
         const className = isActive ? 'list-button active' : 'list-button';
+        const path = buttonPaths[button];
 
         return (
-          <button
-            key={button}
-            className={className}
-            onClick={() => setActiveTab(button)} // Set this button as active when clicked
-          >
+          <Link to={path} key={button} className={className} onClick={() => setActiveTab(button)}>
             {button}
-          </button>
+          </Link>
         );
       })}
     </div>
@@ -24,3 +28,4 @@ const ButtonList = ({ buttons, activeTab, setActiveTab }) => {
 };
 
 export default ButtonList;
+
