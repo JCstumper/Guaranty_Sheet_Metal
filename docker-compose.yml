@@ -24,7 +24,7 @@ services:
   #     DB_NAME: GuarantyDatabase
   #     DB_PORT: 5432
   #   ports:
-  #     - "4000:4000"
+  #     - "3000:3000"
   #   depends_on:
   #     - db
 
