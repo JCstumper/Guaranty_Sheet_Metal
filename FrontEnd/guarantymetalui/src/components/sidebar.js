@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './sidebar.css';
 import logo from "../pictures/logo.png";
 import settingsIcon from "../pictures/settings.png"; // Assuming you have a settings icon image
@@ -6,10 +6,40 @@ import ButtonList from './ButtonList';
 
 const buttons = ['DASH', 'INVENTORY', 'ORDERS', 'CUSTOMERS'];
 
-const Sidebar = () => {
+const Sidebar = ({setAuth}) => {
     const [activeTab, setActiveTab] = useState(buttons[0]);
     const [dropdownOpen, setDropdownOpen] = useState(false);
-    const userName = "User Name"; // Placeholder for dynamic user name
+    const [userName, setName] = useState("");
+
+    async function getName() {
+        try {
+
+            const response = await fetch("http://localhost:3000/dashboard", {
+                method: "GET",
+                headers: {token: localStorage.token}
+            });
+
+            const parseRes = await response.json();
+
+            // console.log(parseRes);
+
+            setName(parseRes.username);
+            
+        } catch (err) {
+            console.error(err.message);
+        }
+    }
+
+    const logout = (e) => {
+        e.preventDefault();
+        localStorage.removeItem("token");
+        setAuth(false);
+    }
+
+
+    useEffect(() => {
+        getName();
+    }, []);
 
     const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
 
@@ -26,7 +56,7 @@ const Sidebar = () => {
                 {dropdownOpen && (
                     <div className="settings-dropdown">
                         <a href="/settings" className="dropdown-item">Settings</a>
-                        <a href="/logout" className="dropdown-item">Logout</a>
+                        <a href="/logout" className="dropdown-item" onClick={e => logout(e)}>Logout</a>
                     </div>
                 )}
                 <button className="user-name-button">{userName}</button>
