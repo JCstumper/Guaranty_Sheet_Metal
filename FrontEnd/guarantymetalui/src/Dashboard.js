@@ -5,7 +5,7 @@ import './Dashboard.css'; // Assuming you have specific styles for Dashboard
 const Dashboard = ({setAuth}) => {
     return (
         <div className="dashboard">
-        <Sidebar />
+        <Sidebar setAuth={setAuth} />
         </div>
     );
 };
