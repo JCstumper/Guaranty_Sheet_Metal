@@ -1,36 +1,49 @@
 .button-list {
   display: flex;
   flex-direction: column;
-  align-items: left;
-  width: fit-content; /* Or specify a width */
-  padding-left: 60px;
-  gap: 50px;
+  align-items: center; /* Centered for the collapsed state, will adjust on expand */
+  width: fit-content; /* Adjust as needed when sidebar collapses */
+  padding-left: 0; /* Remove padding for collapsed state, adjust if needed */
+  gap: 20px; /* Reduced gap for a tighter layout in collapsed mode */
   margin-top: 150px;
+  transition: all 0.3s ease; /* Smooth transition for layout changes */
 }
 
-  
 .list-button {
-    /* Style for each button */
-    margin: 5px;
-    background-color: #d1cece17;
-    color: rgb(0, 0, 0);
-    border: none;
-    cursor: pointer;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    letter-spacing: 1px;
-    text-decoration: none;
+  display: flex;
+  justify-content: center; /* Center content horizontally */
+  align-items: center; /* Center content vertically */
+  width: 80px; /* Adjust based on collapsed sidebar width */
+  height: 80px; /* Adjust if you want a specific button height */
+  margin: 5px auto; /* Center button horizontally, maintain vertical margin */
+  background-color: #d1cece17;
+  color: rgb(0, 0, 0);
+  border: none;
+  cursor: pointer;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px; /* Adjust text size as needed */
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-decoration: none;
+  transition: all 0.3s ease; /* Smooth transition for changes */
+  gap: 10px; /* Space between icon and text */
 }
-  
-  .list-button:hover {
-    /* Hover state style */
-    transition: color 0.3s ease;
-    color: #aaaaaaaa;
-    text-decoration: none;
-  };  
 
-  .list-button.list-button.active {
-    background-color: #4CAF50; /* Example active color */
-    color: white;
-  }
+.sidebar-container:not(.collapsed) .list-button {
+  align-items: left; /* Re-align items to the left when sidebar is expanded */
+  padding-left: 60px; /* Restore padding */
+  gap: 20px; /* Restore original gap */
+}
+
+/* Specific styles for icons */
+.list-button svg {
+  width: 30px; /* Icon size, adjust as needed */
+  height: 30px; /* Icon size, adjust as needed */
+  transition: transform 0.3s ease; /* Smooth transition for icon transformation */
+}
+
+/* Adjust the layout when the sidebar expands */
+.sidebar-container:not(.collapsed) .button-list {
+  align-items: left; /* Re-align items to the left when sidebar is expanded */
+  padding-left: 60px; /* Restore padding */
+}

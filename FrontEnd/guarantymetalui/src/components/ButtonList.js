@@ -1,13 +1,21 @@
 import React from 'react';
 import './ButtonList.css'; // Styles for the buttons
 import { Link } from 'react-router-dom';
+import { MdDashboard, MdInventory, MdShoppingCart, MdPeople } from 'react-icons/md'; // Example icons
 
-const ButtonList = ({ buttons, activeTab, setActiveTab }) => {
+const ButtonList = ({ buttons, activeTab, setActiveTab, isCollapsed }) => {
   const buttonPaths = {
-    DASH: '/dashboard',
+    HOME: '/dashboard',
     INVENTORY: '/inventory',
     ORDERS: '/orders',
     CUSTOMERS: '/customers',
+  };
+
+  const buttonIcons = {
+    HOME: <MdDashboard />,
+    INVENTORY: <MdInventory />,
+    ORDERS: <MdShoppingCart />,
+    CUSTOMERS: <MdPeople />,
   };
 
   return (
@@ -16,10 +24,11 @@ const ButtonList = ({ buttons, activeTab, setActiveTab }) => {
         const isActive = button === activeTab;
         const className = isActive ? 'list-button active' : 'list-button';
         const path = buttonPaths[button];
+        const icon = buttonIcons[button];
 
         return (
           <Link to={path} key={button} className={className} onClick={() => setActiveTab(button)}>
-            {button}
+            {isCollapsed ? icon : button}
           </Link>
         );
       })}
@@ -28,4 +37,3 @@ const ButtonList = ({ buttons, activeTab, setActiveTab }) => {
 };
 
 export default ButtonList;
-

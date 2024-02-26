@@ -6,11 +6,12 @@ function Home() {
     <div className="home-container">
       <div className="section">
         <h3>Project Goals</h3>
-        <ul>
-          <li>Allow a user to sign in to the client side.</li>
-          <li>Have forms for users to enter shipments received and outgoing projects.</li>
-          <li>Have a simple working end-to-end application that persists data.</li>
-          <li>Allow users to browse the current inventory and sort based on different attributes.</li>
+        <ul class="project-goals">
+          <li>Implement user authentication to enable secure sign-ins on the client side.</li>
+          <li>Develop interactive forms for recording details of incoming shipments and tracking outgoing projects.</li>
+          <li>Establish a fully functional end-to-end application that reliably stores data using Node.js, PostgreSQL on Docker, and React.</li>
+          <li>Enable inventory browsing capabilities, allowing users to filter and sort items by various attributes such as name, quantity, and status.</li>
+          <li>Host the application and its database on the company’s internal server or utilize AWS for reliable and scalable cloud hosting.</li>
         </ul>
       </div>
       <div className="section">

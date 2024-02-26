@@ -1,122 +1,164 @@
-.sidebar-image {
-    width: 207px;
-    height: 70px;
-    margin-top: 25px;
-    margin-left: 20px;
-    transition: transform 0.3s ease, opacity 0.3s ease; /* Smooth transition for transform and opacity */
-}
-
+/* Sidebar container with full height and fixed positioning */
 .sidebar-container { 
     display: flex;
-    width: 250px;
-    height: 100vh; /* Full height of the viewport */
+    width: 80px; /* Start with collapsed width */
+    height: 100vh;
     align-items: left;
     background-color: #d1cecebd;
     flex-direction: column;
-    position: fixed; /* Fixed position to the left of the screen */
+    position: fixed;
+    transition: width 0.3s ease; /* Smooth transition for width adjustment */
+    z-index: 1000; /* Ensure sidebar is above other content */
 }
 
-.sidebar-image:hover {
-    opacity: 0.7; /* Slightly reduce the opacity */
+/* Hover over the sidebar to expand its width */
+.sidebar-container:hover {
+    width: 250px; /* Expanded width on hover */
 }
 
-.Account
-{
-     width: 50px; /* Set both width and height to the same value */
+/* Sidebar image styling */
+.sidebar-image {
+    width: 100%; /* Ensure the logo adapts to the sidebar width */
+    max-width: 207px; /* Max width for the logo */
+    height: auto;
+    margin: 25px 20px; /* Adjusted margin to center the logo */
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    cursor: default;
+}
+
+.sidebar-container.collapsed .sidebar-image {
+    max-width: 60px; /* Smaller max-width for the collapsed state */
+    margin: 15px 10px; /* Center the logo in the collapsed sidebar */
+}
+
+/* Account button style */
+.Account {
+    width: 50px;
     height: 50px;
-    border-radius: 50%; /* This makes the button circular */
+    border-radius: 50%;
     border: none;
-    display: flex;
-    justify-content: center; /* Center content horizontally */
-    align-items: center; /* Center content vertically */
-    cursor: pointer;
-    margin-left: 90px;
-    margin-top: 300px;
-}
-
-.Account:hover
-{
-    opacity: 0.7; /* Slightly reduce the opacity */
-}
-
-.sidebar-footer {
-    margin-top: auto; /* Pushes the footer to the bottom */
-    display: flex;
-    align-items: center;
-    padding: 20px;
-}
-
-.settings-icon-wrapper {
-    width: 36px; /* Slightly larger than the icon for padding */
-    height: 36px; /* Slightly larger than the icon for padding */
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 8px; /* Curved corners */
-    transition: background-color 0.3s ease; /* Smooth transition for background color */
+    cursor: pointer;
+    margin: 0 auto; /* Center the button horizontally */
+    margin-top: 300px; /* Adjust spacing from the top */
+    transition: opacity 0.3s ease; /* Smooth transition for the hover effect */
+}
+
+/* Footer of the sidebar */
+.sidebar-footer {
+    display: flex;
+    justify-content: center; /* Center content horizontally in the footer */
+    align-items: center; /* Align items vertically */
+    width: 100%; /* Ensure the footer spans the entire width of the sidebar */
+    margin-top: auto; /* Push the footer to the bottom of the sidebar */
+    padding: 20px; /* Adjust padding as needed */
+    transition: all 0.3s ease; /* Smooth transition for layout changes */
+}
+
+/* When the sidebar expands */
+.sidebar-container:not(.collapsed) .sidebar-footer {
+    flex-direction: row; /* Arrange items in a row */
+    justify-content: center; /* Evenly space the settings icon and username */
+}
+
+/* Additional style adjustments for the settings icon and username for better alignment and spacing */
+.settings-icon-wrapper, .user-name-button {
+    margin: 0 10px; /* Add some horizontal spacing around these elements */
+}
+
+
+/* Settings icon wrapper for clickable area */
+.settings-icon-wrapper {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px; /* Optional for rounded corners */
+    transition: background-color 0.3s ease; /* Smooth background transition */
     cursor: pointer;
 }
 
+/* Settings icon style */
 .settings-icon {
-    width: 24px; /* Adjust the size as needed */
-    height: 24px; /* Adjust the size as needed */
-    transition: filter 0.3s ease, transform 0.3s ease; /* Smooth transitions for the filter and transform */
+    width: 24px;
+    height: 24px; /* Adjust icon size as needed */
+    transition: filter 0.3s ease, transform 0.3s ease; /* Smooth transition for icon effects */
 }
 
-.settings-icon-wrapper:hover {
-    background-color: #00000050; /* Slightly darker background on hover */
-}
 
-.settings-icon-wrapper:hover .settings-icon {
-    filter: brightness(70%); /* Make the icon darker on hover */
-    transform: rotate(90deg); /* Rotate 90 degrees on hover */
-}
 
-.user-name-button {
-    background-color: #d1cece17; /* Semi-transparent background */
-    color: rgb(0, 0, 0); /* Black text color */
-    border: none; /* No border */
-    cursor: pointer; /* Pointer cursor on hover */
-    font-family: Arial, Helvetica, sans-serif; /* Font styling */
-    font-size: 14px; /* Font size */
-    font-weight: 500; /* Font weight */
-    letter-spacing: 1px; /* Letter spacing */
-    padding: 10px 20px; /* Padding around the text */
-    border-radius: 8px; /* Rounded corners */
-    margin-top: auto; /* Push to the bottom if inside a flex container */
-    transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition for hover effects */
-}
-
-.user-name-button:hover {
-    background-color: #00000050; /* Darker background on hover */
-}
-
+/* Dropdown menu for settings */
 .settings-dropdown {
+    display: none;
     position: absolute;
     background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-    bottom: 60px;
-    border-radius: 8px;
-    overflow: hidden;
+    min-width: 160px; /* Adjust width as needed */
+    box-shadow: 0px 8px 16px rgba(0,0,0,0.2); /* Shadow for depth */
+    z-index: 5; /* Ensure dropdown is above other sidebar content */
+    bottom: 60px; /* Position above the footer */
+    border-radius: 8px; /* Rounded corners for dropdown */
+    overflow: hidden; /* Hide overflow */
+    transition: opacity 10s ease; /* Smooth transition for appearing */
 }
 
+/* Style for each item in the dropdown menu */
 .dropdown-item {
-    background-color: #d1cece17; /* Semi-transparent background */
-    color: rgb(0, 0, 0); /* Black text color */
-    border: none; /* No border */
-    cursor: pointer; /* Pointer cursor on hover */
-    font-family: Arial, Helvetica, sans-serif; /* Font styling */
-    font-size: 14px; /* Font size */
-    font-weight: 500; /* Font weight */
-    letter-spacing: 1px; /* Letter spacing */
+    background-color: #d1cece17;
+    color: rgb(0, 0, 0);
+    border: none;
+    cursor: pointer;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1px;
     padding: 12px 16px;
+    display: block;
+    transition: background-color 0.3s ease; /* Smooth transition for hover background */
+}
+
+/* Hover effects for interactive elements */
+.settings-icon-wrapper:hover,.dropdown-item:hover, .Account:hover, .user-name-button:hover {
+    background-color: #00000050; /* Darken on hover for visual feedback */
+}
+
+/* Ensure the dropdown is shown when hovering over the settings icon wrapper or the dropdown itself */
+.settings-icon-wrapper:hover .settings-dropdown,
+.settings-dropdown:hover {
     display: block;
 }
 
-.dropdown-item:hover {
-    background-color: #00000050; /* Darker background on hover */
-    text-decoration: none;
+
+/* User name button styling */
+.user-name-button {
+    background-color: #d1cece17;
+    color: rgb(0, 0, 0);
+    border: none;
+    cursor: pointer;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    padding: 10px 20px;
+    border-radius: 8px; /* Rounded edges for the button */
+    margin-top: auto; /* Ensure it's placed at the bottom */
+    transition: background-color 0.3s ease; /* Transition for hover effect */
+}
+
+.user-name-initial {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 36px; /* Ensure width and height are equal */
+    height: 36px; /* This should match the width for a perfect circle */
+    border-radius: 50%; /* This creates the circle shape */
+    font-size: 20px; /* Adjust font size as needed */
+    color: white; /* Font color */
+    margin: 10px auto; /* Center it horizontally, adjust margin as needed */
+    transition: background-color 0.3s ease;
+    /* Ensure the content doesn't stretch the container */
+    overflow: hidden; /* Prevents content from stretching the container */
 }
 
