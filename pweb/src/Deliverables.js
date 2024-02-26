@@ -6,36 +6,27 @@ function Deliverables() {
     <div className="deliverables-container">
       <div className="deliverable">
         <h3>Sprint 1 Deliverable</h3>
-        <div>
-          <a href={`${process.env.PUBLIC_URL}/Sprint1PlanningDocument.pdf`} target="_blank" rel="noopener noreferrer">
-            Sprint One Planning Document
-          </a>
-        </div>
-        <div>
-          <a href={`${process.env.PUBLIC_URL}/Sprint1Backlog.pdf`} target="_blank" rel="noopener noreferrer">
-            Sprint One Backlog
-          </a>
-        </div>
-        <div>
-          <a href={`${process.env.PUBLIC_URL}/DailyJournalDocument.pdf`} target="_blank" rel="noopener noreferrer">
-            Daily Journal
-          </a>
-        </div>
-        <div>
-          <a href={`${process.env.PUBLIC_URL}/Sprint1GuarantySheetMetal.pdf`} target="_blank" rel="noopener noreferrer">
-            Sprint One PowerPoint PDF
-          </a>
-        </div>
-        <div>
-          <a href={`${process.env.PUBLIC_URL}/retro.pdf`} target="_blank" rel="noopener noreferrer">
-            Sprint One Retrospective
-          </a>
-        </div>
-        <div>
-          <a href={`${process.env.PUBLIC_URL}/Project1Backlog.pdf`} target="_blank" rel="noopener noreferrer">
-            Project Backlog
-          </a>
-        </div>
+        <a href={`${process.env.PUBLIC_URL}/Sprint1PlanningDocument.pdf`} target="_blank" rel="noopener noreferrer" className="github-button">
+          Sprint One Planning Document
+        </a>
+        <a href={`${process.env.PUBLIC_URL}/Sprint1Backlog.pdf`} target="_blank" rel="noopener noreferrer" className="github-button">
+          Sprint One Backlog
+        </a>
+        <a href={`${process.env.PUBLIC_URL}/DailyJournalDocument.pdf`} target="_blank" rel="noopener noreferrer" className="github-button">
+          Daily Journal
+        </a>
+        <a href={`${process.env.PUBLIC_URL}/Metals-Sprint1Slides.pptx`} target="_blank" rel="noopener noreferrer" className="github-button">
+          Sprint One PowerPoint
+        </a>
+        <a href={`${process.env.PUBLIC_URL}/retro.pdf`} target="_blank" rel="noopener noreferrer" className="github-button">
+          Sprint One Retrospective
+        </a>
+        <a href={`${process.env.PUBLIC_URL}/Project1Backlog.pdf`} target="_blank" rel="noopener noreferrer" className="github-button">
+          Project Backlog
+        </a>
+        <a href="https://github.com/JCstumper/Guaranty_Sheet_Metal" className="github-button">
+          Guaranty Sheet Metal Development GitHub
+        </a>
       </div>
       <div className="deliverable">
         <h3>Sprint 2 Deliverable</h3>
