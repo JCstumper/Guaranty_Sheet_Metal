@@ -10,7 +10,7 @@ const buttons = ['HOME', 'INVENTORY', 'ORDERS', 'CUSTOMERS'];
 const Sidebar = ({ setAuth }) => {
     const [activeTab, setActiveTab] = useState(buttons[0]);
     const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(true);
     const [userName, setName] = useState("");
     const [initialBgColor, setInitialBgColor] = useState('#ffffff'); // Default color
 
