@@ -39,26 +39,25 @@ const Sidebar = ({ setAuth }) => {
         setAuth(false);
     };
 
-    const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
+    //const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
     const generateRandomColor = () => '#' + Math.floor(Math.random() * 16777215).toString(16);
 
     return (
         <aside className={`sidebar-container ${isCollapsed ? 'collapsed' : ''}`} onMouseEnter={() => setIsCollapsed(false)} onMouseLeave={() => setIsCollapsed(true)}>
-            <a href="/">
+            <a href="/" onClick={(e) => e.preventDefault()}>
                 <img src={isCollapsed ? collapsedLogo : logo} alt="Logo" className="sidebar-image" />
             </a>
+
             <ButtonList buttons={buttons} activeTab={activeTab} setActiveTab={setActiveTab} isCollapsed={isCollapsed} />
             <div className="sidebar-footer">
                 {!isCollapsed && (
-                    <div className="settings-icon-wrapper" onClick={toggleDropdown}>
-                        <img src={settingsIcon} alt="Settings" className="settings-icon" />
-                    </div>
-                )}
-                {dropdownOpen && (
-                    <div className="settings-dropdown">
-                        <a href="/settings" className="dropdown-item">Settings</a>
-                        <a href="/logout" className="dropdown-item" onClick={logout}>Logout</a>
-                    </div>
+                   <div className="settings-icon-wrapper">
+                   <img src={settingsIcon} alt="Settings" className="settings-icon" />
+                   <div className="settings-dropdown">
+                       <a href="/settings" className="dropdown-item">Settings</a>
+                       <a href="/logout" className="dropdown-item" onClick={logout}>Logout</a>
+                   </div>
+               </div>
                 )}
                 {isCollapsed ? (
                     <div className="user-name-initial" style={{ backgroundColor: initialBgColor }}>
