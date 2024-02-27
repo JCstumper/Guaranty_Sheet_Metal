@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import NavBar from './NavBar';
 import Home from './Home';
 import Deliverables from './Deliverables';
@@ -11,9 +11,10 @@ function App() {
     <Router>
       <NavBar /> {/* This includes the NavBar on every page */}
       <Routes>
-        <Route path="/Guaranty_Sheet_Metal" element={<Home />} />
-        <Route path="/Guaranty_Sheet_Metal/Deliverables" element={<Deliverables />} />
-        <Route path="/Guaranty_Sheet_Metal/Team" element={<Team />} />
+        <Route path="/" element={<Navigate replace to="/home" />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/Deliverables" element={<Deliverables />} />
+        <Route path="/Team" element={<Team />} />
       </Routes>
     </Router>
   );
