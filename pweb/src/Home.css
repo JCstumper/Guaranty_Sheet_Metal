@@ -43,3 +43,30 @@
 .github-button:hover {
     background-color: #45a049;
 }
+
+/* Inherits some styles from .section for consistency */
+ul.project-goals {
+    list-style-type: none; /* Removes bullet points */
+    margin: 20px auto; /* Aligns with .section margin */
+    padding: 15px; /* Provides internal spacing */
+    background-color: #2f3e46; /* Matches .section background-color */
+    color: #ffffff; /* Ensures text is white for visibility */
+    width: 80%; /* Matches .section width */
+    box-sizing: border-box; /* Ensures padding and border are included in width */
+    max-width: 600px; /* Optional: to prevent the list from becoming too wide */
+}
+
+ul.project-goals li {
+    padding: 10px 0; /* Adds vertical padding for each item */
+    border-bottom: 1px solid #ddd; /* Adds a separator, adjust color to fit the theme */
+    color: #bebebe; /* Matches .section li color for consistency */
+    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+ul.project-goals li:hover {
+    background-color: #374955; /* Darker than the section background for contrast */
+}
+
+ul.project-goals li:last-child {
+    border-bottom: none; /* Removes bottom border from the last item */
+}

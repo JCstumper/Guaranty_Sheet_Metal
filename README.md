@@ -62,7 +62,7 @@ This is a script made to execute `nodemon server.js`, which all it is doing is s
 
 ## Start React Project
 
-Once in the `testingUI` folder, start the REACT project by using the command:
+Once in the `guarantymetalui` folder, start the REACT project by using the command:
 
 ### `npm start`
 

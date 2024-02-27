@@ -1,12 +1,16 @@
+SHELL := /bin/bash
 .PHONY: all start_docker start_api start_frontend
 
 all: start_docker start_api start_frontend
 
 start_docker:
-	docker-compose -f "/Users/Jacob Carney/Documents/Guaranty_Sheet_Metal/docker-compose.yml" up -d
+	docker-compose -f "./docker-compose.yml" up -d
 
 start_api:
-	cd "/Users/Jacob Carney/Documents/Guaranty_Sheet_Metal/api" && start /B npm start
+	cd "./api" && start npm start
 
 start_frontend:
-	cd "/Users/Jacob Carney/Documents/Guaranty_Sheet_Metal/FrontEnd/guarantymetalui" && start /B npm start
+	cd "./FrontEnd/guarantymetalui" && start npm start
+
+
+#made the makefile general so anyone can use it - WK
