@@ -12,30 +12,23 @@ services:
       - "5432:5432"
     volumes:
       - mydbdata:/var/lib/postgresql/data
+      - ./database:/docker-entrypoint-initdb.d
 
-  # api:
-  #   build:
-  #     context: ./api
-  #     dockerfile: Dockerfile
-  #   environment:
-  #     DB_HOST: db
-  #     DB_USER: admin
-  #     DB_PASSWORD: Guaranty123
-  #     DB_NAME: GuarantyDatabase
-  #     DB_PORT: 5432
-  #   ports:
-  #     - "3000:3000"
-  #   depends_on:
-  #     - db
+  api:
+    build: ./API
+    restart: always
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
 
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "8080:80"
-  #   depends_on:
-  #     - api
+  frontend:
+    build: ./FrontEnd/GuarantyMetalUi
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
 
 volumes:
   mydbdata:
