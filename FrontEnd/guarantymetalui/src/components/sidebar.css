@@ -7,7 +7,7 @@
     background-color: #d1cecebd;
     flex-direction: column;
     position: fixed;
-    transition: width 0.3s ease; /* Smooth transition for width adjustment */
+    transition: width 0.1s ease; /* Smooth transition for width adjustment */
     z-index: 1000; /* Ensure sidebar is above other content */
 }
 
@@ -22,7 +22,7 @@
     max-width: 207px; /* Max width for the logo */
     height: auto;
     margin: 25px 20px; /* Adjusted margin to center the logo */
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition: opacity 0.5s ease, transform 0.5s ease;
     cursor: default;
 }
 
@@ -85,7 +85,7 @@
 .settings-icon {
     width: 24px;
     height: 24px; /* Adjust icon size as needed */
-    transition: filter 0.3s ease, transform 0.3s ease; /* Smooth transition for icon effects */
+    transition: filter 0.3s ease, transform 0.3s ease; 
 }
 
 
@@ -98,7 +98,8 @@
     min-width: 160px; /* Adjust width as needed */
     box-shadow: 0px 8px 16px rgba(0,0,0,0.2); /* Shadow for depth */
     z-index: 5; /* Ensure dropdown is above other sidebar content */
-    bottom: 60px; /* Position above the footer */
+    bottom: 55px; /* Position above the footer */
+    right: 60px; /* Position above the footer */
     border-radius: 8px; /* Rounded corners for dropdown */
     overflow: hidden; /* Hide overflow */
     transition: opacity 10s ease; /* Smooth transition for appearing */
