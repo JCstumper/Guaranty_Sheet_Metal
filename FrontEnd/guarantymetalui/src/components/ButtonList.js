@@ -1,22 +1,35 @@
 import React from 'react';
-import './ButtonList.css'; //styles for the buttons
+import './ButtonList.css'; // Styles for the buttons
+import { Link } from 'react-router-dom';
+import { MdDashboard, MdInventory, MdShoppingCart, MdPeople } from 'react-icons/md'; // Example icons
 
-const ButtonList = ({ buttons }) => {
+const ButtonList = ({ buttons, activeTab, setActiveTab, isCollapsed }) => {
+  const buttonPaths = {
+    HOME: '/dashboard',
+    INVENTORY: '/inventory',
+    ORDERS: '/orders',
+    CUSTOMERS: '/customers',
+  };
+
+  const buttonIcons = {
+    HOME: <MdDashboard />,
+    INVENTORY: <MdInventory />,
+    ORDERS: <MdShoppingCart />,
+    CUSTOMERS: <MdPeople />,
+  };
+
   return (
     <div className="button-list">
-      {buttons.map((button, index) => {
-        // Determine if the button is a React element (e.g., your image button)
-        const isReactElement = React.isValidElement(button);
-        
-        // Extract className if it's a React element, otherwise default to 'list-button'
-        const className = isReactElement && button.props.className ? button.props.className : 'list-button';
+      {buttons.map((button) => {
+        const isActive = button === activeTab;
+        const className = isActive ? 'list-button active' : 'list-button';
+        const path = buttonPaths[button];
+        const icon = buttonIcons[button];
 
         return (
-          // Apply the extracted or default className to the button
-          <button key={index} className={className}>
-            {/* Render the button content. If it's a React element, render as is; otherwise, treat as text */}
-            {isReactElement ? button : button}
-          </button>
+          <Link to={path} key={button} className={className} onClick={() => setActiveTab(button)}>
+            {isCollapsed ? icon : button}
+          </Link>
         );
       })}
     </div>
