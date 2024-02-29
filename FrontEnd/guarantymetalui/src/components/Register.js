@@ -79,7 +79,7 @@ const Register = ({ setAuth }) => {
                 {/* Input fields for username, password, and email */}
                 <input type="text" name="username" placeholder="Username" className="register-input" value={username} onChange={onChange} />
                 <input type="password" name="password" placeholder="Password" className="register-input" value={password} onChange={onChange} />
-                <input type="email" name="email" placeholder="Email" className="register-input" value={email} onChange={onChange} />
+                <input type="e-mail" name="email" placeholder="Email" className="register-input" value={email} onChange={onChange} />
                 <button type="submit" className="register-button">Register</button>
             </form>
             <Link to="/login">Already have an account? Login</Link>

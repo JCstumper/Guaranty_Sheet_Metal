@@ -2,10 +2,10 @@ import React from 'react';
 import Sidebar from './components/sidebar';
 import './Inventory.css';
 
-const Inventory = () => {
+const Inventory = ({setAuth}) => {
     return (
         <div className="inventory">
-        <Sidebar />
+        <Sidebar setAuth={setAuth}/>
         </div>
     );
 };
