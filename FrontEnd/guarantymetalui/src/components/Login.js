@@ -1,6 +1,7 @@
 import React, {Fragment, useState} from 'react';
 import {Link} from 'react-router-dom';
-import './LoginPage.css';
+import { Bounce, toast } from 'react-toastify';
+import '../LoginPage.css';
 import logo from '../pictures/logo.png';
 
 const Login = ({setAuth}) => {
@@ -14,6 +15,18 @@ const Login = ({setAuth}) => {
 
     const onChange = (e) => {
         setInputs({...inputs, [e.target.name] : e.target.value});
+    };
+
+    const options = {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
     };
 
     const onSubmitForm = async (e) => {
@@ -32,11 +45,17 @@ const Login = ({setAuth}) => {
 
             const parseRes = await response.json();
 
-            // console.log(parseRes);
+            if(parseRes.token) {
+                localStorage.setItem("token", parseRes.token);
 
-            localStorage.setItem("token", parseRes.token);
+                setAuth(true);      
+                toast.success("Login Successful!", options);
+            }
+            else {
+                setAuth(false);
+                toast.error(parseRes, options);
+            }
 
-            setAuth(true);
 
         } catch (err) {
             console.error(err.message);

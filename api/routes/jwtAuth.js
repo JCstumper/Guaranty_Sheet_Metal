@@ -16,7 +16,7 @@ router.post("/register", validInfo, async(req, res) => {
         const user = await pool.query("SELECT * FROM users WHERE username = $1", [username]);
 
         if (user.rows.length !== 0) {
-            return res.status(401).send("User already exists"); //401 means that the user is Unauthenticated
+            return res.status(401).json("User already exists"); //401 means that the user is Unauthenticated
         }
 
         //3. Bcrypt the user password
