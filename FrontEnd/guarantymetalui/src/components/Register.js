@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link, redirect } from "react-router-dom";
+import { Bounce, toast } from 'react-toastify';
 import './Register.css'; // Importing the new CSS file for the register page
 import logo from '../pictures/logo.png'; // Assuming the same logo is used
 
@@ -18,6 +19,18 @@ const Register = ({ setAuth }) => {
         setInputs({ ...inputs, [e.target.name]: e.target.value });
     };
 
+    const options = {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+    };
+
     const onSubmitForm = async (e) => {
         e.preventDefault();
 
@@ -31,9 +44,18 @@ const Register = ({ setAuth }) => {
             });
 
             const parseRes = await response.json();
-            setAuth(true);
+
+            if(parseRes.token) {
+                setAuth(true);
+                toast.success("Registered Successfully!", options); 
+
+                return navigate('/login');
+            }
+            else {
+                setAuth(false);
+                toast.error(parseRes, options);
+            }
             
-            navigate('/login'); // Use navigate for SPA behavior
         } catch (err) {
             console.error(err.message);
         }
@@ -62,7 +84,7 @@ const Register = ({ setAuth }) => {
                     onChange={onChange}
                 />
                 <input
-                    type="email"
+                    type="e-mail"
                     name="email"
                     placeholder="Email"
                     className="register-input"
@@ -73,9 +95,9 @@ const Register = ({ setAuth }) => {
                     Register
                 </button>
             </form>
-            <a href="/login" className="back-to-login"> {/* Updated class name */}
+            <Link to="/login">
                 Already have an account? Login
-            </a>
+            </Link>
         </div>
     );
 };
