@@ -6,7 +6,8 @@ module.exports = (req, res, next) => {
     }
 
     function validUsername(userName) {
-        return /^[A-Za-z][A-Za-z0-9_]{4,29}$/.test(username);
+        // return /^[A-Za-z][A-Za-z0-9_]{4,29}$/.test(username);
+        return /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()-+=])[A-Za-z\d!@#$%^&*()-+=_]{7,29}$/.test(userName);
     }
   
     if (req.path === "/register") {
@@ -17,7 +18,7 @@ module.exports = (req, res, next) => {
             return res.status(401).json("Invalid Email");
         }
         else if(!validUsername(username)) {
-            return res.status(401).json("Invalid Username.\n Username must begin with an alphabetical character, must contain a lowercase or uppercase character, digit, or underscore, and it must be between 5-29 characters long.");
+            return res.status(401).json("Invalid Username. Username must contain at least 1 uppercase character, 1 digit, 1 special character, and it must be between 8-29 characters long.");
         }
     } 
     else if (req.path === "/login") {
@@ -25,7 +26,7 @@ module.exports = (req, res, next) => {
             return res.status(401).json("Missing Credentials");
         } 
         else if(!validUsername(username)) {
-            return res.status(401).json("Invalid Username.\n Username must begin with an alphabetical character, must contain a lowercase or uppercase character, digit, or underscore, and it must be between 5-29 characters long.");
+            return res.status(401).json("Invalid Username. Username must contain at least 1 uppercase character, 1 digit, 1 special character, and it must be between 8-29 characters long.");
         }
     }
     
