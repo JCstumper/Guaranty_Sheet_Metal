@@ -1,54 +1,54 @@
 .login-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    margin-top: -50px;
+    display: flex; /* Using flexbox for layout */
+    flex-direction: column; /* Stacking children vertically */
+    align-items: center; /* Centering items horizontally */
+    justify-content: center; /* Centering items vertically */
+    height: 100vh; /* Taking full viewport height */
+    margin-top: -50px; /* Adjusting position upwards */
 }  
 
 .logo-container {
-    margin-bottom: 20px;
+    margin-bottom: 20px; /* Space below the logo */
 }
 
 .company-logo {
-    width: 300px;
-    height: auto;
+    width: 300px; /* Width of the logo */
+    height: auto; /* Auto height to maintain aspect ratio */
 }
 
 .login-form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    display: flex; /* Using flexbox for layout */
+    flex-direction: column; /* Stacking input fields vertically */
+    gap: 10px; /* Space between each field/button */
 }
 
 .login-input {
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    outline: none;
+    padding: 10px; /* Padding inside the input fields */
+    border-radius: 5px; /* Rounded corners */
+    border: 1px solid #ccc; /* Border color */
+    outline: none; /* Removing focus outline */
 }
 
 .login-button {
-    padding: 10px;
-    border-radius: 5px;
-    border: none;
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
+    padding: 10px; /* Padding inside the button */
+    border-radius: 5px; /* Rounded corners */
+    border: none; /* No border */
+    background-color: #007bff; /* Background color */
+    color: white; /* Text color */
+    cursor: pointer; /* Pointer cursor on hover */
 }
 
 .login-button:hover {
-    background-color: #0056b3;
+    background-color: #0056b3; /* Darker background on hover */
 }
 
 .forgot-password {
-    margin-top: 10px;
-    text-align: center;
-    color: #007bff;
-    text-decoration: none;
+    margin-top: 10px; /* Space above the link */
+    text-align: center; /* Centering text */
+    color: #007bff; /* Text color */
+    text-decoration: none; /* No underline */
 }
 
 .forgot-password:hover {
-    text-decoration: underline;
+    text-decoration: underline; /* Underline on hover */
 }

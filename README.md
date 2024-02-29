@@ -1,93 +1,94 @@
-# Steps to Setup and Start Project
+# GuarantyMetalUI Project
 
-1. Start PostgreSQL Container and Create Users Table
-2. Start REST API
-3. Start React Project
+This project is designed to run a React frontend, a Node.js API, and a PostgreSQL database, all containerized with Docker for seamless development, testing, and deployment experiences.
 
-## Start PostgreSQL Container and Create Users Table
+## Project Structure
 
-To start the PostgreSQL container using `docker-compose` you will need to comment out the services `api` and `frontend`.
+- **Frontend**: React application for the user interface.
+- **API**: Node.js backend for business logic.
+- **DB**: PostgreSQL for persistent data storage.
 
-Otherwise `docker-compose` will attempt to find the `dockerfile` for both and will fail to launch.
+## Getting Started
 
-After commnenting out the services `api` and `frontend`, open up `Docker Desktop`. \
-`Docker Desktop` can be minimized after opening.
+These instructions will help you get the project up and running on your local machine for development and testing purposes.
 
-Additonally, make sure you are in the `root` folder.
+### Prerequisites
 
-Next, run the following commands.
+Ensure you have the following tools installed:
+- Docker
+- Docker Compose
 
-### `docker-compose up -d`
+### Setup
 
-This will start the PostgreSQL container and will allow you to still use your current shell.
+1. **Clone the Repository**
 
-### `docker ps`
+    ```bash
+    git clone <repository-url>
+    ```
 
-Will bring up a list of currently active containers. You'll want to copy the `CONTAINER ID`.
+2. **Navigate to Project Directory**
 
-### `docker exec -it <CONTAINER ID> bash`
+    ```bash
+    cd <project-directory>
+    ```
 
-Will bring you into the bash shell that is on the container. Also, the `CONTAINER ID` will be different each time you use `docker-compose up`.
+3. **Launch Docker Containers**
 
-### `psql -U admin -d GuarantyDatabase`
+    ```bash
+    docker-compose up --build
+    ```
 
-This will log you into the PostgreSQL database as the `admin` user.
+This command starts up all the necessary services:
+- `db`: A PostgreSQL database.
+- `api`: A Node.js-based backend.
+- `frontend`: A React-based frontend.
 
-### `\c GuarantyDatabase`
+### Access Points
 
-Will connect you to the database. Allowing you to actually execute SQL queries.
+- **Frontend**: [http://localhost:3001](http://localhost:3001) - React application.
+- **API**: [http://localhost:3000](http://localhost:3000) - Backend API.
 
-### `create extension if not exists "uuid-ossp";`
+## Docker Services
 
-Executing this command will allow us to use the `uuid_generate_v4()` function, which creates a randomized string. This will prevent data from clashing together for the `user_id`.
+### Database (PostgreSQL)
 
-    CREATE TABLE users(
-        user_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-        username VARCHAR(255) NOT NULL,
-        email VARCHAR(255) NOT NULL,
-        password VARCHAR(255) NOT NULL
-    );
+- **Image**: `postgres:latest`
+- **Environment Variables**: Configures the database name, user, and password.
+- **Volumes**: Persists database data and initializes the database with SQL scripts.
 
-This will create the `users` table within the database.
+### API (Node.js)
 
-## Start REST API
+- **Build Context**: `./api`
+- **Environment Variables**: Contains database connection settings.
+- **Dependencies**: Waits for the `db` service to be ready.
 
-To start the REST API, you will first need to navigate to the `api` folder.
+### Frontend (React)
 
-Once in the folder you can run the following command.
+- **Build Context**: `./FrontEnd/guarantymetalui`
+- **Volumes**: Enables live reloading for development.
+- **Environment**: Set to `development`.
+- **Dependencies**: Waits for the `api` service.
 
-### `npm start`
+## Persistent Volume
 
-This is a script made to execute `nodemon server.js`, which all it is doing is starting the server for the API.
+- **mydbdata**: Stores PostgreSQL data across container lifecycles.
 
-## Start React Project
+## Development Workflow
 
-Once in the `guarantymetalui` folder, start the REACT project by using the command:
+- Live reloading is enabled for the frontend. Any changes in the `./FrontEnd/guarantymetalui` directory will be reflected immediately.
+- The API server automatically restarts upon changes, facilitated by Nodemon.
 
-### `npm start`
+## Built With
 
-Since the REST API is currently setup to `PORT 3000`, the REACT project will ask if you want to run on a different `PORT`.
+- [React](https://reactjs.org/) - Frontend framework.
+- [Node.js](https://nodejs.org/) - Backend runtime.
+- [PostgreSQL](https://www.postgresql.org/) - Database system.
+- [Docker](https://www.docker.com/) - Containerization platform.
 
-Type `y` and it will automatically set you up with a new `PORT` number.
+## Authors
 
-## Registering a New User
-
-You can register a new user in the `users` table by clicking the `Register` button at the bottom of the `Login` page.
-
-Once on the `Register` page, enter the information on the screen and hit `Submit`.
-
-Afterwards, it will take you to the `Login` page where you will be able to login into website.
-
-## Signing In
-
-Enter `Username` and `Password` to log into the website.
-
-After entering in the information and pressing the `Login` button, it will take you to a `Dashboard` page, which at the moment does not include much.
-
-## Tips
-
-- To leave the GuarantyDatabase within the container, enter `exit` into the command line until you are back in your shell.
-
-- To shutdown the container, type `docker compose down`.
-
-- To stop the REST API hit `CTR`+`C`.
+- **Jacob Carney**
+- **Waleed Kambal**
+- **Mason Wittkofski**
+- **Brandon Bejarano**
+- **Michal Zajac**

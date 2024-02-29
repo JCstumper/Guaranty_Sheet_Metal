@@ -1,54 +1,54 @@
 .register-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    margin-top: -50px;
+    display: flex; /* Use flexbox for layout */
+    flex-direction: column; /* Stack children elements vertically */
+    align-items: center; /* Center items horizontally */
+    justify-content: center; /* Center items vertically */
+    height: 100vh; /* Full height of the viewport */
+    margin-top: -50px; /* Adjusts the container up for visual alignment */
 }
 
 .logo-container {
-    margin-bottom: 20px;
+    margin-bottom: 20px; /* Space below the logo */
 }
 
 .company-logo {
-    width: 300px;
-    height: auto;
+    width: 300px; /* Set a fixed width for the logo */
+    height: auto; /* Height adjusts automatically to maintain aspect ratio */
 }
 
 .register-form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    display: flex; /* Use flexbox for layout */
+    flex-direction: column; /* Stack input fields and button vertically */
+    gap: 10px; /* Space between each field/button */
 }
 
 .register-input {
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    outline: none;
+    padding: 10px; /* Padding inside each input field */
+    border-radius: 5px; /* Rounded corners for the input fields */
+    border: 1px solid #ccc; /* Border color */
+    outline: none; /* Removes the outline to customize focus styles */
 }
 
 .register-button {
-    padding: 10px;
-    border-radius: 5px;
-    border: none;
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
+    padding: 10px; /* Padding inside the button */
+    border-radius: 5px; /* Rounded corners for the button */
+    border: none; /* No border for the button */
+    background-color: #007bff; /* Primary button color */
+    color: white; /* Text color for the button */
+    cursor: pointer; /* Changes cursor to pointer on hover */
 }
 
 .register-button:hover {
-    background-color: #0056b3;
+    background-color: #0056b3; /* Darker shade on hover for visual feedback */
 }
 
 .back-to-login {
-    margin-top: 10px;
-    text-align: center;
-    color: #007bff;
-    text-decoration: none;
+    margin-top: 10px; /* Space above the link */
+    text-align: center; /* Centers the link text */
+    color: #007bff; /* Link text color */
+    text-decoration: none; /* Removes underline from the link */
 }
 
 .back-to-login:hover {
-    text-decoration: underline;
+    text-decoration: underline; /* Adds underline on hover for visual feedback */
 }
