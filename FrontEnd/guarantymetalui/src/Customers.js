@@ -6,6 +6,9 @@ const Customers = () => {
     return (
         <div className="inventory">
         <Sidebar />
+            <div className="customers-container">
+                Customers
+            </div>
         </div>
     );
 };

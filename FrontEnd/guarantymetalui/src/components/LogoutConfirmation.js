@@ -1,9 +1,12 @@
-import React from 'react';
-import './LogoutConfirmation.css'; // Ensure you have the CSS file with this name
+import React from 'react'; // Import React to enable JSX syntax
+import './LogoutConfirmation.css'; // Import CSS for styling the component
 
+// Component to render a logout confirmation modal
 const LogoutConfirmation = ({ isOpen, onConfirm, onCancel }) => {
+    // If the modal is not open, don't render anything
     if (!isOpen) return null;
 
+    // Rendering the modal content
     return (
         <div className="logout-confirmation-overlay">
             <div className="logout-confirmation-container">
@@ -19,4 +22,4 @@ const LogoutConfirmation = ({ isOpen, onConfirm, onCancel }) => {
     );
 };
 
-export default LogoutConfirmation;
+export default LogoutConfirmation; // Export the component for use in other parts of the application

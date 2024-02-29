@@ -1,165 +1,159 @@
-/* Sidebar container with full height and fixed positioning */
+/* Main container for the sidebar, using flex layout for inner items */
 .sidebar-container { 
     display: flex;
-    width: 80px; /* Start with collapsed width */
-    height: 100vh;
-    align-items: left;
-    background-color: #d1cecebd;
-    flex-direction: column;
-    position: fixed;
-    transition: width 0.1s ease; /* Smooth transition for width adjustment */
-    z-index: 1000; /* Ensure sidebar is above other content */
+    width: 80px; /* Initial width for a collapsed state */
+    height: 100vh; /* Full height of the viewport */
+    align-items: left; /* Align items to the start of the flex container (left) */
+    background-color: #d1cecebd; /* Semi-transparent background color */
+    flex-direction: column; /* Stack children vertically */
+    position: fixed; /* Fixed positioning to stay visible during scroll */
+    transition: width 0.1s ease; /* Smooth transition for width changes */
+    z-index: 1000; /* High z-index to ensure it's on top of other content */
 }
 
-/* Hover over the sidebar to expand its width */
+/* Expands the sidebar width on hover */
 .sidebar-container:hover {
-    width: 250px; /* Expanded width on hover */
+    width: 250px; /* New width for expanded state */
 }
 
-/* Sidebar image styling */
+/* Styles for the logo or image in the sidebar */
 .sidebar-image {
-    width: 100%; /* Ensure the logo adapts to the sidebar width */
-    max-width: 207px; /* Max width for the logo */
-    height: auto;
-    margin: 25px 20px; /* Adjusted margin to center the logo */
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    cursor: default;
+    width: 100%; /* Full width of its container */
+    max-width: 207px; /* Maximum width to maintain aspect ratio */
+    height: auto; /* Height is auto to maintain aspect ratio */
+    margin: 25px 20px; /* Margin to center the logo/image */
+    transition: opacity 0.5s ease, transform 0.5s ease; /* Transition for opacity and transform changes */
+    cursor: default; /* Default cursor to indicate non-interactivity */
 }
 
+/* Adjusts logo size and margin in collapsed state */
 .sidebar-container.collapsed .sidebar-image {
-    max-width: 60px; /* Smaller max-width for the collapsed state */
-    margin: 15px 10px; /* Center the logo in the collapsed sidebar */
+    max-width: 60px; /* Reduced width for the collapsed state */
+    margin: 15px 10px; /* Adjusted margin to center in the reduced space */
 }
 
-/* Account button style */
+/* Style for account button, typically used for user profile or logout */
 .Account {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    border: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    margin: 0 auto; /* Center the button horizontally */
-    margin-top: 300px; /* Adjust spacing from the top */
-    transition: opacity 0.3s ease; /* Smooth transition for the hover effect */
+    width: 50px; /* Fixed width */
+    height: 50px; /* Fixed height */
+    border-radius: 50%; /* Circular shape */
+    border: none; /* No border */
+    display: flex; /* Use flexbox for centering content */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    cursor: pointer; /* Pointer cursor on hover */
+    margin: 0 auto; /* Center horizontally */
+    margin-top: 300px; /* Distance from top or previous element */
+    transition: opacity 0.3s ease; /* Transition for opacity changes */
 }
 
-/* Footer of the sidebar */
+/* Styles for the footer of the sidebar */
 .sidebar-footer {
-    display: flex;
-    justify-content: center; /* Center content horizontally in the footer */
-    align-items: center; /* Align items vertically */
-    width: 100%; /* Ensure the footer spans the entire width of the sidebar */
-    margin-top: auto; /* Push the footer to the bottom of the sidebar */
-    padding: 20px; /* Adjust padding as needed */
-    transition: all 0.3s ease; /* Smooth transition for layout changes */
+    display: flex; /* Use flexbox for layout */
+    justify-content: center; /* Center content horizontally */
+    align-items: center; /* Center content vertically */
+    width: 100%; /* Full width of the container */
+    margin-top: auto; /* Push to the bottom of the flex container */
+    padding: 20px; /* Padding inside the footer */
+    transition: all 0.3s ease; /* Transition for all changes */
 }
 
-/* When the sidebar expands */
+/* Adjusts layout of footer when sidebar is not collapsed */
 .sidebar-container:not(.collapsed) .sidebar-footer {
-    flex-direction: row; /* Arrange items in a row */
-    justify-content: center; /* Evenly space the settings icon and username */
+    flex-direction: row; /* Arrange items horizontally */
 }
 
-/* Additional style adjustments for the settings icon and username for better alignment and spacing */
+/* Styles for the settings icon and user name for alignment and spacing */
 .settings-icon-wrapper, .user-name-button {
-    margin: 0 10px; /* Add some horizontal spacing around these elements */
+    margin: 0 10px; /* Horizontal margin for spacing */
 }
 
-
-/* Settings icon wrapper for clickable area */
+/* Container for the settings icon, making it interactive */
 .settings-icon-wrapper {
-    width: 36px;
-    height: 36px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 8px; /* Optional for rounded corners */
-    transition: background-color 0.3s ease; /* Smooth background transition */
-    cursor: pointer;
+    width: 36px; /* Fixed width */
+    height: 36px; /* Fixed height */
+    display: flex; /* Use flexbox for centering content */
+    justify-content: center; /* Center content horizontally */
+    align-items: center; /* Center content vertically */
+    border-radius: 8px; /* Optional rounded corners */
+    transition: background-color 0.3s ease; /* Smooth transition for background color */
+    cursor: pointer; /* Pointer cursor to indicate it's clickable */
 }
 
-/* Settings icon style */
+/* Style for the actual settings icon */
 .settings-icon {
-    width: 24px;
-    height: 24px; /* Adjust icon size as needed */
-    transition: filter 0.3s ease, transform 0.3s ease; 
+    width: 24px; /* Width of the icon */
+    height: 24px; /* Height of the icon */
+    transition: filter 0.3s ease, transform 0.3s ease; /* Transition for visual effects */
 }
 
-
-
-/* Dropdown menu for settings */
+/* Dropdown menu for additional settings or options */
 .settings-dropdown {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px; /* Adjust width as needed */
+    display: none; /* Hidden by default */
+    position: absolute; /* Positioning relative to its positioned ancestor */
+    background-color: #f9f9f9; /* Background color */
+    min-width: 160px; /* Minimum width */
     box-shadow: 0px 8px 16px rgba(0,0,0,0.2); /* Shadow for depth */
-    z-index: 5; /* Ensure dropdown is above other sidebar content */
-    bottom: 55px; /* Position above the footer */
-    right: 60px; /* Position above the footer */
-    border-radius: 8px; /* Rounded corners for dropdown */
-    overflow: hidden; /* Hide overflow */
-    transition: opacity 10s ease; /* Smooth transition for appearing */
+    z-index: 5; /* Ensure it's above other content but below the sidebar */
+    bottom: 55px; /* Position from the bottom */
+    right: 60px; /* Position from the right */
+    border-radius: 8px; /* Rounded corners */
+    overflow: hidden; /* Hide overflow content */
+    transition: opacity 10s ease; /* Transition for opacity */
 }
 
-/* Style for each item in the dropdown menu */
+/* Style for items within the dropdown menu */
 .dropdown-item {
-    background-color: #d1cece17;
-    color: rgb(0, 0, 0);
-    border: none;
-    cursor: pointer;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    letter-spacing: 1px;
-    padding: 12px 16px;
-    display: block;
-    transition: background-color 0.3s ease; /* Smooth transition for hover background */
+    background-color: #d1cece17; /* Semi-transparent background */
+    color: rgb(0, 0, 0); /* Text color */
+    border: none; /* No border */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-family: Arial, Helvetica, sans-serif; /* Font styling */
+    font-size: 14px; /* Font size */
+    font-weight: 500; /* Font weight */
+    letter-spacing: 1px; /* Space between characters */
+    padding: 12px 16px; /* Padding inside each item */
+    display: block; /* Block level for full width */
+    transition: background-color 0.3s ease; /* Background color transition on hover */
 }
 
-/* Hover effects for interactive elements */
-.settings-icon-wrapper:hover,.dropdown-item:hover, .Account:hover, .user-name-button:hover {
-    background-color: #00000050; /* Darken on hover for visual feedback */
+/* Hover effects for various elements to indicate interactivity */
+.settings-icon-wrapper:hover, .dropdown-item:hover, .Account:hover, .user-name-button:hover {
+    background-color: #00000050; /* Darken background on hover */
 }
 
-/* Ensure the dropdown is shown when hovering over the settings icon wrapper or the dropdown itself */
+/* Display the settings dropdown when hovering over related elements */
 .settings-icon-wrapper:hover .settings-dropdown,
 .settings-dropdown:hover {
-    display: block;
+    display: block; /* Show the dropdown */
 }
 
-
-/* User name button styling */
+/* Styling for a button that might display the user's name */
 .user-name-button {
-    background-color: #d1cece17;
-    color: rgb(0, 0, 0);
-    border: none;
-    cursor: pointer;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    letter-spacing: 1px;
-    padding: 10px 20px;
-    border-radius: 8px; /* Rounded edges for the button */
-    margin-top: auto; /* Ensure it's placed at the bottom */
-    transition: background-color 0.3s ease; /* Transition for hover effect */
+    background-color: #d1cece17; /* Semi-transparent background */
+    color: rgb(0, 0, 0); /* Text color */
+    border: none; /* No border */
+    cursor: pointer; /* Pointer cursor to indicate it's clickable */
+    font-family: Arial, Helvetica, sans-serif; /* Font styling */
+    font-size: 14px; /* Font size */
+    font-weight: 500; /* Font weight */
+    letter-spacing: 1px; /* Character spacing */
+    padding: 10px 20px; /* Padding inside the button */
+    border-radius: 8px; /* Rounded corners */
+    margin-top: auto; /* Pushed to the bottom if it's inside a flex container */
+    transition: background-color 0.3s ease; /* Smooth transition for background color changes */
 }
 
+/* Styling for a circular representation of the user's initial */
 .user-name-initial {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 36px; /* Ensure width and height are equal */
-    height: 36px; /* This should match the width for a perfect circle */
-    border-radius: 50%; /* This creates the circle shape */
-    font-size: 20px; /* Adjust font size as needed */
-    color: white; /* Font color */
-    margin: 10px auto; /* Center it horizontally, adjust margin as needed */
-    transition: background-color 0.3s ease;
-    /* Ensure the content doesn't stretch the container */
-    overflow: hidden; /* Prevents content from stretching the container */
+    display: flex; /* Use flexbox for centering content */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    width: 36px; /* Fixed width for a circle */
+    height: 36px; /* Fixed height for a circle */
+    border-radius: 50%; /* Makes the element a circle */
+    font-size: 20px; /* Font size for the initial */
+    color: white; /* Color of the initial */
+    margin: 10px auto; /* Center the element horizontally */
+    transition: background-color 0.3s ease; /* Transition for background color changes */
 }
-
