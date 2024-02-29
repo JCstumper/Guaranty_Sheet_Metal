@@ -47,13 +47,13 @@ function App() {
       <div className="container">
       <Routes>
         <Route path="/" element={<Navigate replace to="/login" />} />
-        <Route exact path="/login" element={!isAuthenticated ? (<Login setAuth={setAuth} />) : (<Navigate to="/dashboard" />)} />
-        <Route exact path="/register" element={!isAuthenticated ? (<Register setAuth={setAuth} />) : (<Login />)} />
-        <Route exact path="/dashboard" element={isAuthenticated ? (<Dashboard setAuth={setAuth} />) : (<Navigate to="/login" />)} />
-        <Route exact path="/orders" element={isAuthenticated ? (<Orders setAuth={setAuth} />) : (<Navigate to="/login" />)} />
-        <Route exact path="/customers" element={isAuthenticated ? (<Customers setAuth={setAuth} />) : (<Navigate to="/login" />)} />
-        <Route exact path="/inventory" element={isAuthenticated ? (<Inventory setAuth={setAuth} />) : (<Navigate to="/login" />)} />
-        <Route exact path="/#" element={isAuthenticated ? (<Logout setAuth={setAuth} />) : (<Navigate to="/login" />)} />
+        <Route path="/login" element={!isAuthenticated ? (<Login setAuth={setAuth} />) : (<Navigate to="/dashboard" />)} />
+        <Route path="/register" element={!isAuthenticated ? (<Register setAuth={setAuth} />) : (<Login />)} />
+        <Route path="/dashboard" element={isAuthenticated ? (<Dashboard setAuth={setAuth} />) : (<Navigate to="/login" />)} />
+        <Route path="/orders" element={isAuthenticated ? (<Orders setAuth={setAuth} />) : (<Navigate to="/login" />)} />
+        <Route path="/customers" element={isAuthenticated ? (<Customers setAuth={setAuth} />) : (<Navigate to="/login" />)} />
+        <Route path="/inventory" element={isAuthenticated ? (<Inventory setAuth={setAuth} />) : (<Navigate to="/login" />)} />
+        <Route path="/#" element={isAuthenticated ? (<Logout setAuth={setAuth} />) : (<Navigate to="/login" />)} />
       </Routes>
       </div>
     </Router>

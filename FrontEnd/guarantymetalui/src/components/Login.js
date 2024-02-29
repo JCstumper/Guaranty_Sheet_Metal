@@ -1,6 +1,6 @@
 import React, {Fragment, useState} from 'react';
 import {Link} from 'react-router-dom';
-import '../LoginPage.css';
+import './LoginPage.css';
 import logo from '../pictures/logo.png';
 
 const Login = ({setAuth}) => {
