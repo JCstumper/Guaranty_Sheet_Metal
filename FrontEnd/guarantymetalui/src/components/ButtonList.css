@@ -1,49 +1,47 @@
 .button-list {
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Centered for the collapsed state, will adjust on expand */
-  width: fit-content; /* Adjust as needed when sidebar collapses */
-  padding-left: 0; /* Remove padding for collapsed state, adjust if needed */
-  gap: 20px; /* Reduced gap for a tighter layout in collapsed mode */
-  margin-top: 150px;
-  transition: all 0.3s ease; /* Smooth transition for layout changes */
+  display: flex; /* Use flexbox for layout */
+  flex-direction: column; /* Stack children vertically */
+  align-items: center; /* Center items horizontally in the container */
+  width: fit-content; /* Width should fit the content */
+  padding-left: 0; /* No padding on the left */
+  gap: 20px; /* Space between each button */
+  margin-top: 150px; /* Space from the top of the container */
+  transition: all 0.3s ease; /* Smooth transition for all properties */
 }
 
 .list-button {
-  display: flex;
+  display: flex; /* Use flexbox for layout */
   justify-content: center; /* Center content horizontally */
   align-items: center; /* Center content vertically */
-  width: 80px; /* Adjust based on collapsed sidebar width */
-  height: 80px; /* Adjust if you want a specific button height */
-  margin: 5px auto; /* Center button horizontally, maintain vertical margin */
-  background-color: #d1cece17;
-  color: rgb(0, 0, 0);
-  border: none;
-  cursor: pointer;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 14px; /* Adjust text size as needed */
-  font-weight: 500;
-  letter-spacing: 1px;
-  text-decoration: none;
-  transition: all 0.3s ease; /* Smooth transition for changes */
+  width: 80px; /* Fixed width for buttons */
+  height: 80px; /* Fixed height for buttons */
+  margin: 5px auto; /* Center button horizontally, with margin top & bottom */
+  background-color: #d1cece17; /* Semi-transparent background */
+  color: rgb(0, 0, 0); /* Text color */
+  border: none; /* No border */
+  cursor: pointer; /* Pointer cursor on hover */
+  font-family: Arial, Helvetica, sans-serif; /* Font styling */
+  font-size: 14px; /* Font size */
+  font-weight: 500; /* Font weight */
+  letter-spacing: 1px; /* Space between letters */
+  text-decoration: none; /* No underline on text */
+  transition: all 0.3s ease; /* Smooth transition for all properties */
   gap: 10px; /* Space between icon and text */
 }
 
 .sidebar-container:not(.collapsed) .list-button {
-  align-items: left; /* Re-align items to the left when sidebar is expanded */
-  padding-left: 60px; /* Restore padding */
-  gap: 20px; /* Restore original gap */
+  align-items: left; /* Align items to the left when sidebar is not collapsed */
+  padding-left: 60px; /* Add padding on the left */
+  gap: 20px; /* Increase space between icon and text */
 }
 
-/* Specific styles for icons */
 .list-button svg {
-  width: 30px; /* Icon size, adjust as needed */
-  height: 30px; /* Icon size, adjust as needed */
+  width: 30px; /* Width of the icon */
+  height: 30px; /* Height of the icon */
   transition: transform 0.3s ease; /* Smooth transition for icon transformation */
 }
 
-/* Adjust the layout when the sidebar expands */
 .sidebar-container:not(.collapsed) .button-list {
-  align-items: left; /* Re-align items to the left when sidebar is expanded */
-  padding-left: 60px; /* Restore padding */
+  align-items: left; /* Align items to the left when sidebar is not collapsed */
+  padding-left: 60px; /* Add padding on the left */
 }

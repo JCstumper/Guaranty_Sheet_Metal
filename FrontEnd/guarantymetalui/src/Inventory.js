@@ -1,11 +1,11 @@
 import React from 'react';
-import Sidebar from './components/sidebar'; // Adjust the path as necessary
-import './Inventory.css'; // Assuming you have specific styles for Dashboard
+import Sidebar from './components/sidebar';
+import './Inventory.css';
 
-const Inventory = () => {
+const Inventory = ({setAuth}) => {
     return (
         <div className="inventory">
-        <Sidebar />
+        <Sidebar setAuth={setAuth}/>
         </div>
     );
 };
