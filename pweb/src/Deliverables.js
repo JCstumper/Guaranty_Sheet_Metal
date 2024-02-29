@@ -24,8 +24,8 @@ function Deliverables() {
         <a href={`${process.env.PUBLIC_URL}/Project1Backlog.pdf`} target="_blank" rel="noopener noreferrer" className="github-button">
           Project Backlog
         </a>
-        <a href="https://github.com/JCstumper/Guaranty_Sheet_Metal" className="github-button">
-          Guaranty Sheet Metal Development GitHub
+        <a href="https://github.com/JCstumper/Guaranty_Sheet_Metal/tree/sprint1snapshot" className="github-button">
+          Guaranty Sheet Metal Development GitHub for Sprint 1
         </a>
       </div>
       <div className="deliverable">
