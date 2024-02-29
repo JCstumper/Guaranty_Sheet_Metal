@@ -6,28 +6,35 @@ module.exports = (req, res, next) => {
     }
 
     function validUsername(userName) {
-        // return /^[A-Za-z][A-Za-z0-9_]{4,29}$/.test(username);
-        return /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()-+=])[A-Za-z\d!@#$%^&*()-+=_]{7,29}$/.test(userName);
+        return /^[A-Za-z][A-Za-z0-9_]{4,29}$/.test(userName);
+    }
+
+    function validPassword(userPassword) {
+        return /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()-+=])[A-Za-z\d!@#$%^&*()-+=_]{7,29}$/.test(userPassword);
     }
   
     if (req.path === "/register") {
         console.log(!email.length);
         if (![username, password, email].every(Boolean)) {
             return res.status(401).json("Missing Credentials");
-        } else if (!validEmail(email)) {
-            return res.status(401).json("Invalid Email");
         }
         else if(!validUsername(username)) {
-            return res.status(401).json("Invalid Username. Username must contain at least 1 uppercase character, 1 digit, 1 special character, and it must be between 8-29 characters long.");
+            return res.status(401).json("Invalid Username. Username must be between 5-29 characters long.");
+        }
+        else if(!validPassword(password)) {
+            return res.status(401).json("Invalid Password. Password must contain at least 1 capital letter, 1 digit, 1 special character, and must be between 8-29 characters long.")
+        } 
+        else if (!validEmail(email)) {
+            return res.status(401).json("Invalid Email");
         }
     } 
     else if (req.path === "/login") {
         if (![username, password].every(Boolean)) {
             return res.status(401).json("Missing Credentials");
         } 
-        else if(!validUsername(username)) {
-            return res.status(401).json("Invalid Username. Username must contain at least 1 uppercase character, 1 digit, 1 special character, and it must be between 8-29 characters long.");
-        }
+        // else if(!validUsername(username)) {
+        //     return res.status(401).json("Invalid Username. Username must be between 5-29 characters long.");
+        // }
     }
     
     next();
