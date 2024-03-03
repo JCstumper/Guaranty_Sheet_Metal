@@ -14,6 +14,8 @@ RUN npm audit fix --force
 # Copy the rest of your application's code
 COPY . .
 
+ENV HTTPS=true
+
 # Your app listens on some port, so you'll expose that port
 EXPOSE 3000
 
