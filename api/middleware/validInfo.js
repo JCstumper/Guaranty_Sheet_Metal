@@ -12,7 +12,7 @@ module.exports = (req, res, next) => {
     function validPassword(userPassword) {
         return /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()-+=])[A-Za-z\d!@#$%^&*()-+=_]{7,29}$/.test(userPassword);
     }
-  
+
     if (req.path === "/register") {
         console.log(!email.length);
         if (![username, password, email].every(Boolean)) {

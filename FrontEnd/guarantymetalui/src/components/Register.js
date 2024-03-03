@@ -56,7 +56,7 @@ const Register = ({ setAuth }) => {
 
             // Checking if registration was successful (based on token presence)
             if (parseRes.token) {
-                setAuth(true); // Setting authentication state to true
+                setAuth(false); // Setting authentication state to true
                 toast.success("Registered Successfully!", options); // Displaying success notification
 
                 navigate('/login'); // Navigating to login page after successful registration
