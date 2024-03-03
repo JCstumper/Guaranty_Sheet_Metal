@@ -40,10 +40,24 @@ function App() {
     }
   }
 
-  // Use an effect to authenticate the user when the component mounts
-  useEffect(() => {
-    isAuth()
-  }, []); // Empty dependency array means this runs once on mount
+  // Update to immediate state update based on localStorage
+useEffect(() => {
+  const token = localStorage.getItem('token');
+  setIsAuthenticated(!!token); // Boolean conversion: true if token exists, false otherwise
+  isAuth(); // Then verify with the backend for token validity
+}, []);
+
+// ProtectedRoute component
+const ProtectedRoute = ({ children }) => {
+  const isAuthenticated = !!localStorage.getItem('token'); // Immediate check based on token presence
+  // You might want to include a loading state here to wait for the `isAuth` verification to complete
+  
+  return isAuthenticated ? children : <Navigate to="/login" />;
+};
+
+// Usage within your Router
+<Route path="/inventory" element={<ProtectedRoute><Inventory setAuth={setAuth} /></ProtectedRoute>} />
+
 
   return (
     <Fragment>
@@ -54,10 +68,11 @@ function App() {
             <Route path="/" element={<Navigate replace to="/login" />} />
             <Route path="/login" element={!isAuthenticated ? (<Login setAuth={setAuth} />) : (<Navigate to="/dashboard" />)} />
             <Route path="/register" element={!isAuthenticated ? (<Register setAuth={setAuth} />) : (<Navigate to="/login" />)} />
-            <Route path="/dashboard" element={isAuthenticated ? (<Dashboard setAuth={setAuth} />) : (<Navigate to="/login" />)} />
-            <Route path="/orders" element={isAuthenticated ? (<Orders setAuth={setAuth} />) : (<Navigate to="/login" />)} />
-            <Route path="/customers" element={isAuthenticated ? (<Customers setAuth={setAuth} />) : (<Navigate to="/login" />)} />
-            <Route path="/inventory" element={isAuthenticated ? (<Inventory setAuth={setAuth} />) : (<Navigate to="/login" />)} />
+            <Route path="/dashboard" element={<ProtectedRoute><Dashboard setAuth={setAuth} /></ProtectedRoute>} />
+            <Route path="/orders" element={<ProtectedRoute><Orders setAuth={setAuth} /></ProtectedRoute>}  />
+            <Route path="/customers" element={<ProtectedRoute><Customers setAuth={setAuth} /></ProtectedRoute>} />
+            {/* <Route path="/inventory" element={isAuthenticated ? (<Inventory setAuth={setAuth} />) : (<Navigate to="/login" />)} /> */}
+            <Route path="/inventory" element={<ProtectedRoute><Inventory setAuth={setAuth} /></ProtectedRoute>} />
             <Route path="/logout" element={isAuthenticated ? (<Logout setAuth={setAuth} />) : (<Navigate to="/login" />)} />
           </Routes>
         </div>
