@@ -1,0 +1,15 @@
+.dashboard {
+    display: flex;
+    flex-direction: row; /* Align items horizontally */
+  }
+  
+  .sidebar {
+    /* Your existing sidebar styles */
+    flex: 0 0 auto; /* Example flex setting: don't grow, don't shrink, initial basis auto */
+  }
+  
+  .overview-card {
+    margin-top: 20px; /* Or any value you prefer */
+    flex: 1; /* Allow the card to grow as needed */
+  }
+  
