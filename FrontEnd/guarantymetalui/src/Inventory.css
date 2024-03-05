@@ -1,12 +1,12 @@
 .inventory {
-    background-color: #e9edee; /* Light grey background for the inventory area */
+    background-color: #b5b5b6; /* Light grey background for the inventory area */
     display: flex;
     min-height: 100vh; /* Ensure full vertical coverage */
 }
 
 .inventory-content {
     flex-grow: 1;
-    margin-left: 80px; /* Adjust for the collapsed sidebar width */
+    /* margin-left: 80px; Adjust for the collapsed sidebar width */
     transition: margin-left 0.3s ease;
     padding: 20px;
     overflow: auto; /* Ensures content is scrollable if it overflows */

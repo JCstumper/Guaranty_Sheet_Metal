@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from 'react'; // Importing React and useState hook for state management
 import { Link } from 'react-router-dom'; // Importing Link for navigation without page refresh
 import { Bounce, toast } from 'react-toastify'; // Importing toastify for displaying notifications
-import './LoginPage.css'; // Importing CSS for styling the login page
+import './Login.css'; // Importing CSS for styling the login page
 import logo from '../pictures/logo.png'; // Importing the logo image
 
 // Login component with setAuth prop for managing authentication state

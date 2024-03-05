@@ -21,7 +21,7 @@ const Inventory = ({ setAuth }) => {
     ];
 
      // Group materials by type
-     const groupedMaterials = initialMaterials.reduce((acc, material) => {
+    const groupedMaterials = initialMaterials.reduce((acc, material) => {
         acc[material.material] = acc[material.material] || [];
         acc[material.material].push(material);
         return acc;
