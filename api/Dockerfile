@@ -19,5 +19,5 @@ ENV HTTPS=true
 # Your app listens on some port, so you'll expose that port
 EXPOSE 3000
 
-CMD ["node", "server.js"]
+CMD ["npm", "start"]
 

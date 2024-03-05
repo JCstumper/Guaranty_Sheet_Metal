@@ -16,12 +16,19 @@ services:
   api:
     build: ./api
     environment:
-      DB_HOST: db
-      DB_USER: admin
-      DB_PASS: Guaranty123
-      DB_NAME: GuarantyDatabase
+      - DB_HOST=db
+      - DB_USER=admin
+      - DB_PASS=Guaranty123
+      - DB_NAME=GuarantyDatabase
+      - CHOKIDAR_USEPOLLING=true
     ports:
       - "3000:3000"
+    volumes:
+      - ./api/middleware:/usr/src/app/middleware:ro
+      - ./api/routes:/usr/src/app/routes:ro
+      - ./api/utils:/usr/src/app/utils:ro
+      - ./api/db.js:/usr/src/app/db.js:ro
+      - ./api/server.js:/usr/src/app/server.js:ro
     depends_on:
       - db
 
