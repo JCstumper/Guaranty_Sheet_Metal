@@ -3,6 +3,7 @@ version: '3.1'
 services:
   db:
     image: postgres:latest
+    container_name: Postgres
     environment:
       POSTGRES_DB: GuarantyDatabase
       POSTGRES_USER: admin
@@ -14,6 +15,7 @@ services:
       - ./database/sql:/docker-entrypoint-initdb.d
 
   api:
+    container_name: API
     build: ./api
     environment:
       - DB_HOST=db
@@ -33,13 +35,14 @@ services:
       - db
 
   frontend:
+    container_name: React
     build:
       context: ./FrontEnd/guarantymetalui
     volumes:
       - ./FrontEnd/guarantymetalui:/app
       - /app/node_modules
-    ports:
-      - "3001:3000"
+    # ports:
+    #   - "3001:3000"
     environment:
       - NODE_ENV=development
       - WDS_SOCKET_PORT=0
@@ -47,9 +50,9 @@ services:
       - api
 
   nginx:
-    container_name: nginx
-    restart: unless-stopped
     image: nginx:latest
+    container_name: Nginx
+    restart: unless-stopped
     ports:
       - 80:80
       - 443:443
