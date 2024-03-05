@@ -1,16 +1,16 @@
 import React from 'react';
-import Sidebar from './components/sidebar'; // Adjust the path as necessary
-import OverviewCard from './components/OverviewCard'; // Import the OverviewCard component
-import './Dashboard.css'; // Assuming you have specific styles for Dashboard
+import Sidebar from './components/sidebar';
+import './Dashboard.css';
 
 const Dashboard = ({setAuth}) => {
     return (
         <div className="dashboard">
             <Sidebar setAuth={setAuth}/>
-            <div className="overview">
-                {/* You can repeat the OverviewCard component or map through an array of data to generate multiple cards */}
-                <OverviewCard/>
-                {/* Add more cards as needed */}
+            <div className="card-container"> {/* Wrapper for cards */}
+                <div className="overview-card">Customers</div>
+                <div className="overview-card">Sales</div>
+                <div className="overview-card">Top Product</div>
+                <div className="overview-card">Pending Jobs</div>
             </div>
         </div>
     );

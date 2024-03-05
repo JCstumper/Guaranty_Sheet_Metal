@@ -4,7 +4,7 @@
     width: 80px; /* Initial width for a collapsed state */
     height: 100vh; /* Full height of the viewport */
     align-items: left; /* Align items to the start of the flex container (left) */
-    background-color: #d1cecebd; /* Semi-transparent background color */
+    background-color: #d1cece; /* Semi-transparent background color */
     flex-direction: column; /* Stack children vertically */
     position: fixed; /* Fixed positioning to stay visible during scroll */
     transition: width 0.1s ease; /* Smooth transition for width changes */

@@ -1,15 +1,18 @@
 .dashboard {
-    display: flex;
-    flex-direction: row; /* Align items horizontally */
+    display: grid;
+
+    gap:5px;
   }
-  
+  .card-container {
+    display: flex;
+    gap: 5px; /* Adjust the space between cards */
+    overflow-x: auto; /* Enables horizontal scrolling for smaller screens */
+}
+
   .sidebar {
     /* Your existing sidebar styles */
     flex: 0 0 auto; /* Example flex setting: don't grow, don't shrink, initial basis auto */
   }
   
-  .overview-card {
-    margin-top: 20px; /* Or any value you prefer */
-    flex: 1; /* Allow the card to grow as needed */
-  }
+  
   
