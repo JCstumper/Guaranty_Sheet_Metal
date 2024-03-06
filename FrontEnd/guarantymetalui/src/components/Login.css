@@ -1,11 +1,17 @@
+
+
 .login-container {
-    display: flex; /* Using flexbox for layout */
-    flex-direction: column; /* Stacking children vertically */
-    align-items: center; /* Centering items horizontally */
-    justify-content: center; /* Centering items vertically */
-    height: 100vh; /* Taking full viewport height */
-    margin-top: -50px; /* Adjusting position upwards */
-}  
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 400px; /* Set a specific width for the container */
+    padding: 40px; /* Padding around the content */
+    border: 2px solid #007bff; /* Blue border */
+    background-color: #f9f9f9; /* Light grey background */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Shadow for depth */
+    border-radius: 10px; /* Rounded corners for the box */
+}
 
 .logo-container {
     margin-bottom: 20px; /* Space below the logo */

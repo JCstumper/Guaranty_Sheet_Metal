@@ -72,11 +72,11 @@ const ProtectedRoute = ({ children }) => {
             <Route path="/" element={<Navigate replace to="/login" />} />
             <Route path="/login" element={!isAuthenticated ? (<Login setAuth={setAuth} />) : (<Navigate to="/dashboard" />)} />
             <Route path="/register" element={!isAuthenticated ? (<Register setAuth={setAuth} />) : (<Navigate to="/login" />)} />
-            <Route path="/dashboard" element={<ProtectedRoute> {isAuthenticated ? (<Dashboard setAuth={setAuth} />) : (<Navigate to="/login" />)}</ProtectedRoute>} />
-            <Route path="/orders" element={<ProtectedRoute>{isAuthenticated ? (<Orders setAuth={setAuth} />) : (<Navigate to="/login" />)}</ProtectedRoute>}  />
-            <Route path="/customers" element={<ProtectedRoute>{isAuthenticated ? (<Customers setAuth={setAuth} />) : (<Navigate to="/login" />)}</ProtectedRoute>} />
+            <Route path="/dashboard" element={<ProtectedRoute><Dashboard setAuth={setAuth} /></ProtectedRoute>} />
+            <Route path="/orders" element={<ProtectedRoute><Orders setAuth={setAuth} /></ProtectedRoute>}  />
+            <Route path="/customers" element={<ProtectedRoute><Customers setAuth={setAuth} /></ProtectedRoute>} />
             {/* <Route path="/inventory" element={isAuthenticated ? (<Inventory setAuth={setAuth} />) : (<Navigate to="/login" />)} /> */}
-            <Route path="/inventory" element={<ProtectedRoute>{isAuthenticated ? (<Inventory setAuth={setAuth} />) : (<Navigate to="/login" />)}</ProtectedRoute>} />
+            <Route path="/inventory" element={<ProtectedRoute><Inventory setAuth={setAuth} /></ProtectedRoute>} />
             <Route path="/logout" element={isAuthenticated ? (<Logout setAuth={setAuth} />) : (<Navigate to="/login" />)} />
           </Routes>
         </div>

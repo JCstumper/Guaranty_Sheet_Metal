@@ -1,22 +1,25 @@
-/* Sidebar.css */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Use full viewport height */
+    margin: 0; /* Remove default margin */
+}
 
-/* Default styles */
+/* Styles for the sidebar container */
 .sidebar-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: calc(100% - 20px); /* Adjust width to accommodate padding */
-    height: 70px; /* Adjust height as needed */
-    background-color: #eeeded; /* Adjust background color */
+    width: calc(100% - 20px); /* Adjust width to account for padding */
+    height: 70px; /* Set a fixed height for the sidebar */
+    border: 2px solid #007bff; /* Blue border for visibility */
+    background-color: #eeeded; /* Light gray background */
     z-index: 1000;
-    padding: 10px; /* Add padding for spacing */
+    padding: 10px; /* Padding around content */
     position: fixed;
-    bottom: 10px;
-    left: 10px; /* Add space on the left */
-    border-top-left-radius: 10px; /* Add curved corners to top left */
-    border-top-right-radius: 10px; /* Add curved corners to top right */
-    border-bottom-left-radius: 10px; /* Add curved corners to bottom left */
-    border-bottom-right-radius: 10px; /* Add curved corners to bottom right */
+    left: 10px; /* Space from the left edge */
+    border-radius: 10px; /* Rounded corners for aesthetics */
 }
 
 .bottom-bar-logo-container {
@@ -135,26 +138,22 @@
     transition: background-color 0.3s ease;
 }
 
-.user-name-initial {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    font-size: 20px;
-    color: white;
-    margin: 10px auto;
-    transition: background-color 0.3s ease;
+@media (min-width: 769px) {
+    .sidebar-container {
+        top: 10px; /* Position at the top for desktop */
+        bottom: auto; /* Reset bottom property */
+    }
 }
 
 /* Media query for mobile devices */
 @media (max-width: 768px) {
-    .bottom-bar-logo-container {
-        display: none; /* Hide the logo */
+    .sidebar-container {
+        bottom: 10px; /* Position at the bottom for mobile */
+        top: auto; /* Reset top property */
     }
-    
-    .user-name-button {
-        display: none; /* Hide the username button */
+
+    /* Hide certain elements on mobile for a cleaner look */
+    .bottom-bar-logo-container, .user-name-button {
+        display: none;
     }
 }
