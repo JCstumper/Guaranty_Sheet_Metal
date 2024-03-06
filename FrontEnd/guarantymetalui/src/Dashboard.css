@@ -1,5 +1,5 @@
 .dashboard {
-    display: grid;
+    display: flex;
 
     gap:5px;
   }
@@ -9,10 +9,6 @@
     overflow-x: auto; /* Enables horizontal scrolling for smaller screens */
 }
 
-  .sidebar {
-    /* Your existing sidebar styles */
-    flex: 0 0 auto; /* Example flex setting: don't grow, don't shrink, initial basis auto */
-  }
-  
+ 
   
   
