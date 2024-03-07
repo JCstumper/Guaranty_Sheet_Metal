@@ -1,14 +1,22 @@
-.dashboard {
-    display: flex;
-
-    gap:5px;
-  }
-  .card-container {
-    display: flex;
-    gap: 5px; /* Adjust the space between cards */
-    overflow-x: auto; /* Enables horizontal scrolling for smaller screens */
+.card-container {
+  display: flex;
+  flex-wrap: wrap; /* Allow items to wrap to the next line */
+  gap: 30px; /* Adjust the space between cards */
+  padding-left: 100px; /* Adjusted to account for sidebar space */
+  margin: 0 20px 20px; /* Margin for top, right and bottom for breathing room */
 }
 
- 
-  
-  
+.overview-card {
+  flex: 0 1 calc(25% - 30px); /* Flex grow, flex shrink, and basis calculations */
+  /* Explanation: cards will take up 25% of the container width minus the gap, adjust basis as needed */
+  height: 200px; /* Consistent height */
+  /* Removed width and padding-left as these will be controlled by flex-basis and container padding */
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(112, 46, 46, 0.1);
+  transition: box-shadow 0.3s ease-in-out;
+  display: flex; /* Makes it a flex container to center its children */
+  justify-content: center; /* Center children horizontally */
+  align-items: center; /* Center children vertically */
+  /* Added lines to center content within the card */
+}

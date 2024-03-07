@@ -9,7 +9,7 @@ const Dashboard = ({setAuth}) => {
             <Sidebar setAuth={setAuth}/>
             <div className="card-container">
                 {/* Use OverviewCard component for each card */}
-                <OverviewCard title="Customers" />
+                <OverviewCard title="Customers" number={29}/>
                 <OverviewCard title="Sales" />
                 <OverviewCard title="Top Product" />
                 <OverviewCard title="Pending Jobs" />

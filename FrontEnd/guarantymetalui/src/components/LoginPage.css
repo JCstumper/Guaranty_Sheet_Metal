@@ -1,11 +1,26 @@
-.login-container {
-    display: flex; /* Using flexbox for layout */
-    flex-direction: column; /* Stacking children vertically */
-    align-items: center; /* Centering items horizontally */
-    justify-content: center; /* Centering items vertically */
-    height: 100vh; /* Taking full viewport height */
-    margin-top: -50px; /* Adjusting position upwards */
-}  
+.login-page-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Make it fill the entire viewport height */
+    width: 100vw; /* Make it fill the entire viewport width */
+    background-color: #ccc;
+  }
+  
+  .login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 500px; /* Your specified width */
+    padding: 20px; /* Adds padding around the login form */
+    /* Removed margin-top: 200px; since we're centering it now */
+    background-color: #FFFFFF; /* Simple background color for the container */
+    border-radius: 10px; /* Soft rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: adds a subtle shadow for depth */
+  }
+  
+
 
 .logo-container {
     margin-bottom: 20px; /* Space below the logo */

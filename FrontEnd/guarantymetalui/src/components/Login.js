@@ -69,6 +69,7 @@ const Login = ({ setAuth }) => {
     // Rendering the login form
     return (
         <Fragment>
+        <div className='login-page-container'>
             <div className="login-container">
                 <div className="logo-container">
                     <img src={logo} alt="Company Logo" className="company-logo" />
@@ -95,6 +96,7 @@ const Login = ({ setAuth }) => {
                 </form>
                 <Link to="/register">Register</Link>
             </div>
+        </div>
         </Fragment>
     );
 };
