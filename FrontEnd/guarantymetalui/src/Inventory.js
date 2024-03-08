@@ -18,7 +18,16 @@ const Inventory = ({ setAuth }) => {
         { id: 'CP-010', material: 'Copper', description: 'Copper Gutter Strap', count: 150, cost: '7.00', size: 'N/A' },
         { id: 'PL-011', material: 'Plastic', description: 'Plastic Downspout Splash Block', count: 85, cost: '5.50', size: 'N/A' },
         { id: 'SS-012', material: 'Stainless Steel', description: 'Stainless Steel Joint Connector', count: 95, cost: '2.20', size: 'N/A' },
+        { id: 'AL-013', material: 'Aluminum', description: 'Aluminum Gutter End Cap', count: 120, cost: '3.75', size: 'N/A' },
+        { id: 'CP-014', material: 'Copper', description: 'Copper Gutter Corner', count: 65, cost: '18.50', size: 'N/A' },
+        { id: 'PL-015', material: 'Plastic', description: 'Plastic Gutter Adapter', count: 180, cost: '2.90', size: 'N/A' },
+        // Add more products here
+        { id: 'SS-016', material: 'Stainless Steel', description: 'Stainless Steel Gutter Outlet', count: 100, cost: '4.75', size: 'N/A' },
+        { id: 'AL-017', material: 'Aluminum', description: 'Aluminum Gutter Elbow', count: 110, cost: '5.25', size: 'N/A' },
+        { id: 'CP-018', material: 'Copper', description: 'Copper Gutter Reducer', count: 70, cost: '10.80', size: 'N/A' },
+        // Add more products as needed
     ];
+    
 
      // Group materials by type
     const groupedMaterials = initialMaterials.reduce((acc, material) => {

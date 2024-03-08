@@ -1,34 +1,29 @@
 .inventory {
-    background-color: #b5b5b6;
-    display: flex; /* Reintroduce or adjust as needed */
+    /* background: linear-gradient(to bottom, #b5b5b6, #d5d5d6); */
+    display: flex; /* Reintroduce flex display */
     flex-direction: column; /* Stacks children vertically */
     min-height: 100vh;
 }
 
+
 .inventory-content {
-    width: 100%; /* Ensure it spans the full width of its parent */
     padding: 20px;
     box-sizing: border-box; /* Include padding in the width calculation */
-    overflow: auto; /* Keeps the overflow content scrollable */
+    overflow-x: auto; /* Horizontal overflow scroll */
+    width: 100%; /* Ensure it spans the full width of its parent */
+    margin-top: 70px; /* Adjust this value based on the height of your top bar */
+    border-radius: 15px; /* Add border radius */
 }
 
-.inventory, .inventory-content {
-    width: 100%; /* Ensures it spans the full width */
-    max-width: none; /* Removes any max-width constraints */
-    text-align: left;
-}  
 
 .material-table {
     background-color: #fff;
-    border: 1px solid #a1aab3;
+    border: 4px solid #8ca47d;
     border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Slight box shadow */
     margin-bottom: 20px; /* Ensures space between tables */
     overflow: hidden;
-    display: table;
-    width: 100%; /* Full width of its container */
 }
-
 
 .table-header {
     background-color: #0b2b61; /* Deep blue for header */
@@ -37,7 +32,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-radius: 15px 15px 0 0;
+    border-radius: 10px 10px 0 0;
 }
 
 .table-title, .action-button {
@@ -65,7 +60,10 @@
 
 .action-button:hover {
     background-color: #60817a; /* Subdued teal on hover for a subtle effect */
+    transform: translateY(-2px); /* Lift the button slightly on hover */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Add a slight shadow on hover */
 }
+
 
 .table-content th, .table-content td {
     text-align: left;
@@ -88,8 +86,9 @@
 /* Responsive adjustments for smaller screens */
 @media screen and (max-width: 768px) {
     .inventory-content {
-        margin-left: 0;
         width: 100%; /* Full width on smaller screens */
+        margin-top: 0px; /* Adjust this value based on the height of your top bar */
+        margin-bottom: 50px; /* Adjust this value based on the height of your top bar */
     }
 
     .search-input, .action-button {

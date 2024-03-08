@@ -1,0 +1,24 @@
+.filter-sidebar {
+    background-color: #f0f0f0; /* Light grey background */
+    padding: 20px; /* Add padding */
+    border-radius: 15px; /* Rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Shadow for depth */
+    width: 200px; /* Set a fixed width */
+}
+
+.filter-sidebar h2 {
+    margin-bottom: 10px; /* Add some space below the title */
+}
+
+/* .filter-options { */
+    /* Add styling for filter options */
+/* } */
+
+.filter-options label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.filter-options input[type="checkbox"] {
+    margin-right: 5px;
+}

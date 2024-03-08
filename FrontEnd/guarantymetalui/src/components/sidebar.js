@@ -1,20 +1,20 @@
-// Sidebar.js
 import React, { useState, useEffect } from 'react';
 import './sidebar.css';
 import logo from "../pictures/logo.png";
-import settingsIcon from "../pictures/settings.png";
-import { Link } from 'react-router-dom';
-import { MdDashboard, MdInventory, MdShoppingCart, MdPeople } from 'react-icons/md';
-import LogoutConfirmation from './LogoutConfirmation';
+import { NavLink } from 'react-router-dom';
+import { MdDashboard, MdInventory, MdShoppingCart, MdPeople, MdSettings, MdExitToApp } from 'react-icons/md'; // Import MdSettings and MdArrowDropDown icons
+import LogoutConfirmation from './LogoutConfirmation'; // Import LogoutConfirmation component
 
-const buttons = ['DASHBOARD', 'INVENTORY', 'ORDERS', 'CUSTOMERS'];
+const buttons = ['DASHBOARD', 'INVENTORY', 'ORDERS', 'CUSTOMERS', 'SETTINGS']; // Add 'SETTINGS' button to the list
 
 const Sidebar = ({ setAuth }) => {
+    const [isLoading, setIsLoading] = useState(false);
     const [activeTab, setActiveTab] = useState(buttons[0]);
     const [userName, setUserName] = useState("");
     const [initialBgColor, setInitialBgColor] = useState('#ffffff');
     const [logoutConfirmationOpen, setLogoutConfirmationOpen] = useState(false);
-    const [showSettingsDropdown, setShowSettingsDropdown] = useState(false);
+
+
 
     useEffect(() => {
         async function getName() {
@@ -44,24 +44,32 @@ const Sidebar = ({ setAuth }) => {
         setInitialBgColor(generateRandomColor());
     }, []);
 
-    const logout = (e) => {
-        e.preventDefault();
-        setLogoutConfirmationOpen(true);
-    };
-
-    const confirmLogout = () => {
+    const logout = () => {
         localStorage.removeItem("token");
         setAuth(false);
-    };
-
-    const toggleSettingsDropdown = () => {
-        setShowSettingsDropdown(!showSettingsDropdown);
     };
 
     const generateRandomColor = () => '#' + Math.floor(Math.random() * 16777215).toString(16);
 
     const handleLinkClick = (button) => {
-        setActiveTab(button); // Update active tab immediately
+        setActiveTab(button);
+    };
+
+    const getButtonIcon = (button) => {
+        switch (button) {
+            case 'DASHBOARD':
+                return <MdDashboard />;
+            case 'INVENTORY':
+                return <MdInventory />;
+            case 'ORDERS':
+                return <MdShoppingCart />;
+            case 'CUSTOMERS':
+                return <MdPeople />;
+            case 'SETTINGS': // Return MdSettings icon for 'SETTINGS' button
+                return <MdSettings />;
+            default:
+                return null;
+        }
     };
 
     return (
@@ -70,55 +78,39 @@ const Sidebar = ({ setAuth }) => {
                 <img src={logo} alt="Logo" className="bottom-bar-logo" />
             </div>
             <div className="button-list">
-                {buttons.map((button) => {
-                    const isActive = button === activeTab;
-                    const className = isActive ? 'list-button active' : 'list-button';
+            {buttons.map((button) => {
                     const path = button === 'DASHBOARD' ? '/dashboard' : `/${button.toLowerCase()}`;
                     const icon = getButtonIcon(button);
 
                     return (
-                        <Link
+                        <NavLink
                             to={path}
                             key={button}
-                            className={className}
-                            onClick={() => handleLinkClick(button)} // Set active tab directly
+                            className="list-button"
+                            activeClassName="active"
+                            onClick={() => handleLinkClick(button)}
                         >
                             {icon}
-                            <span>{button}</span> {/* Display button name */}
-                        </Link>
+                            <span>{button}</span>
+                        </NavLink>
                     );
                 })}
             </div>
-            <div className="sidebar-footer">
-                <div className="settings-icon-wrapper" onClick={toggleSettingsDropdown} onMouseLeave={() => setShowSettingsDropdown(false)}>
-                    <img src={settingsIcon} alt="Settings" className="settings-icon" />
-                    {showSettingsDropdown && (
-                        <div className="settings-dropdown">
-                            <a href="/settings" className="dropdown-item">Settings</a>
-                            <a href="#" className="dropdown-item" onClick={logout}>Logout</a>
-                        </div>
-                    )}
-                </div>
-                <button className="user-name-button">{userName}</button>
+            <div className="user-name-dropdown">
+                <button className="user-name" onClick={() => setLogoutConfirmationOpen(true)}>
+                    {userName}
+                    <MdExitToApp className="logout-icon" onClick={logout} />
+                </button>
+                {logoutConfirmationOpen && (
+                    <div className="logout-dropdown">
+                        <button onClick={logout}>Sign Out</button>
+                    </div>
+                )}
             </div>
-            <LogoutConfirmation isOpen={logoutConfirmationOpen} onConfirm={confirmLogout} onCancel={() => setLogoutConfirmationOpen(false)} />
+
+            <LogoutConfirmation isOpen={logoutConfirmationOpen} onConfirm={logout} onCancel={() => setLogoutConfirmationOpen(false)} />
         </aside>
     );
-};
-
-const getButtonIcon = (button) => {
-    switch (button) {
-        case 'DASHBOARD':
-            return <MdDashboard />;
-        case 'INVENTORY':
-            return <MdInventory />;
-        case 'ORDERS':
-            return <MdShoppingCart />;
-        case 'CUSTOMERS':
-            return <MdPeople />;
-        default:
-            return null;
-    }
 };
 
 export default Sidebar;

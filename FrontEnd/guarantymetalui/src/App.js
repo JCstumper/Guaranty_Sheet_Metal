@@ -8,13 +8,16 @@ import Dashboard from './Dashboard';
 import Orders from './Orders';
 import Customers from './Customers';
 import Inventory from './Inventory';
+import Settings from './Settings';
 import Login from './components/Login';
 import Register from './components/Register';
 import Logout from './components/LogoutConfirmation';
+import Loading from './components/Loading';
 
 function App() {
   // State to track if user is authenticated
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // Add isLoading state
 
   // Function to update authentication state
   const setAuth = (boolean) => {
@@ -36,9 +39,6 @@ function App() {
       parseRes === true ? setIsAuthenticated(true) : setIsAuthenticated(false);
 
       if (response.status === 401 && parseRes.message === "jwt expired") {
-        // Handle JWT expiration error here
-        // Redirect the user to the login page or display a message
-        // Example: history.push('/login');
         setIsAuthenticated(false);
         return <Navigate to="/login" />;
       }
@@ -53,6 +53,8 @@ useEffect(() => {
   const token = localStorage.getItem('token');
   setIsAuthenticated(!!token); // Boolean conversion: true if token exists, false otherwise
   isAuth(); // Then verify with the backend for token validity
+  setIsLoading(false); // Update isLoading after 3 seconds
+
 }, []);
 
 // ProtectedRoute component
@@ -65,22 +67,27 @@ const ProtectedRoute = ({ children }) => {
 
   return (
     <Fragment>
-      <Router>
-        <div className="container">
-          <Routes>
-            {/* Route definitions, redirecting or granting access based on the authentication state */}
-            <Route path="/" element={<Navigate replace to="/login" />} />
-            <Route path="/login" element={!isAuthenticated ? (<Login setAuth={setAuth} />) : (<Navigate to="/dashboard" />)} />
-            <Route path="/register" element={!isAuthenticated ? (<Register setAuth={setAuth} />) : (<Navigate to="/login" />)} />
-            <Route path="/dashboard" element={<ProtectedRoute><Dashboard setAuth={setAuth} /></ProtectedRoute>} />
-            <Route path="/orders" element={<ProtectedRoute><Orders setAuth={setAuth} /></ProtectedRoute>}  />
-            <Route path="/customers" element={<ProtectedRoute><Customers setAuth={setAuth} /></ProtectedRoute>} />
-            {/* <Route path="/inventory" element={isAuthenticated ? (<Inventory setAuth={setAuth} />) : (<Navigate to="/login" />)} /> */}
-            <Route path="/inventory" element={<ProtectedRoute><Inventory setAuth={setAuth} /></ProtectedRoute>} />
-            <Route path="/logout" element={isAuthenticated ? (<Logout setAuth={setAuth} />) : (<Navigate to="/login" />)} />
-          </Routes>
-        </div>
-      </Router>
+        <Router>
+          <div className="container">
+            {isLoading ? (
+              <Loading />
+            ) : (
+            <Routes>
+              {/* Route definitions, redirecting or granting access based on the authentication state */}
+              <Route path="/" element={<Navigate replace to="/login" />} />
+              <Route path="/login" element={!isAuthenticated ? (<Login setAuth={setAuth} setIsLoading={setIsLoading} />) : (<Navigate to="/dashboard" />)} />
+              <Route path="/register" element={!isAuthenticated ? (<Register setAuth={setAuth} setIsLoading={setIsLoading}/>) : (<Navigate to="/login" />)} />
+              <Route path="/dashboard" element={<ProtectedRoute>{isAuthenticated ? (<Dashboard setAuth={setAuth} setIsLoading={setIsLoading}/> ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
+              <Route path="/orders" element={<ProtectedRoute>{isAuthenticated ? (<Orders setAuth={setAuth} setIsLoading={setIsLoading}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>}  />
+              <Route path="/customers" element={<ProtectedRoute>{isAuthenticated ? (<Customers setAuth={setAuth} setIsLoading={setIsLoading}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
+              {/* <Route path="/inventory" element={isAuthenticated ? (<Inventory setAuth={setAuth} />) : (<Navigate to="/login" />)} /> */}
+              <Route path="/inventory" element={<ProtectedRoute>{isAuthenticated ? (<Inventory setAuth={setAuth} setIsLoading={setIsLoading}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
+              <Route path="/settings" element={<ProtectedRoute>{isAuthenticated ? (<Settings setAuth={setAuth} setIsLoading={setIsLoading}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
+              <Route path="/logout" element={isAuthenticated ? (<Logout setAuth={setAuth} setIsLoading={setIsLoading}/>) : (<Navigate to="/login" />)} />
+            </Routes>
+            )}
+          </div>
+        </Router>
     </Fragment>
   );
 }
