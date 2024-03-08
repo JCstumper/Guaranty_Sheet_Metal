@@ -15,7 +15,7 @@ RUN npm install
 # Bundle app source
 COPY . .
 
-ENV HTTPS=true
+# ENV HTTPS=true
 
 # Expose port 3000 for the development server
 EXPOSE 3000

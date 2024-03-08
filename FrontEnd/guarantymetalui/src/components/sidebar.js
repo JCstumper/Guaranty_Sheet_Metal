@@ -1,101 +1,116 @@
-// Import necessary modules from React and other components
 import React, { useState, useEffect } from 'react';
-import './sidebar.css'; // Import the stylesheet for the sidebar
-import logo from "../pictures/logo.png"; // Import the standard logo
-import collapsedLogo from "../pictures/collapse-logo.png"; // Import the logo for the collapsed state
-import settingsIcon from "../pictures/settings.png"; // Import the settings icon
-import ButtonList from './ButtonList'; // Import the ButtonList component for navigation
-import LogoutConfirmation from './LogoutConfirmation'; // Import the LogoutConfirmation component
+import './sidebar.css';
+import logo from "../pictures/logo.png";
+import { NavLink } from 'react-router-dom';
+import { MdDashboard, MdInventory, MdShoppingCart, MdPeople, MdSettings, MdExitToApp } from 'react-icons/md'; // Import MdSettings and MdArrowDropDown icons
+import LogoutConfirmation from './LogoutConfirmation'; // Import LogoutConfirmation component
 
-// Pre-defined buttons for sidebar navigation
-const buttons = ['HOME', 'INVENTORY', 'ORDERS', 'CUSTOMERS'];
+const buttons = ['DASHBOARD', 'INVENTORY', 'ORDERS', 'CUSTOMERS', 'SETTINGS']; // Add 'SETTINGS' button to the list
 
-// Sidebar component with `setAuth` prop for managing authentication state
 const Sidebar = ({ setAuth }) => {
-    // State for the active navigation tab
+    const [isLoading, setIsLoading] = useState(false);
     const [activeTab, setActiveTab] = useState(buttons[0]);
-    // State to manage sidebar collapsed or expanded status
-    const [isCollapsed, setIsCollapsed] = useState(true);
-    // State for storing the user's name
-    const [userName, setName] = useState("");
-    // State for the initial background color
+    const [userName, setUserName] = useState("");
     const [initialBgColor, setInitialBgColor] = useState('#ffffff');
-    // State to control the visibility of the logout confirmation modal
     const [logoutConfirmationOpen, setLogoutConfirmationOpen] = useState(false);
-    // State for showing or hiding the settings dropdown
-    const [showSettingsDropdown, setShowSettingsDropdown] = useState(false);
 
-    // Effect hook to fetch the user's name and set a random color for the initial upon component mount or userName change
+
+
     useEffect(() => {
+        async function getName() {
+            try {
+                const response = await fetch("http://localhost:3000/dashboard", {
+                    method: "GET",
+                    headers: { token: localStorage.token }
+                });
+
+                if (!response.ok) {
+                    const responseBody = await response.json();
+                    if (responseBody.error === "jwt expired") {
+                        setAuth(false);
+                    }
+                } else {
+                    setAuth(true);
+                }
+
+                const parseRes = await response.json();
+                setUserName(parseRes.username);
+            } catch (err) {
+                console.error(err.message);
+            }
+        }
+
         getName();
         setInitialBgColor(generateRandomColor());
-    }, [userName]);
+    }, []);
 
-    // Function to fetch the user's name, typically from a backend server
-    async function getName() {
-        try {
-            const response = await fetch("http://localhost:3000/dashboard", {
-                method: "GET",
-                headers: { token: localStorage.token }
-            });
-
-            const parseRes = await response.json();
-            setName(parseRes.username); // Set the fetched username to state
-        } catch (err) {
-            console.error(err.message);
-        }
-    }
-
-    // Function to handle logout button click, opens confirmation modal
-    const logout = (e) => {
-        e.preventDefault();
-        setLogoutConfirmationOpen(true);
-    };
-
-    // Function to handle confirmation of logout, removes token and updates auth state
-    const confirmLogout = () => {
+    const logout = () => {
         localStorage.removeItem("token");
         setAuth(false);
     };
 
-    // Function to toggle the visibility of the settings dropdown
-    const toggleSettingsDropdown = () => {
-        setShowSettingsDropdown(!showSettingsDropdown);
-    };
-
-    // Function to generate a random color for the initial background
     const generateRandomColor = () => '#' + Math.floor(Math.random() * 16777215).toString(16);
 
+    const handleLinkClick = (button) => {
+        setActiveTab(button);
+    };
+
+    const getButtonIcon = (button) => {
+        switch (button) {
+            case 'DASHBOARD':
+                return <MdDashboard />;
+            case 'INVENTORY':
+                return <MdInventory />;
+            case 'ORDERS':
+                return <MdShoppingCart />;
+            case 'CUSTOMERS':
+                return <MdPeople />;
+            case 'SETTINGS': // Return MdSettings icon for 'SETTINGS' button
+                return <MdSettings />;
+            default:
+                return null;
+        }
+    };
+
     return (
-        // Sidebar structure with conditional class for collapsed state
-        <aside className={`sidebar-container ${isCollapsed ? 'collapsed' : ''}`} onMouseEnter={() => setIsCollapsed(false)} onMouseLeave={() => setIsCollapsed(true)}>
-            <a href="/" onClick={(e) => e.preventDefault()}>
-                <img src={isCollapsed ? collapsedLogo : logo} alt="Logo" className="sidebar-image" />
-            </a>
-            <ButtonList buttons={buttons} activeTab={activeTab} setActiveTab={setActiveTab} isCollapsed={isCollapsed} />
-            <div className="sidebar-footer">
-                {!isCollapsed && (
-                    <div className="settings-icon-wrapper" onClick={toggleSettingsDropdown} onMouseLeave={() => setShowSettingsDropdown(false)}>
-                        <img src={settingsIcon} alt="Settings" className="settings-icon" />
-                        {showSettingsDropdown && (
-                            <div className="settings-dropdown">
-                                <a href="/settings" className="dropdown-item">Settings</a>
-                                <a href="#" className="dropdown-item" onClick={logout}>Logout</a>
-                            </div>
-                        )}
+        <aside className="sidebar-container">
+            <div className="bottom-bar-logo-container">
+                <img src={logo} alt="Logo" className="bottom-bar-logo" />
+            </div>
+            <div className="button-list">
+            {buttons.map((button) => {
+                    const path = button === 'DASHBOARD' ? '/dashboard' : `/${button.toLowerCase()}`;
+                    const icon = getButtonIcon(button);
+
+                    return (
+                        <NavLink
+                            to={path}
+                            key={button}
+                            className="list-button"
+                            activeClassName="active"
+                            onClick={() => handleLinkClick(button)}
+                        >
+                            {icon}
+                            <span>{button}</span>
+                        </NavLink>
+                    );
+                })}
+            </div>
+            <div className="user-name-dropdown">
+                <button className="user-name" onClick={() => setLogoutConfirmationOpen(true)}>
+                    {userName}
+                    <MdExitToApp className="logout-icon" onClick={logout} />
+                </button>
+                {logoutConfirmationOpen && (
+                    <div className="logout-dropdown">
+                        <button onClick={logout}>Sign Out</button>
                     </div>
-                )}
-                {isCollapsed ? (
-                    <div className="user-name-initial" style={{ backgroundColor: initialBgColor }}>
-                        {userName.charAt(0).toUpperCase()}
-                    </div>
-                ) : (
-                    <button className="user-name-button">{userName}</button>
                 )}
             </div>
-            <LogoutConfirmation isOpen={logoutConfirmationOpen} onConfirm={confirmLogout} onCancel={() => setLogoutConfirmationOpen(false)} />
+
+            <LogoutConfirmation isOpen={logoutConfirmationOpen} onConfirm={logout} onCancel={() => setLogoutConfirmationOpen(false)} />
         </aside>
     );
 };
 
-export default Sidebar; // Export the Sidebar component for use elsewhere in the application
+export default Sidebar;

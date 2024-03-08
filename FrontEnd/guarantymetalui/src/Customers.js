@@ -4,7 +4,7 @@ import './Customers.css'; // Assuming you have specific styles for Dashboard
 
 const Customers = ({setAuth}) => {
     return (
-        <div className="inventory">
+        <div className="customers">
         <Sidebar setAuth={setAuth}/>
             <div className="customers-container">
                 Customers
