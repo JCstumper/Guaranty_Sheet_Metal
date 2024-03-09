@@ -41,8 +41,9 @@ services:
     volumes:
       - ./FrontEnd/guarantymetalui:/app
       - /app/node_modules
-    # ports:
-    #   - "3001:3000"
+      # - ./nginx/ssl:/app/ssl
+    ports:
+      - "3001:3000"
     environment:
       - NODE_ENV=development
       - WDS_SOCKET_PORT=0
@@ -54,8 +55,8 @@ services:
     container_name: Nginx
     restart: unless-stopped
     ports:
-      - 80:80
-      - 443:443
+      - 8080:80
+      - 8081:443
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/ssl:/etc/nginx/ssl

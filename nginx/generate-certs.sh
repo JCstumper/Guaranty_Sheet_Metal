@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the directory to store SSL certificates within the nginx folder
-NGINX_CERT_DIR="./etc/nginx/ssl"
+NGINX_CERT_DIR="/etc/nginx/ssl"
 
 # Create SSL directory within nginx folder if not exists
 mkdir -p "$NGINX_CERT_DIR"
