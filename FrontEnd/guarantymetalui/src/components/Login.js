@@ -33,7 +33,7 @@ const Login = ({ setAuth, setIsLoading }) => {
             const body = { username, password };
             setIsLoading(true);
 
-            const response = await fetch("https://localhost:3000/auth/login", {
+            const response = await fetch("https://localhost/api/auth/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body)

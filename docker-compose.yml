@@ -23,8 +23,8 @@ services:
       - DB_PASS=Guaranty123
       - DB_NAME=GuarantyDatabase
       - CHOKIDAR_USEPOLLING=true
-    ports:
-      - "3000:3000"
+    # ports:
+    #   - "3000:3000"
     volumes:
       - ./api/middleware:/usr/src/app/middleware:ro
       - ./api/routes:/usr/src/app/routes:ro

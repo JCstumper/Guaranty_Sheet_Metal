@@ -19,7 +19,7 @@ const Sidebar = ({ setAuth }) => {
     useEffect(() => {
         async function getName() {
             try {
-                const response = await fetch("https://localhost:3000/dashboard", {
+                const response = await fetch("https://localhost/api/dashboard", {
                     method: "GET",
                     headers: { token: localStorage.token }
                 });
