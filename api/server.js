@@ -2,6 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 app.use(express.json());
+const fs = require('fs');
+const https = require('https'); 
 
 const authRoute = require("./routes/jwtAuth");
 const dashRoute = require("./routes/dashboard");
@@ -29,6 +31,16 @@ app.use((error, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Load SSL certificate
+const options = {
+  key: fs.readFileSync('/usr/src/app/ssl/privkey.pem'),
+  cert: fs.readFileSync('/usr/src/app/ssl/fullchain.pem')
+};
 
+const PORT = process.env.PORT || 3000;
+
+// app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Create HTTPS server
+https.createServer(options, app).listen(PORT, () => {
+  console.log(`HTTPS Server running on port ${PORT}`);
+});

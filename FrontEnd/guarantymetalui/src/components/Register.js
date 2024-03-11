@@ -45,7 +45,7 @@ const Register = ({ setAuth }) => {
             const body = { username, password, email };
             
             // Making a POST request to the register endpoint
-            const response = await fetch("http://localhost:3000/auth/register", {
+            const response = await fetch("https://localhost:3000/auth/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body)
