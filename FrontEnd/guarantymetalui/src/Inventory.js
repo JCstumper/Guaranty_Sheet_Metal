@@ -1,113 +1,157 @@
-import React, { useState } from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import Sidebar from './components/sidebar';
+import React, { useState, useEffect } from 'react';
+import Topbar from './components/topbar';
 import './Inventory.css';
 
 const Inventory = ({ setAuth }) => {
-    // Expanded set of dummy data for various materials
-    const initialMaterials = [
-        { id: 'AL-001', material: 'Aluminum', description: 'Aluminum Gutter Section', count: 120, cost: '6.50', size: '12ft' },
-        { id: 'CP-002', material: 'Copper', description: 'Copper Downspout', count: 75, cost: '15.00', size: '8ft' },
-        { id: 'PL-003', material: 'Plastic', description: 'Plastic Gutter Guard', count: 200, cost: '2.25', size: '4ft' },
-        { id: 'SS-004', material: 'Stainless Steel', description: 'Stainless Steel Gutter Mesh', count: 150, cost: '9.75', size: '5ft' },
-        { id: 'AL-005', material: 'Aluminum', description: 'Aluminum Downspout Connector', count: 80, cost: '4.50', size: '2ft' },
-        { id: 'CP-006', material: 'Copper', description: 'Copper End Cap', count: 90, cost: '12.00', size: 'N/A' },
-        { id: 'PL-007', material: 'Plastic', description: 'Plastic Gutter Bracket', count: 250, cost: '1.80', size: 'N/A' },
-        { id: 'SS-008', material: 'Stainless Steel', description: 'Stainless Steel Gutter Screws', count: 500, cost: '0.10', size: 'N/A' },
-        { id: 'AL-009', material: 'Aluminum', description: 'Aluminum Gutter Hanger', count: 300, cost: '3.25', size: 'N/A' },
-        { id: 'CP-010', material: 'Copper', description: 'Copper Gutter Strap', count: 150, cost: '7.00', size: 'N/A' },
-        { id: 'PL-011', material: 'Plastic', description: 'Plastic Downspout Splash Block', count: 85, cost: '5.50', size: 'N/A' },
-        { id: 'SS-012', material: 'Stainless Steel', description: 'Stainless Steel Joint Connector', count: 95, cost: '2.20', size: 'N/A' },
-        { id: 'AL-013', material: 'Aluminum', description: 'Aluminum Gutter End Cap', count: 120, cost: '3.75', size: 'N/A' },
-        { id: 'CP-014', material: 'Copper', description: 'Copper Gutter Corner', count: 65, cost: '18.50', size: 'N/A' },
-        { id: 'PL-015', material: 'Plastic', description: 'Plastic Gutter Adapter', count: 180, cost: '2.90', size: 'N/A' },
-        // Add more products here
-        { id: 'SS-016', material: 'Stainless Steel', description: 'Stainless Steel Gutter Outlet', count: 100, cost: '4.75', size: 'N/A' },
-        { id: 'AL-017', material: 'Aluminum', description: 'Aluminum Gutter Elbow', count: 110, cost: '5.25', size: 'N/A' },
-        { id: 'CP-018', material: 'Copper', description: 'Copper Gutter Reducer', count: 70, cost: '10.80', size: 'N/A' },
-        // Add more products as needed
-    ];
+    const [materials, setMaterials] = useState([]);
+    const [filter, setFilter] = useState("");
+    const [showModal, setShowModal] = useState(false);
+    const [newInventoryItem, setNewInventoryItem] = useState({
+        partNumber: '', // maps to part_number
+        size: '',
+        materialType: '', // maps to material_type
+        description: '',
+        productType: '', // maps to product_type
+        length: '', // should be a string that can be converted to DECIMAL
+        price: '', // should be a string that can be converted to DECIMAL
+        priceWithTransport: '', // should be a string that can be converted to DECIMAL
+        unit: '',
+        categoryName: '', // maps to category_name
+    });
+    
     
 
-     // Group materials by type
-    const groupedMaterials = initialMaterials.reduce((acc, material) => {
-        acc[material.material] = acc[material.material] || [];
-        acc[material.material].push(material);
-        return acc;
-    }, {});
-
-    // Convert grouped materials into an array for draggable
-    const [materialGroups, setMaterialGroups] = useState(Object.keys(groupedMaterials).map((key, index) => ({
-        id: `group-${key}-${index}`,
-        material: key,
-        items: groupedMaterials[key],
-    })));
-
-    const onDragEnd = (result) => {
-        if (!result.destination) {
-            return; // Dropped outside the list
+    // Function to fetch materials from your API
+    const fetchMaterials = async () => {
+        try {
+            const response = await fetch('http://localhost:3000/products');
+            const jsonData = await response.json();
+            // console.log(jsonData.rows);
+            console.log(jsonData.products.rows);
+            // jsonData.rows.forEach((rows, index) => {
+            //     console.log(`Row ${index}:`, rows);
+            // });
+            setMaterials(jsonData.products.rows);
+        } catch (error) {
+            console.error('Error fetching data:', error);
         }
-        const items = Array.from(materialGroups);
-        const [reorderedItem] = items.splice(result.source.index, 1);
-        items.splice(result.destination.index, 0, reorderedItem);
-
-        setMaterialGroups(items);
     };
+
+    useEffect(() => {
+        fetchMaterials();
+    }, []);
+
+    const handleFilterChange = (event) => {
+        setFilter(event.target.value.toLowerCase());
+    };
+
+    const handleAddInventory = async () => {
+        console.log("Attempting to add inventory item..."); // Debug log
+        try {
+            const response = await fetch('http://localhost:3000/products', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newInventoryItem),
+            });
+    
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+    
+            setShowModal(false); // Close modal
+            fetchMaterials(); // Refresh materials list
+            setNewInventoryItem({
+                partNumber: '', // maps to part_number
+                size: '',
+                materialType: '', // maps to material_type
+                description: '',
+                productType: '', // maps to product_type
+                length: '', // should be a string that can be converted to DECIMAL
+                price: '', // should be a string that can be converted to DECIMAL
+                priceWithTransport: '', // should be a string that can be converted to DECIMAL
+                unit: '',
+                categoryName: '', // maps to category_name
+            }); // Reset form
+        } catch (error) {
+            console.error('Error adding inventory item:', error);
+        }
+    };
+    
+    const filteredMaterials = materials.filter(material =>
+        material.description.toLowerCase().includes(filter) ||
+        material.material_type.toLowerCase().includes(filter)
+    );
 
     return (
         <div className="inventory">
-            <Sidebar setAuth={setAuth} />
-            <DragDropContext onDragEnd={onDragEnd}>
-                <Droppable droppableId="droppable-material-groups">
-                    {(provided) => (
-                        <div {...provided.droppableProps} ref={provided.innerRef} className="inventory-content">
-                            {materialGroups.map((group, index) => (
-                                <Draggable key={group.id} draggableId={group.id} index={index}>
-                                    {(provided) => (
-                                        <div 
-                                            ref={provided.innerRef}
-                                            {...provided.draggableProps}
-                                            {...provided.dragHandleProps}
-                                            className="material-table"
-                                        >
-                                            <div className="table-header">
-                                                <span className="table-title">{group.material} Materials</span>
-                                                <div className="table-actions">
-                                                    <input type="text" placeholder="Search..." className="search-input" />
-                                                    <button className="action-button">Filter</button>
-                                                </div>
-                                            </div>
-                                            <table className="table-content">
-                                                <thead>
-                                                    <tr>
-                                                        <th>ID</th>
-                                                        <th>Description</th>
-                                                        <th>Count</th>
-                                                        <th>Cost</th>
-                                                        <th>Size</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {group.items.map(item => (
-                                                        <tr key={item.id}>
-                                                            <td>{item.id}</td>
-                                                            <td>{item.description}</td>
-                                                            <td>{item.count}</td>
-                                                            <td>${item.cost}</td>
-                                                            <td>{item.size}</td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    )}
-                                </Draggable>
+            <Topbar setAuth={setAuth} />
+            <div className="inventory-main">
+                <div className="material-table">
+                    <div className="table-header">
+                        <span className="table-title">Inventory</span>
+                        <button className="add-button" onClick={() => setShowModal(true)}>+</button>
+                    </div>
+                    <table className="table-content">
+                        <thead>
+                            <tr>
+                                <th>Part Number</th>
+                                <th>Material</th>
+                                <th>Description</th>
+                                <th>Quantity</th>
+                                <th>Cost</th>
+                                <th>Size</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredMaterials.map((material, index) => (
+                                <tr key={index}>
+                                    <td>{material.part_number}</td>
+                                    <td>{material.material_type}</td>
+                                    <td>{material.description}</td>
+                                    <td>{material.quantity}</td>
+                                    <td>${material.price}</td>
+                                    <td>{material.size}</td>
+                                </tr>
                             ))}
-                            {provided.placeholder}
+                        </tbody>
+                    </table>
+                </div>
+                <div className="filtering-box">
+                    <input
+                        type="text"
+                        className="search-input"
+                        placeholder="Filter materials..."
+                        onChange={handleFilterChange}
+                    />
+                </div>
+                {showModal && (
+                    <div className="modal-backdrop" onClick={() => setShowModal(false)}>
+                        <div className="modal-content" onClick={e => e.stopPropagation()}>
+                            <div className="modal-header">
+                                <h2>Add New Inventory Item</h2>
+                            </div>
+                            <div className="modal-body">
+                                <input type="text" placeholder="Part Number" value={newInventoryItem.partNumber} onChange={e => setNewInventoryItem({ ...newInventoryItem, partNumber: e.target.value })} />
+                                <input type="text" placeholder="Size" value={newInventoryItem.size} onChange={e => setNewInventoryItem({ ...newInventoryItem, size: e.target.value })} />
+                                <input type="text" placeholder="Material Type" value={newInventoryItem.materialType} onChange={e => setNewInventoryItem({ ...newInventoryItem, materialType: e.target.value })} />
+                                <textarea placeholder="Description" value={newInventoryItem.description} onChange={e => setNewInventoryItem({ ...newInventoryItem, description: e.target.value })} />
+                                <input type="text" placeholder="Product Type" value={newInventoryItem.productType} onChange={e => setNewInventoryItem({ ...newInventoryItem, productType: e.target.value })} />
+                                <input type="text" placeholder="Length" value={newInventoryItem.length} onChange={e => setNewInventoryItem({ ...newInventoryItem, length: e.target.value })} />
+                                <input type="text" placeholder="Price" value={newInventoryItem.price} onChange={e => setNewInventoryItem({ ...newInventoryItem, price: e.target.value })} />
+                                <input type="text" placeholder="Price with Transport" value={newInventoryItem.priceWithTransport} onChange={e => setNewInventoryItem({ ...newInventoryItem, priceWithTransport: e.target.value })} />
+                                <input type="text" placeholder="Unit" value={newInventoryItem.unit} onChange={e => setNewInventoryItem({ ...newInventoryItem, unit: e.target.value })} />
+                                <input type="text" placeholder="Category Name" value={newInventoryItem.categoryName} onChange={e => setNewInventoryItem({ ...newInventoryItem, categoryName: e.target.value })} />
+                            </div>
+                            <div className="modal-actions">
+                                <button onClick={handleAddInventory}>Add Item</button>
+                                <button onClick={() => setShowModal(false)}>Cancel</button>
+                            </div>
                         </div>
-                    )}
-                </Droppable>
-            </DragDropContext>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

@@ -5,12 +5,14 @@ app.use(express.json());
 
 const authRoute = require("./routes/jwtAuth");
 const dashRoute = require("./routes/dashboard");
+const productsRoute = require('./routes/products');
   
 const cors = require('cors');
 app.use(cors());
 
 app.use("/auth", authRoute);
 app.use("/dashboard", dashRoute);
+app.use("/products", productsRoute);
 
 // Error handling for if an endpoint is not found
 app.use((req, res, next) => {

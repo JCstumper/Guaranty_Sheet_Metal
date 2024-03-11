@@ -1,11 +1,12 @@
-import React, { useState } from "react"; // Importing React and useState hook for managing state
+import React, { Fragment, useState } from 'react';
 import { useNavigate, Link } from "react-router-dom"; // Importing useNavigate for programmatic navigation and Link for declarative navigation
 import { Bounce, toast } from 'react-toastify'; // Importing toastify for displaying notifications
 import './Register.css'; // Import CSS for styling the register page
 import logo from '../pictures/logo.png'; // Import the logo for the register page
+import Loading from './Loading';
 
 // Register component with setAuth prop for managing authentication state
-const Register = ({ setAuth }) => {
+const Register = ({ setAuth, setIsLoading }) => {
     const navigate = useNavigate(); // Hook for programmatic navigation
 
     // State for managing input fields (username, password, email)
@@ -43,6 +44,7 @@ const Register = ({ setAuth }) => {
         try {
             // Preparing the body for the POST request
             const body = { username, password, email };
+            setIsLoading(true);
             
             // Making a POST request to the register endpoint
             const response = await fetch("http://localhost:3000/auth/register", {
@@ -57,12 +59,20 @@ const Register = ({ setAuth }) => {
             // Checking if registration was successful (based on token presence)
             if (parseRes.token) {
                 setAuth(false); // Setting authentication state to true
-                toast.success("Registered Successfully!", options); // Displaying success notification
-
+                setTimeout(() => {
+                    setIsLoading(false); 
+                }, 2000);
+                setTimeout(() => {
+                    toast.success("Registered Successfully!", options); // Displaying success notification
+                }, 1000);
                 navigate('/login'); // Navigating to login page after successful registration
             } else {
-                setAuth(false); // Setting authentication state to false if registration fails
-                toast.error(parseRes, options); // Displaying error notification
+                setTimeout(() => {
+                    setIsLoading(false); 
+                }, 2000); // Setting authentication state to false if registration fails
+                setTimeout(() => {
+                    toast.error(parseRes, options); // Displaying error notification
+                }, 1000);
             }
         } catch (err) {
             console.error(err.message); // Logging any errors to the console
@@ -71,19 +81,22 @@ const Register = ({ setAuth }) => {
 
     // Rendering the registration form
     return (
-        <div className="register-container">
-            <div className="logo-container">
-                <img src={logo} alt="Company Logo" className="company-logo" />
-            </div>
-            <form className="register-form" onSubmit={onSubmitForm}>
-                {/* Input fields for username, password, and email */}
-                <input type="text" name="username" placeholder="Username" className="register-input" value={username} onChange={onChange} />
-                <input type="password" name="password" placeholder="Password" className="register-input" value={password} onChange={onChange} />
-                <input type="e-mail" name="email" placeholder="Email" className="register-input" value={email} onChange={onChange} />
-                <button type="submit" className="register-button">Register</button>
-            </form>
-            <Link to="/login">Already have an account? Login</Link>
-        </div>
+        <Fragment>
+            {<Loading />}
+                <div className="register-container">
+                    <div className="logo-container">
+                        <img src={logo} alt="Company Logo" className="company-logo" />
+                    </div>
+                    <form className="register-form" onSubmit={onSubmitForm}>
+                        {/* Input fields for username, password, and email */}
+                        <input type="text" name="username" placeholder="Username" className="register-input" value={username} onChange={onChange} />
+                        <input type="password" name="password" placeholder="Password" className="register-input" value={password} onChange={onChange} />
+                        <input type="e-mail" name="email" placeholder="Email" className="register-input" value={email} onChange={onChange} />
+                        <button type="submit" className="register-button">Register</button>
+                    </form>
+                    <Link to="/login">Already have an account? Login</Link>
+                </div>
+        </Fragment>
     );
 };
 

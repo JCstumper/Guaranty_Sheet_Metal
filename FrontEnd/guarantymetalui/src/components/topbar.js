@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './sidebar.css';
+import './topbar.css';
 import logo from "../pictures/logo.png";
 import { NavLink } from 'react-router-dom';
 import { MdDashboard, MdInventory, MdShoppingCart, MdPeople, MdSettings, MdExitToApp } from 'react-icons/md'; // Import MdSettings and MdArrowDropDown icons
@@ -7,7 +7,7 @@ import LogoutConfirmation from './LogoutConfirmation'; // Import LogoutConfirmat
 
 const buttons = ['DASHBOARD', 'INVENTORY', 'ORDERS', 'CUSTOMERS', 'SETTINGS']; // Add 'SETTINGS' button to the list
 
-const Sidebar = ({ setAuth }) => {
+const Topbar = ({ setAuth }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [activeTab, setActiveTab] = useState(buttons[0]);
     const [userName, setUserName] = useState("");
@@ -73,7 +73,7 @@ const Sidebar = ({ setAuth }) => {
     };
 
     return (
-        <aside className="sidebar-container">
+        <aside className="topbar-container">
             <div className="bottom-bar-logo-container">
                 <img src={logo} alt="Logo" className="bottom-bar-logo" />
             </div>
@@ -113,4 +113,4 @@ const Sidebar = ({ setAuth }) => {
     );
 };
 
-export default Sidebar;
+export default Topbar;
