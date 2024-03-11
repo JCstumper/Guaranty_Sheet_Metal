@@ -3,6 +3,7 @@ version: '3.1'
 services:
   db:
     image: postgres:latest
+    container_name: Postgres
     environment:
       POSTGRES_DB: GuarantyDatabase
       POSTGRES_USER: admin
@@ -14,29 +15,55 @@ services:
       - ./database/sql:/docker-entrypoint-initdb.d
 
   api:
+    container_name: API
     build: ./api
     environment:
-      DB_HOST: db
-      DB_USER: admin
-      DB_PASS: Guaranty123
-      DB_NAME: GuarantyDatabase
-    ports:
-      - "3000:3000"
+      - DB_HOST=db
+      - DB_USER=admin
+      - DB_PASS=Guaranty123
+      - DB_NAME=GuarantyDatabase
+      - CHOKIDAR_USEPOLLING=true
+    # ports:
+    #   - "3000:3000"
+    volumes:
+      - ./api/middleware:/usr/src/app/middleware:ro
+      - ./api/routes:/usr/src/app/routes:ro
+      - ./api/utils:/usr/src/app/utils:ro
+      - ./api/db.js:/usr/src/app/db.js:ro
+      - ./api/server.js:/usr/src/app/server.js:ro
+      - ./nginx/ssl:/usr/src/app/ssl
     depends_on:
       - db
 
   frontend:
+    container_name: React
     build:
       context: ./FrontEnd/guarantymetalui
     volumes:
       - ./FrontEnd/guarantymetalui:/app
       - /app/node_modules
-    ports:
-      - "3001:3000"
+    # ports:
+    #   - "3001:3000"
     environment:
       - NODE_ENV=development
+      - WDS_SOCKET_PORT=0
     depends_on:
       - api
+
+  nginx:
+    image: nginx:latest
+    container_name: Nginx
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl
+      - ./nginx/generate-certs.sh:/etc/nginx/generate-certs.sh
+    depends_on:
+      - frontend
+    entrypoint: /bin/bash -c "/etc/nginx/generate-certs.sh && nginx -g 'daemon off;'"
 
 volumes:
   mydbdata:

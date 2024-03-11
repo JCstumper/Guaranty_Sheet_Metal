@@ -1,5 +1,6 @@
 # Dependency directories
 node_modules
+Dockerfile
 # jspm_packages
 
 # # Logs
