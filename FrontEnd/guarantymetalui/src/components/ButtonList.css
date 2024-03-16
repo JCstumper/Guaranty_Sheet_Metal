@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .button-list {
   display: flex;
   flex-direction: column;
@@ -6,10 +7,24 @@
   padding-left: 0;
   gap: 20px;
   margin-top: 150px;
+=======
+/* .button-list {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  background-color: #fff;
+  padding: 10px 20px;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+>>>>>>> origin/main
 }
 
 .list-button {
   display: flex;
+<<<<<<< HEAD
   justify-content: center;
   align-items: center;
   width: 80px;
@@ -31,3 +46,28 @@
   width: 30px;
   height: 30px;
 }
+=======
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #000;
+  text-decoration: none;
+}
+
+.list-button.active {
+  color: #007bff;
+}
+
+.list-button svg {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 3px;
+}
+
+.list-button span {
+  font-size: 10px;
+  margin-top: 3px;
+  display: block;
+} */
+>>>>>>> origin/main

@@ -1,5 +1,5 @@
 # Use an official Node runtime as a parent image
-FROM node:lts
+FROM node:20.11.1-bookworm-slim
 
 # Set the working directory in the container
 WORKDIR /app
@@ -15,7 +15,11 @@ RUN npm install
 # Bundle app source
 COPY . .
 
+<<<<<<< HEAD
 #ENV HTTPS=true
+=======
+# ENV HTTPS=true
+>>>>>>> origin/main
 
 # Expose port 3000 for the development server
 EXPOSE 3000

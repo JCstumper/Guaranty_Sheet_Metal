@@ -45,7 +45,7 @@ This command starts up all the necessary services:
 
 ### Access Points
 
-- **Frontend**: [http://localhost:3001](http://localhost:3001) - React application.
+- **Frontend**: [http://localhost:80](http://localhost:80) or [https://localhost:443](https://localhost:443) - React application.
 - **API**: [http://localhost:3000](http://localhost:3000) - Backend API.
 
 ## Docker Services
@@ -84,6 +84,9 @@ This command starts up all the necessary services:
 - [Node.js](https://nodejs.org/) - Backend runtime.
 - [PostgreSQL](https://www.postgresql.org/) - Database system.
 - [Docker](https://www.docker.com/) - Containerization platform.
+
+## Issues
+- If you are having trouble running `generate-certs.sh`. Double check that the End of Line Sequence on the file is set to `LF`.
 
 ## Authors
 
