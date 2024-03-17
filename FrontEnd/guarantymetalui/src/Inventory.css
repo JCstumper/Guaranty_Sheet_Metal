@@ -9,9 +9,10 @@
     margin-top: 90px;
     margin-left: 10px;
     padding-right: 250px;
+    flex-direction: column;
 }
 
-.material-table {
+.product-table {
     flex-grow: 1;
     background-color: #fff;
     border: 4px solid #b3b3b3;
@@ -40,7 +41,7 @@
     border: none;
     background-color: #f8f8f8;
     color: #0b2b61;
-    border-radius: 15px;
+    border-radius: 5px;
 }
 
 .table-content {
@@ -61,8 +62,8 @@
 }
 
 .table-content th {
-    background-color: #007bff;
-    color: white;
+    background-color: #ebebeb;
+    color: rgb(0, 0, 0);
 }
 
 .table-content tr:nth-child(even) {
@@ -88,6 +89,12 @@
 .table-content::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+
+
+.th { 
+    width: 150px; 
+}
+
 
 .filtering-box {
     position: fixed;
@@ -235,7 +242,7 @@
         padding-right: 0;
     }
 
-    .material-table {
+    .product-table {
         margin: 0 0 20px 0;
     }
 

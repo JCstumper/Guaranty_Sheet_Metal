@@ -17,13 +17,23 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
     try {
-        const { partNumber, size, materialType, description, productType, length, price, priceWithTransport, unit, categoryName} = req.body;
-
+        const { partNumber, size, metalType, description, productType, length, pieces, price, priceWithTransport, unit} = req.body;
         const newProduct = await pool.query(`
-        INSERT INTO products (part_number, size, material_type, description, product_type, length, price, price_with_transport, unit, category_name)
+        INSERT INTO products (
+            part_number, 
+            size, 
+            material_type, 
+            description, 
+            type,
+            length, 
+            pieces,
+            price, 
+            w_trans,
+            unit
+        )
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-        RETURNING *
-        `, [partNumber, size, materialType, description, productType, length, price, priceWithTransport, unit, categoryName]);
+        RETURNING *;       
+        `, [partNumber, size, metalType, description, productType, length, pieces, price, priceWithTransport, unit]);
 
         res.status(201).json({
             message: 'Product added successfully',

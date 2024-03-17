@@ -15,18 +15,20 @@ CREATE TABLE IF NOT EXISTS users(
 --     name VARCHAR(255) PRIMARY KEY
 -- );
 
-CREATE TABLE IF NOT EXISTS products (
-    part_number VARCHAR(50) PRIMARY KEY,
-    size VARCHAR(50),
+CREATE TABLE products (
+    part_number VARCHAR(255) NOT NULL,
+    size VARCHAR(255),
     material_type VARCHAR(255),
     description TEXT,
-    product_type VARCHAR(100),
-    length DECIMAL,
-    price DECIMAL,
-    price_with_transport DECIMAL,
-    unit VARCHAR(50),
-    category_name VARCHAR(255)
+    type VARCHAR(255),
+    length DECIMAL(10,2),
+    pieces INT,
+    price MONEY,
+    w_trans MONEY,
+    unit VARCHAR(255),
+    PRIMARY KEY (part_number)
 );
+
 
 -- CREATE TABLE IF NOT EXISTS inventory (
 --     part_number VARCHAR(50),
