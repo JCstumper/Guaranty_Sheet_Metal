@@ -1,103 +1,255 @@
 .inventory {
-    /* background: linear-gradient(to bottom, #b5b5b6, #d5d5d6); */
-    display: flex; /* Reintroduce flex display */
-    flex-direction: column; /* Stacks children vertically */
+    display: flex;
+    flex-direction: column;
     min-height: 100vh;
 }
 
-
-.inventory-content {
-    padding: 20px;
-    box-sizing: border-box; /* Include padding in the width calculation */
-    overflow-x: auto; /* Horizontal overflow scroll */
-    width: 100%; /* Ensure it spans the full width of its parent */
-    margin-top: 70px; /* Adjust this value based on the height of your top bar */
-    border-radius: 15px; /* Add border radius */
+.inventory-main {
+    display: flex;
+    margin-top: 90px;
+    margin-left: 10px;
+    padding-right: 250px;
+    flex-direction: column;
 }
 
-
-.material-table {
+.product-table {
+    flex-grow: 1;
     background-color: #fff;
-    border: 4px solid #8ca47d;
+    border: 4px solid #b3b3b3;
     border-radius: 15px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Slight box shadow */
-    margin-bottom: 20px; /* Ensures space between tables */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     overflow: hidden;
+    margin: 0 20px 20px 0;
+    display: flex;
+    flex-direction: column;
 }
 
 .table-header {
-    background-color: #0b2b61; /* Deep blue for header */
+    background-color: #0b2b61;
     color: #ffffff;
-    padding: 10px 15px;
+    padding: 15px;
+    font-size: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-radius: 10px 10px 0 0;
 }
 
-.table-title, .action-button {
-    font-size: 18px;
-    color: #ffffff; /* For better contrast and readability */
-}
-
-.search-input {
-    padding: 8px 12px;
-    border-radius: 4px;
-    border: 1px solid #a1aab3; /* Muted blue-grey for the border */
-    margin-right: 10px; /* Space before the filter button */
-    flex-grow: 1; /* Allows input to fill available space */
-}
-
-.action-button {
-    background-color: #8ca47d; /* Soft green for action buttons */
-    color: #ffffff;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 4px;
+.add-button {
+    font-size: 20px;
     cursor: pointer;
-    transition: background-color 0.2s ease; /* Smooth transition for hover effect */
+    padding: 5px 10px;
+    border: none;
+    background-color: #f8f8f8;
+    color: #0b2b61;
+    border-radius: 5px;
 }
 
-.action-button:hover {
-    background-color: #60817a; /* Subdued teal on hover for a subtle effect */
-    transform: translateY(-2px); /* Lift the button slightly on hover */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Add a slight shadow on hover */
+.table-content {
+    width: 100%;
+    overflow-x: auto;
 }
 
+.table-content table {
+    border-collapse: collapse;
+    width: 100%;
+}
 
-.table-content th, .table-content td {
+.table-content th,
+.table-content td {
     text-align: left;
-    padding: 8px;
-    border-bottom: 1px solid #a1aab3; /* Muted blue-grey for separation */
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
 }
 
-/* Uniform column widths */
-.table-content th, .table-content td {
-    width: 20%; /* Adjusting all to be uniform, modify as needed */
+.table-content th {
+    background-color: #ebebeb;
+    color: rgb(0, 0, 0);
 }
 
-/* Specific column widths */
-.table-content th:nth-child(1), .table-content td:nth-child(1) { width: 10%; } /* ID */
-.table-content th:nth-child(2), .table-content td:nth-child(2) { width: 60%; } /* Description */
-.table-content th:nth-child(3), .table-content td:nth-child(3) { width: 20%; } /* Count */
-.table-content th:nth-child(4), .table-content td:nth-child(4) { width: 20%; } /* Cost */
-.table-content th:nth-child(5), .table-content td:nth-child(5) { width: 20%; } /* Size */
+.table-content tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
 
-/* Responsive adjustments for smaller screens */
+.table-content tr:hover {
+    background-color: #ddd;
+}
+
+.table-content::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.table-content::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+.table-content::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+
+.th { 
+    width: 150px; 
+}
+
+
+.filtering-box {
+    position: fixed;
+    top: 90px;
+    right: 10px;
+    width: 250px;
+    height: calc(100vh - 105px);
+    padding: 20px;
+    background-color: #fff;
+    border: 4px solid #b3b3b3;
+    border-radius: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow-y: auto;
+    box-sizing: border-box;
+    z-index: 1000;
+}
+
+.filtering-box .search-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 2px solid #0b2b61;
+    border-radius: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    outline: none;
+    font-size: 16px;
+}
+
+.filtering-box .action-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #0b2b61;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.filtering-box .action-button:hover {
+    background-color: #083d77;
+}
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    border: 4px solid #007bff; /* Added border with the specified blue color */
+    padding: 0;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: auto;
+    max-width: 600px;
+    z-index: 1001;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header {
+    background-color: #0b2b61;
+    color: white;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+    padding: 10px 20px 10px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-weight: normal;
+    font-size: 20px;
+}
+
+.modal-header .modal-close-button:hover {
+    color: #aad1e6;
+}
+
+.modal-body {
+    padding: 30px;
+    gap: 15px;
+}
+
+.modal-content input, .modal-content textarea {
+    width: 100%;
+    padding: 15px;
+    margin: 5px 0;
+    border-radius: 15px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+.modal-content textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.modal-actions button {
+    cursor: pointer;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 15px;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.modal-actions button:first-child {
+    background-color: #007bff;
+    color: white;
+}
+
+.modal-actions button:last-child {
+    background-color: #ccc;
+    color: #333;
+}
+
+.modal-actions button:hover {
+    opacity: 0.8;
+}
+
 @media screen and (max-width: 768px) {
-    .inventory-content {
-        width: 100%; /* Full width on smaller screens */
-        margin-top: 0px; /* Adjust this value based on the height of your top bar */
-        margin-bottom: 50px; /* Adjust this value based on the height of your top bar */
-    }
-
-    .search-input, .action-button {
-        margin-top: 10px;
-        width: 100%; /* Full width for inputs and buttons */
-    }
-
-    .table-header {
+    .inventory-main {
         flex-direction: column;
-        align-items: flex-start; /* Align items to the start on smaller screens */
+        padding-right: 0;
+    }
+
+    .product-table {
+        margin: 0 0 20px 0;
+    }
+
+    .filtering-box {
+        position: static;
+        width: 100%;
+        height: auto;
+        margin-top: 20px;
     }
 }

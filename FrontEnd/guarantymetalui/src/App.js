@@ -78,8 +78,8 @@ const ProtectedRoute = ({ children }) => {
               <Route path="/login" element={!isAuthenticated ? (<Login setAuth={setAuth} setIsLoading={setIsLoading} />) : (<Navigate to="/dashboard" />)} />
               <Route path="/register" element={!isAuthenticated ? (<Register setAuth={setAuth} setIsLoading={setIsLoading}/>) : (<Navigate to="/login" />)} />
               <Route path="/dashboard" element={<ProtectedRoute>{isAuthenticated ? (<Dashboard setAuth={setAuth} setIsLoading={setIsLoading}/> ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
-              <Route path="/orders" element={<ProtectedRoute>{isAuthenticated ? (<Orders setAuth={setAuth} setIsLoading={setIsLoading}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>}  />
-              <Route path="/customers" element={<ProtectedRoute>{isAuthenticated ? (<Customers setAuth={setAuth} setIsLoading={setIsLoading}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
+              <Route path="/purchases" element={<ProtectedRoute>{isAuthenticated ? (<Orders setAuth={setAuth} setIsLoading={setIsLoading}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>}  />
+              <Route path="/jobs" element={<ProtectedRoute>{isAuthenticated ? (<Customers setAuth={setAuth} setIsLoading={setIsLoading}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
               {/* <Route path="/inventory" element={isAuthenticated ? (<Inventory setAuth={setAuth} />) : (<Navigate to="/login" />)} /> */}
               <Route path="/inventory" element={<ProtectedRoute>{isAuthenticated ? (<Inventory setAuth={setAuth} setIsLoading={setIsLoading}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute>{isAuthenticated ? (<Settings setAuth={setAuth} setIsLoading={setIsLoading}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
