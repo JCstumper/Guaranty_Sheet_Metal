@@ -4,6 +4,7 @@ import { Bounce, toast } from 'react-toastify';
 import './Login.css';
 import logo from '../pictures/logo.png';
 import Loading from './Loading';
+import sanitize from '../sanitize/Sanitize';
 
 const Login = ({ setAuth, setIsLoading }) => {
     const [inputs, setInputs] = useState({ username: "", password: "" });
@@ -30,6 +31,10 @@ const Login = ({ setAuth, setIsLoading }) => {
         e.preventDefault();
 
         try {
+
+            // const santizedUsername = sanitize(username);
+            // const santizedPassword = sanitize(password);
+
             const body = { username, password };
             setIsLoading(true);
 
