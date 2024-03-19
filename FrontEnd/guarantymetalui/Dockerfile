@@ -16,11 +16,7 @@ RUN npm install xlsx
 # Bundle app source
 COPY . .
 
-<<<<<<< HEAD
-#ENV HTTPS=true
-=======
 # ENV HTTPS=true
->>>>>>> origin/main
 
 # Expose port 3000 for the development server
 EXPOSE 3000
