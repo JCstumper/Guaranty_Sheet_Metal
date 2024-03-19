@@ -45,12 +45,19 @@ const Login = ({ setAuth, setIsLoading }) => {
                 localStorage.setItem("token", parseRes.token);
                 setTimeout(() => {
                     setIsLoading(false); 
+                    setAuth(true);
                 }, 2000);
-                setAuth(true);
-                toast.success("Login Successful!", options);
+                setTimeout(() => {
+                    toast.success("Login Successful!", options);
+                }, 1000);
             } else {
-                setAuth(false);
-                toast.error(parseRes, options);
+                setTimeout(() => {
+                    setIsLoading(false); 
+                    setAuth(false);
+                }, 2000);
+                setTimeout(() => {
+                    toast.error(parseRes, options);
+                }, 1000);
             }
         } catch (err) {
             console.error(err.message);

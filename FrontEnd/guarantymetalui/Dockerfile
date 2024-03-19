@@ -9,6 +9,7 @@ COPY package*.json ./
 
 # Install any needed packages
 RUN npm install
+RUN npm install xlsx
 
 # If you are using Yarn, you can use COPY package.json yarn.lock ./ and RUN yarn install instead
 

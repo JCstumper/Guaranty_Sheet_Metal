@@ -1,3 +1,4 @@
+<<<<<<< HEAD:FrontEnd/guarantymetalui/src/components/sidebar.css
 <<<<<<< HEAD
 /* Main container for the sidebar, using flex layout for inner items */
 .sidebar-container {
@@ -83,12 +84,16 @@
 =======
 /* Styles for the sidebar container */
 .sidebar-container {
+=======
+/* Styles for the topbar container */
+.topbar-container {
+>>>>>>> main:FrontEnd/guarantymetalui/src/components/topbar.css
     display: flex;
     justify-content: space-between; /* Ensure elements are spaced evenly */
     align-items: center;
     width: calc(100% - 20px); /* Adjust width to account for padding */
-    height: 70px; /* Set a fixed height for the sidebar */
-    border: 4px solid #8ca47d; /* Blue border for visibility */
+    height: 70px; /* Set a fixed height for the topbar */
+    border: 4px solid #b3b3b3; /* Blue border for visibility */
     background-color: #f7f6f6; /* Light gray background */
     z-index: 1000;
     padding: 10px; /* Padding around content */
@@ -166,7 +171,7 @@
     font-size: 10px; /* Small font size for button text */
 }
 
-.sidebar-footer {
+.topbar-footer {
     display: flex;
     align-items: center;
 }
@@ -240,7 +245,7 @@
 
 
 @media (min-width: 769px) {
-    .sidebar-container {
+    .topbar-container {
         top: 10px; /* Position at the top for desktop */
         bottom: auto; /* Reset bottom property */
     }
@@ -248,7 +253,7 @@
 
 /* Media query for mobile devices */
 @media (max-width: 768px) {
-    .sidebar-container {
+    .topbar-container {
         bottom: 10px; /* Position at the bottom for mobile */
         top: auto; /* Reset top property */
     }

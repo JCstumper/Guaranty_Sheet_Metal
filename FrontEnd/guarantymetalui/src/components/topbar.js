@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+<<<<<<< HEAD:FrontEnd/guarantymetalui/src/components/sidebar.js
 import './sidebar.css';
 <<<<<<< HEAD
 import collapsedLogo from "../pictures/collapse-logo.png";
@@ -35,14 +36,18 @@ const Sidebar = ({ setAuth }) => {
 
     const confirmLogout = () => {
 =======
+=======
+import './topbar.css';
+>>>>>>> main:FrontEnd/guarantymetalui/src/components/topbar.js
 import logo from "../pictures/logo.png";
 import { NavLink } from 'react-router-dom';
-import { MdDashboard, MdInventory, MdShoppingCart, MdPeople, MdSettings, MdExitToApp } from 'react-icons/md'; // Import MdSettings and MdArrowDropDown icons
+import { MdDashboard, MdInventory, MdShoppingCart, MdPeople, MdSettings, MdExitToApp, } from 'react-icons/md';
+import { FaHardHat, FaTruck } from 'react-icons/fa';
 import LogoutConfirmation from './LogoutConfirmation'; // Import LogoutConfirmation component
 
-const buttons = ['DASHBOARD', 'INVENTORY', 'ORDERS', 'CUSTOMERS', 'SETTINGS']; // Add 'SETTINGS' button to the list
+const buttons = ['DASHBOARD', 'INVENTORY', 'PURCHASES', 'JOBS', 'SETTINGS']; // Add 'SETTINGS' button to the list
 
-const Sidebar = ({ setAuth }) => {
+const Topbar = ({ setAuth }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [activeTab, setActiveTab] = useState(buttons[0]);
     const [userName, setUserName] = useState("");
@@ -124,10 +129,10 @@ const Sidebar = ({ setAuth }) => {
                 return <MdDashboard />;
             case 'INVENTORY':
                 return <MdInventory />;
-            case 'ORDERS':
-                return <MdShoppingCart />;
-            case 'CUSTOMERS':
-                return <MdPeople />;
+            case 'PURCHASES':
+                return <FaTruck />;
+            case 'JOBS':
+                return <FaHardHat />;
             case 'SETTINGS': // Return MdSettings icon for 'SETTINGS' button
                 return <MdSettings />;
             default:
@@ -136,7 +141,7 @@ const Sidebar = ({ setAuth }) => {
     };
 
     return (
-        <aside className="sidebar-container">
+        <aside className="topbar-container">
             <div className="bottom-bar-logo-container">
                 <img src={logo} alt="Logo" className="bottom-bar-logo" />
             </div>
@@ -178,4 +183,4 @@ const Sidebar = ({ setAuth }) => {
     
 };
 
-export default Sidebar;
+export default Topbar;

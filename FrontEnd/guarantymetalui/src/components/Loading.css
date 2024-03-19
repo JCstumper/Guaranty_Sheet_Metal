@@ -5,7 +5,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(11, 43, 97, 0.8); /* Semi-transparent black background */
+    background-color: #364b72; /* Semi-transparent black background */
     display: flex;
     justify-content: center;
     align-items: center;
