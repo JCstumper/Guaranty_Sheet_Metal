@@ -46,6 +46,7 @@ const Topbar = ({ setAuth }) => {
     }, []);
 
     const logout = () => {
+
         localStorage.removeItem("token");
         setAuth(false);
     };
@@ -112,6 +113,7 @@ const Topbar = ({ setAuth }) => {
             <LogoutConfirmation isOpen={logoutConfirmationOpen} onConfirm={logout} onCancel={() => setLogoutConfirmationOpen(false)} />
         </aside>
     );
+    
 };
 
 export default Topbar;

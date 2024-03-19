@@ -1,0 +1,27 @@
+.overview-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Aligns children starting from the top */
+  align-items: center; /* Center children horizontally */
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(112, 46, 46, 0.1);
+  transition: box-shadow 0.3s ease-in-out;
+  margin-top: 20px;
+}
+
+.overview-title {
+  font-size: 25px;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  text-align: center;
+  margin-top: 40px;
+  width: 100%; /* Ensures the title spans the full width of the card */
+}
+
+.overview-number {
+  font-size: 20px;
+  font-weight: bold;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  text-align: center;
+  width: 100%; /* Ensures the number spans the full width of the card */
+}

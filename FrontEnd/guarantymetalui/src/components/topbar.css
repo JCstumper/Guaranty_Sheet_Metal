@@ -1,3 +1,7 @@
+FrontEnd/guarantymetalui/src/components/sidebar.css
+/* Styles for the sidebar container */
+.sidebar-container {
+
 /* Styles for the topbar container */
 .topbar-container {
     display: flex;
@@ -174,4 +178,6 @@
     .bottom-bar-logo-container, .user-name-button {
         display: none;
     }
-}
+
+    }
+}   
