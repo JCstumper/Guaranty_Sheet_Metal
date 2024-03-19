@@ -1,36 +1,12 @@
-<<<<<<< HEAD:FrontEnd/guarantymetalui/src/components/LoginPage.css
-.login-page-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh; /* Make it fill the entire viewport height */
-    width: 100vw; /* Make it fill the entire viewport width */
-    background-color: #ccc;
-  }
-  
-  .login-container {
-=======
 .login-container {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
->>>>>>> origin/main:FrontEnd/guarantymetalui/src/components/Login.css
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-<<<<<<< HEAD:FrontEnd/guarantymetalui/src/components/LoginPage.css
-    width: 500px; /* Your specified width */
-    padding: 20px; /* Adds padding around the login form */
-    /* Removed margin-top: 200px; since we're centering it now */
-    background-color: #FFFFFF; /* Simple background color for the container */
-    border-radius: 10px; /* Soft rounded corners */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: adds a subtle shadow for depth */
-  }
-  
-
-=======
     width: 400px;
     padding: 40px;
     border: 2px solid #007bff;
@@ -38,7 +14,6 @@
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     border-radius: 10px;
 }
->>>>>>> origin/main:FrontEnd/guarantymetalui/src/components/Login.css
 
 .logo-container {
     margin-bottom: 20px; /* Space below the logo */

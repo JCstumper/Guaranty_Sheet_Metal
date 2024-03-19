@@ -66,11 +66,7 @@ const Login = ({ setAuth, setIsLoading }) => {
 
     return (
         <Fragment>
-<<<<<<< HEAD
-        <div className='login-page-container'>
-=======
             {<Loading />}
->>>>>>> origin/main
             <div className="login-container">
                 <div className="logo-container">
                     <img src={logo} alt="Company Logo" className="company-logo" />
@@ -97,7 +93,6 @@ const Login = ({ setAuth, setIsLoading }) => {
                 </form>
                 <Link to="/register">Register</Link>
             </div>
-        </div>
         </Fragment>
     );
 };
