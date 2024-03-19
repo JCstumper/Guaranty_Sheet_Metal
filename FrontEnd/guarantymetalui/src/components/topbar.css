@@ -1,93 +1,9 @@
-<<<<<<< HEAD:FrontEnd/guarantymetalui/src/components/sidebar.css
-<<<<<<< HEAD
-/* Main container for the sidebar, using flex layout for inner items */
-.sidebar-container {
-    display: flex;
-    width: 80px; /* Width adjusted for a permanently collapsed state */
-    height: 100vh; /* Full height of the viewport */
-    align-items: left; /* Align items to the start of the flex container (left) */
-    background-color: #d1cece; /* Background color */
-    flex-direction: column; /* Stack children vertically */
-    position: fixed; /* Fixed positioning to stay visible during scroll */
-    z-index: 1000; /* High z-index to ensure it's on top of other content */
-    transition: width 0.1s ease; /* Keep or remove, as transition is not needed without hover effect */
-}
-
-/* Styles for the logo or image in the sidebar, already suitable for collapsed state */
-.sidebar-image {
-    width: 100%; /* Full width of its container */
-    max-width: 60px; /* Adjusted width for the collapsed state */
-    height: auto; /* Height is auto to maintain aspect ratio */
-    margin: 15px 10px; /* Adjusted margin to center in the reduced space */
-}
-
-/* Adjust or remove hover effects, as they are no longer needed */
-/* .sidebar-container:hover { */
-/*     width: 250px; */ /* No longer needed */
-/* } */
-
-/* Style adjustments for elements in the sidebar footer */
-.sidebar-footer {
-    display: flex; /* Use flexbox for layout */
-    justify-content: center; /* Center content horizontally */
-    align-items: center; /* Center content vertically */
-    width: 100%; /* Full width of the container */
-    margin-top: auto; /* Push to the bottom of the flex container */
-    padding: 20px; /* Padding inside the footer */
-}
-
-/* Style for the circular representation of the user's initial that also acts as an account/settings button */
-.user-name-initial {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 40px; /* Adjust width as needed for your design */
-    height: 40px; /* Adjust height as needed for your design */
-    border-radius: 50%; /* Circular shape */
-    font-size: 20px; /* Size of the initial */
-    color: #FFF; /* Color of the text/initial */
-    background-color: #4D4D4D; /* Background color of the circle, adjust as needed */
-    cursor: pointer; /* Changes the cursor to a pointer to indicate it's clickable */
-    margin-bottom: 10px; /* Space from the bottom or next element */
-    transition: background-color 0.3s ease; /* Smooth transition for the background color on hover */
-}
-
-/* Hover effect for the user's initial to indicate interactivity */
-.user-name-initial:hover {
-    background-color: #666; /* Darken the background color on hover for visual feedback */
-}
-
-/* Styles for the dropdown that appears when the user's initial is clicked, showing settings/account options */
-.settings-dropdown {
-    position: absolute;
-    bottom: 60px; /* Position the dropdown below the user's initial */
-    left: 100%; /* Ensure the dropdown appears to the side of the initial */
-    min-width: 160px; /* Minimum width of the dropdown */
-    background-color: #f0f0f0; /* Background color of the dropdown */
-    box-shadow: 0 8px 16px rgba(0,0,0,0.2); /* Shadow for visual depth */
-    z-index: 1001; /* Ensures the dropdown is above other content */
-    border-radius: 4px; /* Rounded corners for the dropdown */
-}
-
-/* Style for individual items within the settings dropdown */
-.dropdown-item {
-    padding: 12px 16px; /* Padding inside each item for spacing */
-    display: block; /* Ensures the link spans the entire width of the dropdown */
-    text-decoration: none; /* Removes underline from link text */
-    color: #333; /* Color of the dropdown item text */
-    transition: background-color 0.2s ease; /* Transition for the background color on hover */
-}
-
-/* Hover effect for dropdown items to provide visual feedback */
-.dropdown-item:hover {
-    background-color: #ddd; /* Lightens the background color on hover */
-=======
+FrontEnd/guarantymetalui/src/components/sidebar.css
 /* Styles for the sidebar container */
 .sidebar-container {
-=======
+
 /* Styles for the topbar container */
 .topbar-container {
->>>>>>> main:FrontEnd/guarantymetalui/src/components/topbar.css
     display: flex;
     justify-content: space-between; /* Ensure elements are spaced evenly */
     align-items: center;
@@ -262,5 +178,6 @@
     .bottom-bar-logo-container, .user-name-button {
         display: none;
     }
->>>>>>> origin/main
-}
+
+    }
+}   
