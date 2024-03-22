@@ -8,6 +8,7 @@ const https = require('https');
 const authRoute = require("./routes/jwtAuth");
 const dashRoute = require("./routes/dashboard");
 const productsRoute = require('./routes/products');
+const jobsRoute = require('./routes/jobs');
   
 const cors = require('cors');
 
@@ -29,7 +30,7 @@ app.use(cors(corsOptions));
 app.use("/auth", authRoute);
 app.use("/dashboard", dashRoute);
 app.use("/products", productsRoute);
-
+app.use("/jobs", jobsRoute);
 // Error handling for if an endpoint is not found
 app.use((req, res, next) => {
   const error = new Error("Not Found");

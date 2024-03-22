@@ -29,6 +29,16 @@ CREATE TABLE products (
     PRIMARY KEY (part_number)
 );
 
+CREATE TABLE IF NOT EXISTS jobs (
+    job_id SERIAL PRIMARY KEY,
+    customer_name VARCHAR(255) NOT NULL,
+    address TEXT,
+    phone VARCHAR(255),
+    email VARCHAR(255)
+);
+
+
+
 
 -- CREATE TABLE IF NOT EXISTS inventory (
 --     part_number VARCHAR(50),

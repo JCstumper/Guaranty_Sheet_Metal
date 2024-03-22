@@ -33,7 +33,6 @@
     justify-content: space-between;
     align-items: center;
 }
-
 .table-content {
     width: 100%;
     overflow-x: auto;
@@ -125,7 +124,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 10; /* Make sure it's above other elements */
+    z-index: 1010; /* Make sure it's above other elements */
   }
   
   .modalAddJob-content {
@@ -218,4 +217,53 @@
   .btn-secondary:hover {
     opacity: 0.9;
   }
-  
+  .job-details-expanded {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 15px;
+}
+
+.job-details-section {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.job-details-content {
+  display: flex;
+  justify-content: space-around;
+}
+
+.order-details, .invoice-details, .estimate-details {
+  flex: 1;
+  margin: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.job-details-content h4 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.details-button-container {
+  margin-top: 5px; /* Adds space between the buttons */
+}
+
+.details-btn {
+  display: inline-block;
+  padding: 10px 15px;
+  margin: 5px 0; /* Add margin for vertical spacing */
+  background-color: #0b2b61;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.details-btn:hover {
+  background-color: #083d77;
+}
