@@ -24,6 +24,53 @@
     flex-direction: column;
 }
 
+.product-details-content {
+    padding: 20px;
+    border: 1px solid #ddd; /* Light grey border */
+    border-radius: 5px; /* Rounded corners */
+    background-color: #f9f9f9; /* Light grey background */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow */
+}
+
+.product-details-content p {
+    margin: 10px 0;
+    line-height: 1.5; /* Improved line spacing */
+    color: #333; /* Dark grey text for better readability */
+}
+
+.product-details-content strong {
+    color: #000; /* Make labels bold and slightly more prominent */
+}
+
+.product-details.expanded td {
+    background-color: rgba(238, 238, 238, 0.7); /* Darker background for the expanded area */
+    color: #fff; /* Optional: changes the text color to white for contrast */
+}
+
+/* Base styles for the status box */
+.status-box {
+    display: inline-block;
+    padding: 5px 10px;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    text-align: center;
+    min-width: 75px;
+}
+
+/* Styles for items in stock */
+.in-stock {
+    background-color: #28a745; /* Green */
+    content: "In Stock";
+}
+
+/* Styles for items out of stock */
+.out-of-stock {
+    background-color: #dc3545; /* Red */
+    content: "Out of Stock";
+}
+
+
 .table-header {
     background-color: #0b2b61;
     color: #ffffff;
@@ -90,11 +137,23 @@
     background: #555;
 }
 
+.product-details td {
+    background-color: #f9f9f9; /* Lighter background for expanded details */
+}
+
+.product-details-content p {
+    margin: 5px 0;
+}
+
 
 .th { 
     width: 150px; 
 }
 
+.status-column, .status-box-container {
+    width: 150px; /* Adjust based on your needs */
+    text-align: center; /* Center the content */
+}
 
 .filtering-box {
     position: fixed;
