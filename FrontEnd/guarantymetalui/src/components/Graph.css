@@ -1,5 +1,5 @@
 /* Styles for the card container */
-.card {
+.graph {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     background-color: #fff;
@@ -13,7 +13,7 @@
   }
   
   /* Title styling within the card */
-  .card h2 {
+  .graph h2 {
     margin: 0 0 20px 0;
     color: #333;
     font-size: 24px;
