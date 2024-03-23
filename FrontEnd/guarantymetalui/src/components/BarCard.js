@@ -4,14 +4,14 @@ import './BarCard.css';
 
 // Sample data
 const data = [
-  { name: 'Item 1', inStock: 4000, outOfStock: 2400 },
-  { name: 'Item 2', inStock: 3000, outOfStock: 1398 },
-  { name: 'Item 3', inStock: 2000, outOfStock: 9800 },
-  { name: 'Item 4', inStock: 2780, outOfStock: 3908 },
-  { name: 'Item 5', inStock: 1890, outOfStock: 4800 },
-  { name: 'Item 6', inStock: 2390, outOfStock: 3800 },
-  { name: 'Item 7', inStock: 3490, outOfStock: 4300 },
-  { name: 'Item 8', inStock: 2000, outOfStock: 3000 },
+  { name: 'Round End Cap', inStock: 4000, outOfStock: 2400 },
+  { name: 'Round Hanger', inStock: 3000, outOfStock: 1398 },
+  { name: 'Downspout', inStock: 2000, outOfStock: 9800 },
+  { name: 'Elbow 40 Degree', inStock: 2780, outOfStock: 3908 },
+  { name: 'Drop Outlet', inStock: 1890, outOfStock: 4800 },
+  { name: 'Inline Cleanout', inStock: 2390, outOfStock: 3800 },
+  { name: 'Wire Strainer', inStock: 3490, outOfStock: 4300 },
+  { name: 'Y Connector', inStock: 2000, outOfStock: 3000 },
 ];
 
 const GraphCard = () => (
