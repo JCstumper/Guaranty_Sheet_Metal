@@ -4,12 +4,22 @@ import './Customers.css';
 
 const Customers = ({ setAuth }) => {
     const [jobs, setJobs] = useState([]);
+    const [filteredJobs, setFilteredJobs] = useState([]);
     const [selectedJobId, setSelectedJobId] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [filter, setFilter] = useState("");
     useEffect(() => {
         fetchJobs();
     }, []);
+
+    useEffect(() => {
+        setFilteredJobs(jobs.filter(job => 
+            job.customer_name.toLowerCase().includes(filter.toLowerCase()) ||
+            job.address.toLowerCase().includes(filter.toLowerCase()) ||
+            job.phone.includes(filter) ||
+            job.email.toLowerCase().includes(filter.toLowerCase())
+        ));
+    }, [filter, jobs]);
     
     const fetchJobs = async () => {
         try {
@@ -20,6 +30,7 @@ const Customers = ({ setAuth }) => {
             const data = await response.json();
             console.log('Jobs data:', data);
             setJobs(data.jobs || data);
+            setFilteredJobs(data.jobs || data);
         } catch (error) {
             console.error('Error fetching jobs:', error);
         }
@@ -97,8 +108,9 @@ const Customers = ({ setAuth }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {jobs && jobs.length > 0 ? (
-                                jobs.map((job, index) => (
+                            {filteredJobs.length > 0 ? (
+                                filteredJobs.map((job, index) => (
+
                                     <React.Fragment key={job.id || index}>
                                         <tr onClick={() => handleSelectJob(job.job_id)}>
                                             <td>{job.job_id}</td>
