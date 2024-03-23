@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { useNavigate, Link } from "react-router-dom"; // Importing useNavigate for programmatic navigation and Link for declarative navigation
 import { Bounce, toast } from 'react-toastify'; // Importing toastify for displaying notifications
 import './Register.css'; // Import CSS for styling the register page

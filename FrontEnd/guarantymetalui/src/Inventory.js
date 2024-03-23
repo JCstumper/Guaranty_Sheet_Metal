@@ -12,6 +12,8 @@ const Inventory = ({ setAuth }) => {
     const [uploadedFile, setUploadedFile] = useState(null);
     const [isUploading, setIsUploading] = useState(false);
     const [showUploadModal, setShowUploadModal] = useState(false);
+    const [showEditQuantityModal, setShowEditQuantityModal] = useState(false);
+    const [editItem, setEditItem] = useState({ partNumber: '', quantityInStock: 0 });
     const count = 0;
 
     const [newProductItem, setNewProductItem] = useState({
@@ -26,7 +28,6 @@ const Inventory = ({ setAuth }) => {
         price: '', // Should handle conversion to MONEY type/format as needed
         markUpPrice: '', // Should handle conversion to MONEY type/format as needed
     });
-    
     
     // // Function to fetch products from your API
     // const fetchProducts = async () => {
@@ -44,7 +45,6 @@ const Inventory = ({ setAuth }) => {
         try {
             const response = await fetch('https://localhost/api/products/with-inventory');
             const jsonData = await response.json();
-            console.log('Products with inventory:', jsonData.products);
             setProducts(jsonData.products);
         } catch (error) {
             console.error('Error fetching products with inventory:', error);
@@ -78,7 +78,7 @@ const Inventory = ({ setAuth }) => {
             }
     
             setShowModal(false); // Close modal
-            fetchProductsWithInventory(); // Refresh products list
+            await fetchProductsWithInventory(); // Note: This is an async call
             setNewProductItem({
                 partNumber: '',
                 radiusSize: '', // Corresponds to radius_size in your table
@@ -192,6 +192,7 @@ const Inventory = ({ setAuth }) => {
     
             const result = await response.json();
             console.log('Data sent successfully', result);
+            await fetchProductsWithInventory(); // Note: This is an async call
             // You might want to refresh your frontend data here
         } catch (error) {
             console.error('Error sending data to server:', error);
@@ -210,16 +211,27 @@ const Inventory = ({ setAuth }) => {
     };
 
     const renderProductRows = products.filter(product =>
-        product.part_number.toLowerCase().includes(filter) ||
-        product.description.toLowerCase().includes(filter)
+        product.part_number && product.part_number.toLowerCase().includes(filter.toLowerCase()) ||
+        product.description && product.description.toLowerCase().includes(filter.toLowerCase()) ||
+        product.radius_size !== null && (product.radius_size + '').toLowerCase().includes(filter.toLowerCase()) ||
+        product.material_type && product.color && (product.material_type + ' / ' + product.color).toLowerCase().includes(filter.toLowerCase()) ||
+        product.type && product.type.toLowerCase().includes(filter.toLowerCase()) ||
+        product.quantity_of_item !== null && product.unit && (product.quantity_of_item + ' ' + product.unit).toLowerCase().includes(filter.toLowerCase()) ||
+        product.price !== null && (product.price + '').toLowerCase().includes(filter.toLowerCase()) ||
+        product.mark_up_price !== null && (product.mark_up_price + '').toLowerCase().includes(filter.toLowerCase())
     )
+    .sort((a, b) => b.quantity_in_stock - a.quantity_in_stock)
     .map((product, index) => (
         <React.Fragment key={index}>
             <tr onClick={() => toggleProductExpansion(index)}>
                 <td>{product.part_number}</td>
-                <td>{product.material_type} / {product.color}</td>
+                <td>{product.material_type && product.color ? `${product.material_type} / ${product.color}` : product.material_type ? product.material_type : product.color ? product.color : ''}</td>
                 <td>{product.description}</td>
-                <td>{product.quantity_in_stock}</td>
+                <td>{product.quantity_in_stock} <button onClick={(e) => {
+                        e.stopPropagation(); // Prevent row expansion
+                        openEditQuantityModal(product);
+                    }}>Edit Quantity</button>
+                </td>
                 <td>
                 <div className={`status-box ${product.quantity_in_stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
                     {product.quantity_in_stock > 0 ? 'In Stock' : 'Out of Stock'}
@@ -233,7 +245,7 @@ const Inventory = ({ setAuth }) => {
                             <div style={{ display: 'grid', gridTemplateColumns: 'auto auto', gap: '10px' }}>
                                 <p><strong>Part Number:</strong> {product.part_number}</p>
                                 <p><strong>Size:</strong> {product.radius_size}"</p>
-                                <p><strong>Material/Color:</strong> {product.material_type} / {product.color}</p>
+                                <p><strong>Material/Color:</strong> {product.material_type && product.color ? `${product.material_type} / ${product.color}` : product.material_type ? product.material_type : product.color ? product.color : ''}</p>
                                 <p><strong>Description:</strong> {product.description}</p>
                                 <p><strong>Product Type:</strong> {product.type}</p>
                                 <p><strong>Base Quantity of Product:</strong> {product.quantity_of_item} {product.unit}</p>
@@ -248,11 +260,31 @@ const Inventory = ({ setAuth }) => {
         </React.Fragment>
     ));
 
-    const filteredProducts = products.filter(product =>
-        product.part_number.toLowerCase().includes(filter) ||
-        product.description.toLowerCase().includes(filter)
-    );
-
+    const openEditQuantityModal = (item) => {
+        setEditItem({ partNumber: item.part_number, quantityInStock: item.quantity_in_stock });
+        setShowEditQuantityModal(true);
+    };
+    
+    const handleUpdateQuantity = async (e) => {
+        e.preventDefault();
+        console.log("made it into handleupdatequantity");
+        try {
+            const response = await fetch(`/api/inventory/${editItem.partNumber}/quantity`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ quantity_in_stock: editItem.quantityInStock })
+            });
+            if (response.ok) {
+                setShowEditQuantityModal(false); // Close the modal on success
+                fetchProductsWithInventory(); // Refresh the inventory list
+            } else {
+                console.error("Failed to update item.");
+            }
+        } catch (error) {
+            console.error("Error updating item:", error);
+        }
+    };
+    
     return (
         <div className="inventory">
             <Topbar setAuth={setAuth} />
@@ -340,6 +372,29 @@ const Inventory = ({ setAuth }) => {
                                     {isUploading ? 'Switch to Manual Input' : 'Switch to Upload'}
                                 </button>
                             </div>
+                        </div>
+                    </div>
+                )}
+                {showEditQuantityModal && (
+                    <div className="edit-quantity-modal-backdrop" onClick={() => setShowEditQuantityModal(false)}>
+                        <div className="edit-quantity-modal-container" onClick={e => e.stopPropagation()}>
+                            <h2>Edit Quantity in Stock</h2>
+                            <form onSubmit={handleUpdateQuantity} className="edit-quantity-modal-form">
+                                <div className="edit-quantity-modal-input-group">
+                                    <label htmlFor="quantityInStock">Quantity in Stock:</label>
+                                    <input
+                                        id="quantityInStock"
+                                        type="number"
+                                        className="edit-quantity-modal-input"
+                                        value={editItem.quantityInStock}
+                                        onChange={e => setEditItem({ ...editItem, quantityInStock: parseInt(e.target.value, 10) })}
+                                    />
+                                </div>
+                                <div className="edit-quantity-modal-actions">
+                                    <button type="submit" className="edit-quantity-modal-update-btn">Update</button>
+                                    <button type="button" onClick={() => setShowEditQuantityModal(false)} className="edit-quantity-modal-cancel-btn">Cancel</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 )}
