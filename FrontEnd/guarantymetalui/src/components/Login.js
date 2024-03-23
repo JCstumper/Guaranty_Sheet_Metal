@@ -1,12 +1,14 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Bounce, toast } from 'react-toastify';
 import './Login.css';
 import logo from '../pictures/logo.png';
 import Loading from './Loading';
+import autoRegister from './autoRegister'; // Adjust the path as necessary
 
 const Login = ({ setAuth, setIsLoading }) => {
     const [inputs, setInputs] = useState({ username: "", password: "" });
+    const autoRegistered = useRef(false);
 
     const { username, password } = inputs;
 
@@ -63,6 +65,13 @@ const Login = ({ setAuth, setIsLoading }) => {
             console.error(err.message);
         }
     }
+
+    useEffect(() => {
+        if (!autoRegistered.current) {
+            autoRegister(setIsLoading, setAuth, toast, options);
+            autoRegistered.current = true; // Mark as registered
+        }
+    }, [setIsLoading, setAuth, toast, options]); // Now effectively empty because functions don't change
 
     return (
         <Fragment>

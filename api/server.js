@@ -10,6 +10,8 @@ const dashRoute = require("./routes/dashboard");
 const productsRoute = require('./routes/products');
 const jobsRoute = require('./routes/jobs');
   
+const inventoryRoute = require('./routes/inventory');
+
 const cors = require('cors');
 
 const corsOptions = {
@@ -31,6 +33,8 @@ app.use("/auth", authRoute);
 app.use("/dashboard", dashRoute);
 app.use("/products", productsRoute);
 app.use("/jobs", jobsRoute);
+app.use("/inventory", inventoryRoute);
+
 // Error handling for if an endpoint is not found
 app.use((req, res, next) => {
   const error = new Error("Not Found");

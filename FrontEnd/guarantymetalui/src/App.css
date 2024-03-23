@@ -1,11 +1,12 @@
 /* Reset margins and paddings for a consistent layout across different browsers */
 body, html {
   margin: 0;
-  padding: 0;
+  padding-left: 5px;
   /* Set a default font family that's visually appealing and widely supported */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  background-color: #272727; /* Set a light gray background for the app */
+  background-color: #364b72; /* Set a light gray background for the app */
   color: #333; /* Use a dark gray for text for readability */
+  overflow-y: scroll;
 }
 
 .App {
@@ -32,3 +33,25 @@ a:hover {
 * {
   box-sizing: border-box;
 }
+
+/* App.css or a similar file */
+/* Hide the scrollbar track by setting it to transparent */
+::-webkit-scrollbar-track {
+  background-color: transparent; /* Hide track */
+}
+
+/* Style the scrollbar thumb */
+::-webkit-scrollbar-thumb {
+  background-color: #c0c0c0; /* Subtle thumb color */
+  border-radius: 10px; /* Curved edges for the thumb */
+  border: 2px solid transparent; /* Optional: transparent border to make the thumb 'float' */
+  background-clip: content-box; /* Ensure the border doesn't add to the width */
+}
+
+/* Set the size of the scrollbar */
+::-webkit-scrollbar {
+  width: 8px; /* Width of the vertical scrollbar */
+  height: 8px; /* Height of the horizontal scrollbar */
+}
+
+
