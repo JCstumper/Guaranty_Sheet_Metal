@@ -9,6 +9,13 @@
     margin-top: 75px;
 
 }
+.graph-container {
+    display: flex;
+    justify-content: center; /* Adjust as needed for your layout */
+    flex-wrap: wrap;
+    gap: 20px;
+
+}
 
 .cxcard, .scard, .pcard, .Tcard {
     width: 250px;

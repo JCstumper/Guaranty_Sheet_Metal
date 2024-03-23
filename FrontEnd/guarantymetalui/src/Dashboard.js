@@ -1,12 +1,15 @@
 import React from 'react';
 import Topbar from './components/topbar'; // Adjust the path as necessary
+import BarCard from './components/BarCard'; // Make sure the path to GraphCard is correct
+import PieCard from './components/PieCard'; // Make sure the path to GraphCard is correct
 import './Dashboard.css'; // Assuming you have specific styles for Dashboard
 
-const Dashboard = ({setAuth}) => {
+const Dashboard = ({ setAuth }) => {
     return (
         <div className="dashboard">
             <Topbar setAuth={setAuth}/>
-            <div className="card-container"> {/* Ensure this div is correctly opened */}
+            <div className="card-container">
+                {/* Your existing cards */}
                 <div className="cxcard">
                     <div className="card-content">
                         <h3 className="card-title">Customers</h3>
@@ -31,6 +34,12 @@ const Dashboard = ({setAuth}) => {
                         <p className="card-info">18</p>
                     </div>
                 </div>
+            </div>
+            <div className="graph-container">
+                {/* Place GraphCard components inside this container */}
+                <BarCard />
+                <PieCard />
+                {/* You can add more GraphCard components or different types of graph components here */}
             </div>
         </div>
     );
