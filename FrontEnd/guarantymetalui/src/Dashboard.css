@@ -1,0 +1,37 @@
+.card-container
+{
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap; /* Allows cards to wrap on smaller screens */
+    gap: 20px; /* Adds some space between the cards */
+    padding: 20px;
+    margin-top: 75px;
+
+}
+
+.cxcard, .scard, .pcard, .Tcard {
+    width: 250px;
+    height: 150px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+}
+
+.card-info
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%; /* Fill the card */
+    height: 100%; /* Fill the card */
+    font-size: 30px;
+    font-weight: bold;
+  
+  
+}
