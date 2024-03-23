@@ -5,7 +5,6 @@ import Topbar from './components/topbar';
 
 const Inventory = ({ setAuth }) => {
     const [products, setProducts] = useState([]);
-    const [inventory, setInventory] = useState([]);
     const [expandedRowIndex, setExpandedRowIndex] = useState(null);
     const [filter, setFilter] = useState("");
     const [showModal, setShowModal] = useState(false);
@@ -14,7 +13,20 @@ const Inventory = ({ setAuth }) => {
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [showEditQuantityModal, setShowEditQuantityModal] = useState(false);
     const [editItem, setEditItem] = useState({ partNumber: '', quantityInStock: 0 });
-    const count = 0;
+    const [sortColumn, setSortColumn] = useState(null); // e.g., 'part_number', 'quantity_in_stock'
+    const [sortDirection, setSortDirection] = useState('ascending'); // or 'descending'
+    const [filterOptions, setFilterOptions] = useState({
+        radius_size: [],
+        material_type: [],
+        color: [],
+        type: [],
+    });
+    const [activeFilters, setActiveFilters] = useState({
+        radius_size: [],
+        material_type: [],
+        color: [],
+        type: [],
+    });
 
     const [newProductItem, setNewProductItem] = useState({
         partNumber: '',
@@ -57,20 +69,57 @@ const Inventory = ({ setAuth }) => {
         fetchProductsWithInventory();
     }, []);
 
+    useEffect(() => {
+        // Dynamically generate filter options based on products data
+        const generateOptions = (items) => {
+            let options = [...new Set(items.map(item => item ?? '(blank)').filter((item, index, array) => array.indexOf(item) === index))];
+            // Remove '(blank)' if it exists to sort the rest
+            const blankExists = options.includes('(blank)');
+            if (blankExists) {
+                options = options.filter(item => item !== '(blank)');
+            }
+            // Sort options and append '(blank)' at the end if it was originally there
+            options.sort();
+            if (blankExists) {
+                options.push('(blank)');
+            }
+            return options;
+        };
+    
+        const newFilterOptions = {
+            radius_size: generateOptions(products.map(product => product.radius_size?.trim() === '' || product.radius_size == null ? '(blank)' : `${product.radius_size}"`)),
+            material_type: generateOptions(products.map(product => product.material_type?.trim() === '' || product.radius_size == null ? '(blank)' : product.material_type)),
+            color: generateOptions(products.map(product => product.color?.trim() === '' || product.radius_size == null ? '(blank)' : product.color)),
+            type: generateOptions(products.map(product => product.type?.trim() === '' || product.radius_size == null ? '(blank)' : product.type)),
+        };
+    
+        setFilterOptions(newFilterOptions);
+    }, [products]);
+    
+    
+    
+
     const handleFilterChange = (event) => {
         setFilter(event.target.value.toLowerCase());
     };
 
     const handleAddProducts = async () => {
         console.log("Attempting to add inventory item..."); // Debug log
-        // console.log(newProductItem);
+    
+        // Sanitize each field in newProductItem before sending it
+        const sanitizedNewProductItem = Object.keys(newProductItem).reduce((acc, key) => {
+            acc[key] = typeof newProductItem[key] === 'string' ? sanitizeInput(newProductItem[key]) : newProductItem[key];
+            return acc;
+        }, {});
+    
         try {
             const response = await fetch('https://localhost/api/products', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(newProductItem),
+                // Use the sanitized item for the request
+                body: JSON.stringify(sanitizedNewProductItem),
             });
     
             if (!response.ok) {
@@ -94,7 +143,7 @@ const Inventory = ({ setAuth }) => {
         } catch (error) {
             console.error('Error adding inventory item:', error);
         }
-    };
+    }    
 
     const handleFileChange = (e) => {
         setUploadedFile(e.target.files[0]);
@@ -126,16 +175,16 @@ const Inventory = ({ setAuth }) => {
     
             jsonData.forEach((item) => {
                 const itemData = {
-                    partNumber: item[columnIndices['partnumber']],
-                    radiusSize: item[columnIndices['size']],
-                    materialType: item[columnIndices['materialtype']],
-                    color: item[columnIndices['color']],
-                    description: item[columnIndices['description']],
-                    type: item[columnIndices['type']],
-                    quantityOfItem: item[columnIndices['quantity']],
-                    unit: item[columnIndices['unit']],
-                    price: item[columnIndices['price']],
-                    markUpPrice: item[columnIndices['markupprice']]
+                    partNumber: sanitizeInput(item[columnIndices['partnumber']]),
+                    radiusSize: sanitizeInput(item[columnIndices['size']]),
+                    materialType: sanitizeInput(item[columnIndices['materialtype']]),
+                    color: sanitizeInput(item[columnIndices['color']]),
+                    description: sanitizeInput(item[columnIndices['description']]),
+                    type: sanitizeInput(item[columnIndices['type']]),
+                    quantityOfItem: sanitizeInput(item[columnIndices['quantity']]),
+                    unit: sanitizeInput(item[columnIndices['unit']]),
+                    price: sanitizeInput(item[columnIndices['price']]),
+                    markUpPrice: sanitizeInput(item[columnIndices['markupprice']])
                 };
     
                 if (itemData.partNumber) {
@@ -173,6 +222,19 @@ const Inventory = ({ setAuth }) => {
         return normalized;
     }
 
+    // Sanitization function to remove leading/trailing spaces and convert double spaces to single
+    const sanitizeInput = (value) => {
+        // Only apply trim and replace operations on strings
+        if (typeof value === 'string') {
+            return value.trim().replace(/\s\s+/g, ' ');
+        } else {
+            // For non-string values, return the value as is
+            return value;
+        }
+    };
+    
+
+
     const sendDataToBackend = async (data) => {
         try {
             const response = await fetch('https://localhost/api/products', {
@@ -184,8 +246,6 @@ const Inventory = ({ setAuth }) => {
             });
     
             if (!response.ok) {
-                count = count + 1
-
                 console.log(data);
                 throw new Error('Failed to send data to the server');
             }
@@ -210,17 +270,64 @@ const Inventory = ({ setAuth }) => {
         }
     };
 
-    const renderProductRows = products.filter(product =>
-        product.part_number && product.part_number.toLowerCase().includes(filter.toLowerCase()) ||
-        product.description && product.description.toLowerCase().includes(filter.toLowerCase()) ||
-        product.radius_size !== null && (product.radius_size + '').toLowerCase().includes(filter.toLowerCase()) ||
-        product.material_type && product.color && (product.material_type + ' / ' + product.color).toLowerCase().includes(filter.toLowerCase()) ||
-        product.type && product.type.toLowerCase().includes(filter.toLowerCase()) ||
-        product.quantity_of_item !== null && product.unit && (product.quantity_of_item + ' ' + product.unit).toLowerCase().includes(filter.toLowerCase()) ||
-        product.price !== null && (product.price + '').toLowerCase().includes(filter.toLowerCase()) ||
-        product.mark_up_price !== null && (product.mark_up_price + '').toLowerCase().includes(filter.toLowerCase())
-    )
-    .sort((a, b) => b.quantity_in_stock - a.quantity_in_stock)
+    const normalizeText = (text) => {
+        return text ? text.toLowerCase().replace(/[^a-z0-9]/g, '') : '';
+    };
+
+    const matchesFilter = (product) => {
+        const normalizedFilter = filter.toLowerCase();
+        return (
+            product.part_number.toLowerCase().includes(normalizedFilter) ||
+            product.description.toLowerCase().includes(normalizedFilter)
+        ) && Object.keys(activeFilters).every(key =>
+            activeFilters[key].length === 0 || activeFilters[key].includes(product[key])
+        );
+    };
+    
+    // const matchesFilter = (product, filter) => {
+    //     const normalizedFilter = normalizeText(filter);
+    
+    //     // Check if the part number or description matches the normalized filter
+    //     const partNumberMatch = normalizeText(product.part_number).includes(normalizedFilter);
+    //     const descriptionMatch = normalizeText(product.description).includes(normalizedFilter);
+    
+    //     return partNumberMatch || descriptionMatch;
+    // };
+    
+    const sortProducts = (a, b) => {
+        if (sortColumn === null) return 0;
+    
+        // Special handling for "status"
+        if (sortColumn === 'status') {
+            const statusA = a.quantity_in_stock > 0 ? 1 : 0; // 1 for In Stock, 0 for Out of Stock
+            const statusB = b.quantity_in_stock > 0 ? 1 : 0;
+    
+            // Ascending: Show "Out of Stock" before "In Stock"
+            // Descending: Show "In Stock" before "Out of Stock"
+            return sortDirection === 'ascending' ? statusA - statusB : statusB - statusA;
+        }
+    
+        let valueA = a[sortColumn];
+        let valueB = b[sortColumn];
+        
+        // Handle numeric sorting
+        if (typeof valueA === 'number' && typeof valueB === 'number') {
+            return sortDirection === 'ascending' ? valueA - valueB : valueB - valueA;
+        }
+        
+        // Handle string sorting
+        valueA = valueA ? valueA.toString().toLowerCase() : '';
+        valueB = valueB ? valueB.toString().toLowerCase() : '';
+        if (valueA < valueB) return sortDirection === 'ascending' ? -1 : 1;
+        if (valueA > valueB) return sortDirection === 'ascending' ? 1 : -1;
+        
+        return 0;
+    };    
+
+    const sortedProducts = [...products].filter(product => matchesFilter(product, filter)).sort(sortProducts);
+
+    const renderProductRows = sortedProducts
+    .filter(product => matchesFilter(product, filter))
     .map((product, index) => (
         <React.Fragment key={index}>
             <tr onClick={() => toggleProductExpansion(index)}>
@@ -248,7 +355,7 @@ const Inventory = ({ setAuth }) => {
                                 <p><strong>Material/Color:</strong> {product.material_type && product.color ? `${product.material_type} / ${product.color}` : product.material_type ? product.material_type : product.color ? product.color : ''}</p>
                                 <p><strong>Description:</strong> {product.description}</p>
                                 <p><strong>Product Type:</strong> {product.type}</p>
-                                <p><strong>Base Quantity of Product:</strong> {product.quantity_of_item} {product.unit}</p>
+                                <p><strong>Base Quantity of Product:</strong> {Number.isInteger(parseFloat(product.quantity_of_item)) ? parseInt(product.quantity_of_item, 10) : product.quantity_of_item}{product.unit}</p>
                                 <p><strong>Base Price:</strong> {product.price}</p>
                                 <p><strong>Mark Up Price:</strong> {product.mark_up_price}</p>
                                 {/* Additional details can go here if needed */}
@@ -259,6 +366,46 @@ const Inventory = ({ setAuth }) => {
             )}
         </React.Fragment>
     ));
+
+    const handleCheckboxChange = (category, option) => {
+        setActiveFilters(prev => ({
+            ...prev,
+            [category]: prev[category].includes(option) ?
+                prev[category].filter(item => item !== option) :
+                [...prev[category], option],
+        }));
+    };
+
+    // Function to render checkboxes for a given category
+    const renderCategoryCheckboxes = (category) => {
+        return (
+            <div className="filter-category">
+                <h3>{category.replace(/_/g, ' ').toUpperCase()}</h3>
+                {filterOptions[category].map(option => (
+                    <label key={option} className="category-checkbox">
+                        <input
+                            type="checkbox"
+                            checked={activeFilters[category].includes(option)}
+                            onChange={() => handleCheckboxChange(category, option)}
+                        />
+                        {option}
+                    </label>
+                ))}
+            </div>
+        );
+    };
+
+    const filteredProducts = products.filter(matchesFilter);
+
+    const handleSort = (columnName) => {
+        if (sortColumn === columnName) {
+            setSortDirection(sortDirection === 'ascending' ? 'descending' : 'ascending');
+        } else {
+            setSortColumn(columnName);
+            setSortDirection('ascending');
+        }
+    };
+    
 
     const openEditQuantityModal = (item) => {
         setEditItem({ partNumber: item.part_number, quantityInStock: item.quantity_in_stock });
@@ -297,11 +444,31 @@ const Inventory = ({ setAuth }) => {
                     <table className="table-content">
                         <thead>
                             <tr>
-                                <th>Part Number</th>
-                                <th>Material/Color</th>
-                                <th>Description</th>
-                                <th>Quantity In Stock</th>
-                                <th className="status-column">Status</th> {/* Add a class here */}
+                                <th>
+                                    <button onClick={() => handleSort('part_number')} className="sortable-header">
+                                        Part Number {sortColumn === 'part_number' ? (sortDirection === 'ascending' ? '↑' : '↓') : ''}
+                                    </button>
+                                </th>
+                                <th>
+                                    <button onClick={() => handleSort('material_type')} className="sortable-header">
+                                        Material/Color {sortColumn === 'material_type' ? (sortDirection === 'ascending' ? '↑' : '↓') : ''}
+                                    </button>
+                                </th>
+                                <th>
+                                    <button onClick={() => handleSort('description')} className="sortable-header">
+                                        Description {sortColumn === 'description' ? (sortDirection === 'ascending' ? '↑' : '↓') : ''}
+                                    </button>
+                                </th>
+                                <th>
+                                    <button onClick={() => handleSort('quantity_in_stock')} className="sortable-header">
+                                        Quantity In Stock {sortColumn === 'quantity_in_stock' ? (sortDirection === 'ascending' ? '↑' : '↓') : ''}
+                                    </button>
+                                </th>
+                                <th>
+                                    <button onClick={() => handleSort('status')} className="sortable-header">
+                                        Status {sortColumn === 'status' ? (sortDirection === 'ascending' ? '↑' : '↓') : ''}
+                                    </button>
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -313,9 +480,10 @@ const Inventory = ({ setAuth }) => {
                     <input
                         type="text"
                         className="search-input"
-                        placeholder="Filter products..."
+                        placeholder="Search for products..."
                         onChange={handleFilterChange}
                     />
+                    {Object.keys(filterOptions).map(category => renderCategoryCheckboxes(category))}
                 </div>
                 {showUploadModal && (
                     <div className="modal-backdrop" onClick={() => setShowUploadModal(false)}>
