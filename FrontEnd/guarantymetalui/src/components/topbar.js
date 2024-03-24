@@ -6,16 +6,11 @@ import { MdDashboard, MdInventory, MdShoppingCart, MdPeople, MdSettings, MdExitT
 import { FaHardHat, FaTruck } from 'react-icons/fa';
 import LogoutConfirmation from './LogoutConfirmation'; // Import LogoutConfirmation component
 
-const buttons = ['DASHBOARD', 'INVENTORY', 'PURCHASES', 'JOBS', 'SETTINGS']; // Add 'SETTINGS' button to the list
+const buttons = ['DASHBOARD', 'INVENTORY', 'PURCHASES', 'JOBS', 'SETTINGS'];
 
 const Topbar = ({ setAuth }) => {
-    const [isLoading, setIsLoading] = useState(false);
-    const [activeTab, setActiveTab] = useState(buttons[0]);
     const [userName, setUserName] = useState("");
-    const [initialBgColor, setInitialBgColor] = useState('#ffffff');
     const [logoutConfirmationOpen, setLogoutConfirmationOpen] = useState(false);
-
-
 
     useEffect(() => {
         async function getName() {
@@ -42,19 +37,15 @@ const Topbar = ({ setAuth }) => {
         }
 
         getName();
-        setInitialBgColor(generateRandomColor());
     }, []);
 
-    const logout = () => {
+    const handleLogoutConfirm = () => {
         localStorage.removeItem("token");
         setAuth(false);
+        setLogoutConfirmationOpen(false); // Close the modal on logout confirmation
     };
 
-    const generateRandomColor = () => '#' + Math.floor(Math.random() * 16777215).toString(16);
-
-    const handleLinkClick = (button) => {
-        setActiveTab(button);
-    };
+    // Removed the original logout function as its logic moves into handleLogoutConfirm
 
     const getButtonIcon = (button) => {
         switch (button) {
@@ -66,7 +57,7 @@ const Topbar = ({ setAuth }) => {
                 return <FaTruck />;
             case 'JOBS':
                 return <FaHardHat />;
-            case 'SETTINGS': // Return MdSettings icon for 'SETTINGS' button
+            case 'SETTINGS':
                 return <MdSettings />;
             default:
                 return null;
@@ -79,17 +70,15 @@ const Topbar = ({ setAuth }) => {
                 <img src={logo} alt="Logo" className="bottom-bar-logo" />
             </div>
             <div className="button-list">
-            {buttons.map((button) => {
-                    const path = button === 'DASHBOARD' ? '/dashboard' : `/${button.toLowerCase()}`;
+                {buttons.map((button) => {
+                    const path = `/${button.toLowerCase()}`;
                     const icon = getButtonIcon(button);
 
                     return (
                         <NavLink
                             to={path}
                             key={button}
-                            className="list-button"
-                            activeClassName="active"
-                            onClick={() => handleLinkClick(button)}
+                            className={({ isActive }) => isActive ? "list-button active" : "list-button"}
                         >
                             {icon}
                             <span>{button}</span>
@@ -100,16 +89,11 @@ const Topbar = ({ setAuth }) => {
             <div className="user-name-dropdown">
                 <button className="user-name" onClick={() => setLogoutConfirmationOpen(true)}>
                     {userName}
-                    <MdExitToApp className="logout-icon" onClick={logout} />
+                    <MdExitToApp className="logout-icon" />
                 </button>
-                {logoutConfirmationOpen && (
-                    <div className="logout-dropdown">
-                        <button onClick={logout}>Sign Out</button>
-                    </div>
-                )}
             </div>
 
-            <LogoutConfirmation isOpen={logoutConfirmationOpen} onConfirm={logout} onCancel={() => setLogoutConfirmationOpen(false)} />
+            <LogoutConfirmation isOpen={logoutConfirmationOpen} onConfirm={handleLogoutConfirm} onCancel={() => setLogoutConfirmationOpen(false)} />
         </aside>
     );
 };
