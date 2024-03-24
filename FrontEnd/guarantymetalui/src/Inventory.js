@@ -87,7 +87,7 @@ const Inventory = ({ setAuth }) => {
         };
     
         const newFilterOptions = {
-            radius_size: generateOptions(products.map(product => product.radius_size?.trim() === '' || product.radius_size == null ? '(blank)' : `${product.radius_size}"`)),
+            radius_size: generateOptions(products.map(product => product.radius_size?.trim() === '' || product.radius_size == null ? '(blank)' : product.radius_size)),
             material_type: generateOptions(products.map(product => product.material_type?.trim() === '' || product.radius_size == null ? '(blank)' : product.material_type)),
             color: generateOptions(products.map(product => product.color?.trim() === '' || product.radius_size == null ? '(blank)' : product.color)),
             type: generateOptions(products.map(product => product.type?.trim() === '' || product.radius_size == null ? '(blank)' : product.type)),
@@ -279,10 +279,13 @@ const Inventory = ({ setAuth }) => {
         return (
             product.part_number.toLowerCase().includes(normalizedFilter) ||
             product.description.toLowerCase().includes(normalizedFilter)
-        ) && Object.keys(activeFilters).every(key =>
-            activeFilters[key].length === 0 || activeFilters[key].includes(product[key])
-        );
+        ) && Object.keys(activeFilters).every(key => {
+            // Convert both to string if numeric values are involved
+            const productValue = typeof product[key] === 'number' ? product[key].toString() : product[key];
+            return activeFilters[key].length === 0 || activeFilters[key].includes(productValue);
+        });
     };
+    
     
     // const matchesFilter = (product, filter) => {
     //     const normalizedFilter = normalizeText(filter);
@@ -334,10 +337,19 @@ const Inventory = ({ setAuth }) => {
                 <td>{product.part_number}</td>
                 <td>{product.material_type && product.color ? `${product.material_type} / ${product.color}` : product.material_type ? product.material_type : product.color ? product.color : ''}</td>
                 <td>{product.description}</td>
-                <td>{product.quantity_in_stock} <button onClick={(e) => {
-                        e.stopPropagation(); // Prevent row expansion
-                        openEditQuantityModal(product);
-                    }}>Edit Quantity</button>
+                <td>
+                    <div className="quantity-edit-container">
+                        {product.quantity_in_stock}
+                        <button
+                        onClick={(e) => {
+                            e.stopPropagation(); // Prevent row expansion
+                            openEditQuantityModal(product);
+                        }}
+                        className="edit-quantity-btn"
+                        >
+                        Edit Quantity
+                        </button>
+                    </div>
                 </td>
                 <td>
                 <div className={`status-box ${product.quantity_in_stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
@@ -388,12 +400,13 @@ const Inventory = ({ setAuth }) => {
                             checked={activeFilters[category].includes(option)}
                             onChange={() => handleCheckboxChange(category, option)}
                         />
-                        {option}
+                        {category === 'radius_size' && option !== '(blank)' ? `${option}"` : option}
                     </label>
                 ))}
             </div>
         );
     };
+
 
     const filteredProducts = products.filter(matchesFilter);
 
@@ -490,6 +503,7 @@ const Inventory = ({ setAuth }) => {
                         <div className="modal-content" onClick={e => e.stopPropagation()}>
                             <div className="modal-header">
                                 <h2>Upload Products File</h2>
+                                <button onClick={() => setShowUploadModal(false)} className="modal-close-button">X</button>
                             </div>
                             <div className="modal-body">
                                 <input type="file" onChange={e => setUploadedFile(e.target.files[0])} />
@@ -506,6 +520,7 @@ const Inventory = ({ setAuth }) => {
                         <div className="modal-content" onClick={e => e.stopPropagation()}>
                             <div className="modal-header">
                                 <h2>{isUploading ? 'Upload Excel File' : 'Add New Inventory Item'}</h2>
+                                <button onClick={() => setShowModal(false)} className="modal-close-button">X</button>
                             </div>
                             <div className="modal-body">
                                 {isUploading ? (
@@ -544,25 +559,26 @@ const Inventory = ({ setAuth }) => {
                     </div>
                 )}
                 {showEditQuantityModal && (
-                    <div className="edit-quantity-modal-backdrop" onClick={() => setShowEditQuantityModal(false)}>
-                        <div className="edit-quantity-modal-container" onClick={e => e.stopPropagation()}>
-                            <h2>Edit Quantity in Stock</h2>
-                            <form onSubmit={handleUpdateQuantity} className="edit-quantity-modal-form">
-                                <div className="edit-quantity-modal-input-group">
-                                    <label htmlFor="quantityInStock">Quantity in Stock:</label>
+                    <div className="modal-backdrop" onClick={() => setShowEditQuantityModal(false)}>
+                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                            <div className="modal-header">
+                                <h2>Edit Quantity</h2>
+                                <button onClick={() => setShowEditQuantityModal(false)} className="modal-close-button">X</button>
+                            </div>
+                            <div className="modal-body">
+                                <form onSubmit={handleUpdateQuantity}>
                                     <input
-                                        id="quantityInStock"
                                         type="number"
                                         className="edit-quantity-modal-input"
                                         value={editItem.quantityInStock}
-                                        onChange={e => setEditItem({ ...editItem, quantityInStock: parseInt(e.target.value, 10) })}
+                                        onChange={(e) => setEditItem({ ...editItem, quantityInStock: parseInt(e.target.value, 10) })}
                                     />
-                                </div>
-                                <div className="edit-quantity-modal-actions">
-                                    <button type="submit" className="edit-quantity-modal-update-btn">Update</button>
-                                    <button type="button" onClick={() => setShowEditQuantityModal(false)} className="edit-quantity-modal-cancel-btn">Cancel</button>
-                                </div>
-                            </form>
+                                    <div className="modal-actions">
+                                        <button type="submit" className="edit-quantity-modal-update-btn">Update</button>
+                                        <button type="button" onClick={() => setShowEditQuantityModal(false)} className="edit-quantity-modal-cancel-btn">Cancel</button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 )}
