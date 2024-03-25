@@ -1,0 +1,42 @@
+/* NotFound.css */
+.not-found-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 400px;
+    padding: 40px;
+    border: 2px solid #dc3545; /* Using a red-ish color for the border to indicate an error/page not found */
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 10px;
+}
+
+.not-found-title {
+    margin-bottom: 20px; /* Space below the title */
+    color: #dc3545; /* Using a red-ish color to highlight the not found/error state */
+    text-align: center; /* Centering title text */
+}
+
+.not-found-message {
+    text-align: center; /* Centering message text */
+    margin-bottom: 20px; /* Space below the message */
+}
+
+/* Reuse styles for the button if similar to login, or customize as needed */
+.not-found-button {
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+}
+
+.not-found-button:hover {
+    background-color: #0056b3;
+}

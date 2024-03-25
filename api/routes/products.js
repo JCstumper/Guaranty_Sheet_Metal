@@ -64,6 +64,110 @@ router.post('/', async (req, res) => {
     }
 });
 
+router.delete('/:partNumber', async (req, res) => {
+    try {
+        const { partNumber } = req.params;
+
+        // First, delete any related inventory records for the product to avoid foreign key constraints.
+        // This assumes that `part_number` is used as a reference in your `inventory` table.
+        const inventoryDeletionResponse = await pool.query(`
+            DELETE FROM inventory
+            WHERE part_number = $1;
+        `, [partNumber]);
+
+        console.log(`Deleted ${inventoryDeletionResponse.rowCount} inventory record(s) for part number: ${partNumber}`);
+
+        // Then, delete the product from the products table.
+        const productDeletionResponse = await pool.query(`
+            DELETE FROM products
+            WHERE part_number = $1
+            RETURNING *;
+        `, [partNumber]);
+
+        // Check if a product was actually deleted. If not, the product was not found.
+        if (productDeletionResponse.rowCount === 0) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+
+        res.json({
+            message: 'Product and associated inventory records deleted successfully',
+            deletedProduct: productDeletionResponse.rows[0],
+        });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: 'Failed to delete product' });
+    }
+});
+
+// PUT route to update a product and its part number
+router.put('/:originalPartNumber', async (req, res) => {
+    try {
+        const { originalPartNumber } = req.params;
+        const {
+            newPartNumber,   // New part number to update
+            radiusSize,      // Maps to 'radius_size'
+            materialType,    // Maps to 'material_type'
+            color,           // Maps to 'color'
+            description,     // Maps to 'description'
+            type,            // Maps to 'type'
+            quantityOfItem,  // Maps to 'quantity_of_item'
+            unit,            // Maps to 'unit'
+            price,           // Maps to 'price'
+            markUpPrice      // Maps to 'mark_up_price'
+        } = req.body;
+
+        // Begin transaction
+        await pool.query('BEGIN');
+
+        // Update the product with the matching original part number
+        const updateProductQuery = `
+            UPDATE products
+            SET 
+                part_number = $1,
+                radius_size = $2, 
+                material_type = $3, 
+                color = $4, 
+                description = $5, 
+                type = $6, 
+                quantity_of_item = $7, 
+                unit = $8, 
+                price = $9, 
+                mark_up_price = $10
+            WHERE part_number = $11
+            RETURNING *;
+        `;
+
+        const updatedProduct = await pool.query(updateProductQuery, [newPartNumber, radiusSize, materialType, color, description, type, quantityOfItem, unit, price, markUpPrice, originalPartNumber]);
+
+        // If no rows were updated, the original product was not found
+        if (updatedProduct.rowCount === 0) {
+            await pool.query('ROLLBACK');
+            return res.status(404).json({ error: 'Product not found' });
+        }
+
+        // Update the inventory record to match the new part number
+        const updateInventoryQuery = `
+            UPDATE inventory
+            SET part_number = $1
+            WHERE part_number = $2;
+        `;
+
+        await pool.query(updateInventoryQuery, [newPartNumber, originalPartNumber]);
+
+        // Commit transaction
+        await pool.query('COMMIT');
+
+        res.json({
+            message: 'Product and inventory updated successfully',
+            product: updatedProduct.rows[0],
+        });
+    } catch (err) {
+        await pool.query('ROLLBACK');
+        console.error(err.message);
+        res.status(500).json({ error: 'Failed to update product and inventory' });
+    }
+});
+
 router.get('/with-inventory', async (req, res) => {
     try {
         // Perform a SQL JOIN to fetch products with their inventory quantity

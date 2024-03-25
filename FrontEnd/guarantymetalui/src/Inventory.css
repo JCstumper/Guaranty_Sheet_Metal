@@ -21,11 +21,23 @@ body {
 .inventory-main::before {
     content: "";
     position: fixed; /* Fixed to the viewport */
-    top: 0px; /* Start at the bottom of the top bar */
+    top: 0px; /* Anchored at the bottom of the viewport */
     left: 0;
     right: 0;
     height: 120px; /* Height of the fade effect */
-    background: linear-gradient(to top, #364b7200 0%, #364b72 100%);
+    background: linear-gradient(to top, #364b7200 0%, #364b72 100%); /* Gradient starts transparent and becomes solid at the bottom */
+    z-index: 10;
+    pointer-events: none; /* Ensures clicks pass through */
+}
+
+.inventory-main::after {
+    content: "";
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 120px; /* Height of the fade effect */
+    background: linear-gradient(to bottom, #364b7200 0%, #364b72 100%);
     z-index: 10;
     pointer-events: none; /* Ensures clicks pass through */
 }
@@ -436,6 +448,47 @@ text-decoration: none;
 
 .modal-close-button:hover {
     color: #aad1e6; /* Lighter shade for hover effect */
+}
+
+/* Container for Edit and Delete buttons */
+.product-action-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%; /* Full width to center the buttons */
+    margin-top: 20px; /* Space from the product details */
+}
+
+/* Common styles for Edit and Delete buttons */
+.product-action-button {
+    width: 40%; /* 60% of the parent's width */
+    padding: 10px;
+    margin-bottom: 10px; /* Space between buttons */
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+/* Specific styles for Edit button */
+.edit-button {
+    background-color: #001f41; /* Blue */
+}
+
+.edit-button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Specific styles for Delete button */
+.delete-button {
+    background-color: #dc3545; /* Red */
+    margin-bottom: 0; /* No margin at the bottom for the last button */
+}
+
+.delete-button:hover {
+    background-color: #c82333; /* Darker red on hover */
 }
 
 
