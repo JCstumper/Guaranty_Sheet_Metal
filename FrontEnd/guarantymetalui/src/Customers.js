@@ -196,16 +196,16 @@ const Customers = ({ setAuth }) => {
                         <div className="modalAddJob-body">
                             <form onSubmit={handleAddJob}>
                                 <label htmlFor="customerName">Customer Name:</label>
-                                <input type="text" id="customer_name" name="customer_name" required />
+                                <input type="text" id="customer_name" name="customer_name" placeholder='Customer Name' required />
 
                                 <label htmlFor="jobAddress">Address:</label>
-                                <input type="text" id="address" name="address" required />
+                                <input type="text" id="address" name="address" placeholder='Address' required />
 
                                 <label htmlFor="jobPhone">Phone:</label>
-                                <input type="tel" id="phone" name="phone" required />
+                                <input type="tel" id="phone" name="phone" placeholder='Phone' required />
 
                                 <label htmlFor="jobEmail">Email:</label>
-                                <input type="email" id="email" name="email" required />
+                                <input type="email" id="email" name="email" placeholder='Email' required />
 
                                 <div className="modalAddJob-footer">
                                     <button type="submit" className="btn btn-primary">Add Job</button>

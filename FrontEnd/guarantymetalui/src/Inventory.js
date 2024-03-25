@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './Inventory.css';
 import * as XLSX from 'xlsx';
 import Topbar from './components/topbar';
+import { toast } from 'react-toastify';
 
 const Inventory = ({ setAuth }) => {
     const [products, setProducts] = useState([]);
@@ -15,6 +16,10 @@ const Inventory = ({ setAuth }) => {
     const [editItem, setEditItem] = useState({ partNumber: '', quantityInStock: 0 });
     const [sortColumn, setSortColumn] = useState(null); // e.g., 'part_number', 'quantity_in_stock'
     const [sortDirection, setSortDirection] = useState('ascending'); // or 'descending'
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deletePartNumber, setDeletePartNumber] = useState(null);
+    const [showEditProductModal, setShowEditProductModal] = useState(false);
+    const [editProductItem, setEditProductItem] = useState(null);
     const [filterOptions, setFilterOptions] = useState({
         radius_size: [],
         material_type: [],
@@ -41,18 +46,6 @@ const Inventory = ({ setAuth }) => {
         markUpPrice: '', // Should handle conversion to MONEY type/format as needed
     });
     
-    // // Function to fetch products from your API
-    // const fetchProducts = async () => {
-    //     try {
-    //         const response = await fetch('https://localhost/api/products');
-    //         const jsonData = await response.json();
-    //         // console.log(jsonData.products.rows);
-    //         setProducts(jsonData.products.rows);
-    //     } catch (error) {
-    //         console.error('Error fetching data:', error);
-    //     }
-    // };
-
     const fetchProductsWithInventory = async () => {
         try {
             const response = await fetch('https://localhost/api/products/with-inventory');
@@ -285,18 +278,7 @@ const Inventory = ({ setAuth }) => {
             return activeFilters[key].length === 0 || activeFilters[key].includes(productValue);
         });
     };
-    
-    
-    // const matchesFilter = (product, filter) => {
-    //     const normalizedFilter = normalizeText(filter);
-    
-    //     // Check if the part number or description matches the normalized filter
-    //     const partNumberMatch = normalizeText(product.part_number).includes(normalizedFilter);
-    //     const descriptionMatch = normalizeText(product.description).includes(normalizedFilter);
-    
-    //     return partNumberMatch || descriptionMatch;
-    // };
-    
+
     const sortProducts = (a, b) => {
         if (sortColumn === null) return 0;
     
@@ -361,7 +343,7 @@ const Inventory = ({ setAuth }) => {
                 <tr className={`product-details ${expandedRowIndex === index ? 'expanded' : ''}`}>
                     <td colSpan="5">
                         <div className="product-details-content">
-                            <div style={{ display: 'grid', gridTemplateColumns: 'auto auto', gap: '10px' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
                                 <p><strong>Part Number:</strong> {product.part_number}</p>
                                 <p><strong>Size:</strong> {product.radius_size}"</p>
                                 <p><strong>Material/Color:</strong> {product.material_type && product.color ? `${product.material_type} / ${product.color}` : product.material_type ? product.material_type : product.color ? product.color : ''}</p>
@@ -370,7 +352,15 @@ const Inventory = ({ setAuth }) => {
                                 <p><strong>Base Quantity of Product:</strong> {Number.isInteger(parseFloat(product.quantity_of_item)) ? parseInt(product.quantity_of_item, 10) : product.quantity_of_item}{product.unit}</p>
                                 <p><strong>Base Price:</strong> {product.price}</p>
                                 <p><strong>Mark Up Price:</strong> {product.mark_up_price}</p>
-                                {/* Additional details can go here if needed */}
+                                {/* Add additional details as needed, ensure there are multiples of 4 for an even layout */}
+                            </div>
+                            <div className="product-action-buttons">
+                                <button className="product-action-button edit-button" onClick={() => openEditProductModal(product)}>
+                                    Edit
+                                </button>
+                                <button className="product-action-button delete-button" onClick={() => confirmDeleteProduct(product.part_number)}>
+                                    Delete
+                                </button>
                             </div>
                         </div>
                     </td>
@@ -444,6 +434,132 @@ const Inventory = ({ setAuth }) => {
             console.error("Error updating item:", error);
         }
     };
+
+    const confirmDeleteProduct = (partNumber) => {
+        setDeletePartNumber(partNumber);
+        setShowDeleteModal(true);
+    };
+
+    const performDeleteProduct = async (partNumber) => {
+        try {
+            const response = await fetch(`https://localhost/api/products/${partNumber}`, {
+                method: 'DELETE',
+            });
+    
+            if (!response.ok) {
+                throw new Error('Failed to delete the product');
+            }
+    
+            toast.success('Product deleted successfully.', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+            await fetchProductsWithInventory(); // Refresh the product list
+        } catch (error) {
+            console.error('Error deleting product:', error);
+            toast.error('Error deleting product.', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+        }
+    };
+
+    // Example function to open the edit modal and set the state with the product's current information
+    const openEditProductModal = (product) => {
+        // Assuming 'product' is an object with all the details you need
+        setEditProductItem({
+            originalPartNumber: product.part_number, // Store the original part number to identify the product
+            partNumber: product.part_number,
+            radiusSize: product.radius_size || '', // Use empty string as fallback if the field is undefined
+            materialType: product.material_type || '',
+            color: product.color || '',
+            description: product.description || '',
+            type: product.type || '',
+            quantityOfItem: product.quantity_of_item ? product.quantity_of_item.toString() : '', // Convert to string for input value
+            unit: product.unit || '',
+            price: product.price ? product.price.toString() : '', // Convert to string for input value
+            markUpPrice: product.mark_up_price ? product.mark_up_price.toString() : '', // Convert to string for input value
+        });
+        setShowEditProductModal(true); // Show the edit modal
+    };
+
+
+    const handleUpdateProduct = async (e) => {
+        e.preventDefault();
+    
+        // Ensure you have a way to keep the original part number unchanged
+        // It might be a good idea to store the original part number in the editProductItem state when opening the modal
+        const { originalPartNumber, partNumber, radiusSize, materialType, color, description, type, quantityOfItem, unit, price, markUpPrice } = editProductItem;
+    
+        // Prepare the data object based on the backend's expected format
+        const updateData = {
+            newPartNumber: partNumber, // Assuming the user can edit the part number. If not, adjust accordingly.
+            radiusSize,
+            materialType,
+            color,
+            description,
+            type,
+            quantityOfItem: parseInt(quantityOfItem, 10), // Make sure to convert to the expected data type
+            unit,
+            price: parseFloat(price), // Assuming price is to be sent as a float. Adjust the conversion based on your backend needs.
+            markUpPrice: parseFloat(markUpPrice), // Same as above
+        };
+    
+        try {
+            console.log(originalPartNumber);
+            console.log(updateData.newPartNumber);
+            const response = await fetch(`https://localhost/api/products/${originalPartNumber}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updateData),
+            });
+    
+            if (!response.ok) {
+                throw new Error('Failed to update the product');
+            }
+    
+            const result = await response.json();
+            console.log('Product updated successfully', result);
+            toast.success('Product updated successfully.', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+            setShowEditProductModal(false); // Close the edit modal
+            await fetchProductsWithInventory(); // Refresh the products list to show the updated data
+        } catch (error) {
+            console.error('Error updating product:', error);
+            toast.error('Error updating product.', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+        }
+    }; 
     
     return (
         <div className="inventory">
@@ -498,23 +614,6 @@ const Inventory = ({ setAuth }) => {
                     />
                     {Object.keys(filterOptions).map(category => renderCategoryCheckboxes(category))}
                 </div>
-                {showUploadModal && (
-                    <div className="modal-backdrop" onClick={() => setShowUploadModal(false)}>
-                        <div className="modal-content" onClick={e => e.stopPropagation()}>
-                            <div className="modal-header">
-                                <h2>Upload Products File</h2>
-                                <button onClick={() => setShowUploadModal(false)} className="modal-close-button">X</button>
-                            </div>
-                            <div className="modal-body">
-                                <input type="file" onChange={e => setUploadedFile(e.target.files[0])} />
-                            </div>
-                            <div className="modal-actions">
-                                <button onClick={handleFileUpload}>Upload File</button>
-                                <button onClick={() => setShowUploadModal(false)}>Cancel</button>
-                            </div>
-                        </div>
-                    </div>
-                )}
                 {showModal && (
                     <div className="modal-backdrop" onClick={() => setShowModal(false)}>
                         <div className="modal-content" onClick={e => e.stopPropagation()}>
@@ -576,6 +675,54 @@ const Inventory = ({ setAuth }) => {
                                     <div className="modal-actions">
                                         <button type="submit" className="edit-quantity-modal-update-btn">Update</button>
                                         <button type="button" onClick={() => setShowEditQuantityModal(false)} className="edit-quantity-modal-cancel-btn">Cancel</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                {showDeleteModal && (
+                    <div className="modal-backdrop">
+                        <div className="modal-content" onClick={e => e.stopPropagation()}>
+                            <div className="modal-header">
+                                <h2>Confirm Deletion</h2>
+                                <button onClick={() => setShowDeleteModal(false)} className="modal-close-button">X</button>
+                            </div>
+                            <div className="modal-body">
+                                Are you sure you want to delete the product with part number: {deletePartNumber}?
+                            </div>
+                            <div className="modal-actions">
+                                <button onClick={() => {
+                                    performDeleteProduct(deletePartNumber);
+                                    setShowDeleteModal(false);
+                                }} className="delete-confirm">Delete</button>
+                                <button onClick={() => setShowDeleteModal(false)} className="delete-cancel">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                {showEditProductModal && (
+                    <div className="modal-backdrop" onClick={() => setShowEditProductModal(false)}>
+                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                            <div className="modal-header">
+                                <h2>Edit Product</h2>
+                                <button onClick={() => setShowEditProductModal(false)} className="modal-close-button">X</button>
+                            </div>
+                            <div className="modal-body">
+                                <form onSubmit={handleUpdateProduct}>
+                                    <input type="text" placeholder="Part Number" value={editProductItem.partNumber} onChange={(e) => setEditProductItem({ ...editProductItem, partNumber: e.target.value })} />
+                                    <input type="text" placeholder="Radius Size" value={editProductItem.radiusSize} onChange={(e) => setEditProductItem({ ...editProductItem, radiusSize: e.target.value })} />
+                                    <input type="text" placeholder="Material Type" value={editProductItem.materialType} onChange={(e) => setEditProductItem({ ...editProductItem, materialType: e.target.value })} />
+                                    <input type="text" placeholder="Color" value={editProductItem.color} onChange={(e) => setEditProductItem({ ...editProductItem, color: e.target.value })} />
+                                    <textarea placeholder="Description" value={editProductItem.description} onChange={(e) => setEditProductItem({ ...editProductItem, description: e.target.value })}></textarea>
+                                    <input type="text" placeholder="Type" value={editProductItem.type} onChange={(e) => setEditProductItem({ ...editProductItem, type: e.target.value })} />
+                                    <input type="text" placeholder="Quantity of Item" value={editProductItem.quantityOfItem} onChange={(e) => setEditProductItem({ ...editProductItem, quantityOfItem: e.target.value })} />
+                                    <input type="text" placeholder="Unit" value={editProductItem.unit} onChange={(e) => setEditProductItem({ ...editProductItem, unit: e.target.value })} />
+                                    <input type="text" placeholder="Price" value={editProductItem.price} onChange={(e) => setEditProductItem({ ...editProductItem, price: e.target.value })} />
+                                    <input type="text" placeholder="Mark Up Price" value={editProductItem.markUpPrice} onChange={(e) => setEditProductItem({ ...editProductItem, markUpPrice: e.target.value })} />
+                                    <div className="modal-actions">
+                                        <button type="submit">Save Changes</button>
+                                        <button type="button" onClick={() => setShowEditProductModal(false)}>Cancel</button>
                                     </div>
                                 </form>
                             </div>
