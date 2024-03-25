@@ -1,21 +1,50 @@
 /* Styles for the topbar container */
 .topbar-container {
-    display: flex;
-    justify-content: space-between; /* Ensure elements are spaced evenly */
-    align-items: center;
-    width: calc(100% - 30px); /* Adjust width to account for padding */
-    height: 70px; /* Set a fixed height for the topbar */
-    border: 4px solid #b3b3b3; /* Blue border for visibility */
-    background-color: #f7f6f6; /* Light gray background */
-    z-index: 1000;
-    padding: 10px; /* Padding around content */
     position: fixed;
-    left: 20px; /* Space from the left edge */
-    right: 20px; /* Space from the left edge */
-    border-radius: 10px; /* Rounded corners for aesthetics */
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    padding: 0 15px;
+    border: 4px solid #b3b3b3;
+    background-color: #f7f6f6;
+    z-index: 1000;
+    margin: 0 10px;
+    border-radius: 10px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
+
+.loading-overlay {
+    opacity: 1;
+    visibility: visible;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+}
+
+.loading-overlay.hide {
+    opacity: 0;
+    visibility: hidden;
+}
+
+
 .bottom-bar-logo-container {
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
     display: flex;
     align-items: center;
 }
@@ -25,12 +54,22 @@
     height: 40px; /* Adjust logo height */
 }
 
+.bottom-bar-logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.bottom-bar-logo {
+    width: auto;
+    height: 40px; 
+}
+
 .button-list {
     display: flex;
     align-items: center;
-    justify-content: center; /* Center the icons horizontally */
-    flex-grow: 1; /* Allow the button list to grow and take up remaining space */
-    gap: 100px; /* Add 100px gap between button icons */
+    justify-content: center;
+    flex-grow: 1;
+    gap: 100px;
 }
 
 .button-list.hover {
@@ -45,28 +84,26 @@
     text-align: center;
     color: #000;
     text-decoration: none;
-    font-size: 10px; /* Small font size for button text */
+    font-size: 10px;
 }
 
-
 .list-button.active {
-    position: relative; /* Ensure relative positioning for pseudo-element */
-    color: #000000; /* Active button color */
+    position: relative;
+    color: #000000;
 }
 
 .list-button.active::before {
-    content: ""; /* Add a pseudo-element for the square box */
-    position: absolute; /* Position the square box absolutely */
-    top: 50%; /* Center vertically */
-    left: 50%; /* Center horizontally */
-    transform: translate(-50%, -50%); /* Center the square box */
-    width: 70px; /* Set the width of the square box */
-    height: 60px; /* Set the height of the square box */
-    background-color: rgba(112, 112, 112, 0.5); /* Darker background color for the square box */
-    border-radius: 4px; /* Rounded corners for the square box */
-    z-index: -1; /* Ensure the square box is behind the icon */
+    content: "";
+    position: absolute;
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%);
+    width: 70px; 
+    height: 60px; 
+    background-color: rgba(112, 112, 112, 0.5); 
+    border-radius: 4px;
+    z-index: -1;
 }
-
 
 .list-button svg {
     width: 24px;
@@ -74,14 +111,13 @@
 }
 
 .list-button:hover svg {
-    fill: #CCCCCC; /* Change the color to a lighter grey */
+    fill: #CCCCCC; 
 }
-
 
 .list-button:hover span {
     fill: #CCCCCC;
     text-decoration: none;
-    font-size: 10px; /* Small font size for button text */
+    font-size: 10px;
 }
 
 .topbar-footer {
@@ -89,72 +125,39 @@
     align-items: center;
 }
 
-.user-name-dropdown {
-    position: relative;
-}
-
-.user-name {
-    text-transform: uppercase; /* Transform text to uppercase */
-    background-color: #f7f6f6;
-    color: rgb(0, 0, 0);
-    border: none;
-    cursor: pointer;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    letter-spacing: 1px;
-    padding: 10px 20px;
-    border-radius: 8px;
-    margin-left: 20px; /* Adjust spacing */
-    transition: background-color 0.3s ease;
-}
-
-.user-name-dropdown button {
+/* User information and logout button */
+.user-info {
+    position: absolute;
+    right: 15px;
+    top: 0;
+    bottom: 0;
     display: flex;
     align-items: center;
 }
 
-.user-name-dropdown button svg {
-    margin-left: 5px;
-}
-
-.logout-dropdown {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
-    z-index: 5;
-    top: 100%;
-    right: 0;
-    border-radius: 8px;
+/* Username display with fixed width and overflow handling */
+.username {
+    max-width: 120px; /* Fixed width for the username container */
+    white-space: nowrap;
     overflow: hidden;
+    text-overflow: ellipsis; /* Show ellipsis (...) if the username is too long */
+    padding-right: 10px; /* Space before the logout button */
 }
 
-.user-name-dropdown:hover .logout-dropdown {
-    display: block;
-}
-
-.logout-dropdown button {
+/* Styles for the logout button */
+.logout-button {
     background: none;
     border: none;
     cursor: pointer;
-    padding: 10px;
-    width: 100%;
-    text-align: left;
-}
-
-.logout-dropdown button:hover {
-    background-color: #d1cece;
+    padding: 0;
+    display: flex;
+    align-items: center;
 }
 
 .logout-icon {
-    width: 24px;
-    height: 24px;
-    margin-left: 20px; /* Adjust spacing */
-    cursor: pointer;
-    transition: transform 0.3s ease;
+    font-size: 24px; /* Logout icon size */
 }
+
 
 
 @media (min-width: 769px) {
@@ -176,3 +179,4 @@
         display: none;
     }
 }
+
