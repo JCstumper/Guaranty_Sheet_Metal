@@ -147,9 +147,6 @@ const Topbar = ({ setAuth }) => {
                     </div>
                 )}
             </div>
-            <div>
-            {isTokenExpired ? <p>Token has expired. Please log in again.</p> : <p>Token is valid.</p>}
-            </div>
             <LogoutConfirmation isOpen={logoutConfirmationOpen} onConfirm={logout} onCancel={() => setLogoutConfirmationOpen(false)} />
         </aside>
     );
