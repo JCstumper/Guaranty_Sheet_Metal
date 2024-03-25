@@ -30,10 +30,10 @@ function Deliverables() {
       </div>
       <div className="deliverable">
         <h3>Sprint 2 Deliverable</h3>
-        <a href={`${process.env.PUBLIC_URL}/Sprint1PlanningDocument.pdf`} target="_blank" rel="noopener noreferrer" className="github-button">
+        <a href={`${process.env.PUBLIC_URL}/Sprint2PlanningDocument.pdf`} target="_blank" rel="noopener noreferrer" className="github-button">
           Sprint Two Planning Document
         </a>
-        <a href={`${process.env.PUBLIC_URL}/Sprint1Backlog.pdf`} target="_blank" rel="noopener noreferrer" className="github-button">
+        <a href={`${process.env.PUBLIC_URL}/Sprint2Backlog.pdf`} target="_blank" rel="noopener noreferrer" className="github-button">
           Sprint Two Backlog
         </a>
         <a href={`${process.env.PUBLIC_URL}/DailyJournalDocument.pdf`} target="_blank" rel="noopener noreferrer" className="github-button">
@@ -42,7 +42,7 @@ function Deliverables() {
         <a href={`${process.env.PUBLIC_URL}/Metals-Sprint1Slides.pptx`} target="_blank" rel="noopener noreferrer" className="github-button">
           Sprint Two PowerPoint
         </a>
-        <a href={`${process.env.PUBLIC_URL}/retro.pdf`} target="_blank" rel="noopener noreferrer" className="github-button">
+        <a href={`${process.env.PUBLIC_URL}/Sprint2Retrospective.pdf`} target="_blank" rel="noopener noreferrer" className="github-button">
           Sprint Two Retrospective
         </a>
         <a href={`${process.env.PUBLIC_URL}/Project1Backlog.pdf`} target="_blank" rel="noopener noreferrer" className="github-button">
