@@ -2,6 +2,7 @@ import React, {Fragment, useState, useEffect} from "react"; // Import React and 
 import './App.css'; // Import the main stylesheet for global styles
 // Import React Router components for navigation and routing
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { jwtDecode } from "jwt-decode";
 
 // Import all page components used in the app
 import Dashboard from './Dashboard';
@@ -18,6 +19,7 @@ function App() {
   // State to track if user is authenticated
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true); // Add isLoading state
+  const [isTokenExpired, setIsTokenExpired] = useState(false);
 
   // Function to update authentication state
   const setAuth = (boolean) => {
@@ -48,10 +50,33 @@ function App() {
     }
   }
 
+  const checkTokenExpiration = (token) => {
+    try {
+      const decodedToken = jwtDecode(token);
+      const currentTime = Date.now() / 1000; // Convert to seconds
+      if (decodedToken.exp < currentTime) {
+        setIsTokenExpired(true);
+        localStorage.removeItem("token");
+        setAuth(false); 
+        // Optionally, handle token expiration (e.g., redirect to login page)
+      } else {
+        setIsTokenExpired(false);
+        setAuth(true);
+      }
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      // Handle error (e.g., token might be malformed)
+    }
+  };
+
   // Update to immediate state update based on localStorage
-useEffect(() => {
+  useEffect(() => {
   const token = localStorage.getItem('token');
-  setIsAuthenticated(!!token); // Boolean conversion: true if token exists, false otherwise
+
+  if(token && token !== '') {
+    checkTokenExpiration(token);
+  }
+
   isAuth(); // Then verify with the backend for token validity
   setIsLoading(false); // Update isLoading after 3 seconds
 

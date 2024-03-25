@@ -5,6 +5,9 @@ import { NavLink } from 'react-router-dom';
 import { MdDashboard, MdInventory, MdShoppingCart, MdPeople, MdSettings, MdExitToApp, } from 'react-icons/md';
 import { FaHardHat, FaTruck } from 'react-icons/fa';
 import LogoutConfirmation from './LogoutConfirmation'; // Import LogoutConfirmation component
+// import jwtDecode from 'jwt-decode';
+// const jwtDecode = require('jwt-decode').default;
+import { jwtDecode } from "jwt-decode";
 
 const buttons = ['DASHBOARD', 'INVENTORY', 'PURCHASES', 'JOBS', 'SETTINGS']; // Add 'SETTINGS' button to the list
 
@@ -14,35 +17,71 @@ const Topbar = ({ setAuth }) => {
     const [userName, setUserName] = useState("");
     const [initialBgColor, setInitialBgColor] = useState('#ffffff');
     const [logoutConfirmationOpen, setLogoutConfirmationOpen] = useState(false);
+    const [isTokenExpired, setIsTokenExpired] = useState(false);
 
+    async function getName() {
+        try {
+            const response = await fetch("https://localhost/api/dashboard", {
+                method: "GET",
+                headers: { token: localStorage.token }
+            });
 
+            const responseBody = await response.json();
+
+            if (!response.ok) {
+                // const responseBody = await response.json();
+                if (responseBody.error === "jwt expired") {
+                    setAuth(false);
+                }
+            } else {
+                setAuth(true);
+            }
+
+            // const parseRes = await response.json();
+            setUserName(responseBody.username);
+
+            console.log("userName");
+            console.log({userName});
+        } catch (err) {
+            console.error(err.message);
+        }
+    }
+
+    const checkTokenExpiration = (token) => {
+        try {
+          const decodedToken = jwtDecode(token);
+          const currentTime = Date.now() / 1000; // Convert to seconds
+          if (decodedToken.exp < currentTime) {
+            setIsTokenExpired(true);
+            localStorage.removeItem("token");
+            setAuth(false); 
+            // Optionally, handle token expiration (e.g., redirect to login page)
+          } else {
+            setIsTokenExpired(false);
+            setAuth(true);
+          }
+        } catch (error) {
+          console.error('Error decoding token:', error);
+          // Handle error (e.g., token might be malformed)
+        }
+    };
 
     useEffect(() => {
-        async function getName() {
-            try {
-                const response = await fetch("https://localhost/api/dashboard", {
-                    method: "GET",
-                    headers: { token: localStorage.token }
-                });
+        const token = localStorage.token; // Adjust based on where you store the token
 
-                if (!response.ok) {
-                    const responseBody = await response.json();
-                    if (responseBody.error === "jwt expired") {
-                        setAuth(false);
-                    }
-                } else {
-                    setAuth(true);
-                }
-
-                const parseRes = await response.json();
-                setUserName(parseRes.username);
-            } catch (err) {
-                console.error(err.message);
-            }
+        // Optional: Set up an interval to continuously check for expiration
+        // This example checks every minute
+        const interval = setInterval(() => {
+        if (token) {
+            checkTokenExpiration(token);
         }
+        }, 5000);
 
         getName();
         setInitialBgColor(generateRandomColor());
+
+        // Clear the interval when the component unmounts
+        return () => clearInterval(interval);
     }, []);
 
     const logout = () => {
@@ -108,7 +147,9 @@ const Topbar = ({ setAuth }) => {
                     </div>
                 )}
             </div>
-
+            <div>
+            {isTokenExpired ? <p>Token has expired. Please log in again.</p> : <p>Token is valid.</p>}
+            </div>
             <LogoutConfirmation isOpen={logoutConfirmationOpen} onConfirm={logout} onCancel={() => setLogoutConfirmationOpen(false)} />
         </aside>
     );
