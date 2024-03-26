@@ -50,9 +50,17 @@ const Inventory = ({ setAuth }) => {
         try {
             const response = await fetch('https://localhost/api/products/with-inventory');
             const jsonData = await response.json();
-            setProducts(jsonData.products);
+            
+            if (Array.isArray(jsonData.products)) {
+                setProducts(jsonData.products);
+            } else {
+                console.error('Unexpected response format:', jsonData);
+                setProducts([]); // Set to an empty array or handle appropriately
+            }
+            
         } catch (error) {
             console.error('Error fetching products with inventory:', error);
+            setProducts([]); // Ensure products is always an array
         }
     };
     
