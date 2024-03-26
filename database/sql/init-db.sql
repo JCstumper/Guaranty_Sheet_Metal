@@ -37,6 +37,21 @@ CREATE TABLE IF NOT EXISTS jobs (
     email VARCHAR(255)
 );
 
+CREATE TABLE IF NOT EXISTS invoices (
+    invoice_id SERIAL PRIMARY KEY,
+    supplier_id INT,
+    total_cost DECIMAL(10, 2),
+    invoice_Date DATE,
+    status VARCHAR(100)
+);
+
+CREATE TABLE IF NOT EXISTS invoice_items (
+    product_id INT,
+    invoice_id INT,
+    quantity INT,
+    price_per_unit DECIMAL(10, 2),
+    FOREIGN KEY (invoice_id) REFERENCES invoices(invoice_id)
+);
 
 
 CREATE TABLE IF NOT EXISTS inventory (
