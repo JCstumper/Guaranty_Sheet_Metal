@@ -10,7 +10,7 @@ import { jwtDecode } from "jwt-decode";
 import { Bounce, toast } from 'react-toastify';
 import EditProfile from './EditProfile';
 
-const buttons = ['DASHBOARD', 'INVENTORY', 'PURCHASES', 'JOBS', 'SETTINGS'];
+const buttons = ['DASHBOARD', 'INVENTORY', 'PURCHASES', 'JOBS'];
 
 const Topbar = ({ setAuth }) => {
     const [userName, setUserName] = useState("");
@@ -81,18 +81,18 @@ const Topbar = ({ setAuth }) => {
 
     const checkTokenExpiration = (token) => {
         try {
-          const decodedToken = jwtDecode(token);
-          const currentTime = Date.now() / 1000; // Convert to seconds
-          if (decodedToken.exp < currentTime) {
-            setIsTokenExpired(true);
-            localStorage.removeItem("token");
-            setAuth(false); 
-          } else {
-            setIsTokenExpired(false);
-            setAuth(true);
-          }
+            const decodedToken = jwtDecode(token);
+            const currentTime = Date.now() / 1000; // Convert to seconds
+            if (decodedToken.exp < currentTime) {
+                setIsTokenExpired(true);
+                localStorage.removeItem("token");
+                setAuth(false); 
+            } else {
+                setIsTokenExpired(false);
+                setAuth(true);
+            }
         } catch (error) {
-          console.error('Error decoding token:', error);
+            console.error('Error decoding token:', error);
         }
     };
 
@@ -171,36 +171,35 @@ const Topbar = ({ setAuth }) => {
                     {buttons.map((button) => {
                         const path = `/${button.toLowerCase()}`;
                         const icon = getButtonIcon(button);
-
                         return (
-                            <NavLink
-                                to={path}
-                                key={button}
-                                className={({ isActive }) => isActive ? "list-button active" : "list-button"}
-                            >
+                            <NavLink to={path} key={button} className={({ isActive }) => isActive ? "list-button active" : "list-button"}>
                                 {icon}
                                 <span>{button}</span>
                             </NavLink>
                         );
                     })}
                 </div>
-                <div className="user-info" ref={dropdownRef}>
-                    <button className="username" onClick={toggleDropdown}>{userName}</button>
+                <div className="user-info" onClick={toggleDropdown} ref={dropdownRef}>
+                    <span className="username">{userName}</span>
                     {showDropdown && (
                         <div className="user-dropdown">
-                            <button onClick={() => { setShowEditProfile(true); setShowDropdown(false); }}>Edit Profile</button>
+                            <button onClick={() => setShowEditProfile(true)}>Edit Profile</button>
+                            <button onClick={() => setLogoutConfirmationOpen(true)}>
+                                Logout
+                            </button>
                         </div>
                     )}
-                    <EditProfile isOpen={showEditProfile} onSave={handleProfileUpdate} onClose={() => setShowEditProfile(false)} />
-                    <button className="logout-button" aria-label="Logout" onClick={() => setLogoutConfirmationOpen(true)}>
-                        <MdExitToApp className="logout-icon" />
-                    </button>
                 </div>
                 <LogoutConfirmation 
                     isOpen={logoutConfirmationOpen} 
-                    onConfirm={onConfirmLogout} 
+                    onConfirm={() => {
+                        localStorage.removeItem("token");
+                        setAuth(false);
+                        setShowDropdown(false); // Close the dropdown upon logging out
+                    }} 
                     onCancel={() => setLogoutConfirmationOpen(false)} 
                 />
+                <EditProfile isOpen={showEditProfile} onSave={handleProfileUpdate} onClose={() => setShowEditProfile(false)} />
             </aside>
         </>
     );
@@ -214,7 +213,6 @@ const getButtonIcon = (button) => {
         case 'INVENTORY': return <MdInventory />;
         case 'PURCHASES': return <FaTruck />;
         case 'JOBS': return <FaHardHat />;
-        case 'SETTINGS': return <MdSettings />;
         default: return null;
     }
 };

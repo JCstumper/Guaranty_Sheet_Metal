@@ -150,14 +150,15 @@ const Inventory = ({ setAuth }) => {
         setUploadedFile(e.target.files[0]);
     };
 
-    const handleFileUpload = () => {
+    const handleFileUpload = async () => {
         if (!uploadedFile) {
             console.error('No file selected!');
+            toast.error('No file selected.');
             return;
         }
     
         const reader = new FileReader();
-        reader.onload = (e) => {
+        reader.onload = async (e) => {
             const data = e.target.result;
             const workbook = XLSX.read(data, { type: 'array' });
             const sheetName = workbook.SheetNames[0];
@@ -166,35 +167,46 @@ const Inventory = ({ setAuth }) => {
             
             // Remove the header row and standardize it
             const headers = jsonData.shift().map(header => normalizeHeaderName(header, columnVariations));
-            console.log("these are the headers:");
-            console.log(headers);
             // Map standardized column names to their indices
             const columnIndices = {};
             headers.forEach((name, index) => {
                 columnIndices[name] = index;
             });
     
-            jsonData.forEach((item) => {
-                const itemData = {
-                    partNumber: sanitizeInput(item[columnIndices['partnumber']]),
-                    radiusSize: sanitizeInput(item[columnIndices['size']]),
-                    materialType: sanitizeInput(item[columnIndices['materialtype']]),
-                    color: sanitizeInput(item[columnIndices['color']]),
-                    description: sanitizeInput(item[columnIndices['description']]),
-                    type: sanitizeInput(item[columnIndices['type']]),
-                    quantityOfItem: sanitizeInput(item[columnIndices['quantity']]),
-                    unit: sanitizeInput(item[columnIndices['unit']]),
-                    price: sanitizeInput(item[columnIndices['price']]),
-                    markUpPrice: sanitizeInput(item[columnIndices['markupprice']])
-                };
+            try {
+                // Assume sendDataToBackend is an async function that sends each item to the backend
+                for (const item of jsonData) {
+                    const itemData = {
+                        partNumber: sanitizeInput(item[columnIndices['partnumber']]),
+                        radiusSize: sanitizeInput(item[columnIndices['size']]),
+                        materialType: sanitizeInput(item[columnIndices['materialtype']]),
+                        color: sanitizeInput(item[columnIndices['color']]),
+                        description: sanitizeInput(item[columnIndices['description']]),
+                        type: sanitizeInput(item[columnIndices['type']]),
+                        quantityOfItem: sanitizeInput(item[columnIndices['quantity']]),
+                        unit: sanitizeInput(item[columnIndices['unit']]),
+                        price: sanitizeInput(item[columnIndices['price']]),
+                        markUpPrice: sanitizeInput(item[columnIndices['markupprice']])
+                    };
     
-                if (itemData.partNumber) {
-                    sendDataToBackend(itemData);
+                    if (itemData.partNumber) {
+                        await sendDataToBackend(itemData);
+                    }
                 }
-            });
+    
+                // Close the upload modal on successful upload
+                setShowUploadModal(false);
+                toast.success('File uploaded successfully.');
+                fetchProductsWithInventory(); // Refresh the inventory list
+            } catch (error) {
+                // Log and show error without closing the modal
+                console.error('Error uploading file:', error);
+                toast.error('Failed to upload file.');
+            }
         };
         reader.readAsArrayBuffer(uploadedFile);
     };
+    
     
     // Mapping of variations to a standardized name
     const columnVariations = {
