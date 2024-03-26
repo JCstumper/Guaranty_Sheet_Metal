@@ -102,7 +102,7 @@ const ProtectedRoute = ({ children }) => {
               {/* Route definitions, redirecting or granting access based on the authentication state */}
               <Route path="/" element={<Navigate replace to="/login" />} />
               <Route path="/login" element={!isAuthenticated ? (<Login setAuth={setAuth} setIsLoading={setIsLoading} />) : (<Navigate to="/dashboard" />)} />
-              <Route path="/register" element={!isAuthenticated ? (<Register setAuth={setAuth}/>) : (<Navigate to="/login" />)} />
+              <Route path="/register" element={!isAuthenticated ? (<Register setAuth={setAuth} setIsLoading={setIsLoading}/>) : (<Navigate to="/login" />)} />
               <Route path="/dashboard" element={<ProtectedRoute>{isAuthenticated ? (<Dashboard setAuth={setAuth} /> ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
               <Route path="/purchases" element={<ProtectedRoute>{isAuthenticated ? (<Orders setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>}  />
               <Route path="/jobs" element={<ProtectedRoute>{isAuthenticated ? (<Customers setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />

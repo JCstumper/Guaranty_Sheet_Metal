@@ -32,9 +32,19 @@ module.exports = (req, res, next) => {
         if (![username, password].every(Boolean)) {
             return res.status(401).json("Missing Credentials");
         } 
-        // else if(!validUsername(username)) {
-        //     return res.status(401).json("Invalid Username. Username must be between 5-29 characters long.");
-        // }
+    }
+    else if (req.path === "/profile") {
+        const { newUsername, newPassword, newEmail } = req.body;
+        
+        if (newUsername && !validUsername(newUsername)) {
+            return res.status(401).json("Invalid Username. Username must be between 5-29 characters long.");
+        }
+        else if(newPassword && !validPassword(newPassword)) {
+            return res.status(401).json("Invalid Password. Password must contain at least 1 capital letter, 1 digit, 1 special character, and must be between 8-29 characters long.")
+        } 
+        else if (newEmail && !validEmail(newEmail)) {
+            return res.status(401).json("Invalid Email");
+        }
     }
     
     next();
