@@ -513,6 +513,7 @@ const Inventory = ({ setAuth }) => {
     
         // Prepare the data object based on the backend's expected format
         const updateData = {
+            originalPartNumber,
             newPartNumber: partNumber, // Assuming the user can edit the part number. If not, adjust accordingly.
             radiusSize,
             materialType,
@@ -526,8 +527,6 @@ const Inventory = ({ setAuth }) => {
         };
     
         try {
-            console.log(originalPartNumber);
-            console.log(updateData.newPartNumber);
             const response = await fetch(`https://localhost/api/products/${originalPartNumber}`, {
                 method: 'PUT',
                 headers: {
