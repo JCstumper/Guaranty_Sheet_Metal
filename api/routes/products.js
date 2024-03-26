@@ -99,8 +99,8 @@ router.delete('/:partNumber', async (req, res) => {
     }
 });
 
-// PUT route to update a product and its part number
 router.put('/:originalPartNumber', async (req, res) => {
+    const client = await pool.connect();
     try {
         const { originalPartNumber } = req.params;
         const {
@@ -117,54 +117,57 @@ router.put('/:originalPartNumber', async (req, res) => {
         } = req.body;
 
         // Begin transaction
-        await pool.query('BEGIN');
+        await client.query('BEGIN');
 
-        // Update the product with the matching original part number
-        const updateProductQuery = `
-            UPDATE products
-            SET 
-                part_number = $1,
-                radius_size = $2, 
-                material_type = $3, 
-                color = $4, 
-                description = $5, 
-                type = $6, 
-                quantity_of_item = $7, 
-                unit = $8, 
-                price = $9, 
-                mark_up_price = $10
-            WHERE part_number = $11
-            RETURNING *;
-        `;
+        if (newPartNumber === originalPartNumber) {
+            // Update existing product details
+            const updateProductQuery = `
+                UPDATE products
+                SET 
+                    radius_size = $1, 
+                    material_type = $2, 
+                    color = $3, 
+                    description = $4, 
+                    type = $5, 
+                    quantity_of_item = $6, 
+                    unit = $7, 
+                    price = $8, 
+                    mark_up_price = $9
+                WHERE part_number = $10;
+            `;
+            await client.query(updateProductQuery, [radiusSize, materialType, color, description, type, quantityOfItem, unit, price, markUpPrice, originalPartNumber]);
+        } else {
+            // Insert new product details with the new part number
+            const insertProductQuery = `
+                INSERT INTO products (part_number, radius_size, material_type, color, description, type, quantity_of_item, unit, price, mark_up_price)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                ON CONFLICT (part_number) DO NOTHING;
+            `;
+            await client.query(insertProductQuery, [newPartNumber, radiusSize, materialType, color, description, type, quantityOfItem, unit, price, markUpPrice]);
 
-        const updatedProduct = await pool.query(updateProductQuery, [newPartNumber, radiusSize, materialType, color, description, type, quantityOfItem, unit, price, markUpPrice, originalPartNumber]);
+            // Update the inventory record to match the new part number
+            const updateInventoryQuery = `
+                UPDATE inventory
+                SET part_number = $1
+                WHERE part_number = $2;
+            `;
+            await client.query(updateInventoryQuery, [newPartNumber, originalPartNumber]);
 
-        // If no rows were updated, the original product was not found
-        if (updatedProduct.rowCount === 0) {
-            await pool.query('ROLLBACK');
-            return res.status(404).json({ error: 'Product not found' });
+            // Optionally, delete the old product if no longer needed
+            // const deleteOldProductQuery = `DELETE FROM products WHERE part_number = $1;`;
+            // await client.query(deleteOldProductQuery, [originalPartNumber]);
         }
 
-        // Update the inventory record to match the new part number
-        const updateInventoryQuery = `
-            UPDATE inventory
-            SET part_number = $1
-            WHERE part_number = $2;
-        `;
-
-        await pool.query(updateInventoryQuery, [newPartNumber, originalPartNumber]);
-
         // Commit transaction
-        await pool.query('COMMIT');
+        await client.query('COMMIT');
 
-        res.json({
-            message: 'Product and inventory updated successfully',
-            product: updatedProduct.rows[0],
-        });
+        res.json({ message: 'Product and inventory updated successfully.' });
     } catch (err) {
-        await pool.query('ROLLBACK');
+        await client.query('ROLLBACK');
         console.error(err.message);
-        res.status(500).json({ error: 'Failed to update product and inventory' });
+        res.status(500).json({ error: 'Failed to update product and inventory', details: err.message });
+    } finally {
+        client.release();
     }
 });
 
