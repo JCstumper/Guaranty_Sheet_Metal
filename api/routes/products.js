@@ -20,6 +20,7 @@ router.post('/', async (req, res) => {
         // Extracting fields from req.body based on the structure provided earlier
         const {
             partNumber,      // Maps to 'part_number'
+            supplierPartNumber,
             radiusSize,      // Originally 'size', now correctly mapped to 'radius_size'
             materialType,    // Maps to 'material_type'
             color,           // New addition, maps to 'color'
@@ -34,7 +35,8 @@ router.post('/', async (req, res) => {
         // Ensure the SQL query matches your database schema
         const newProduct = await pool.query(`
         INSERT INTO products (
-            part_number, 
+            part_number,
+            supplier_part_number,
             radius_size, 
             material_type, 
             color, 
@@ -45,9 +47,9 @@ router.post('/', async (req, res) => {
             price, 
             mark_up_price
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
         RETURNING *;
-        `, [partNumber, radiusSize, materialType, color, description, type, quantityOfItem, unit, price, markUpPrice]);
+        `, [partNumber, supplierPartNumber, radiusSize, materialType, color, description, type, quantityOfItem, unit, price, markUpPrice]);
 
         await pool.query(`
             INSERT INTO inventory (part_number, quantity_in_stock)
@@ -105,6 +107,7 @@ router.put('/:originalPartNumber', async (req, res) => {
         const { originalPartNumber } = req.params;
         const {
             newPartNumber,   // New part number to update
+            supplierPartNumber,
             radiusSize,      // Maps to 'radius_size'
             materialType,    // Maps to 'material_type'
             color,           // Maps to 'color'
@@ -124,26 +127,27 @@ router.put('/:originalPartNumber', async (req, res) => {
             const updateProductQuery = `
                 UPDATE products
                 SET 
-                    radius_size = $1, 
-                    material_type = $2, 
-                    color = $3, 
-                    description = $4, 
-                    type = $5, 
-                    quantity_of_item = $6, 
-                    unit = $7, 
-                    price = $8, 
-                    mark_up_price = $9
-                WHERE part_number = $10;
+                    supplier_part_number = $1
+                    radius_size = $2, 
+                    material_type = $3, 
+                    color = $4, 
+                    description = $5, 
+                    type = $6, 
+                    quantity_of_item = $7, 
+                    unit = $8, 
+                    price = $9, 
+                    mark_up_price = $10
+                WHERE part_number = $11;
             `;
-            await client.query(updateProductQuery, [radiusSize, materialType, color, description, type, quantityOfItem, unit, price, markUpPrice, originalPartNumber]);
+            await client.query(updateProductQuery, [supplierPartNumber, radiusSize, materialType, color, description, type, quantityOfItem, unit, price, markUpPrice, originalPartNumber]);
         } else {
             // Insert new product details with the new part number
             const insertProductQuery = `
-                INSERT INTO products (part_number, radius_size, material_type, color, description, type, quantity_of_item, unit, price, mark_up_price)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                INSERT INTO products (part_number, supplier_part_number, radius_size, material_type, color, description, type, quantity_of_item, unit, price, mark_up_price)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
                 ON CONFLICT (part_number) DO NOTHING;
             `;
-            await client.query(insertProductQuery, [newPartNumber, radiusSize, materialType, color, description, type, quantityOfItem, unit, price, markUpPrice]);
+            await client.query(insertProductQuery, [newPartNumber, supplierPartNumber, radiusSize, materialType, color, description, type, quantityOfItem, unit, price, markUpPrice]);
 
             // Update the inventory record to match the new part number
             const updateInventoryQuery = `

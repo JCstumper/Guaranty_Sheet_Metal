@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS users(
 
 CREATE TABLE IF NOT EXISTS products (
     part_number VARCHAR(50) NOT NULL,
+    supplier_part_number VARCHAR(50),
     radius_size VARCHAR(255),
     material_type VARCHAR(255),
     color VARCHAR(255),

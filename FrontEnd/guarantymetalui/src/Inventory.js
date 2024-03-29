@@ -35,16 +35,18 @@ const Inventory = ({ setAuth }) => {
 
     const [newProductItem, setNewProductItem] = useState({
         partNumber: '',
-        radiusSize: '', // Corresponds to radius_size in your table
-        materialType: '',
-        color: '',
-        description: '',
-        type: '', // Corresponds to product type
-        quantityOfItem: '', // Should be converted to INT before sending
-        unit: '',
-        price: '', // Should handle conversion to MONEY type/format as needed
-        markUpPrice: '', // Should handle conversion to MONEY type/format as needed
+        supplierPartNumber: '', // Added to match your table schema
+        radiusSize: '', // Corresponds to `radius_size` in your table
+        materialType: '', // Matches `material_type` in your schema
+        color: '', // Directly corresponds to `color`
+        description: '', // Matches `description`
+        type: '', // Directly corresponds to `type`
+        quantityOfItem: 0, // Assuming a numeric value, initialized as 0; adjust as needed
+        unit: '', // Matches `unit`
+        price: 0.00, // Initialized as 0.00 for monetary values, consider the format required by your backend
+        markUpPrice: 0.00, // Similarly initialized for monetary values
     });
+    
     
     const fetchProductsWithInventory = async () => {
         try {
@@ -131,16 +133,17 @@ const Inventory = ({ setAuth }) => {
             await fetchProductsWithInventory(); // Note: This is an async call
             setNewProductItem({
                 partNumber: '',
-                radiusSize: '', // Corresponds to radius_size in your table
+                supplierPartNumber: '', // Resetting this field as well
+                radiusSize: '',
                 materialType: '',
                 color: '',
                 description: '',
-                type: '', // Corresponds to product type
-                quantityOfItem: '', // Should be converted to INT before sending
+                type: '',
+                quantityOfItem: 0, // Reset to 0, assuming default quantity as zero
                 unit: '',
-                price: '', // Should handle conversion to MONEY type/format as needed
-                markUpPrice: '', // Should handle conversion to MONEY type/format as needed
-            }); // Reset form
+                price: 0.00, // Reset to 0.00, assuming a monetary value
+                markUpPrice: 0.00, // Reset to 0.00, assuming a monetary value
+            }); // Reset form with appropriate defaults for each field            
         } catch (error) {
             console.error('Error adding inventory item:', error);
         }
@@ -150,13 +153,14 @@ const Inventory = ({ setAuth }) => {
         setUploadedFile(e.target.files[0]);
     };
 
+    // Adjusted handleFileUpload to reflect the correct schema and ensure proper data handling
     const handleFileUpload = async () => {
         if (!uploadedFile) {
             console.error('No file selected!');
             toast.error('No file selected.');
             return;
         }
-    
+
         const reader = new FileReader();
         reader.onload = async (e) => {
             const data = e.target.result;
@@ -172,55 +176,54 @@ const Inventory = ({ setAuth }) => {
             headers.forEach((name, index) => {
                 columnIndices[name] = index;
             });
-    
+
             try {
-                // Assume sendDataToBackend is an async function that sends each item to the backend
                 for (const item of jsonData) {
                     const itemData = {
                         partNumber: sanitizeInput(item[columnIndices['partnumber']]),
-                        radiusSize: sanitizeInput(item[columnIndices['size']]),
+                        supplierPartNumber: sanitizeInput(item[columnIndices['supplierpartnumber']]), // Added field
+                        radiusSize: sanitizeInput(item[columnIndices['radius_size']]),
                         materialType: sanitizeInput(item[columnIndices['materialtype']]),
                         color: sanitizeInput(item[columnIndices['color']]),
                         description: sanitizeInput(item[columnIndices['description']]),
                         type: sanitizeInput(item[columnIndices['type']]),
-                        quantityOfItem: sanitizeInput(item[columnIndices['quantity']]),
+                        quantityOfItem: parseInt(sanitizeInput(item[columnIndices['quantityofitem']]), 10), // Ensure numeric conversion
                         unit: sanitizeInput(item[columnIndices['unit']]),
-                        price: sanitizeInput(item[columnIndices['price']]),
-                        markUpPrice: sanitizeInput(item[columnIndices['markupprice']])
+                        price: parseFloat(sanitizeInput(item[columnIndices['price']])), // Ensure numeric conversion
+                        markUpPrice: parseFloat(sanitizeInput(item[columnIndices['markupprice']])) // Ensure numeric conversion
                     };
-    
+
                     if (itemData.partNumber) {
                         await sendDataToBackend(itemData);
                     }
                 }
-    
-                // Close the upload modal on successful upload
+
                 setShowUploadModal(false);
                 toast.success('File uploaded successfully.');
-                fetchProductsWithInventory(); // Refresh the inventory list
+                fetchProductsWithInventory();
             } catch (error) {
-                // Log and show error without closing the modal
                 console.error('Error uploading file:', error);
                 toast.error('Failed to upload file.');
             }
         };
         reader.readAsArrayBuffer(uploadedFile);
     };
-    
-    
-    // Mapping of variations to a standardized name
+
+    // Adjust columnVariations mapping to match the expected schema and include all relevant fields
     const columnVariations = {
-        'partnumber': ['partnumber', 'part #', 'partnum', 'pn', 'part_no', 'partno'],
-        'size': ['size', 'radius', 'radius size', 'size (radius)', 'sizeradius', 'dimension'],
-        'materialtype': ['materialtype', 'material', 'type of material', 'material_type', 'mattype', 'material kind'],
-        'color': ['color', 'colour', 'clr', 'colorcode', 'color code'],
-        'description': ['description', 'desc', 'description of item', 'item description', 'desc.', 'itemdesc'],
-        'type': ['type', 'itemtype', 'producttype', 'type of item', 'typeofitem', 'item type'],
-        'quantity': ['quantity', 'qty', 'quantity of item', 'amount', 'numberofitems', 'no of items', 'quantityofitem'],
-        'unit': ['unit', 'unitofmeasure', 'measurement unit', 'uom', 'unit of measurement', 'unitmeasure'],
-        'price': ['price', 'cost', 'item price', 'price per unit', 'unitprice', 'price/unit'],
-        'markupprice': ['markupprice', 'price with trans', 'w_trans', 'price_w_trans', 'pricetrans', 'transprice', 'price trans', 'pricewithtrans', 'markup price', 'wtrans']
+        'partnumber': ['Part Number', 'partnumber', 'part #'],
+        'supplierpartnumber': ['Supplier Part Number', 'supplierpartnumber', 'supplier part #'],
+        'radius_size': ['Radius Size', 'radius_size', 'Size', 'size'],
+        'materialtype': ['Material Type', 'materialtype', 'Material'],
+        'color': ['Color', 'color'],
+        'description': ['Description', 'description'],
+        'type': ['Type', 'type'],
+        'quantityofitem': ['Quantity of Item', 'quantityofitem', 'Quantity'],
+        'unit': ['Unit', 'unit'],
+        'price': ['Price', 'price'],
+        'markupprice': ['Markup Price', 'markupprice', 'Mark Up']
     };
+
     
     
     function normalizeHeaderName(headerName, variationsMap) {
@@ -250,6 +253,7 @@ const Inventory = ({ setAuth }) => {
 
     const sendDataToBackend = async (data) => {
         try {
+            console.log(data);
             const response = await fetch('https://localhost/api/products', {
                 method: 'POST',
                 headers: {
@@ -283,21 +287,19 @@ const Inventory = ({ setAuth }) => {
         }
     };
 
-    const normalizeText = (text) => {
-        return text ? text.toLowerCase().replace(/[^a-z0-9]/g, '') : '';
-    };
-
     const matchesFilter = (product) => {
-        const normalizedFilter = filter.toLowerCase();
+        const normalizedFilter = filter?.toLowerCase() ?? '';
         return (
-            product.part_number.toLowerCase().includes(normalizedFilter) ||
-            product.description.toLowerCase().includes(normalizedFilter)
+            product.part_number?.toLowerCase().includes(normalizedFilter) ||
+            product.supplier_part_number?.toLowerCase().includes(normalizedFilter) || // Include supplier part number in the filter check
+            product.description?.toLowerCase().includes(normalizedFilter)
         ) && Object.keys(activeFilters).every(key => {
             // Convert both to string if numeric values are involved
-            const productValue = typeof product[key] === 'number' ? product[key].toString() : product[key];
+            const productValue = typeof product[key] === 'number' ? product[key].toString() : product[key] ?? ''; // Ensure non-null string
             return activeFilters[key].length === 0 || activeFilters[key].includes(productValue);
         });
     };
+    
 
     const sortProducts = (a, b) => {
         if (sortColumn === null) return 0;
@@ -365,20 +367,31 @@ const Inventory = ({ setAuth }) => {
                         <div className="product-details-content">
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
                                 <p><strong>Part Number:</strong> {product.part_number}</p>
-                                <p><strong>Size:</strong> {product.radius_size}"</p>
-                                <p><strong>Material/Color:</strong> {product.material_type && product.color ? `${product.material_type} / ${product.color}` : product.material_type ? product.material_type : product.color ? product.color : ''}</p>
+                                <p><strong>Supplier Part Number:</strong> {product.supplier_part_number}</p> {/* Added Supplier Part Number */}
+                                <p><strong>Radius Size:</strong> {product.radius_size}"</p> {/* Adjusted for clarity */}
+                                <p><strong>Material/Color:</strong> {
+                                    product.material_type && product.color 
+                                    ? `${product.material_type} / ${product.color}` 
+                                    : product.material_type ? product.material_type 
+                                    : product.color ? product.color : 'N/A' // Improved handling of missing values
+                                }</p>
                                 <p><strong>Description:</strong> {product.description}</p>
                                 <p><strong>Product Type:</strong> {product.type}</p>
-                                <p><strong>Base Quantity of Product:</strong> {Number.isInteger(parseFloat(product.quantity_of_item)) ? parseInt(product.quantity_of_item, 10) : product.quantity_of_item}{product.unit}</p>
+                                <p><strong>Quantity of Item:</strong> {product.quantity_of_item} {product.unit}</p> {/* Simplified display */}
                                 <p><strong>Base Price:</strong> {product.price}</p>
                                 <p><strong>Mark Up Price:</strong> {product.mark_up_price}</p>
-                                {/* Add additional details as needed, ensure there are multiples of 4 for an even layout */}
                             </div>
                             <div className="product-action-buttons">
-                                <button className="product-action-button edit-button" onClick={() => openEditProductModal(product)}>
+                                <button 
+                                    className="product-action-button edit-button" 
+                                    onClick={() => openEditProductModal(product)}
+                                >
                                     Edit
                                 </button>
-                                <button className="product-action-button delete-button" onClick={() => confirmDeleteProduct(product.part_number)}>
+                                <button 
+                                    className="product-action-button delete-button" 
+                                    onClick={() => confirmDeleteProduct(product.part_number)}
+                                >
                                     Delete
                                 </button>
                             </div>
@@ -498,44 +511,55 @@ const Inventory = ({ setAuth }) => {
 
     // Example function to open the edit modal and set the state with the product's current information
     const openEditProductModal = (product) => {
-        // Assuming 'product' is an object with all the details you need
         setEditProductItem({
-            originalPartNumber: product.part_number, // Store the original part number to identify the product
+            originalPartNumber: product.part_number, // Retain the original part number for identification
             partNumber: product.part_number,
-            radiusSize: product.radius_size || '', // Use empty string as fallback if the field is undefined
+            supplierPartNumber: product.supplier_part_number || '', // Include supplier part number
+            radiusSize: product.radius_size || '', // Fallback to empty string if undefined
             materialType: product.material_type || '',
             color: product.color || '',
             description: product.description || '',
             type: product.type || '',
-            quantityOfItem: product.quantity_of_item ? product.quantity_of_item.toString() : '', // Convert to string for input value
+            quantityOfItem: product.quantity_of_item ? product.quantity_of_item.toString() : '', // Convert to string for form input
             unit: product.unit || '',
-            price: product.price ? product.price.toString() : '', // Convert to string for input value
-            markUpPrice: product.mark_up_price ? product.mark_up_price.toString() : '', // Convert to string for input value
+            price: product.price ? product.price.toString() : '', // Convert to string for form input
+            markUpPrice: product.mark_up_price ? product.mark_up_price.toString() : '', // Convert to string for form input
         });
-        setShowEditProductModal(true); // Show the edit modal
+        setShowEditProductModal(true); // Display the modal for editing product details
     };
-
 
     const handleUpdateProduct = async (e) => {
         e.preventDefault();
     
-        // Ensure you have a way to keep the original part number unchanged
-        // It might be a good idea to store the original part number in the editProductItem state when opening the modal
-        const { originalPartNumber, partNumber, radiusSize, materialType, color, description, type, quantityOfItem, unit, price, markUpPrice } = editProductItem;
-    
-        // Prepare the data object based on the backend's expected format
-        const updateData = {
+        const {
             originalPartNumber,
-            newPartNumber: partNumber, // Assuming the user can edit the part number. If not, adjust accordingly.
+            partNumber,
+            supplierPartNumber, // Include supplierPartNumber in the destructuring
             radiusSize,
             materialType,
             color,
             description,
             type,
-            quantityOfItem: parseInt(quantityOfItem, 10), // Make sure to convert to the expected data type
+            quantityOfItem,
             unit,
-            price: parseFloat(price), // Assuming price is to be sent as a float. Adjust the conversion based on your backend needs.
-            markUpPrice: parseFloat(markUpPrice), // Same as above
+            price,
+            markUpPrice
+        } = editProductItem;
+    
+        // Prepare the data object for updating, including all relevant product details
+        const updateData = {
+            originalPartNumber,
+            partNumber, // If the part number is editable, otherwise omit this line
+            supplierPartNumber, // Added to update data
+            radiusSize,
+            materialType,
+            color,
+            description,
+            type,
+            quantityOfItem: parseInt(quantityOfItem, 10), // Convert quantity to integer
+            unit,
+            price: parseFloat(price), // Ensure price is a float
+            markUpPrice: parseFloat(markUpPrice), // Ensure markUpPrice is a float
         };
     
         try {
@@ -578,7 +602,7 @@ const Inventory = ({ setAuth }) => {
                 theme: "light",
             });
         }
-    }; 
+    };    
     
     return (
         <div className="inventory">
@@ -648,17 +672,71 @@ const Inventory = ({ setAuth }) => {
                                 ) : (
                                     <div>
                                         {/* Manual input fields */}
-                                        <input type="text" placeholder="Part Number" value={newProductItem.partNumber} onChange={e => setNewProductItem({ ...newProductItem, partNumber: e.target.value })} />
-                                        <input type="text" placeholder="Radius Size" value={newProductItem.radiusSize} onChange={e => setNewProductItem({ ...newProductItem, radiusSize: e.target.value })} />
-                                        <input type="text" placeholder="Material Type" value={newProductItem.materialType} onChange={e => setNewProductItem({ ...newProductItem, materialType: e.target.value })} />
-                                        <input type="text" placeholder="Color" value={newProductItem.color} onChange={e => setNewProductItem({ ...newProductItem, color: e.target.value })} />
-                                        <textarea placeholder="Description" value={newProductItem.description} onChange={e => setNewProductItem({ ...newProductItem, description: e.target.value })} />
-                                        <input type="text" placeholder="Type" value={newProductItem.type} onChange={e => setNewProductItem({ ...newProductItem, type: e.target.value })} />
-                                        <input type="number" placeholder="Quantity of Item" value={newProductItem.quantityOfItem} onChange={e => setNewProductItem({ ...newProductItem, quantityOfItem: e.target.value })} />
-                                        <input type="text" placeholder="Unit" value={newProductItem.unit} onChange={e => setNewProductItem({ ...newProductItem, unit: e.target.value })} />
-                                        <input type="text" placeholder="Price" value={newProductItem.price} onChange={e => setNewProductItem({ ...newProductItem, price: e.target.value })} />
-                                        <input type="text" placeholder="Mark Up Price" value={newProductItem.markUpPrice} onChange={e => setNewProductItem({ ...newProductItem, markUpPrice: e.target.value })} />
-                                        {/* Include other input fields here */}
+                                        <input
+                                            type="text"
+                                            placeholder="Part Number"
+                                            value={newProductItem.partNumber}
+                                            onChange={e => setNewProductItem({ ...newProductItem, partNumber: e.target.value })}
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Supplier Part Number"
+                                            value={newProductItem.supplierPartNumber}
+                                            onChange={e => setNewProductItem({ ...newProductItem, supplierPartNumber: e.target.value })}
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Radius Size"
+                                            value={newProductItem.radiusSize}
+                                            onChange={e => setNewProductItem({ ...newProductItem, radiusSize: e.target.value })}
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Material Type"
+                                            value={newProductItem.materialType}
+                                            onChange={e => setNewProductItem({ ...newProductItem, materialType: e.target.value })}
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Color"
+                                            value={newProductItem.color}
+                                            onChange={e => setNewProductItem({ ...newProductItem, color: e.target.value })}
+                                        />
+                                        <textarea
+                                            placeholder="Description"
+                                            value={newProductItem.description}
+                                            onChange={e => setNewProductItem({ ...newProductItem, description: e.target.value })}
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Type"
+                                            value={newProductItem.type}
+                                            onChange={e => setNewProductItem({ ...newProductItem, type: e.target.value })}
+                                        />
+                                        <input
+                                            type="number"
+                                            placeholder="Quantity of Item"
+                                            value={newProductItem.quantityOfItem}
+                                            onChange={e => setNewProductItem({ ...newProductItem, quantityOfItem: e.target.value })}
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Unit"
+                                            value={newProductItem.unit}
+                                            onChange={e => setNewProductItem({ ...newProductItem, unit: e.target.value })}
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Price"
+                                            value={newProductItem.price}
+                                            onChange={e => setNewProductItem({ ...newProductItem, price: e.target.value })}
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Mark Up Price"
+                                            value={newProductItem.markUpPrice}
+                                            onChange={e => setNewProductItem({ ...newProductItem, markUpPrice: e.target.value })}
+                                        />
                                     </div>
                                 )}
                             </div>
@@ -729,16 +807,71 @@ const Inventory = ({ setAuth }) => {
                             </div>
                             <div className="modal-body">
                                 <form onSubmit={handleUpdateProduct}>
-                                    <input type="text" placeholder="Part Number" value={editProductItem.partNumber} onChange={(e) => setEditProductItem({ ...editProductItem, partNumber: e.target.value })} />
-                                    <input type="text" placeholder="Radius Size" value={editProductItem.radiusSize} onChange={(e) => setEditProductItem({ ...editProductItem, radiusSize: e.target.value })} />
-                                    <input type="text" placeholder="Material Type" value={editProductItem.materialType} onChange={(e) => setEditProductItem({ ...editProductItem, materialType: e.target.value })} />
-                                    <input type="text" placeholder="Color" value={editProductItem.color} onChange={(e) => setEditProductItem({ ...editProductItem, color: e.target.value })} />
-                                    <textarea placeholder="Description" value={editProductItem.description} onChange={(e) => setEditProductItem({ ...editProductItem, description: e.target.value })}></textarea>
-                                    <input type="text" placeholder="Type" value={editProductItem.type} onChange={(e) => setEditProductItem({ ...editProductItem, type: e.target.value })} />
-                                    <input type="text" placeholder="Quantity of Item" value={editProductItem.quantityOfItem} onChange={(e) => setEditProductItem({ ...editProductItem, quantityOfItem: e.target.value })} />
-                                    <input type="text" placeholder="Unit" value={editProductItem.unit} onChange={(e) => setEditProductItem({ ...editProductItem, unit: e.target.value })} />
-                                    <input type="text" placeholder="Price" value={editProductItem.price} onChange={(e) => setEditProductItem({ ...editProductItem, price: e.target.value })} />
-                                    <input type="text" placeholder="Mark Up Price" value={editProductItem.markUpPrice} onChange={(e) => setEditProductItem({ ...editProductItem, markUpPrice: e.target.value })} />
+                                    <input
+                                        type="text"
+                                        placeholder="Part Number"
+                                        value={editProductItem.partNumber}
+                                        onChange={e => setEditProductItem({ ...editProductItem, partNumber: e.target.value })}
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Supplier Part Number"
+                                        value={editProductItem.supplierPartNumber}
+                                        onChange={e => setEditProductItem({ ...editProductItem, supplierPartNumber: e.target.value })}
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Radius Size"
+                                        value={editProductItem.radiusSize}
+                                        onChange={e => setEditProductItem({ ...editProductItem, radiusSize: e.target.value })}
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Material Type"
+                                        value={editProductItem.materialType}
+                                        onChange={e => setEditProductItem({ ...editProductItem, materialType: e.target.value })}
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Color"
+                                        value={editProductItem.color}
+                                        onChange={e => setEditProductItem({ ...editProductItem, color: e.target.value })}
+                                    />
+                                    <textarea
+                                        placeholder="Description"
+                                        value={editProductItem.description}
+                                        onChange={e => setEditProductItem({ ...editProductItem, description: e.target.value })}
+                                    ></textarea>
+                                    <input
+                                        type="text"
+                                        placeholder="Type"
+                                        value={editProductItem.type}
+                                        onChange={e => setEditProductItem({ ...editProductItem, type: e.target.value })}
+                                    />
+                                    <input
+                                        type="number"
+                                        placeholder="Quantity of Item"
+                                        value={editProductItem.quantityOfItem}
+                                        onChange={e => setEditProductItem({ ...editProductItem, quantityOfItem: e.target.value })}
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Unit"
+                                        value={editProductItem.unit}
+                                        onChange={e => setEditProductItem({ ...editProductItem, unit: e.target.value })}
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Price"
+                                        value={editProductItem.price}
+                                        onChange={e => setEditProductItem({ ...editProductItem, price: e.target.value })}
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Mark Up Price"
+                                        value={editProductItem.markUpPrice}
+                                        onChange={e => setEditProductItem({ ...editProductItem, markUpPrice: e.target.value })}
+                                    />
                                     <div className="modal-actions">
                                         <button type="submit">Save Changes</button>
                                         <button type="button" onClick={() => setShowEditProductModal(false)}>Cancel</button>

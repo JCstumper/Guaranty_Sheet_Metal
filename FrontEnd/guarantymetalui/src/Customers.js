@@ -144,9 +144,9 @@ const Customers = ({ setAuth }) => {
                                                             <div className="details-button-container">
                                                                 <button onClick={() => handleAddEstimate(job.estimateId)} className="details-btn">Add Estimate</button>
                                                             </div>
-                                                            <div className="details-button-container">
+                                                            {/* <div className="details-button-container">
                                                                 <button onClick={() => handleEditEstimate(job.estimateId)} className="details-btn">Edit Estimate</button>
-                                                            </div>
+                                                            </div> */}
                                                         </div>
                                                     </div>
                                                 </td>
