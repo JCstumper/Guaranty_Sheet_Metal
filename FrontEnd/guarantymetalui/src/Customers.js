@@ -77,13 +77,13 @@ const Customers = ({ setAuth }) => {
     };
     
     
-    const handleViewInvoice = (invoiceId) => {
-        console.log('Viewing invoice', invoiceId);
+    const handleViewEstimate = (estimateId) => {
+        console.log('Viewing Estimate', estimateId);
         // Implement the view invoice logic, such as opening a modal or navigating to an invoice page
     };
 
-    const handleAddInvoice = () => {
-        console.log('Adding invoice');
+    const handleAddEstimate = () => {
+        console.log('Adding Estimate');
         // Implement the add invoice logic, such as opening a form to create a new invoice
     };
 
@@ -132,21 +132,6 @@ const Customers = ({ setAuth }) => {
                                                         </div>
 
                                                         <div className="job-details-section">
-                                                            <h4>Invoice Information</h4>
-                                                            <p><strong>Invoice Number:</strong> {job.invoiceNumber}</p>
-                                                            <p><strong>Date Issued:</strong> {job.dateIssued}</p>
-                                                            <p><strong>Due Date:</strong> {job.dueDate}</p>
-                                                            <p><strong>Total Amount:</strong> {job.totalAmount}</p>
-                                                            <p><strong>Status:</strong> {job.paymentStatus}</p>
-                                                            <div className="details-button-container">
-                                                                    <button onClick={() => handleViewInvoice(job.invoice.number)} className="details-btn">View Invoice</button>
-                                                            </div>
-                                                            <div className="details-button-container">
-                                                                <button onClick={handleAddInvoice} className="details-btn">Add Invoice</button>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="job-details-section">
                                                             <h4>Estimates</h4>
                                                             <p><strong>Estimate Number:</strong> {job.estimateNumber}</p>
                                                             <p><strong>Date Provided:</strong> {job.estimateDate}</p>
@@ -154,10 +139,13 @@ const Customers = ({ setAuth }) => {
                                                             <p><strong>Expiry Date:</strong> {job.expiryDate}</p>
                                                             <p><strong>Status:</strong> {job.estimateStatus}</p>
                                                             <div className="details-button-container">
-                                                                    <button onClick={() => handleViewInvoice(job.invoice.number)} className="details-btn">View Estimate</button>
+                                                                <button onClick={() => handleViewEstimate(job.estimateId)} className="details-btn">View Estimate</button>
                                                             </div>
                                                             <div className="details-button-container">
-                                                                <button onClick={handleAddInvoice} className="details-btn">Add Estimate</button>
+                                                                <button onClick={() => handleAddEstimate(job.estimateId)} className="details-btn">Add Estimate</button>
+                                                            </div>
+                                                            <div className="details-button-container">
+                                                                <button onClick={() => handleEditEstimate(job.estimateId)} className="details-btn">Edit Estimate</button>
                                                             </div>
                                                         </div>
                                                     </div>

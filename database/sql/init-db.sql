@@ -59,3 +59,11 @@ CREATE TABLE IF NOT EXISTS inventory (
     quantity_in_stock INTEGER NOT NULL,
     FOREIGN KEY (part_number) REFERENCES products(part_number)
 );
+
+--CREATE TABLE IF NOT EXISTS estimates (
+ --   estimate_id SERIAL PRIMARY KEY,
+ --   job_id INTEGER NOT NULL,
+ --   pdf_data BYTEA,  -- To store the PDF file; consider storing the file in the filesystem or cloud storage for better performance
+ --   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+ --   FOREIGN KEY (job_id) REFERENCES jobs(job_id)
+--);
