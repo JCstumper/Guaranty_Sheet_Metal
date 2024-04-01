@@ -40,7 +40,9 @@ test('handles successful login', async () => {
     fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: 'password123' } });
     fireEvent.click(screen.getByText('Login'));
 
-    await waitFor(() => expect(fetch).toHaveBeenCalledWith("https://localhost/api/auth/login", expect.anything()));
+    const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
+
+    await waitFor(() => expect(fetch).toHaveBeenCalledWith(`${API_BASE_URL}/auth/login`, expect.anything()));
 });
 
 test('handles unsuccessful login', async () => {

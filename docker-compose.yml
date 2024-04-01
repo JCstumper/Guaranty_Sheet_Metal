@@ -47,6 +47,7 @@ services:
     environment:
       - NODE_ENV=development
       - WDS_SOCKET_PORT=0
+      # - REACT_APP_API_URL=https://ec2-54-89-24-197.compute-1.amazonaws.com/api
     depends_on:
       - api
 

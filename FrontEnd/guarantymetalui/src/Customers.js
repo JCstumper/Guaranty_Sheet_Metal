@@ -8,6 +8,10 @@ const Customers = ({ setAuth }) => {
     const [selectedJobId, setSelectedJobId] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [filter, setFilter] = useState("");
+
+    const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
+    const verifyUrl = `${API_BASE_URL}/jobs`;
+
     useEffect(() => {
         fetchJobs();
     }, []);
@@ -23,7 +27,7 @@ const Customers = ({ setAuth }) => {
     
     const fetchJobs = async () => {
         try {
-            const response = await fetch('https://localhost/api/jobs');
+            const response = await fetch(verifyUrl);
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
@@ -54,7 +58,7 @@ const Customers = ({ setAuth }) => {
         const jobData = Object.fromEntries(formData.entries());
 
         try {
-            const response = await fetch('https://localhost/api/jobs', {
+            const response = await fetch(verifyUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

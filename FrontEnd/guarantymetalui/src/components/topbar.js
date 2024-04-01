@@ -21,6 +21,8 @@ const Topbar = ({ setAuth }) => {
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef(null);
 
+    const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
+
     function refreshPage() {
         window.location.reload();
     }
@@ -51,7 +53,7 @@ const Topbar = ({ setAuth }) => {
     async function updateProfile(newUsername, newPassword, newEmail) {
         const body = {newUsername, newPassword, newEmail};
         try {
-            const response = await fetch("https://localhost/api/edit/profile", {
+            const response = await fetch(`${API_BASE_URL}/edit/profile`, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
@@ -98,7 +100,7 @@ const Topbar = ({ setAuth }) => {
 
     async function getName() {
         try {
-            const response = await fetch("https://localhost/api/dashboard", {
+            const response = await fetch(`${API_BASE_URL}/dashboard`, {
                 method: "GET",
                 headers: { token: localStorage.token }
             });

@@ -20,6 +20,10 @@ const Inventory = ({ setAuth }) => {
     const [deletePartNumber, setDeletePartNumber] = useState(null);
     const [showEditProductModal, setShowEditProductModal] = useState(false);
     const [editProductItem, setEditProductItem] = useState(null);
+
+    const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
+    const verifyUrl = `${API_BASE_URL}/products`;
+
     const [filterOptions, setFilterOptions] = useState({
         radius_size: [],
         material_type: [],
@@ -48,7 +52,7 @@ const Inventory = ({ setAuth }) => {
     
     const fetchProductsWithInventory = async () => {
         try {
-            const response = await fetch('https://localhost/api/products/with-inventory');
+            const response = await fetch(`${verifyUrl}/with-inventory`);
             const jsonData = await response.json();
             
             if (Array.isArray(jsonData.products)) {
@@ -114,7 +118,7 @@ const Inventory = ({ setAuth }) => {
         }, {});
     
         try {
-            const response = await fetch('https://localhost/api/products', {
+            const response = await fetch(verifyUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -250,7 +254,7 @@ const Inventory = ({ setAuth }) => {
 
     const sendDataToBackend = async (data) => {
         try {
-            const response = await fetch('https://localhost/api/products', {
+            const response = await fetch(verifyUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -462,7 +466,7 @@ const Inventory = ({ setAuth }) => {
 
     const performDeleteProduct = async (partNumber) => {
         try {
-            const response = await fetch(`https://localhost/api/products/${partNumber}`, {
+            const response = await fetch(`${verifyUrl}/${partNumber}`, {
                 method: 'DELETE',
             });
     
@@ -539,7 +543,7 @@ const Inventory = ({ setAuth }) => {
         };
     
         try {
-            const response = await fetch(`https://localhost/api/products/${originalPartNumber}`, {
+            const response = await fetch(`${verifyUrl}/${originalPartNumber}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

@@ -29,8 +29,13 @@ function App() {
   // Function to verify if the user is authenticated by checking a token in local storage
   async function isAuth() {
     try {
+
+      const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
+
+      const verifyUrl = `${API_BASE_URL}/auth/verify`;
+
       // Send a GET request to verify the user's token
-      const response = await fetch("https://localhost/api/auth/verify", {
+      const response = await fetch(verifyUrl, {
         method: "GET",
         headers: {token: localStorage.token}
       });

@@ -35,7 +35,10 @@ const Login = ({ setAuth, setIsLoading }) => {
             const body = { username, password };
             setIsLoading(true);
 
-            const response = await fetch("https://localhost/api/auth/login", {
+            const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
+            const verifyUrl = `${API_BASE_URL}/auth/login`;
+
+            const response = await fetch(verifyUrl, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body)

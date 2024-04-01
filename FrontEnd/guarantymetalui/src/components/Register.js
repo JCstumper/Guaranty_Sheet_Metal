@@ -46,9 +46,12 @@ const Register = ({ setAuth }) => {
             // Preparing the body for the POST request
             const body = { username, password, email };
             setIsLoading(true);
+
+            const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
+            const verifyUrl = `${API_BASE_URL}/auth/register`;
             
             // Making a POST request to the register endpoint
-            const response = await fetch("https://localhost/api/auth/register", {
+            const response = await fetch(verifyUrl, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body)

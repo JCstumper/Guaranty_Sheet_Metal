@@ -7,6 +7,10 @@ const Orders = ({ setAuth }) => {
     const [filter, setFilter] = useState("");
     const [filteredOrders, setFilteredOrders] = useState([]);
     const [showModal, setShowModal] = useState(false);
+
+    const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
+    const verifyUrl = `${API_BASE_URL}/purchases`;
+
     const [newOrder, setNewOrder] = useState({
         supplier_id: '',
         total_cost: '',
@@ -30,7 +34,7 @@ const Orders = ({ setAuth }) => {
 
     const fetchOrders = async () => {
         try {
-            const response = await fetch('https://localhost/api/purchases'); // Adjust according to your API endpoint
+            const response = await fetch(verifyUrl); // Adjust according to your API endpoint
             const data = await response.json();
             if (response.ok) {
                 setOrders(data);
@@ -61,7 +65,7 @@ const Orders = ({ setAuth }) => {
     const handleAddOrder = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('https://localhost/api/purchases', { // Adjust according to your API endpoint
+            const response = await fetch(verifyUrl, { // Adjust according to your API endpoint
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
