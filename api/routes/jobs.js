@@ -50,8 +50,22 @@ router.get('/estimate/:job_id', async (req, res) => {
     }
 });
 
+// Route to check if an estimate exists for a job
+router.get('/check-estimate/:jobId', async (req, res) => {
+    const jobId = parseInt(req.params.jobId);
+    if (isNaN(jobId)) {
+        return res.status(400).json({ error: "Invalid job ID provided" });
+    }
 
-
+    try {
+        const result = await pool.query('SELECT 1 FROM estimates WHERE job_id = $1 LIMIT 1', [jobId]);
+        const hasEstimate = result.rows.length > 0;
+        res.json({ hasEstimate });
+    } catch (err) {
+        console.error('Error checking estimate existence:', err.message);
+        res.status(500).json({ error: 'Failed to check for existing estimate' });
+    }
+});
 
 router.post('/', async (req, res) => {
     try {

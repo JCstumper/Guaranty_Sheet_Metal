@@ -219,7 +219,7 @@
   }
   .job-details-expanded {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr 1fr;
     gap: 20px;
     padding: 15px;
 }
@@ -255,7 +255,7 @@
 .details-btn {
   display: inline-block;
   padding: 10px 15px;
-  margin: 5px 0; /* Add margin for vertical spacing */
+  margin: 5px 10px; /* Add margin for vertical spacing */
   background-color: #0b2b61;
   color: white;
   border: none;
