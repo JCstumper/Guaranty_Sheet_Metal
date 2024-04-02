@@ -4,6 +4,7 @@ const app = express();
 app.use(express.json());
 const fs = require('fs');
 const https = require('https'); 
+const multer = require('multer');
 
 const authRoute = require("./routes/jwtAuth");
 const dashRoute = require("./routes/dashboard");
@@ -37,6 +38,10 @@ app.use("/jobs", jobsRoute);
 app.use("/inventory", inventoryRoute);
 app.use("/purchases", purchasesRoute);
 app.use("/edit", editProfileRoute);
+
+// Serve static files from the uploads directory
+app.use('/uploads', express.static('uploads'));
+
 
 
 // Error handling for if an endpoint is not found

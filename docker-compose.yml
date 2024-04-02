@@ -32,6 +32,7 @@ services:
       - ./api/db.js:/usr/src/app/db.js:ro
       - ./api/server.js:/usr/src/app/server.js:ro
       - ./nginx/ssl:/usr/src/app/ssl
+      - uploads:/usr/src/app/uploads
     depends_on:
       - db
 
@@ -67,3 +68,4 @@ services:
 
 volumes:
   mydbdata:
+  uploads: # Define the uploads volume here
