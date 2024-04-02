@@ -113,8 +113,22 @@ router.post('/upload-estimate', upload.single('estimatePdf'), async (req, res) =
         res.status(500).json({ error: 'Failed to upload estimate' });
     }
 });
-  
-
-
+router.delete('/remove-estimate/:jobId', async (req, res) => {
+    try {
+        const { jobId } = req.params;
+        const deleteEstimateQuery = 'DELETE FROM estimates WHERE job_id = $1 RETURNING *;';
+        
+        const result = await pool.query(deleteEstimateQuery, [jobId]);
+        
+        if (result.rows.length > 0) {
+            res.json({ message: 'Estimate removed successfully', deletedEstimate: result.rows[0] });
+        } else {
+            res.status(404).json({ error: 'Estimate not found' });
+        }
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: 'Failed to remove estimate' });
+    }
+});
 
 module.exports = router;

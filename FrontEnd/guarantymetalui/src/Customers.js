@@ -100,13 +100,38 @@ const Customers = ({ setAuth }) => {
             console.error('Error fetching estimate:', error);
         }
     };
-    
-    
     const handleAddEstimate = (jobId) => {
-        console.log('Adding Estimate for job ID:', jobId);
-        setShowEstimateModal(true);
+        const job = jobs.find(j => j.job_id === jobId);
+        if (job && job.estimateId) {
+          alert("An estimate already exists for this job.");
+        } else {
+          console.log('Adding Estimate for job ID:', jobId);
+          setShowEstimateModal(true);
+        }
     };
-
+    const handleRemoveEstimate = async (jobId) => {
+        if (window.confirm('Are you sure you want to remove this estimate?')) {
+            console.log('Removing Estimate for job ID:', jobId);
+            try {
+                const response = await fetch(`https://localhost/api/jobs/remove-estimate/${jobId}`, {
+                    method: 'DELETE'
+                });
+                if (response.ok) {
+                    alert('Estimate removed successfully');
+                    fetchJobs(); // Re-fetch jobs to update the list and reflect the removal of the estimate
+                } else {
+                    const errorData = await response.json();
+                    console.error('Failed to remove estimate:', errorData.message);
+                    alert(`Failed to remove estimate: ${errorData.message}`);
+                }
+            } catch (error) {
+                console.error('Error removing estimate:', error);
+                alert('Error removing estimate. Please try again.');
+            }
+        }
+    };
+    
+      
     const handleFileChange = (event) => {
         setSelectedFile(event.target.files[0]);
     };
@@ -189,6 +214,7 @@ const Customers = ({ setAuth }) => {
                                                             <div className="details-button-container">
                                                                 <button onClick={() => handleViewEstimate(job.job_id)} className="details-btn">View Estimate</button>
                                                                 <button onClick={() => handleAddEstimate(job.job_id)} className="details-btn">Add Estimate</button>
+                                                                <button onClick={() => handleRemoveEstimate(job.job_id)} className="details-btn">Remove Estimate</button>
                                                             </div>
                                                         </div>
                                                     </div>
