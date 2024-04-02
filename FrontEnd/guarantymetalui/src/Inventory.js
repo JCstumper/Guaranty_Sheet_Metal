@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect} from 'react';
 import './Inventory.css';
-import * as XLSX from 'xlsx';
 import Topbar from './components/topbar';
+import AddProduct from './components/AddProduct';
 import { toast } from 'react-toastify';
 
 const Inventory = ({ setAuth }) => {
@@ -9,9 +9,6 @@ const Inventory = ({ setAuth }) => {
     const [expandedRowIndex, setExpandedRowIndex] = useState(null);
     const [filter, setFilter] = useState("");
     const [showModal, setShowModal] = useState(false);
-    const [uploadedFile, setUploadedFile] = useState(null);
-    const [isUploading, setIsUploading] = useState(false);
-    const [showUploadModal, setShowUploadModal] = useState(false);
     const [showEditQuantityModal, setShowEditQuantityModal] = useState(false);
     const [editItem, setEditItem] = useState({ partNumber: '', quantityInStock: 0 });
     const [sortColumn, setSortColumn] = useState(null); // e.g., 'part_number', 'quantity_in_stock'
@@ -20,6 +17,7 @@ const Inventory = ({ setAuth }) => {
     const [deletePartNumber, setDeletePartNumber] = useState(null);
     const [showEditProductModal, setShowEditProductModal] = useState(false);
     const [editProductItem, setEditProductItem] = useState(null);
+
     const [filterOptions, setFilterOptions] = useState({
         radius_size: [],
         material_type: [],
@@ -32,21 +30,6 @@ const Inventory = ({ setAuth }) => {
         color: [],
         type: [],
     });
-
-    const [newProductItem, setNewProductItem] = useState({
-        partNumber: '',
-        supplierPartNumber: '', // Added to match your table schema
-        radiusSize: '', // Corresponds to `radius_size` in your table
-        materialType: '', // Matches `material_type` in your schema
-        color: '', // Directly corresponds to `color`
-        description: '', // Matches `description`
-        type: '', // Directly corresponds to `type`
-        quantityOfItem: 0, // Assuming a numeric value, initialized as 0; adjust as needed
-        unit: '', // Matches `unit`
-        price: 0.00, // Initialized as 0.00 for monetary values, consider the format required by your backend
-        markUpPrice: 0.00, // Similarly initialized for monetary values
-    });
-    
     
     const fetchProductsWithInventory = async () => {
         try {
@@ -98,183 +81,10 @@ const Inventory = ({ setAuth }) => {
     
         setFilterOptions(newFilterOptions);
     }, [products]);
-    
-    
-    
 
     const handleFilterChange = (event) => {
         setFilter(event.target.value.toLowerCase());
-    };
-
-    const handleAddProducts = async () => {
-        console.log("Attempting to add inventory item..."); // Debug log
-    
-        // Sanitize each field in newProductItem before sending it
-        const sanitizedNewProductItem = Object.keys(newProductItem).reduce((acc, key) => {
-            acc[key] = typeof newProductItem[key] === 'string' ? sanitizeInput(newProductItem[key]) : newProductItem[key];
-            return acc;
-        }, {});
-    
-        try {
-            const response = await fetch('https://localhost/api/products', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                // Use the sanitized item for the request
-                body: JSON.stringify(sanitizedNewProductItem),
-            });
-    
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-    
-            setShowModal(false); // Close modal
-            await fetchProductsWithInventory(); // Note: This is an async call
-            setNewProductItem({
-                partNumber: '',
-                supplierPartNumber: '', // Resetting this field as well
-                radiusSize: '',
-                materialType: '',
-                color: '',
-                description: '',
-                type: '',
-                quantityOfItem: 0, // Reset to 0, assuming default quantity as zero
-                unit: '',
-                price: 0.00, // Reset to 0.00, assuming a monetary value
-                markUpPrice: 0.00, // Reset to 0.00, assuming a monetary value
-            }); // Reset form with appropriate defaults for each field            
-        } catch (error) {
-            console.error('Error adding inventory item:', error);
-        }
-    }    
-
-    const handleFileChange = (e) => {
-        setUploadedFile(e.target.files[0]);
-    };
-
-    // Adjusted handleFileUpload to reflect the correct schema and ensure proper data handling
-    const handleFileUpload = async () => {
-        if (!uploadedFile) {
-            console.error('No file selected!');
-            toast.error('No file selected.');
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-            const data = e.target.result;
-            const workbook = XLSX.read(data, { type: 'array' });
-            const sheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[sheetName];
-            const jsonData = XLSX.utils.sheet_to_json(worksheet, { blankrows: false, header: 1 });
-            
-            // Remove the header row and standardize it
-            const headers = jsonData.shift().map(header => normalizeHeaderName(header, columnVariations));
-            // Map standardized column names to their indices
-            const columnIndices = {};
-            headers.forEach((name, index) => {
-                columnIndices[name] = index;
-            });
-
-            try {
-                for (const item of jsonData) {
-                    const itemData = {
-                        partNumber: sanitizeInput(item[columnIndices['partnumber']]),
-                        supplierPartNumber: sanitizeInput(item[columnIndices['supplierpartnumber']]), // Added field
-                        radiusSize: sanitizeInput(item[columnIndices['radius_size']]),
-                        materialType: sanitizeInput(item[columnIndices['materialtype']]),
-                        color: sanitizeInput(item[columnIndices['color']]),
-                        description: sanitizeInput(item[columnIndices['description']]),
-                        type: sanitizeInput(item[columnIndices['type']]),
-                        quantityOfItem: parseInt(sanitizeInput(item[columnIndices['quantityofitem']]), 10), // Ensure numeric conversion
-                        unit: sanitizeInput(item[columnIndices['unit']]),
-                        price: parseFloat(sanitizeInput(item[columnIndices['price']])), // Ensure numeric conversion
-                        markUpPrice: parseFloat(sanitizeInput(item[columnIndices['markupprice']])) // Ensure numeric conversion
-                    };
-
-                    if (itemData.partNumber) {
-                        await sendDataToBackend(itemData);
-                    }
-                }
-
-                setShowUploadModal(false);
-                toast.success('File uploaded successfully.');
-                fetchProductsWithInventory();
-            } catch (error) {
-                console.error('Error uploading file:', error);
-                toast.error('Failed to upload file.');
-            }
-        };
-        reader.readAsArrayBuffer(uploadedFile);
-    };
-
-    // Adjust columnVariations mapping to match the expected schema and include all relevant fields
-    const columnVariations = {
-        'partnumber': ['Part Number', 'partnumber', 'part #'],
-        'supplierpartnumber': ['Supplier Part Number', 'supplierpartnumber', 'supplier part #'],
-        'radius_size': ['Radius Size', 'radius_size', 'Size', 'size'],
-        'materialtype': ['Material Type', 'materialtype', 'Material'],
-        'color': ['Color', 'color'],
-        'description': ['Description', 'description'],
-        'type': ['Type', 'type'],
-        'quantityofitem': ['Quantity of Item', 'quantityofitem', 'Quantity'],
-        'unit': ['Unit', 'unit'],
-        'price': ['Price', 'price'],
-        'markupprice': ['Markup Price', 'markupprice', 'Mark Up']
-    };
-
-    
-    
-    function normalizeHeaderName(headerName, variationsMap) {
-        const normalized = headerName.toLowerCase().replace(/[^a-z0-9]+/g, '');
-        // Check against known variations
-        for (const standard in variationsMap) {
-            if (variationsMap[standard].includes(normalized)) {
-                return standard;
-            }
-        }
-        // Return the name if no variation matches
-        return normalized;
-    }
-
-    // Sanitization function to remove leading/trailing spaces and convert double spaces to single
-    const sanitizeInput = (value) => {
-        // Only apply trim and replace operations on strings
-        if (typeof value === 'string') {
-            return value.trim().replace(/\s\s+/g, ' ');
-        } else {
-            // For non-string values, return the value as is
-            return value;
-        }
-    };
-    
-
-
-    const sendDataToBackend = async (data) => {
-        try {
-            console.log(data);
-            const response = await fetch('https://localhost/api/products', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
-    
-            if (!response.ok) {
-                console.log(data);
-                throw new Error('Failed to send data to the server');
-            }
-    
-            const result = await response.json();
-            console.log('Data sent successfully', result);
-            await fetchProductsWithInventory(); // Note: This is an async call
-            // You might want to refresh your frontend data here
-        } catch (error) {
-            console.error('Error sending data to server:', error);
-        }
-    };
+    };    
 
     // Toggle the expanded state of a product row
     const toggleProductExpansion = (index) => {
@@ -340,7 +150,7 @@ const Inventory = ({ setAuth }) => {
             <tr onClick={() => toggleProductExpansion(index)}>
                 <td>{product.part_number}</td>
                 <td>{product.material_type && product.color ? `${product.material_type} / ${product.color}` : product.material_type ? product.material_type : product.color ? product.color : ''}</td>
-                <td>{product.description}</td>
+                <td>{product.radius_size && product.description ? `${product.radius_size}" ${product.description}` : product.description}</td>
                 <td>
                     <div className="quantity-edit-container">
                         {product.quantity_in_stock}
@@ -430,8 +240,6 @@ const Inventory = ({ setAuth }) => {
         );
     };
 
-
-    const filteredProducts = products.filter(matchesFilter);
 
     const handleSort = (columnName) => {
         if (sortColumn === columnName) {
@@ -561,7 +369,7 @@ const Inventory = ({ setAuth }) => {
             price: parseFloat(price), // Ensure price is a float
             markUpPrice: parseFloat(markUpPrice), // Ensure markUpPrice is a float
         };
-    
+
         try {
             const response = await fetch(`https://localhost/api/products/${originalPartNumber}`, {
                 method: 'PUT',
@@ -603,6 +411,7 @@ const Inventory = ({ setAuth }) => {
             });
         }
     };    
+
     
     return (
         <div className="inventory">
@@ -658,101 +467,10 @@ const Inventory = ({ setAuth }) => {
                     {Object.keys(filterOptions).map(category => renderCategoryCheckboxes(category))}
                 </div>
                 {showModal && (
-                    <div className="modal-backdrop" onClick={() => setShowModal(false)}>
-                        <div className="modal-content" onClick={e => e.stopPropagation()}>
-                            <div className="modal-header">
-                                <h2>{isUploading ? 'Upload Excel File' : 'Add New Inventory Item'}</h2>
-                                <button onClick={() => setShowModal(false)} className="modal-close-button">X</button>
-                            </div>
-                            <div className="modal-body">
-                                {isUploading ? (
-                                    <div>
-                                        <input type="file" accept=".xlsx, .xls" onChange={handleFileChange} />
-                                    </div>
-                                ) : (
-                                    <div>
-                                        {/* Manual input fields */}
-                                        <input
-                                            type="text"
-                                            placeholder="Part Number"
-                                            value={newProductItem.partNumber}
-                                            onChange={e => setNewProductItem({ ...newProductItem, partNumber: e.target.value })}
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="Supplier Part Number"
-                                            value={newProductItem.supplierPartNumber}
-                                            onChange={e => setNewProductItem({ ...newProductItem, supplierPartNumber: e.target.value })}
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="Radius Size"
-                                            value={newProductItem.radiusSize}
-                                            onChange={e => setNewProductItem({ ...newProductItem, radiusSize: e.target.value })}
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="Material Type"
-                                            value={newProductItem.materialType}
-                                            onChange={e => setNewProductItem({ ...newProductItem, materialType: e.target.value })}
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="Color"
-                                            value={newProductItem.color}
-                                            onChange={e => setNewProductItem({ ...newProductItem, color: e.target.value })}
-                                        />
-                                        <textarea
-                                            placeholder="Description"
-                                            value={newProductItem.description}
-                                            onChange={e => setNewProductItem({ ...newProductItem, description: e.target.value })}
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="Type"
-                                            value={newProductItem.type}
-                                            onChange={e => setNewProductItem({ ...newProductItem, type: e.target.value })}
-                                        />
-                                        <input
-                                            type="number"
-                                            placeholder="Quantity of Item"
-                                            value={newProductItem.quantityOfItem}
-                                            onChange={e => setNewProductItem({ ...newProductItem, quantityOfItem: e.target.value })}
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="Unit"
-                                            value={newProductItem.unit}
-                                            onChange={e => setNewProductItem({ ...newProductItem, unit: e.target.value })}
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="Price"
-                                            value={newProductItem.price}
-                                            onChange={e => setNewProductItem({ ...newProductItem, price: e.target.value })}
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="Mark Up Price"
-                                            value={newProductItem.markUpPrice}
-                                            onChange={e => setNewProductItem({ ...newProductItem, markUpPrice: e.target.value })}
-                                        />
-                                    </div>
-                                )}
-                            </div>
-                            <div className="modal-actions">
-                                {isUploading ? (
-                                    <button onClick={handleFileUpload}>Upload File</button>
-                                ) : (
-                                    <button onClick={handleAddProducts}>Add Item</button>
-                                )}
-                                <button onClick={() => setShowModal(false)}>Cancel</button>
-                                <button onClick={() => setIsUploading(!isUploading)}>
-                                    {isUploading ? 'Switch to Manual Input' : 'Switch to Upload'}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <AddProduct
+                        fetchProductsWithInventory={fetchProductsWithInventory}
+                        setShowModal={setShowModal}
+                    />
                 )}
                 {showEditQuantityModal && (
                     <div className="modal-backdrop" onClick={() => setShowEditQuantityModal(false)}>
@@ -842,12 +560,12 @@ const Inventory = ({ setAuth }) => {
                                         value={editProductItem.description}
                                         onChange={e => setEditProductItem({ ...editProductItem, description: e.target.value })}
                                     ></textarea>
-                                    <input
-                                        type="text"
-                                        placeholder="Type"
+                                    {/* <DropdownWithInput
+                                        options={typeOptions}
                                         value={editProductItem.type}
-                                        onChange={e => setEditProductItem({ ...editProductItem, type: e.target.value })}
-                                    />
+                                        onChange={(newType) => setEditProductItem({ ...editProductItem, type: newType })}
+                                        onNewOption={(newType) => setTypeOptions([...typeOptions, newType])} // Handling new types similarly
+                                    /> */}
                                     <input
                                         type="number"
                                         placeholder="Quantity of Item"
