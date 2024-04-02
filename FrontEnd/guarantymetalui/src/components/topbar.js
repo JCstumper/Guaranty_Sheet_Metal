@@ -12,7 +12,7 @@ import EditProfile from './EditProfile';
 
 const buttons = ['DASHBOARD', 'INVENTORY', 'PURCHASES', 'JOBS'];
 
-const Topbar = ({ setAuth }) => {
+const Topbar = ({ setAuth, API_BASE_URL }) => {
     const [userName, setUserName] = useState("");
     const [logoutConfirmationOpen, setLogoutConfirmationOpen] = useState(false);
     const [isTokenExpired, setIsTokenExpired] = useState(false);
@@ -20,8 +20,6 @@ const Topbar = ({ setAuth }) => {
     const [showEditProfile, setShowEditProfile] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef(null);
-
-    const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
 
     function refreshPage() {
         window.location.reload();

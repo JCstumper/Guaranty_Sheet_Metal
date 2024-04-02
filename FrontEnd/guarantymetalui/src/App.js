@@ -21,6 +21,8 @@ function App() {
   const [isLoading, setIsLoading] = useState(true); // Add isLoading state
   const [isTokenExpired, setIsTokenExpired] = useState(false);
 
+  const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
+
   // Function to update authentication state
   const setAuth = (boolean) => {
     setIsAuthenticated(boolean);
@@ -30,12 +32,8 @@ function App() {
   async function isAuth() {
     try {
 
-      const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
-
-      const verifyUrl = `${API_BASE_URL}/auth/verify`;
-
       // Send a GET request to verify the user's token
-      const response = await fetch(verifyUrl, {
+      const response = await fetch(`${API_BASE_URL}/auth/verify`, {
         method: "GET",
         headers: {token: localStorage.token}
       });
@@ -105,12 +103,12 @@ const ProtectedRoute = ({ children }) => {
             <Routes>
               {/* Route definitions, redirecting or granting access based on the authentication state */}
               <Route path="/" element={<Navigate replace to="/login" />} />
-              <Route path="/login" element={!isAuthenticated ? (<Login setAuth={setAuth} setIsLoading={setIsLoading} />) : (<Navigate to="/dashboard" />)} />
-              <Route path="/register" element={!isAuthenticated ? (<Register setAuth={setAuth} setIsLoading={setIsLoading}/>) : (<Navigate to="/login" />)} />
-              <Route path="/dashboard" element={<ProtectedRoute>{isAuthenticated ? (<Dashboard setAuth={setAuth} /> ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
-              <Route path="/purchases" element={<ProtectedRoute>{isAuthenticated ? (<Orders setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>}  />
-              <Route path="/jobs" element={<ProtectedRoute>{isAuthenticated ? (<Customers setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
-              <Route path="/inventory" element={<ProtectedRoute>{isAuthenticated ? (<Inventory setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
+              <Route path="/login" element={!isAuthenticated ? (<Login setAuth={setAuth} setIsLoading={setIsLoading} API_BASE_URL={API_BASE_URL}/>) : (<Navigate to="/dashboard" />)} />
+              <Route path="/register" element={!isAuthenticated ? (<Register setAuth={setAuth} setIsLoading={setIsLoading} API_BASE_URL={API_BASE_URL}/>) : (<Navigate to="/login" />)} />
+              <Route path="/dashboard" element={<ProtectedRoute>{isAuthenticated ? (<Dashboard setAuth={setAuth} API_BASE_URL={API_BASE_URL}/> ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
+              <Route path="/purchases" element={<ProtectedRoute>{isAuthenticated ? (<Orders setAuth={setAuth} API_BASE_URL={API_BASE_URL}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>}  />
+              <Route path="/jobs" element={<ProtectedRoute>{isAuthenticated ? (<Customers setAuth={setAuth} API_BASE_URL={API_BASE_URL}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
+              <Route path="/inventory" element={<ProtectedRoute>{isAuthenticated ? (<Inventory setAuth={setAuth} API_BASE_URL={API_BASE_URL}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
               <Route path="/logout" element={isAuthenticated ? (<Logout setAuth={setAuth}/>) : (<Navigate to="/login" />)} />
               <Route path="/*" element={isAuthenticated ? (<NotFound setAuth={setAuth}/>) : (<Navigate to="/login" />)} />
             </Routes>

@@ -20,7 +20,7 @@ services:
     environment:
       - DB_HOST=db
       - DB_USER=admin
-      - DB_PASS=Guaranty123
+      - DB_PASSWORD=Guaranty123
       - DB_NAME=GuarantyDatabase
       - CHOKIDAR_USEPOLLING=true
     # ports:

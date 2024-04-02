@@ -6,7 +6,7 @@ import logo from '../pictures/logo.png';
 import Loading from './Loading';
 import autoRegister from './autoRegister'; // Adjust the path as necessary
 
-const Login = ({ setAuth, setIsLoading }) => {
+const Login = ({ setAuth, setIsLoading, API_BASE_URL }) => {
     const [inputs, setInputs] = useState({ username: "", password: "" });
     const autoRegistered = useRef(false);
 
@@ -35,10 +35,7 @@ const Login = ({ setAuth, setIsLoading }) => {
             const body = { username, password };
             setIsLoading(true);
 
-            const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
-            const verifyUrl = `${API_BASE_URL}/auth/login`;
-
-            const response = await fetch(verifyUrl, {
+            const response = await fetch(`${API_BASE_URL}/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body)

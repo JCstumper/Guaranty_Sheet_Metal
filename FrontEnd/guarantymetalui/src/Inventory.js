@@ -4,7 +4,7 @@ import * as XLSX from 'xlsx';
 import Topbar from './components/topbar';
 import { toast } from 'react-toastify';
 
-const Inventory = ({ setAuth }) => {
+const Inventory = ({ setAuth, API_BASE_URL }) => {
     const [products, setProducts] = useState([]);
     const [expandedRowIndex, setExpandedRowIndex] = useState(null);
     const [filter, setFilter] = useState("");
@@ -20,9 +20,6 @@ const Inventory = ({ setAuth }) => {
     const [deletePartNumber, setDeletePartNumber] = useState(null);
     const [showEditProductModal, setShowEditProductModal] = useState(false);
     const [editProductItem, setEditProductItem] = useState(null);
-
-    const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
-    const verifyUrl = `${API_BASE_URL}/products`;
 
     const [filterOptions, setFilterOptions] = useState({
         radius_size: [],
@@ -52,7 +49,7 @@ const Inventory = ({ setAuth }) => {
     
     const fetchProductsWithInventory = async () => {
         try {
-            const response = await fetch(`${verifyUrl}/with-inventory`);
+            const response = await fetch(`${API_BASE_URL}/products/with-inventory`);
             const jsonData = await response.json();
             
             if (Array.isArray(jsonData.products)) {
@@ -118,7 +115,7 @@ const Inventory = ({ setAuth }) => {
         }, {});
     
         try {
-            const response = await fetch(verifyUrl, {
+            const response = await fetch(`${API_BASE_URL}/products`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -254,7 +251,7 @@ const Inventory = ({ setAuth }) => {
 
     const sendDataToBackend = async (data) => {
         try {
-            const response = await fetch(verifyUrl, {
+            const response = await fetch(`${API_BASE_URL}/products`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -466,7 +463,7 @@ const Inventory = ({ setAuth }) => {
 
     const performDeleteProduct = async (partNumber) => {
         try {
-            const response = await fetch(`${verifyUrl}/${partNumber}`, {
+            const response = await fetch(`${API_BASE_URL}/products/${partNumber}`, {
                 method: 'DELETE',
             });
     
@@ -543,7 +540,7 @@ const Inventory = ({ setAuth }) => {
         };
     
         try {
-            const response = await fetch(`${verifyUrl}/${originalPartNumber}`, {
+            const response = await fetch(`${API_BASE_URL}/products/${originalPartNumber}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

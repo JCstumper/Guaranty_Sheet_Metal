@@ -6,7 +6,7 @@ import logo from '../pictures/logo.png'; // Import the logo for the register pag
 import Loading from './Loading';
 
 // Register component with setAuth prop for managing authentication state
-const Register = ({ setAuth }) => {
+const Register = ({ setAuth, setIsLoading, API_BASE_URL }) => {
     const navigate = useNavigate(); // Hook for programmatic navigation
     const [isLoading, setIsLoading] = useState(false);
 
@@ -46,12 +46,9 @@ const Register = ({ setAuth }) => {
             // Preparing the body for the POST request
             const body = { username, password, email };
             setIsLoading(true);
-
-            const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
-            const verifyUrl = `${API_BASE_URL}/auth/register`;
             
             // Making a POST request to the register endpoint
-            const response = await fetch(verifyUrl, {
+            const response = await fetch(`${API_BASE_URL}/auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body)

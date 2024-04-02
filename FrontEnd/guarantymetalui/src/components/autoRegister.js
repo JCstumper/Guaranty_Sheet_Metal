@@ -7,10 +7,9 @@ const registerUser = async (setIsLoading, setAuth, navigate) => {
     try {
 
         const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
-        const verifyUrl = `${API_BASE_URL}/auth/register`;
 
         const body = { username, password, email };
-        const response = await fetch(verifyUrl, {
+        const response = await fetch(`${API_BASE_URL}/auth/register`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(body)

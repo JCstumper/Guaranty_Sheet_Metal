@@ -4,10 +4,10 @@ import BarCard from './components/BarCard'; // Make sure the path to GraphCard i
 import PieCard from './components/PieCard'; // Make sure the path to GraphCard is correct
 import './Dashboard.css'; // Assuming you have specific styles for Dashboard
 
-const Dashboard = ({ setAuth }) => {
+const Dashboard = ({ setAuth, API_BASE_URL }) => {
     return (
         <div className="dashboard">
-            <Topbar setAuth={setAuth}/>
+            <Topbar setAuth={setAuth} API_BASE_URL={API_BASE_URL}/>
             <div className="card-container">
                 {/* Your existing cards */}
                 <div className="cxcard">

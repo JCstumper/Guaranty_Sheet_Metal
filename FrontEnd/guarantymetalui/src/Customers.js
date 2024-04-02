@@ -2,15 +2,12 @@ import React, { useState, useEffect } from 'react';
 import Topbar from './components/topbar';
 import './Customers.css';
 
-const Customers = ({ setAuth }) => {
+const Customers = ({ setAuth, API_BASE_URL }) => {
     const [jobs, setJobs] = useState([]);
     const [filteredJobs, setFilteredJobs] = useState([]);
     const [selectedJobId, setSelectedJobId] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [filter, setFilter] = useState("");
-
-    const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
-    const verifyUrl = `${API_BASE_URL}/jobs`;
 
     useEffect(() => {
         fetchJobs();
@@ -27,7 +24,7 @@ const Customers = ({ setAuth }) => {
     
     const fetchJobs = async () => {
         try {
-            const response = await fetch(verifyUrl);
+            const response = await fetch(`${API_BASE_URL}/jobs`);
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
@@ -58,7 +55,7 @@ const Customers = ({ setAuth }) => {
         const jobData = Object.fromEntries(formData.entries());
 
         try {
-            const response = await fetch(verifyUrl, {
+            const response = await fetch(`${API_BASE_URL}/jobs`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
