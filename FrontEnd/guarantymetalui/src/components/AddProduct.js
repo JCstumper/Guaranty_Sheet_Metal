@@ -8,7 +8,6 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
     const [uploadedFile, setUploadedFile] = useState(null);
     const [isUploading, setIsUploading] = useState(false);
     const [showUploadModal, setShowUploadModal] = useState(false);
-    const [shouldUpdateCategory, setShouldUpdateCategory] = useState(true);
     const [itemType, setItemType] = useState('box');
     const [fileName, setFileName] = useState('');
     const [newProductItem, setNewProductItem] = useState({
@@ -399,20 +398,45 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
         }
     }, [newProductItem.price]);
 
+    // useEffect hook to run a piece of code with specific dependencies
+    useEffect(() => {
+        // Define an asynchronous function to fetch category mappings from the backend
+        const fetchCategoryMappings = async () => {
+        try {
+            // Initiating a fetch request to the '/categories' endpoint.
+            // This is a relative URL, assuming the frontend and backend are served from the same domain.
+            const response = await fetch('/categories', {
+            method: 'GET', // The HTTP method used for the request
+            headers: {
+                'Accept': 'application/json', // Tells the server we want JSON data in response
+                'Content-Type': 'application/json' // Tells the server we are sending JSON data
+            },
+            credentials: 'same-origin', // Ensures cookies are only included for requests to the same domain. Adjust as needed for your auth setup.
+            });
+    
+            // Check if the response was successful (status in the range 200-299)
+            if (!response.ok) {
+            // If not successful, throw an error to jump to the catch block
+            throw new Error('Failed to fetch category mappings');
+            }
+    
+            // Parse the JSON response body and update the categoryMappings state with it
+            const data = await response.json();
+            setCategoryMappings(data); // Updates state with the fetched data. Adjust this line if your state variable is named differently.
+        } catch (error) {
+            // Log any errors to the console and show an error message to the user
+            console.error('Error fetching category mappings:', error);
+            toast.error('Failed to fetch categories. Please check your connection and try again.');
+        }
+        };
+  
+    // Call the fetchCategoryMappings function to execute the fetch operation
+    fetchCategoryMappings();
+  }, []); // An empty dependency array means this effect runs once on component mount, similar to componentDidMount in class components
+  
+
     // Mapping of keywords to categories
-    const [categoryMappings, setCategoryMappings] = useState([
-        { keywords: ['adjustable', 'fascia', 'hanger'], category: 'Adjustable Fascia Hanger', catcode: 'HA' },
-        { keywords: ['fascia', 'hanger'], category: 'Fascia Hanger', catcode: 'HF'  },
-        { keywords: ['roof', 'mount', 'hanger'], category: 'Roof Mount Hanger', catcode: 'HR'  },
-        { keywords: ['end', 'cap', 'universal'], category: 'End Cap Universal', catcode: 'ECU'  },
-        { keywords: ['end', 'cap', 'left'], category: 'End Cap Left', catcode: 'ECL'  },
-        { keywords: ['end', 'cap', 'right'], category: 'End Cap Right', catcode: 'ECR'  },
-        { keywords: ['gutter', 'connector'], category: 'Gutter Connector', catcode: 'GC'  },
-        { keywords: ['inside', 'miter'], category: 'Inside Miter', catcode: 'MIN'  },
-        { keywords: ['outside', 'miter'], category: 'Outside Miter', catcode: 'MOUT'  },
-        { keywords: ['outlet', '4"', 'downspout'], category: 'Downspout', catcode: '4OUT'  },
-        { keywords: ['gutter'], category: 'Gutter', catcode: 'G'  },
-    ]);
+    const [categoryMappings, setCategoryMappings] = useState([]);
     
     const determineCategory = (description) => {
         const descLower = description.toLowerCase();
@@ -429,21 +453,6 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
 
         return { foundCategory, isNewCategory };
     };
-
-    // Modify your useEffect to check shouldUpdateCategory before setting the type
-    useEffect(() => {
-        if (shouldUpdateCategory) {
-            const { foundCategory, isNewCategory } = determineCategory(newProductItem.description);
-            
-            if (!isNewCategory) {
-                setNewProductItem(prev => ({
-                    ...prev,
-                    type: foundCategory
-                }));
-            }
-        }
-        // Reset shouldUpdateCategory whenever the modal is closed or the type is manually edited
-    }, [newProductItem.description, shouldUpdateCategory]);
 
     useEffect(() => {
         // Find the mapping by category name
