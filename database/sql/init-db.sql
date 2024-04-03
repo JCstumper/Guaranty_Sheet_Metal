@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS jobs (
 
 CREATE TABLE IF NOT EXISTS invoices (
     invoice_id SERIAL PRIMARY KEY,
-    supplier_id INT,
+    supplier_name VARCHAR(255) NOT NULL,
     total_cost DECIMAL(10, 2),
     invoice_Date DATE,
     status VARCHAR(100)

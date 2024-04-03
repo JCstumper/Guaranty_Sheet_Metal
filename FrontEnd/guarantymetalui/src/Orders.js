@@ -8,10 +8,14 @@ const Orders = ({ setAuth }) => {
     const [filter, setFilter] = useState("");
     const [filteredOrders, setFilteredOrders] = useState([]);
     const [showModal, setShowModal] = useState(false);
-    const {API_BASE_URL} = useContext(AppContext);
+    const { API_BASE_URL } = useContext(AppContext);
 
+    // State to track the selected order ID for expansion
+    const [selectedOrderId, setSelectedOrderId] = useState(null);
+
+    // Changed state to match updated field names
     const [newOrder, setNewOrder] = useState({
-        supplier_id: '',
+        supplier_name: '',
         total_cost: '',
         invoice_date: '',
         status: ''
@@ -22,8 +26,9 @@ const Orders = ({ setAuth }) => {
     }, []);
 
     useEffect(() => {
+        // Change supplier_id to supplier_name
         const filtered = orders.filter(order =>
-            order.supplier_id.toString().includes(filter) ||
+            order.supplier_name.toLowerCase().includes(filter.toLowerCase()) ||
             order.total_cost.toString().includes(filter) ||
             (order.invoice_date && order.invoice_date.includes(filter)) ||
             order.status.toLowerCase().includes(filter.toLowerCase())
@@ -31,9 +36,15 @@ const Orders = ({ setAuth }) => {
         setFilteredOrders(filtered);
     }, [filter, orders]);
 
+    const handleSelectOrder = (invoiceId) => {
+        // Set the selectedOrderId to the clicked order's ID
+        // If the same order is clicked again, it will toggle (close)
+        setSelectedOrderId(selectedOrderId !== invoiceId ? invoiceId : null);
+    };
+
     const fetchOrders = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/purchases`); // Adjust according to your API endpoint
+            const response = await fetch(`${API_BASE_URL}/purchases`);
             const data = await response.json();
             if (response.ok) {
                 setOrders(data);
@@ -64,7 +75,7 @@ const Orders = ({ setAuth }) => {
     const handleAddOrder = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch(`${API_BASE_URL}/purchases`, { // Adjust according to your API endpoint
+            const response = await fetch(`${API_BASE_URL}/purchases`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -76,7 +87,7 @@ const Orders = ({ setAuth }) => {
             const addedOrder = await response.json();
             setOrders(currentOrders => [...currentOrders, addedOrder]);
             setShowModal(false);
-            setNewOrder({ supplier_id: '', total_cost: '', invoice_date: '', status: '' }); // Reset form fields
+            setNewOrder({ supplier_name: '', total_cost: '', invoice_date: '', status: '' });
         } catch (error) {
             console.error('Error adding order:', error);
         }
@@ -95,7 +106,7 @@ const Orders = ({ setAuth }) => {
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Supplier ID</th>
+                                    <th>Supplier Name</th> {/* No change needed */}
                                     <th>Total Cost</th>
                                     <th>Invoice Date</th>
                                     <th>Status</th>
@@ -103,12 +114,34 @@ const Orders = ({ setAuth }) => {
                             </thead>
                             <tbody>
                                 {filteredOrders.map((order, index) => (
-                                    <tr key={index}>
-                                        <td>{order.supplier_id}</td>
-                                        <td>{order.total_cost}</td>
-                                        <td>{order.invoice_date}</td>
-                                        <td>{order.status}</td>
-                                    </tr>
+                                    // Fragment to wrap multiple elements without adding extra nodes to the DOM
+                                    <React.Fragment key={index}>
+                                        {/* Clickable row to toggle the detail view */}
+                                        <tr onClick={() => handleSelectOrder(order.invoice_id)}>
+                                            <td>{order.supplier_name}</td>
+                                            <td>{order.total_cost}</td>
+                                            <td>{order.invoice_date}</td>
+                                            <td>{order.status}</td>
+                                        </tr>
+                                        {/* Conditional rendering for the expanded section */}
+                                        {selectedOrderId === order.invoice_id && (
+                                            <tr className="expanded-details">
+                                                <td colSpan="4">
+                                                    {/* Placeholder for your expanded details */}
+                                                    <div className="order-details-expanded">
+                                                        <div className="detail-section">
+                                                            <h4>Order Details</h4>
+                                                            {/* Future content goes here */}
+                                                        </div>
+                                                        <div className="detail-section">
+                                                            <h4>More Information</h4>
+                                                            {/* Future content goes here */}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </React.Fragment>
                                 ))}
                                 {filteredOrders.length === 0 && (
                                     <tr>
@@ -137,17 +170,20 @@ const Orders = ({ setAuth }) => {
                             </div>
                             <div className="modalAddOrder-body">
                                 <form onSubmit={handleAddOrder}>
-                                    <label htmlFor="supplier_id">Supplier ID:</label>
-                                    <input type="number" id="supplier_id" name="supplier_id" value={newOrder.supplier_id} onChange={handleInputChange} required />
+                                    {/* Updated to supplier_name */}
+                                    <label htmlFor="supplier_name">Supplier Name:</label>
+                                    <input type="text" id="supplier_name" name="supplier_name" placeholder="Supplier Name" value={newOrder.supplier_name} onChange={handleInputChange} required />
 
+                                    {/* Updated to format as currency */}
                                     <label htmlFor="total_cost">Total Cost:</label>
-                                    <input type="text" id="total_cost" name="total_cost" value={newOrder.total_cost} onChange={handleInputChange} required />
+                                    <input type="text" id="total_cost" name="total_cost" placeholder="Total Cost i.e. 1200.00" value={newOrder.total_cost} onChange={handleInputChange} required />
 
+                                    {/* Updated to accept only date */}
                                     <label htmlFor="invoice_date">Invoice Date:</label>
                                     <input type="date" id="invoice_date" name="invoice_date" value={newOrder.invoice_date} onChange={handleInputChange} required />
 
                                     <label htmlFor="status">Status:</label>
-                                    <input type="text" id="status" name="status" value={newOrder.status} onChange={handleInputChange} required />
+                                    <input type="text" id="status" name="status" placeholder="Paid/Unpaid/Ordered" value={newOrder.status} onChange={handleInputChange} required />
 
                                     <div className="modalAddOrder-footer">
                                         <button type="submit" className="btn btn-primary">Add Order</button>
@@ -157,7 +193,6 @@ const Orders = ({ setAuth }) => {
                             </div>
                         </div>
                     </div>
-
                 )}
             </div>
         </div>
