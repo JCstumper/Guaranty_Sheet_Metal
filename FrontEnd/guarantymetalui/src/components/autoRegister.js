@@ -5,8 +5,11 @@ const registerUser = async (setIsLoading, setAuth, navigate) => {
     const email = "admin@gmail.com"; // Replace with desired email address
 
     try {
+
+        const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
+
         const body = { username, password, email };
-        const response = await fetch("https://localhost/api/auth/register", {
+        const response = await fetch(`${API_BASE_URL}/auth/register`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(body)

@@ -1,15 +1,16 @@
-import React, { Fragment, useState, useEffect, useRef } from 'react';
+import React, { Fragment, useState, useEffect, useRef, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Bounce, toast } from 'react-toastify';
 import './Login.css';
 import logo from '../pictures/logo.png';
 import Loading from './Loading';
 import autoRegister from './autoRegister'; // Adjust the path as necessary
+import { AppContext } from '../App';
 
 const Login = ({ setAuth, setIsLoading }) => {
     const [inputs, setInputs] = useState({ username: "", password: "" });
     const autoRegistered = useRef(false);
-
+    const {API_BASE_URL} = useContext(AppContext);
     const { username, password } = inputs;
 
     const onChange = (e) => {
@@ -35,7 +36,7 @@ const Login = ({ setAuth, setIsLoading }) => {
             const body = { username, password };
             setIsLoading(true);
 
-            const response = await fetch("https://localhost/api/auth/login", {
+            const response = await fetch(`${API_BASE_URL}/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body)

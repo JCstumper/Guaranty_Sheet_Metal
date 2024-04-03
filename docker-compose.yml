@@ -1,6 +1,25 @@
 version: '3.1'
 
 services:
+  nginx:
+    image: nginx:latest
+    container_name: Nginx
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx/nginx.conf.template:/etc/nginx/nginx.conf.template:ro
+      - ./nginx/ssl:/etc/nginx/ssl
+      - ./nginx/generate-certs.sh:/etc/nginx/generate-certs.sh
+      - ./nginx/startup.sh:/etc/nginx/startup.sh
+    environment:
+      - HOST_NAME=localhost
+    depends_on:
+      - frontend
+    # entrypoint: /bin/bash -c "/etc/nginx/generate-certs.sh && nginx -g 'daemon off;'"
+    entrypoint: /bin/bash -c "/etc/nginx/startup.sh"
+
   db:
     image: postgres:latest
     container_name: Postgres
@@ -20,8 +39,9 @@ services:
     environment:
       - DB_HOST=db
       - DB_USER=admin
-      - DB_PASS=Guaranty123
+      - DB_PASSWORD=Guaranty123
       - DB_NAME=GuarantyDatabase
+      - API_URL=https://localhost
       - CHOKIDAR_USEPOLLING=true
     # ports:
     #   - "3000:3000"
@@ -32,6 +52,7 @@ services:
       - ./api/db.js:/usr/src/app/db.js:ro
       - ./api/server.js:/usr/src/app/server.js:ro
       - ./nginx/ssl:/usr/src/app/ssl
+      - uploads:/usr/src/app/uploads
     depends_on:
       - db
 
@@ -47,23 +68,10 @@ services:
     environment:
       - NODE_ENV=development
       - WDS_SOCKET_PORT=0
+      - REACT_APP_API_URL=https://localhost/api
     depends_on:
       - api
 
-  nginx:
-    image: nginx:latest
-    container_name: Nginx
-    restart: unless-stopped
-    ports:
-      - 80:80
-      - 443:443
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/ssl:/etc/nginx/ssl
-      - ./nginx/generate-certs.sh:/etc/nginx/generate-certs.sh
-    depends_on:
-      - frontend
-    entrypoint: /bin/bash -c "/etc/nginx/generate-certs.sh && nginx -g 'daemon off;'"
-
 volumes:
   mydbdata:
+  uploads: # Define the uploads volume here

@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Topbar from './components/topbar';
 import './Orders.css';
+import { AppContext } from './App';
 
 const Orders = ({ setAuth }) => {
     const [orders, setOrders] = useState([]);
     const [filter, setFilter] = useState("");
     const [filteredOrders, setFilteredOrders] = useState([]);
     const [showModal, setShowModal] = useState(false);
+    const {API_BASE_URL} = useContext(AppContext);
+
     const [newOrder, setNewOrder] = useState({
         supplier_id: '',
         total_cost: '',
@@ -30,7 +33,7 @@ const Orders = ({ setAuth }) => {
 
     const fetchOrders = async () => {
         try {
-            const response = await fetch('https://localhost/api/purchases'); // Adjust according to your API endpoint
+            const response = await fetch(`${API_BASE_URL}/purchases`); // Adjust according to your API endpoint
             const data = await response.json();
             if (response.ok) {
                 setOrders(data);
@@ -61,7 +64,7 @@ const Orders = ({ setAuth }) => {
     const handleAddOrder = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('https://localhost/api/purchases', { // Adjust according to your API endpoint
+            const response = await fetch(`${API_BASE_URL}/purchases`, { // Adjust according to your API endpoint
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
