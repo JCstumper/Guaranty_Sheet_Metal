@@ -10,6 +10,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [shouldUpdateCategory, setShouldUpdateCategory] = useState(true);
     const [itemType, setItemType] = useState('box');
+    const [fileName, setFileName] = useState('');
     const [newProductItem, setNewProductItem] = useState({
         partNumber: '',
         supplierPartNumber: '',
@@ -25,17 +26,20 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
     });
 
     const handleFileChange = (e) => {
-        setUploadedFile(e.target.files[0]);
+        const file = e.target.files[0];
+        setUploadedFile(file);
+        // Set the file name, or reset to an empty string if no file is selected
+        setFileName(file ? file.name : '');
     };
 
-    // Adjusted handleFileUpload to reflect the correct schema and ensure proper data handling
+    const requiredColumns = ['radius_size', 'materialtype', 'color', 'description', 'type', 'cat_code', 'quantityofitem', 'unit'];
+
     const handleFileUpload = async () => {
         if (!uploadedFile) {
-            console.error('No file selected!');
             toast.error('No file selected.');
             return;
         }
-
+    
         const reader = new FileReader();
         reader.onload = async (e) => {
             const data = e.target.result;
@@ -43,18 +47,31 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
             const sheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[sheetName];
             const jsonData = XLSX.utils.sheet_to_json(worksheet, { blankrows: false, header: 1 });
-            
-            // Remove the header row and standardize it
+    
+            // Standardize the headers
             const headers = jsonData.shift().map(header => normalizeHeaderName(header, columnVariations));
-            // Map standardized column names to their indices
-            const columnIndices = {};
-            headers.forEach((name, index) => {
-                columnIndices[name] = index;
+            const columnIndices = headers.reduce((acc, header, index) => {
+                acc[header] = index;
+                return acc;
+            }, {});
+    
+            // Check if all required columns are present
+            const missingRequiredColumns = requiredColumns.filter(requiredColumn => {
+                const variations = columnVariations[requiredColumn] || [];
+                return !variations.some(variation => headers.includes(variation.toLowerCase().replace(/[^a-z0-9]+/g, '')));
             });
-
+    
+            if (missingRequiredColumns.length > 0) {
+                const missingColumnsFormatted = missingRequiredColumns.map(col => columnVariations[col][0]).join(', ');
+                toast.error(`Missing required columns: ${missingColumnsFormatted}`);
+                return;
+            }
+    
+            // Process jsonData to send to backend or generate part numbers
             try {
                 for (const item of jsonData) {
-                    const itemData = {
+                    let partNumberProvided = !!item[columnIndices['partnumber']];
+                    let itemData = {
                         partNumber: sanitizeInput(item[columnIndices['partnumber']]),
                         supplierPartNumber: sanitizeInput(item[columnIndices['supplierpartnumber']]), // Added field
                         radiusSize: sanitizeInput(item[columnIndices['radius_size']]),
@@ -65,14 +82,22 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
                         quantityOfItem: parseInt(sanitizeInput(item[columnIndices['quantityofitem']]), 10), // Ensure numeric conversion
                         unit: sanitizeInput(item[columnIndices['unit']]),
                         price: parseFloat(sanitizeInput(item[columnIndices['price']])), // Ensure numeric conversion
-                        markUpPrice: parseFloat(sanitizeInput(item[columnIndices['markupprice']])) // Ensure numeric conversion
+                        markUpPrice: parseFloat(sanitizeInput(item[columnIndices['markupprice']])), // Ensure numeric conversion
+                        catCode: sanitizeInput(item[columnIndices['cat_code']])
                     };
+                    
+                    // Generate part number if not provided
+                    if (!partNumberProvided) {
+                        setNewProductItem(prev => ({ ...prev, ...itemData }));
+                        itemData.partNumber = generatePartNumber();
+                    }
 
+                    // Send the item data to backend
                     if (itemData.partNumber) {
                         await sendDataToBackend(itemData);
                     }
                 }
-
+    
                 setShowUploadModal(false);
                 toast.success('File uploaded successfully.');
                 fetchProductsWithInventory();
@@ -86,32 +111,31 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
 
     // Adjust columnVariations mapping to match the expected schema and include all relevant fields
     const columnVariations = {
-        'partnumber': ['Part Number', 'partnumber', 'part #'],
-        'supplierpartnumber': ['Supplier Part Number', 'supplierpartnumber', 'supplier part #'],
-        'radius_size': ['Radius Size', 'radius_size', 'Size', 'size'],
-        'materialtype': ['Material Type', 'materialtype', 'Material'],
-        'color': ['Color', 'color'],
-        'description': ['Description', 'description'],
-        'type': ['Type', 'type'],
-        'quantityofitem': ['Quantity of Item', 'quantityofitem', 'Quantity'],
-        'unit': ['Unit', 'unit'],
-        'price': ['Price', 'price'],
-        'markupprice': ['Markup Price', 'markupprice', 'Mark Up']
+        'partnumber': ['Part Number', 'partnumber', 'part #', 'P/N', 'Part No', 'Part Num'],
+        'supplierpartnumber': ['Supplier Part Number', 'supplierpartnumber', 'supplier part #', 'Supplier P/N', 'Supp Part No', 'Supp Part Num'],
+        'radius_size': ['Radius Size', 'radius_size', 'Size', 'size', 'Radius', 'radius'],
+        'materialtype': ['Material Type', 'materialtype', 'Material', 'material'],
+        'color': ['Color', 'color', 'Colour', 'colour'],
+        'description': ['Description', 'description', 'Desc', 'desc', 'Description of Item', 'Item Description'],
+        'type': ['Type', 'type', 'Category', 'category', 'Item Type', 'item type'],
+        'quantityofitem': ['quantity_of_item','Quantity_of_Item','Quantity of Item', 'quantityofitem', 'Quantity', 'quantity', 'Qty', 'qty', 'Amount', 'amount', 'quantity_of_items', 'Quantity_of_Items', 'Quantity of Items', 'quantityofitems'],
+        'unit': ['Unit', 'unit', 'Units', 'units', 'Measurement Unit', 'measurement unit'],
+        'price': ['Price', 'price', 'Cost', 'cost', 'Unit Price', 'unit price'],
+        'markupprice': ['Markup Price', 'markupprice', 'Mark Up', 'Mark-Up', 'mark up', 'Selling Price', 'selling price'],
+        'cat_code': ['Cat Code', 'cat_code', 'Category Code', 'category code', 'CatCode', 'Cat', 'cat',],
+        // Add any other column variations you expect here
     };
-
-    
     
     function normalizeHeaderName(headerName, variationsMap) {
         const normalized = headerName.toLowerCase().replace(/[^a-z0-9]+/g, '');
-        // Check against known variations
-        for (const standard in variationsMap) {
-            if (variationsMap[standard].includes(normalized)) {
-                return standard;
+        for (const key in variationsMap) {
+            if (variationsMap[key].map(v => v.replace(/[^a-z0-9]+/g, '').toLowerCase()).includes(normalized)) {
+                return key;
             }
         }
-        // Return the name if no variation matches
-        return normalized;
+        return normalized; // Return the normalized name if no variation matches
     }
+    
 
     // Sanitization function to remove leading/trailing spaces and convert double spaces to single
     const sanitizeInput = (value) => {
@@ -197,18 +221,123 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
 
     const [autoGeneratePartNumber, setAutoGeneratePartNumber] = useState(true);
 
-    // ...
-
-    // This function now checks if itemType is not 'box' before appending quantityOfItem
+    const colorCodes = {
+        'red': 'RD',
+        'dark red': 'DR',
+        'light red': 'LR',
+        'blue': 'BL',
+        'dark blue': 'DB',
+        'light blue': 'LB',
+        'green': 'GN',
+        'dark green': 'DG',
+        'light green': 'LG',
+        'yellow': 'YL',
+        'dark yellow': 'DY',
+        'light yellow': 'LY',
+        'orange': 'OR',
+        'dark orange': 'DO',
+        'light orange': 'LO',
+        'purple': 'PR',
+        'dark purple': 'DP',
+        'light purple': 'LP',
+        'pink': 'PK',
+        'dark pink': 'DK',
+        'light pink': 'LK',
+        'brown': 'BN',
+        'dark brown': 'DB',
+        'light brown': 'LB',
+        'grey': 'GY',
+        'dark grey': 'DG',
+        'light grey': 'LG',
+        'black': 'BK',
+        'white': 'WH',
+        'cyan': 'CY',
+        'dark cyan': 'DC',
+        'light cyan': 'LC',
+        'magenta': 'MG',
+        'dark magenta': 'DM',
+        'light magenta': 'LM',
+        'lime': 'LM',
+        'dark lime': 'DL',
+        'light lime': 'LL',
+        'navy': 'NV',
+        'dark navy': 'DN',
+        'light navy': 'LN',
+        'olive': 'OL',
+        'dark olive': 'DO',
+        'light olive': 'LO',
+        'teal': 'TL',
+        'dark teal': 'DT',
+        'light teal': 'LT',
+        'indigo': 'IN',
+        'dark indigo': 'DI',
+        'light indigo': 'LI',
+        'violet': 'VT',
+        'dark violet': 'DV',
+        'light violet': 'LV',
+        'tan': 'TN',
+        'dark tan': 'DT',
+        'light tan': 'LT',
+        'beige': 'BG',
+        'dark beige': 'DB',
+        'light beige': 'LB',
+        'coral': 'CO',
+        'dark coral': 'DC',
+        'light coral': 'LC',
+        'turquoise': 'TQ',
+        'dark turquoise': 'DT',
+        'light turquoise': 'LT',
+        'silver': 'SV',
+        'gold': 'GD',
+        'rose': 'RS',
+        'dark rose': 'DR',
+        'light rose': 'LR',
+        'amber': 'AB',
+        'cream': 'CM',
+        'sand': 'SD',
+        'dark sand': 'DS',
+        'light sand': 'LS',
+        'rust': 'RT',
+        'dark rust': 'DR',
+        'light rust': 'LR',
+        'charcoal': 'CL',
+        'sapphire': 'SF',
+        'dark sapphire': 'DS',
+        'light sapphire': 'LS',
+        'plum': 'PM',
+        'dark plum': 'DP',
+        'light plum': 'LP',
+        'mint': 'MT',
+        'dark mint': 'DM',
+        'light mint': 'LM',
+        'peach': 'PH',
+        'dark peach': 'DP',
+        'light peach': 'LP',
+        'lavender': 'LV',
+        'dark lavender': 'DL',
+        'light lavender': 'LL',
+        'ivory': 'IV',
+        'dark ivory': 'DI',
+        'light ivory': 'LI',
+        'maroon': 'MN',
+        'dark maroon': 'DM',
+        'light maroon': 'LM',
+    };    
+    
+    const getColorCode = (colorName) => {
+        const cleanedColorName = colorName.trim().toLowerCase();
+        return colorCodes[cleanedColorName] || '';
+    };
+    
     const generatePartNumber = () => {
-        const { materialType, color, radiusSize, catCode, unit, quantityOfItem } = newProductItem;
-        let partNumber = `${materialType[0] || ''}${color[0] || ''}${radiusSize}${catCode || ''}`;
-
-        // Append quantity (assuming it represents length) if item type is not 'box'
-        if (unit === 'ft') {
+        const { materialType, color, radiusSize, catCode, itemType, quantityOfItem } = newProductItem;
+        const colorCode = getColorCode(color); // Use the color code instead of the first letter
+        let partNumber = `${materialType[0] || ''}${colorCode}${radiusSize}${catCode || ''}`;
+    
+        if (itemType !== 'box') {
             partNumber += quantityOfItem;
         }
-
+    
         return partNumber.toUpperCase();
     };
 
@@ -350,7 +479,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
             ...newProductItem,
             catCode: e.target.value
         });
-    };    
+    };   
 
     return (
         <div className="modal-backdrop" onClick={e => e.stopPropagation()}>
@@ -360,14 +489,14 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
                     <button onClick={() => setShowModal(false)} className="modal-close-button">X</button>
                 </div>
                 <div className="modal-body">
-                    {isUploading ? (
-                        <div>
-                            <label htmlFor="file-upload" className="custom-file-upload">
-                                Choose File
-                            </label>
-                            <input id="file-upload" type="file" accept=".xlsx, .xls" onChange={handleFileChange} />
-                        </div>
-                    ) : (
+                {isUploading ? (
+                    <div>
+                        <label htmlFor="file-upload" className="custom-file-upload">
+                            {fileName || 'No file selected'}
+                        </label>
+                        <input id="file-upload" type="file" accept=".xlsx, .xls" onChange={handleFileChange} />
+                    </div>
+                ) : (
                         <div>
                             <div className="auto-generate-part">
                                 <input
