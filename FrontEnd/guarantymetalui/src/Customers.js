@@ -7,6 +7,8 @@ const Customers = ({ setAuth, API_BASE_URL }) => {
     const [filteredJobs, setFilteredJobs] = useState([]);
     const [selectedJobId, setSelectedJobId] = useState(null);
     const [showModal, setShowModal] = useState(false);
+    const [showEstimateModal, setShowEstimateModal] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null);
     const [filter, setFilter] = useState("");
 
     useEffect(() => {
@@ -14,14 +16,14 @@ const Customers = ({ setAuth, API_BASE_URL }) => {
     }, []);
 
     useEffect(() => {
-        setFilteredJobs(jobs.filter(job => 
+        setFilteredJobs(jobs.filter(job =>
             job.customer_name.toLowerCase().includes(filter.toLowerCase()) ||
             job.address.toLowerCase().includes(filter.toLowerCase()) ||
             job.phone.includes(filter) ||
             job.email.toLowerCase().includes(filter.toLowerCase())
         ));
     }, [filter, jobs]);
-    
+
     const fetchJobs = async () => {
         try {
             const response = await fetch(`${API_BASE_URL}/jobs`);
@@ -29,7 +31,6 @@ const Customers = ({ setAuth, API_BASE_URL }) => {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
             const data = await response.json();
-            console.log('Jobs data:', data);
             setJobs(data.jobs || data);
             setFilteredJobs(data.jobs || data);
         } catch (error) {
@@ -37,9 +38,31 @@ const Customers = ({ setAuth, API_BASE_URL }) => {
         }
     };
 
-    const handleSelectJob = (jobId) => {
-        setSelectedJobId(prevId => prevId === jobId ? null : jobId);
-    };    
+    const handleSelectJob = async (jobId) => {
+        const isSameJob = selectedJobId === jobId;
+        setSelectedJobId(isSameJob ? null : jobId);
+    
+        if (!isSameJob) {
+            try {
+                const response = await fetch(`https://localhost/api/jobs/check-estimate/${jobId}`);
+                if (response.ok) {
+                    const { hasEstimate } = await response.json();
+                    const updatedJobs = jobs.map(job => {
+                        if (job.job_id === jobId) {
+                            return { ...job, hasEstimate };
+                        }
+                        return job;
+                    });
+                    setJobs(updatedJobs);
+                } else {
+                    console.error(`Failed to check estimate for job ID: ${jobId}`);
+                }
+            } catch (error) {
+                console.error(`Error checking estimate for job ID: ${jobId}`, error);
+            }
+        }
+    };
+    
 
     const handleToggleModal = () => {
         setShowModal(!showModal);
@@ -76,21 +99,126 @@ const Customers = ({ setAuth, API_BASE_URL }) => {
             console.error('Failed to add job:', err);
         }
     };
+    const handleViewEstimate = async (jobId) => {
+        console.log('Viewing Estimate for job ID:', jobId);
+        try {
+            const checkResponse = await fetch(`https://localhost/api/jobs/check-estimate/${jobId}`);
+            const checkData = await checkResponse.json();
+            if (!checkData.hasEstimate) {
+                alert("No estimate exists for this job.");
+                return;
+            }
+            const response = await fetch(`https://localhost/api/jobs/estimate/${jobId}`);
+            if (response.ok) {
+                const estimateData = await response.json();
+                const pdfBlob = new Blob([new Uint8Array(estimateData.pdf_data.data)], { type: 'application/pdf' });
+                const pdfUrl = window.URL.createObjectURL(pdfBlob);
+                
+                // Open the PDF in a new browser tab
+                window.open(pdfUrl, '_blank', 'noopener,noreferrer');
     
+                // If you want to display the PDF in an iframe within the current page, you could set the src of the iframe to pdfUrl
+                // document.getElementById('your-iframe-id').src = pdfUrl;
+            } else {
+                console.error('Failed to fetch estimate');
+            }
+        } catch (error) {
+            console.error('Error fetching estimate:', error);
+        }
+    };
+    const handleAddEstimate = async (jobId) => {
+        try {
+            const response = await fetch(`https://localhost/api/jobs/check-estimate/${jobId}`);
+            if (!response.ok) {
+                throw new Error('Failed to check estimate existence');
+            }
+            const { hasEstimate } = await response.json();
+            if (hasEstimate) {
+                alert("An estimate already exists for this job.");
+            } else {
+                console.log('Adding Estimate for job ID:', jobId);
+                setShowEstimateModal(true);
+            }
+        } catch (error) {
+            console.error('Error checking estimate:', error);
+            alert('Error checking for existing estimate');
+        }
+    };
     
-    const handleViewEstimate = (estimateId) => {
-        console.log('Viewing Estimate', estimateId);
-        // Implement the view invoice logic, such as opening a modal or navigating to an invoice page
+    const handleRemoveEstimate = async (jobId) => {
+        try {
+            const response = await fetch(`https://localhost/api/jobs/check-estimate/${jobId}`);
+            if (!response.ok) {
+                throw new Error('Failed to check estimate existence');
+            }
+            const { hasEstimate } = await response.json();
+            if (!hasEstimate) {
+                alert("No estimate exists for this job to remove.");
+                return;
+            }
+    
+            if (window.confirm('Are you sure you want to remove this estimate?')) {
+                console.log('Removing Estimate for job ID:', jobId);
+                const removeResponse = await fetch(`https://localhost/api/jobs/remove-estimate/${jobId}`, {
+                    method: 'DELETE'
+                });
+                if (removeResponse.ok) {
+                    alert('Estimate removed successfully');
+                    fetchJobs(); // Re-fetch jobs to update the list and reflect the removal of the estimate
+                } else {
+                    const errorData = await removeResponse.json();
+                    console.error('Failed to remove estimate:', errorData.message);
+                    alert(`Failed to remove estimate: ${errorData.message}`);
+                }
+            }
+        } catch (error) {
+            console.error('Error in removing estimate:', error);
+            alert('Error checking for existing estimate or removing it. Please try again.');
+        }
+    };
+    
+      
+    const handleFileChange = (event) => {
+        setSelectedFile(event.target.files[0]);
     };
 
-    const handleAddEstimate = () => {
-        console.log('Adding Estimate');
-        // Implement the add invoice logic, such as opening a form to create a new invoice
+    const handleUploadEstimate = async (event) => {
+        event.preventDefault();
+        const formData = new FormData();
+        formData.append('estimatePdf', selectedFile);
+        formData.append('job_id', selectedJobId);
+    
+        try {
+            const response = await fetch('https://localhost/api/jobs/upload-estimate', {
+                method: 'POST',
+                body: formData,
+            });
+            if (response.ok) {
+                console.log('Estimate uploaded successfully');
+                setShowEstimateModal(false);
+    
+                // Update the job list to reflect the new estimate
+                const updatedJobs = jobs.map(job => {
+                    if (job.job_id === selectedJobId) {
+                        return { ...job, hasEstimate: true };
+                    }
+                    return job;
+                });
+                setJobs(updatedJobs);
+                // No need to call fetchJobs here as we already updated the state
+    
+            } else {
+                throw new Error('Failed to upload estimate');
+            }
+        } catch (error) {
+            console.error('Error uploading estimate:', error);
+        }
     };
+    
 
     return (
         <div className="customers">
-            <Topbar setAuth={setAuth}/>
+            <Topbar setAuth={setAuth} />
             <div className="customers-main">
                 <div className="customer-table">
                     <div className="table-header">
@@ -101,17 +229,17 @@ const Customers = ({ setAuth, API_BASE_URL }) => {
                         <table>
                             <thead>
                                 <tr>
-                                    <th>JOB ID</th>
-                                    <th>CUSTOMER NAME</th>
+                                    <th>Job ID</th>
+                                    <th>Customer Name</th>
                                     <th>Address</th>
                                     <th>Phone</th>
-                                    <th>Email</th>
+                                    <th>E-mail</th>
                                 </tr>
                             </thead>
                             <tbody>
                             {filteredJobs.length > 0 ? (
                                 filteredJobs.map((job, index) => (
-
+                                    
                                     <React.Fragment key={job.id || index}>
                                         <tr onClick={() => handleSelectJob(job.job_id)}>
                                             <td>{job.job_id}</td>
@@ -140,13 +268,15 @@ const Customers = ({ setAuth, API_BASE_URL }) => {
                                                             <p><strong>Expiry Date:</strong> {job.expiryDate}</p>
                                                             <p><strong>Status:</strong> {job.estimateStatus}</p>
                                                             <div className="details-button-container">
-                                                                <button onClick={() => handleViewEstimate(job.estimateId)} className="details-btn">View Estimate</button>
-                                                            </div>
-                                                            <div className="details-button-container">
-                                                                <button onClick={() => handleAddEstimate(job.estimateId)} className="details-btn">Add Estimate</button>
-                                                            </div>
-                                                            <div className="details-button-container">
-                                                                <button onClick={() => handleEditEstimate(job.estimateId)} className="details-btn">Edit Estimate</button>
+                                                                {job.hasEstimate && (
+                                                                    <>
+                                                                        <button onClick={() => handleViewEstimate(job.job_id)} className="details-btn">View Estimate</button>
+                                                                        <button onClick={() => handleRemoveEstimate(job.job_id)} className="details-btn">Remove Estimate</button>
+                                                                    </>
+                                                                )}
+                                                                {!job.hasEstimate && (
+                                                                    <button onClick={() => handleAddEstimate(job.job_id)} className="details-btn">Add Estimate</button>
+                                                                )}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -199,6 +329,26 @@ const Customers = ({ setAuth, API_BASE_URL }) => {
                                 <div className="modalAddJob-footer">
                                     <button type="submit" className="btn btn-primary">Add Job</button>
                                     <button type="button" onClick={handleToggleModal} className="btn btn-secondary">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {showEstimateModal && (
+                <div className="modalAddJob">
+                    <div className="modalAddJob-content">
+                        <div className="modalAddJob-header">
+                            <h2>Add Estimate</h2>
+                            <button onClick={() => setShowEstimateModal(false)} className="close-modalAddJob">X</button>
+                        </div>
+                        <div className="modalAddJob-body">
+                            <form onSubmit={handleUploadEstimate}>
+                                <label htmlFor="estimatePdf"class="custom-file-upload">Choose PDF:</label>
+                                <input type="file" id="estimatePdf" name="estimatePdf" onChange={handleFileChange} required accept="application/pdf" style={{ display: 'none' }} />
+                                <div className="modalAddJob-footer">
+                                    <button type="submit" className="btn btn-primary">Upload Estimate</button>
+                                    <button type="button" onClick={() => setShowEstimateModal(false)} className="btn btn-secondary">Cancel</button>
                                 </div>
                             </form>
                         </div>

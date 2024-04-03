@@ -42,7 +42,6 @@ body {
     pointer-events: none; /* Ensures clicks pass through */
 }
 
-
 .product-table {
     flex-grow: 1;
     background-color: #fff;
@@ -269,6 +268,42 @@ text-decoration: none;
     user-select: none; /* Prevent text selection */
 }
 
+.custom-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.custom-dropdown::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    border: 5px solid transparent;
+    border-top-color: #333; /* Arrow color */
+}
+
+.custom-select {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    display: block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    -webkit-appearance: none; /* Removes default styling for Safari and Chrome */
+    -moz-appearance: none; /* Removes default styling for Firefox */
+    appearance: none; /* Removes default styling */
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+.custom-select:focus {
+    border-color: #45aaf2;
+    outline: none;
+    box-shadow: 0 0 5px rgba(69, 170, 242, 0.5);
+}
+
 
 .filtering-box {
     position: fixed;
@@ -335,118 +370,15 @@ text-decoration: none;
     accent-color: #0b2b61; /* Use the main color theme for the checkbox */
 }
 
-.modal-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
+/* Responsive adjustments for smaller screens */
+@media (max-width: 576px) {
+    .input-group {
+        flex-direction: column;
+    }
 
-.modal-content {
-    position: relative;
-    background-color: white;
-    border: 2px solid #007bff; /* Added border with the specified blue color */
-    padding: 0;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: auto;
-    max-width: 600px;
-    z-index: 1001;
-    display: flex;
-    flex-direction: column;
-}
-
-.modal-header {
-    background-color: #0b2b61;
-    color: white;
-    border-top-right-radius: 8px;
-    border-top-left-radius: 8px;
-    padding: 10px 20px 10px 30px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.modal-header h2 {
-    margin: 0;
-    font-weight: normal;
-    font-size: 20px;
-}
-
-.modal-header .modal-close-button:hover {
-    color: #aad1e6;
-}
-
-.modal-body {
-    padding: 30px;
-    gap: 15px;
-}
-
-.modal-content input, .modal-content textarea {
-    width: 100%;
-    padding: 15px;
-    margin: 5px 0;
-    border-radius: 15px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-}
-
-.modal-content textarea {
-    resize: vertical;
-    min-height: 100px;
-}
-
-.modal-actions {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.modal-actions button {
-    cursor: pointer;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 15px;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-}
-
-.modal-actions button:first-child {
-    background-color: #007bff;
-    color: white;
-}
-
-.modal-actions button:last-child {
-    background-color: #ccc;
-    color: #333;
-}
-
-.modal-actions button:hover {
-    opacity: 0.8;
-}
-
-.modal-close-button {
-    cursor: pointer;
-    background: none;
-    border: none;
-    color: white;
-    font-size: 15px; /* Adjust size as needed */
-    position: absolute;
-    top: 10px; /* Distance from the top of the modal */
-    right: 10px; /* Distance from the right side of the modal */
-    z-index: 2; /* Ensures it's above other content */
-}
-
-.modal-close-button:hover {
-    color: #aad1e6; /* Lighter shade for hover effect */
+    .input-group > div {
+        flex-basis: 100%;
+    }
 }
 
 /* Container for Edit and Delete buttons */

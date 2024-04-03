@@ -7,6 +7,14 @@ CREATE TABLE IF NOT EXISTS users(
     password VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS category_mappings (
+    id SERIAL PRIMARY KEY,
+    category VARCHAR(255) NOT NULL UNIQUE,
+    keywords TEXT[] NOT NULL,
+    catcode VARCHAR(255) NOT NULL UNIQUE
+);
+
+
 -- CREATE TABLE IF NOT EXISTS materials (
 --     type VARCHAR(255) PRIMARY KEY
 -- );
@@ -17,6 +25,7 @@ CREATE TABLE IF NOT EXISTS users(
 
 CREATE TABLE IF NOT EXISTS products (
     part_number VARCHAR(50) NOT NULL,
+    supplier_part_number VARCHAR(50),
     radius_size VARCHAR(255),
     material_type VARCHAR(255),
     color VARCHAR(255),
@@ -60,10 +69,10 @@ CREATE TABLE IF NOT EXISTS inventory (
     FOREIGN KEY (part_number) REFERENCES products(part_number)
 );
 
---CREATE TABLE IF NOT EXISTS estimates (
- --   estimate_id SERIAL PRIMARY KEY,
- --   job_id INTEGER NOT NULL,
- --   pdf_data BYTEA,  -- To store the PDF file; consider storing the file in the filesystem or cloud storage for better performance
- --   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
- --   FOREIGN KEY (job_id) REFERENCES jobs(job_id)
---);
+CREATE TABLE IF NOT EXISTS estimates (
+    estimate_id SERIAL PRIMARY KEY,
+    job_id INTEGER NOT NULL,
+    pdf_data BYTEA,  -- To store the PDF file; consider storing the file in the filesystem or cloud storage for better performance
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (job_id) REFERENCES jobs(job_id)
+);
