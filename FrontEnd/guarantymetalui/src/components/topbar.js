@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import './topbar.css';
 import logo from "../pictures/logo.png";
 import { NavLink } from 'react-router-dom';
@@ -9,10 +9,11 @@ import LoadingScreen from './Loading'; // Verify this path is correct
 import { jwtDecode } from "jwt-decode";
 import { Bounce, toast } from 'react-toastify';
 import EditProfile from './EditProfile';
+import { AppContext } from '../App';
 
 const buttons = ['DASHBOARD', 'INVENTORY', 'PURCHASES', 'JOBS'];
 
-const Topbar = ({ setAuth, API_BASE_URL }) => {
+const Topbar = ({ setAuth }) => {
     const [userName, setUserName] = useState("");
     const [logoutConfirmationOpen, setLogoutConfirmationOpen] = useState(false);
     const [isTokenExpired, setIsTokenExpired] = useState(false);
@@ -20,6 +21,7 @@ const Topbar = ({ setAuth, API_BASE_URL }) => {
     const [showEditProfile, setShowEditProfile] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef(null);
+    const {API_BASE_URL} = useContext(AppContext);
 
     function refreshPage() {
         window.location.reload();
@@ -31,7 +33,6 @@ const Topbar = ({ setAuth, API_BASE_URL }) => {
 
     const handleProfileUpdate = ({ newUsername, newPassword, newEmail }) => {
         // Process the form data, e.g., send it to your backend server
-        console.log(newUsername, newPassword, newEmail);
         updateProfile(newUsername, newPassword, newEmail);
         setShowEditProfile(false);
     };    

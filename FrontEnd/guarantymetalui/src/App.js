@@ -1,4 +1,4 @@
-import React, {Fragment, useState, useEffect} from "react"; // Import React and necessary hooks
+import React, {Fragment, useState, useEffect, createContext} from "react"; // Import React and necessary hooks
 import './App.css'; // Import the main stylesheet for global styles
 // Import React Router components for navigation and routing
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
@@ -15,6 +15,8 @@ import Logout from './components/LogoutConfirmation';
 import Loading from './components/Loading';
 import NotFound from './components/NotFound';
 
+export const AppContext = createContext();
+
 function App() {
   // State to track if user is authenticated
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -22,8 +24,6 @@ function App() {
   const [isTokenExpired, setIsTokenExpired] = useState(false);
 
   const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
-
-  console.log(API_BASE_URL);
 
   // Function to update authentication state
   const setAuth = (boolean) => {
@@ -96,28 +96,30 @@ const ProtectedRoute = ({ children }) => {
 };
 
   return (
-    <Fragment>
-        <Router>
-          <div className="container">
-            {isLoading ? (
-              <Loading />
-            ) : (
-            <Routes>
-              {/* Route definitions, redirecting or granting access based on the authentication state */}
-              <Route path="/" element={<Navigate replace to="/login" />} />
-              <Route path="/login" element={!isAuthenticated ? (<Login setAuth={setAuth} setIsLoading={setIsLoading} API_BASE_URL={API_BASE_URL}/>) : (<Navigate to="/dashboard" />)} />
-              <Route path="/register" element={!isAuthenticated ? (<Register setAuth={setAuth} API_BASE_URL={API_BASE_URL}/>) : (<Navigate to="/login" />)} />
-              <Route path="/dashboard" element={<ProtectedRoute>{isAuthenticated ? (<Dashboard setAuth={setAuth} API_BASE_URL={API_BASE_URL}/> ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
-              <Route path="/purchases" element={<ProtectedRoute>{isAuthenticated ? (<Orders setAuth={setAuth} API_BASE_URL={API_BASE_URL}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>}  />
-              <Route path="/jobs" element={<ProtectedRoute>{isAuthenticated ? (<Customers setAuth={setAuth} API_BASE_URL={API_BASE_URL}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
-              <Route path="/inventory" element={<ProtectedRoute>{isAuthenticated ? (<Inventory setAuth={setAuth} API_BASE_URL={API_BASE_URL}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
-              <Route path="/logout" element={isAuthenticated ? (<Logout setAuth={setAuth}/>) : (<Navigate to="/login" />)} />
-              <Route path="/*" element={isAuthenticated ? (<NotFound setAuth={setAuth}/>) : (<Navigate to="/login" />)} />
-            </Routes>
-            )}
-          </div>
-        </Router>
-    </Fragment>
+    <AppContext.Provider value={{API_BASE_URL}}>
+      <Fragment>
+          <Router>
+            <div className="container">
+              {isLoading ? (
+                <Loading />
+              ) : (
+              <Routes>
+                {/* Route definitions, redirecting or granting access based on the authentication state */}
+                <Route path="/" element={<Navigate replace to="/login" />} />
+                <Route path="/login" element={!isAuthenticated ? (<Login setAuth={setAuth} setIsLoading={setIsLoading}/>) : (<Navigate to="/dashboard" />)} />
+                <Route path="/register" element={!isAuthenticated ? (<Register setAuth={setAuth}/>) : (<Navigate to="/login" />)} />
+                <Route path="/dashboard" element={<ProtectedRoute>{isAuthenticated ? (<Dashboard setAuth={setAuth}/> ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
+                <Route path="/purchases" element={<ProtectedRoute>{isAuthenticated ? (<Orders setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>}  />
+                <Route path="/jobs" element={<ProtectedRoute>{isAuthenticated ? (<Customers setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
+                <Route path="/inventory" element={<ProtectedRoute>{isAuthenticated ? (<Inventory setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
+                <Route path="/logout" element={isAuthenticated ? (<Logout setAuth={setAuth}/>) : (<Navigate to="/login" />)} />
+                <Route path="/*" element={isAuthenticated ? (<NotFound setAuth={setAuth}/>) : (<Navigate to="/login" />)} />
+              </Routes>
+              )}
+            </div>
+          </Router>
+      </Fragment>
+    </AppContext.Provider>
   );
 }
 

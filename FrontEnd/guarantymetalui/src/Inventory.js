@@ -1,10 +1,11 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import './Inventory.css';
 import Topbar from './components/topbar';
 import AddProduct from './components/AddProduct';
 import { toast } from 'react-toastify';
+import { AppContext } from './App';
 
-const Inventory = ({ setAuth, API_BASE_URL }) => {
+const Inventory = ({ setAuth }) => {
     const [products, setProducts] = useState([]);
     const [expandedRowIndex, setExpandedRowIndex] = useState(null);
     const [filter, setFilter] = useState("");
@@ -17,6 +18,7 @@ const Inventory = ({ setAuth, API_BASE_URL }) => {
     const [deletePartNumber, setDeletePartNumber] = useState(null);
     const [showEditProductModal, setShowEditProductModal] = useState(false);
     const [editProductItem, setEditProductItem] = useState(null);
+    const {API_BASE_URL} = useContext(AppContext);
 
     const [filterOptions, setFilterOptions] = useState({
         radius_size: [],

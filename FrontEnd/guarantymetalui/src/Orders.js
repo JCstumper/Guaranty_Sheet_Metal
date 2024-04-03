@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Topbar from './components/topbar';
 import './Orders.css';
+import { AppContext } from './App';
 
-const Orders = ({ setAuth, API_BASE_URL }) => {
+const Orders = ({ setAuth }) => {
     const [orders, setOrders] = useState([]);
     const [filter, setFilter] = useState("");
     const [filteredOrders, setFilteredOrders] = useState([]);
     const [showModal, setShowModal] = useState(false);
+    const {API_BASE_URL} = useContext(AppContext);
 
     const [newOrder, setNewOrder] = useState({
         supplier_id: '',

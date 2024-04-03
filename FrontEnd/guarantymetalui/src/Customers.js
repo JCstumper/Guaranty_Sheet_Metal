@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Topbar from './components/topbar';
 import './Customers.css';
+import { AppContext } from './App';
 
-const Customers = ({ setAuth, API_BASE_URL }) => {
+const Customers = ({ setAuth }) => {
     const [jobs, setJobs] = useState([]);
     const [filteredJobs, setFilteredJobs] = useState([]);
     const [selectedJobId, setSelectedJobId] = useState(null);
@@ -10,6 +11,7 @@ const Customers = ({ setAuth, API_BASE_URL }) => {
     const [showEstimateModal, setShowEstimateModal] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const [filter, setFilter] = useState("");
+    const {API_BASE_URL} = useContext(AppContext);
 
     useEffect(() => {
         fetchJobs();
