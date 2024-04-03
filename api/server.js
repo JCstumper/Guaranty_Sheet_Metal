@@ -13,6 +13,8 @@ const jobsRoute = require('./routes/jobs');
 const purchasesRoute = require('./routes/purchases');
 const editProfileRoute = require('./routes/editProfile');
 const inventoryRoute = require('./routes/inventory');
+const categoriesRoute = require('./routes/categories');
+app.use("/categories", categoriesRoute);
 
 const cors = require('cors');
 
