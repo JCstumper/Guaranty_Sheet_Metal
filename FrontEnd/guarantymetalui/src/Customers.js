@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Topbar from './components/topbar';
 import './Customers.css';
+import { AppContext } from './App';
 
 const Customers = ({ setAuth }) => {
     const [jobs, setJobs] = useState([]);
@@ -10,6 +11,7 @@ const Customers = ({ setAuth }) => {
     const [showEstimateModal, setShowEstimateModal] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const [filter, setFilter] = useState("");
+    const {API_BASE_URL} = useContext(AppContext);
 
     useEffect(() => {
         fetchJobs();
@@ -26,7 +28,7 @@ const Customers = ({ setAuth }) => {
 
     const fetchJobs = async () => {
         try {
-            const response = await fetch('https://localhost/api/jobs');
+            const response = await fetch(`${API_BASE_URL}/jobs`);
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
@@ -78,7 +80,7 @@ const Customers = ({ setAuth }) => {
         const jobData = Object.fromEntries(formData.entries());
 
         try {
-            const response = await fetch('https://localhost/api/jobs', {
+            const response = await fetch(`${API_BASE_URL}/jobs`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

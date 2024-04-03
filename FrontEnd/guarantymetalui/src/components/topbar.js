@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import './topbar.css';
 import logo from "../pictures/logo.png";
 import { NavLink } from 'react-router-dom';
@@ -9,6 +9,7 @@ import LoadingScreen from './Loading'; // Verify this path is correct
 import { jwtDecode } from "jwt-decode";
 import { Bounce, toast } from 'react-toastify';
 import EditProfile from './EditProfile';
+import { AppContext } from '../App';
 
 const buttons = ['DASHBOARD', 'INVENTORY', 'PURCHASES', 'JOBS'];
 
@@ -20,6 +21,7 @@ const Topbar = ({ setAuth }) => {
     const [showEditProfile, setShowEditProfile] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef(null);
+    const {API_BASE_URL} = useContext(AppContext);
 
     function refreshPage() {
         window.location.reload();
@@ -31,7 +33,6 @@ const Topbar = ({ setAuth }) => {
 
     const handleProfileUpdate = ({ newUsername, newPassword, newEmail }) => {
         // Process the form data, e.g., send it to your backend server
-        console.log(newUsername, newPassword, newEmail);
         updateProfile(newUsername, newPassword, newEmail);
         setShowEditProfile(false);
     };    
@@ -51,7 +52,7 @@ const Topbar = ({ setAuth }) => {
     async function updateProfile(newUsername, newPassword, newEmail) {
         const body = {newUsername, newPassword, newEmail};
         try {
-            const response = await fetch("https://localhost/api/edit/profile", {
+            const response = await fetch(`${API_BASE_URL}/edit/profile`, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
@@ -98,7 +99,7 @@ const Topbar = ({ setAuth }) => {
 
     async function getName() {
         try {
-            const response = await fetch("https://localhost/api/dashboard", {
+            const response = await fetch(`${API_BASE_URL}/dashboard`, {
                 method: "GET",
                 headers: { token: localStorage.token }
             });

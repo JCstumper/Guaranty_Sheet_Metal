@@ -1,14 +1,16 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment, useState, useEffect, useContext } from 'react';
 import { useNavigate, Link } from "react-router-dom"; // Importing useNavigate for programmatic navigation and Link for declarative navigation
 import { Bounce, toast } from 'react-toastify'; // Importing toastify for displaying notifications
 import './Register.css'; // Import CSS for styling the register page
 import logo from '../pictures/logo.png'; // Import the logo for the register page
 import Loading from './Loading';
+import { AppContext } from '../App';
 
 // Register component with setAuth prop for managing authentication state
 const Register = ({ setAuth }) => {
     const navigate = useNavigate(); // Hook for programmatic navigation
     const [isLoading, setIsLoading] = useState(false);
+    const {API_BASE_URL} = useContext(AppContext);
 
     // State for managing input fields (username, password, email)
     const [inputs, setInputs] = useState({
@@ -48,7 +50,7 @@ const Register = ({ setAuth }) => {
             setIsLoading(true);
             
             // Making a POST request to the register endpoint
-            const response = await fetch("https://localhost/api/auth/register", {
+            const response = await fetch(`${API_BASE_URL}/auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body)

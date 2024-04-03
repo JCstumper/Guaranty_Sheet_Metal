@@ -1,8 +1,9 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import './Inventory.css';
 import Topbar from './components/topbar';
 import AddProduct from './components/AddProduct';
 import { toast } from 'react-toastify';
+import { AppContext } from './App';
 
 const Inventory = ({ setAuth }) => {
     const [products, setProducts] = useState([]);
@@ -17,6 +18,7 @@ const Inventory = ({ setAuth }) => {
     const [deletePartNumber, setDeletePartNumber] = useState(null);
     const [showEditProductModal, setShowEditProductModal] = useState(false);
     const [editProductItem, setEditProductItem] = useState(null);
+    const {API_BASE_URL} = useContext(AppContext);
 
     const [filterOptions, setFilterOptions] = useState({
         radius_size: [],
@@ -33,7 +35,7 @@ const Inventory = ({ setAuth }) => {
     
     const fetchProductsWithInventory = async () => {
         try {
-            const response = await fetch('https://localhost/api/products/with-inventory');
+            const response = await fetch(`${API_BASE_URL}/products/with-inventory`);
             const jsonData = await response.json();
             
             if (Array.isArray(jsonData.products)) {
@@ -283,7 +285,7 @@ const Inventory = ({ setAuth }) => {
 
     const performDeleteProduct = async (partNumber) => {
         try {
-            const response = await fetch(`https://localhost/api/products/${partNumber}`, {
+            const response = await fetch(`${API_BASE_URL}/products/${partNumber}`, {
                 method: 'DELETE',
             });
     
@@ -371,7 +373,7 @@ const Inventory = ({ setAuth }) => {
         };
 
         try {
-            const response = await fetch(`https://localhost/api/products/${originalPartNumber}`, {
+            const response = await fetch(`${API_BASE_URL}/products/${originalPartNumber}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

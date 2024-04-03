@@ -18,7 +18,9 @@ const cors = require('cors');
 
 const corsOptions = {
   origin: function (origin, callback) {
-    const allowedOrigins = ['https://localhost'];
+    const BASE_URL = process.env.API_URL || 'https://localhost';
+
+    const allowedOrigins = [BASE_URL];
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
