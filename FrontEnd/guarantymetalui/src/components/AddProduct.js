@@ -188,7 +188,6 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
         const wasSuccessful = await sendDataToBackend(sanitizedNewProductItem);
 
         if (wasSuccessful) {
-            setShouldUpdateCategory(true);
             setShowModal(false);
             setNewProductItem({
                 partNumber: '',
@@ -398,42 +397,44 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
         }
     }, [newProductItem.price]);
 
-    // useEffect hook to run a piece of code with specific dependencies
     useEffect(() => {
-        // Define an asynchronous function to fetch category mappings from the backend
         const fetchCategoryMappings = async () => {
-        try {
-            // Initiating a fetch request to the '/categories' endpoint.
-            // This is a relative URL, assuming the frontend and backend are served from the same domain.
-            const response = await fetch('/categories', {
-            method: 'GET', // The HTTP method used for the request
-            headers: {
-                'Accept': 'application/json', // Tells the server we want JSON data in response
-                'Content-Type': 'application/json' // Tells the server we are sending JSON data
-            },
-            credentials: 'same-origin', // Ensures cookies are only included for requests to the same domain. Adjust as needed for your auth setup.
-            });
+            try {
+                const response = await fetch('/categories', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'same-origin',
+                });
     
-            // Check if the response was successful (status in the range 200-299)
-            if (!response.ok) {
-            // If not successful, throw an error to jump to the catch block
-            throw new Error('Failed to fetch category mappings');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+    
+                const data = await response.json();
+    
+                // Assuming 'data' is the array of categories. Adjust as necessary based on your actual response structure.
+                if (data.length > 0) {
+                    setCategoryMappings(data);
+                } else {
+                    // If the data array is empty, handle accordingly. 
+                    // For instance, you might not want to show an error if an empty array is a valid response.
+                    console.log('No categories found.');
+                    // Optionally, set categoryMappings to an empty array or some default state
+                    setCategoryMappings([]);
+                }
+            } catch (error) {
+                console.error('Error fetching category mappings:', error);
+                // Only show the toast error if there's an actual network or server error
+                toast.error('Failed to fetch categories. Please check your connection and try again.');
             }
-    
-            // Parse the JSON response body and update the categoryMappings state with it
-            const data = await response.json();
-            setCategoryMappings(data); // Updates state with the fetched data. Adjust this line if your state variable is named differently.
-        } catch (error) {
-            // Log any errors to the console and show an error message to the user
-            console.error('Error fetching category mappings:', error);
-            toast.error('Failed to fetch categories. Please check your connection and try again.');
-        }
         };
-  
-    // Call the fetchCategoryMappings function to execute the fetch operation
-    fetchCategoryMappings();
-  }, []); // An empty dependency array means this effect runs once on component mount, similar to componentDidMount in class components
-  
+    
+        fetchCategoryMappings();
+    }, []); // Dependency array left empty to run only once on component mount
+    
 
     // Mapping of keywords to categories
     const [categoryMappings, setCategoryMappings] = useState([]);
@@ -473,22 +474,40 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
         }
     }, [newProductItem.type, categoryMappings]);
 
-    // In your category input onChange handler, set shouldUpdateCategory to false
-    const handleCategoryChange = (e) => {
-        const value = e.target.value;
+    const handleCatCodeChange = (e) => {
+        const catCodeValue = e.target.value;
         setNewProductItem(prevState => ({
             ...prevState,
-            type: value
+            catCode: catCodeValue // Ensure you have a 'catCode' property in your 'newProductItem' state object
         }));
-        setShouldUpdateCategory(false);
     };
 
-    const handleCatCodeChange = (e) => {
-        setNewProductItem({
-            ...newProductItem,
-            catCode: e.target.value
-        });
-    };   
+    const handleCategoryChange = (e) => {
+        const inputValue = e.target.value;
+        setNewProductItem(prevState => ({
+            ...prevState,
+            type: inputValue
+        }));
+    
+        // Find a matching category
+        const matchingCategory = categoryMappings.find(c => c.category.toLowerCase() === inputValue.toLowerCase());
+        
+        if (matchingCategory) {
+            // If there's a match, set the catCode automatically
+            setNewProductItem(prevState => ({
+                ...prevState,
+                catCode: matchingCategory.catcode
+            }));
+        } else {
+            // If no match is found, you might want to clear the catCode or leave it as the user has entered
+            // Decide based on your application's needs. Here's how you'd clear it:
+            setNewProductItem(prevState => ({
+                ...prevState,
+                catCode: '' // Clear the catCode or handle as necessary
+            }));
+        }
+    };
+    
 
     return (
         <div className="modal-backdrop" onClick={e => e.stopPropagation()}>
