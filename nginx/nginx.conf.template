@@ -8,7 +8,7 @@ http {
 
     server {
         listen 80 default_server;
-        server_name localhost;
+        server_name ${HOST_NAME};
 
         # Redirect HTTP to HTTPS
         location / {

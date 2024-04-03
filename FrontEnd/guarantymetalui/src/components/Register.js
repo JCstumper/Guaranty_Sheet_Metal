@@ -6,7 +6,7 @@ import logo from '../pictures/logo.png'; // Import the logo for the register pag
 import Loading from './Loading';
 
 // Register component with setAuth prop for managing authentication state
-const Register = ({ setAuth, setIsLoading, API_BASE_URL }) => {
+const Register = ({ setAuth, API_BASE_URL }) => {
     const navigate = useNavigate(); // Hook for programmatic navigation
     const [isLoading, setIsLoading] = useState(false);
 

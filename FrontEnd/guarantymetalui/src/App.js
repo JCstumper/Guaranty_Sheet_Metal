@@ -23,6 +23,8 @@ function App() {
 
   const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
 
+  console.log(API_BASE_URL);
+
   // Function to update authentication state
   const setAuth = (boolean) => {
     setIsAuthenticated(boolean);
@@ -104,7 +106,7 @@ const ProtectedRoute = ({ children }) => {
               {/* Route definitions, redirecting or granting access based on the authentication state */}
               <Route path="/" element={<Navigate replace to="/login" />} />
               <Route path="/login" element={!isAuthenticated ? (<Login setAuth={setAuth} setIsLoading={setIsLoading} API_BASE_URL={API_BASE_URL}/>) : (<Navigate to="/dashboard" />)} />
-              <Route path="/register" element={!isAuthenticated ? (<Register setAuth={setAuth} setIsLoading={setIsLoading} API_BASE_URL={API_BASE_URL}/>) : (<Navigate to="/login" />)} />
+              <Route path="/register" element={!isAuthenticated ? (<Register setAuth={setAuth} API_BASE_URL={API_BASE_URL}/>) : (<Navigate to="/login" />)} />
               <Route path="/dashboard" element={<ProtectedRoute>{isAuthenticated ? (<Dashboard setAuth={setAuth} API_BASE_URL={API_BASE_URL}/> ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
               <Route path="/purchases" element={<ProtectedRoute>{isAuthenticated ? (<Orders setAuth={setAuth} API_BASE_URL={API_BASE_URL}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>}  />
               <Route path="/jobs" element={<ProtectedRoute>{isAuthenticated ? (<Customers setAuth={setAuth} API_BASE_URL={API_BASE_URL}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
