@@ -32,7 +32,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
         setFileName(file ? file.name : '');
     };
 
-    const requiredColumns = ['radius_size', 'materialtype', 'color', 'description', 'type', 'cat_code', 'quantityofitem', 'unit'];
+    const requiredColumns = ['radiussize', 'materialtype', 'color', 'description', 'type', 'catcode', 'quantityofitem', 'unit'];
 
     const handleFileUpload = async () => {
         if (!uploadedFile) {
@@ -54,7 +54,8 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
                 acc[header] = index;
                 return acc;
             }, {});
-    
+            
+            console.log(headers);
             // Check if all required columns are present
             const missingRequiredColumns = requiredColumns.filter(requiredColumn => {
                 const variations = columnVariations[requiredColumn] || [];
@@ -74,7 +75,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
                     let itemData = {
                         partNumber: sanitizeInput(item[columnIndices['partnumber']]),
                         supplierPartNumber: sanitizeInput(item[columnIndices['supplierpartnumber']]), // Added field
-                        radiusSize: sanitizeInput(item[columnIndices['radius_size']]),
+                        radiusSize: sanitizeInput(item[columnIndices['radiussize']]),
                         materialType: sanitizeInput(item[columnIndices['materialtype']]),
                         color: sanitizeInput(item[columnIndices['color']]),
                         description: sanitizeInput(item[columnIndices['description']]),
@@ -83,17 +84,22 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
                         unit: sanitizeInput(item[columnIndices['unit']]),
                         price: parseFloat(sanitizeInput(item[columnIndices['price']])), // Ensure numeric conversion
                         markUpPrice: parseFloat(sanitizeInput(item[columnIndices['markupprice']])), // Ensure numeric conversion
-                        catCode: sanitizeInput(item[columnIndices['cat_code']])
+                        catCode: sanitizeInput(item[columnIndices['catcode']])
                     };
-                    
+
+                    console.log(itemData);
                     // Generate part number if not provided
                     if (!partNumberProvided) {
                         setNewProductItem(prev => ({ ...prev, ...itemData }));
                         itemData.partNumber = generatePartNumber();
+                        console.log(itemData.partNumber);
                     }
+
+                    console.log(itemData.partNumber);
 
                     // Send the item data to backend
                     if (itemData.partNumber) {
+                        console.log("sending to backend");
                         await sendDataToBackend(itemData);
                     }
                 }
@@ -113,7 +119,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
     const columnVariations = {
         'partnumber': ['Part Number', 'partnumber', 'part #', 'P/N', 'Part No', 'Part Num'],
         'supplierpartnumber': ['Supplier Part Number', 'supplierpartnumber', 'supplier part #', 'Supplier P/N', 'Supp Part No', 'Supp Part Num'],
-        'radius_size': ['Radius Size', 'radius_size', 'Size', 'size', 'Radius', 'radius'],
+        'radiussize': ['Radius Size', 'radius_size', 'Size', 'size', 'Radius', 'radius'],
         'materialtype': ['Material Type', 'materialtype', 'Material', 'material'],
         'color': ['Color', 'color', 'Colour', 'colour'],
         'description': ['Description', 'description', 'Desc', 'desc', 'Description of Item', 'Item Description'],
@@ -122,7 +128,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
         'unit': ['Unit', 'unit', 'Units', 'units', 'Measurement Unit', 'measurement unit'],
         'price': ['Price', 'price', 'Cost', 'cost', 'Unit Price', 'unit price'],
         'markupprice': ['Markup Price', 'markupprice', 'Mark Up', 'Mark-Up', 'mark up', 'Selling Price', 'selling price'],
-        'cat_code': ['Cat Code', 'cat_code', 'Category Code', 'category code', 'CatCode', 'Cat', 'cat',],
+        'catcode': ['Cat Code', 'cat code','cat_code', 'Category Code', 'category code', 'CatCode', 'Cat', 'cat',],
         // Add any other column variations you expect here
     };
     
