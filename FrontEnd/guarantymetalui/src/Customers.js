@@ -1,17 +1,23 @@
 import React, { useState, useEffect, useContext } from 'react';
 import Topbar from './components/topbar';
 import './Customers.css';
+import AddPartModal from './AddPartModal'; // Adjust the path based on your file structure
+
 import { AppContext } from './App';
 
 const Customers = ({ setAuth }) => {
     const [jobs, setJobs] = useState([]);
     const [filteredJobs, setFilteredJobs] = useState([]);
     const [selectedJobId, setSelectedJobId] = useState(null);
+    const [necessaryParts, setNecessaryParts] = useState([]); // State for necessary parts
+    const [usedParts, setUsedParts] = useState([]); // State for used parts
     const [showModal, setShowModal] = useState(false);
     const [showEstimateModal, setShowEstimateModal] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const [filter, setFilter] = useState("");
     const {API_BASE_URL} = useContext(AppContext);
+    const [showAddPartModal, setShowAddPartModal] = useState(false);
+
 
     useEffect(() => {
         fetchJobs();
@@ -216,7 +222,48 @@ const Customers = ({ setAuth }) => {
             console.error('Error uploading estimate:', error);
         }
     };
+    const handleAddNecessaryPart = () => {
+        setShowAddPartModal(true);
+    };
+    const handleCloseAddPartModal = () => {
+        setShowAddPartModal(false);
+    };
+    // This function will be passed to the AddPartModal and called when a part is selected
+    const handleAddPart = (part) => {
+    const updatedNecessaryParts = [...necessaryParts, part];
+    setNecessaryParts(updatedNecessaryParts);
+    handleCloseAddPartModal();  // Close the modal after adding the part
+    };    
+    const handleMoveToUsed = (partNumber) => {
+        // Logic to move a part from Necessary to Used
+    };
     
+    const handleEditNecessaryPart = (partNumber) => {
+        // Logic to edit a part in the Necessary Parts list
+    };
+    
+    const handleRemoveNecessaryPart = (partNumber) => {
+        // Logic to remove a part from the Necessary Parts list
+    };
+    
+    const handleAddUsedPart = () => {
+        // Logic to add a part to the Used Parts list
+    };
+    
+    const handleReturnToNecessary = (partNumber) => {
+        // Logic to move a part from Used to Necessary
+    };
+    
+    const handleEditUsedPart = (partNumber) => {
+        // Logic to edit a part in the Used Parts list
+    };
+    
+    const handleRemoveUsedPart = (partNumber) => {
+        // Logic to remove a part from the Used Parts list
+    };
+    // For the total costs of parts
+    const totalUsedCost = usedParts.reduce((acc, part) => acc + (part.quantity_used * part.price), 0);
+    const totalNecessaryCost = necessaryParts.reduce((acc, part) => acc + (part.quantity_required * part.price), 0);
 
     return (
         <div className="customers">
@@ -255,11 +302,71 @@ const Customers = ({ setAuth }) => {
                                                 <td colSpan="5">
                                                     <div className="job-details-expanded">
                                                         <div className="job-details-section">
-                                                            <h4>Order Details</h4>
-                                                            <p><strong>Date:</strong> {job.orderDate}</p>
-                                                            <p><strong>Description:</strong> {job.description}</p>
-                                                            <p><strong>Quantity & Price:</strong> {job.quantity} at {job.price} each</p>
-                                                            <p><strong>Total Cost:</strong> {job.totalCost}</p>
+                                                            <h4>Job Ticket</h4>
+                                                            {/* Necessary Parts Section */}
+                                                            <div className="parts-section">
+                                                                <h5>Necessary Parts</h5>
+                                                                <button onClick={handleAddNecessaryPart} className="add-part-btn">Add Part</button>
+                                                                <table>
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Part Number</th>
+                                                                            <th>Description</th>
+                                                                            <th>Quantity Required</th>
+                                                                            <th>Price</th>
+                                                                            <th>Actions</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {necessaryParts.map( part => (
+                                                                            <tr key={part.id}>
+                                                                                <td>{part.part_number}</td>
+                                                                                <td>{part.description}</td>
+                                                                                <td>{part.quantity_required}</td>
+                                                                                <td>${part.price.toFixed(2)}</td>
+                                                                                <td>
+                                                                                    <button onClick={() => handleMoveToUsed(part.part_number)} className="details-btn">Move to Used</button>
+                                                                                    <button onClick={() => handleEditNecessaryPart(part.part_number)} className="details-btn">Edit</button>
+                                                                                    <button onClick={() => handleRemoveNecessaryPart(part.part_number)} className="details-btn">Remove</button>
+                                                                                </td>
+                                                                            </tr>
+                                                                        ))}
+                                                                    </tbody>
+                                                                </table>
+                                                                <p>Total Cost of Necessary Parts: ${totalNecessaryCost.toFixed(2)}</p>
+                                                            </div>
+                                                            {/* Used Parts Section */}
+                                                            <div className="parts-section">
+                                                                <h5>Used Parts</h5>
+                                                                <button onClick={handleAddUsedPart} className="add-part-btn">Add Part</button>
+                                                                <table>
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Part Number</th>
+                                                                            <th>Description</th>
+                                                                            <th>Quantity Used</th>
+                                                                            <th>Price</th>
+                                                                            <th>Actions</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {usedParts.map(part => (
+                                                                            <tr key={part.id}>
+                                                                                <td>{part.part_number}</td>
+                                                                                <td>{part.description}</td>
+                                                                                <td>{part.quantity_used}</td>
+                                                                                <td>${part.price.toFixed(2)}</td>
+                                                                                <td>
+                                                                                    <button onClick={() => handleReturnToNecessary(part.part_number)} className="details-btn">Return to Necessary</button>
+                                                                                    <button onClick={() => handleEditUsedPart(part.part_number)} className="details-btn">Edit</button>
+                                                                                    <button onClick={() => handleRemoveUsedPart(part.part_number)} className="details-btn">Remove</button>
+                                                                                </td>
+                                                                            </tr>
+                                                                        ))}
+                                                                    </tbody>
+                                                                </table>
+                                                                <p>Total Cost of Used Parts: ${totalUsedCost.toFixed(2)}</p>
+                                                            </div>
                                                         </div>
 
                                                         <div className="job-details-section">
@@ -356,6 +463,14 @@ const Customers = ({ setAuth }) => {
                         </div>
                     </div>
                 </div>
+            )}
+            {showAddPartModal && (
+                <AddPartModal
+                    isOpen={showAddPartModal}
+                    onClose={handleCloseAddPartModal}
+                    onAddPart={handleAddPart} // Implement this function according to your needs
+                    API_BASE_URL={API_BASE_URL}
+                />
             )}
         </div>
     );
