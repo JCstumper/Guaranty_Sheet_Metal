@@ -197,13 +197,22 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
 
     const [autoGeneratePartNumber, setAutoGeneratePartNumber] = useState(true);
 
-    const generatePartNumber = () => {
-        const { materialType, color, radiusSize, catCode } = newProductItem;
-        let partNumber = `${materialType[0] || ''}${color[0] || ''}${radiusSize}${catCode || ''}`;
-        return partNumber.toUpperCase(); // Customize as needed
-    };
-    
+    // ...
 
+    // This function now checks if itemType is not 'box' before appending quantityOfItem
+    const generatePartNumber = () => {
+        const { materialType, color, radiusSize, catCode, unit, quantityOfItem } = newProductItem;
+        let partNumber = `${materialType[0] || ''}${color[0] || ''}${radiusSize}${catCode || ''}`;
+
+        // Append quantity (assuming it represents length) if item type is not 'box'
+        if (unit === 'ft') {
+            partNumber += quantityOfItem;
+        }
+
+        return partNumber.toUpperCase();
+    };
+
+    // useEffect hook for auto-generating part number whenever necessary state changes
     useEffect(() => {
         if (autoGeneratePartNumber) {
             const generatedPartNumber = generatePartNumber();
@@ -212,8 +221,10 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
                 partNumber: generatedPartNumber
             }));
         }
-        // Add the dependencies you use in your part number generation logic
-    }, [autoGeneratePartNumber, newProductItem.materialType, newProductItem.color, newProductItem.radiusSize, newProductItem.catCode]);
+        // Include itemType and quantityOfItem in the dependency array to re-run the effect when they change
+    }, [autoGeneratePartNumber, newProductItem.materialType, newProductItem.color, newProductItem.radiusSize, newProductItem.catCode, newProductItem.unit, newProductItem.quantityOfItem]);
+
+    // ... 
     
     useEffect(() => {
         // Automatically update the unit based on the selected item type
