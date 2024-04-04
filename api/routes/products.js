@@ -77,8 +77,6 @@ router.delete('/:partNumber', async (req, res) => {
             WHERE part_number = $1;
         `, [partNumber]);
 
-        console.log(`Deleted ${inventoryDeletionResponse.rowCount} inventory record(s) for part number: ${partNumber}`);
-
         // Then, delete the product from the products table.
         const productDeletionResponse = await pool.query(`
             DELETE FROM products
@@ -106,7 +104,7 @@ router.put('/:originalPartNumber', async (req, res) => {
     try {
         const { originalPartNumber } = req.params;
         const {
-            newPartNumber,   // New part number to update
+            partNumber,   // New part number to update
             supplierPartNumber,
             radiusSize,      // Maps to 'radius_size'
             materialType,    // Maps to 'material_type'
@@ -122,7 +120,7 @@ router.put('/:originalPartNumber', async (req, res) => {
         // Begin transaction
         await client.query('BEGIN');
 
-        if (newPartNumber === originalPartNumber) {
+        if (partNumber === originalPartNumber) {
             // Update existing product details
             const updateProductQuery = `
                 UPDATE products
@@ -147,7 +145,7 @@ router.put('/:originalPartNumber', async (req, res) => {
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
                 ON CONFLICT (part_number) DO NOTHING;
             `;
-            await client.query(insertProductQuery, [newPartNumber, supplierPartNumber, radiusSize, materialType, color, description, type, quantityOfItem, unit, price, markUpPrice]);
+            await client.query(insertProductQuery, [partNumber, supplierPartNumber, radiusSize, materialType, color, description, type, quantityOfItem, unit, price, markUpPrice]);
 
             // Update the inventory record to match the new part number
             const updateInventoryQuery = `
@@ -155,7 +153,7 @@ router.put('/:originalPartNumber', async (req, res) => {
                 SET part_number = $1
                 WHERE part_number = $2;
             `;
-            await client.query(updateInventoryQuery, [newPartNumber, originalPartNumber]);
+            await client.query(updateInventoryQuery, [partNumber, originalPartNumber]);
 
             // Optionally, delete the old product if no longer needed
             // const deleteOldProductQuery = `DELETE FROM products WHERE part_number = $1;`;
