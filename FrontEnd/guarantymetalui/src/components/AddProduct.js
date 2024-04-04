@@ -7,7 +7,6 @@ import './AddProduct.css';
 const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
     const [uploadedFile, setUploadedFile] = useState(null);
     const [isUploading, setIsUploading] = useState(false);
-    const [showUploadModal, setShowUploadModal] = useState(false);
     const [shouldUpdateCategory, setShouldUpdateCategory] = useState(true);
     const [itemType, setItemType] = useState('box');
     const [fileName, setFileName] = useState('');
@@ -157,11 +156,14 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
     
 
     const sendDataToBackend = async (data) => {
+        const token = localStorage.getItem('token');
+
         try {
             const response = await fetch('https://localhost/api/products', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'token': token,
                 },
                 body: JSON.stringify(data),
             });
@@ -446,11 +448,10 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
             toast.error('Failed to fetch categories. Please check your connection and try again.');
         }
         };
-  
-    // Call the fetchCategoryMappings function to execute the fetch operation
-    fetchCategoryMappings();
-  }, []); // An empty dependency array means this effect runs once on component mount, similar to componentDidMount in class components
-  
+        // Call the fetchCategoryMappings function to execute the fetch operation
+        fetchCategoryMappings();
+    }, []); // An empty dependency array means this effect runs once on component mount, similar to componentDidMount in class components
+
 
     // Mapping of keywords to categories
     const [categoryMappings, setCategoryMappings] = useState([]);

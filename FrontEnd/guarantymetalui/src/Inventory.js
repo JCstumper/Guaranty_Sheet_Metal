@@ -37,23 +37,31 @@ const Inventory = ({ setAuth }) => {
     });
     
     const fetchProductsWithInventory = async () => {
+        // Retrieve the JWT token from localStorage
+        const token = localStorage.getItem('token');
+        
         try {
-            const response = await fetch(`${API_BASE_URL}/products/with-inventory`);
+            const response = await fetch(`${API_BASE_URL}/products/with-inventory`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token, // Include the token in the request headers
+                },
+            });
             const jsonData = await response.json();
             
             if (Array.isArray(jsonData.products)) {
                 setProducts(jsonData.products);
             } else {
                 console.error('Unexpected response format:', jsonData);
-                setProducts([]); // Set to an empty array or handle appropriately
+                setProducts([]);
             }
             
         } catch (error) {
             console.error('Error fetching products with inventory:', error);
-            setProducts([]); // Ensure products is always an array
+            setProducts([]);
         }
     };
-    
 
     useEffect(() => {
         // fetchProducts();

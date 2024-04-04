@@ -2,8 +2,21 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db'); // make sure the path to db.js is correct
+const authorization = require("../middleware/authorization");
 
-router.get('/', async (req, res) => {
+async function logInventoryAction(actionType, userId, partNumber, changeDetails) {
+    const logQuery = `
+        INSERT INTO inventory_log (action_type, user_id, product_part_number, change_details) 
+        VALUES ($1, $2, $3, $4);
+    `;
+    try {
+        await pool.query(logQuery, [actionType, userId, partNumber, JSON.stringify(changeDetails)]);
+    } catch (err) {
+        console.error('Failed to log inventory action:', err.message);
+    }
+}
+
+router.get('/', authorization, async (req, res) => {
     try {
         const products = await pool.query(`
         SELECT * FROM products
@@ -15,7 +28,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', authorization, async (req, res) => {
     try {
         // Extracting fields from req.body based on the structure provided earlier
         const {
@@ -66,7 +79,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-router.delete('/:partNumber', async (req, res) => {
+router.delete('/:partNumber', authorization, async (req, res) => {
     try {
         const { partNumber } = req.params;
 
@@ -99,7 +112,7 @@ router.delete('/:partNumber', async (req, res) => {
     }
 });
 
-router.put('/:originalPartNumber', async (req, res) => {
+router.put('/:originalPartNumber', authorization, async (req, res) => {
     const client = await pool.connect();
     try {
         const { originalPartNumber } = req.params;
@@ -172,7 +185,7 @@ router.put('/:originalPartNumber', async (req, res) => {
     }
 });
 
-router.get('/with-inventory', async (req, res) => {
+router.get('/with-inventory', authorization, async (req, res) => {
     try {
         // Perform a SQL JOIN to fetch products with their inventory quantity
         const productsWithInventory = await pool.query(`

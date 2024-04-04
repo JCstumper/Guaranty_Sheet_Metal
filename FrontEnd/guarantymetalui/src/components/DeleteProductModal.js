@@ -7,9 +7,16 @@ const DeleteProductModal = ({ showModal, setShowModal, deletePartNumber, fetchPr
     if (!showModal) return null;
 
     const performDeleteProduct = async () => {
+        // Retrieve the JWT token from localStorage
+        const token = localStorage.getItem('token');
+
         try {
             const response = await fetch(`${API_BASE_URL}/products/${deletePartNumber}`, {
                 method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token, // Include the token in the request headers
+                },
             });
     
             if (!response.ok) {
