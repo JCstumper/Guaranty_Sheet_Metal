@@ -8,6 +8,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
     const [uploadedFile, setUploadedFile] = useState(null);
     const [isUploading, setIsUploading] = useState(false);
     const [showUploadModal, setShowUploadModal] = useState(false);
+    const [shouldUpdateCategory, setShouldUpdateCategory] = useState(true);
     const [itemType, setItemType] = useState('box');
     const [fileName, setFileName] = useState('');
     const [newProductItem, setNewProductItem] = useState({
