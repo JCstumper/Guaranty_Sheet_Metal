@@ -2,6 +2,9 @@ import React, { useState, useEffect, useContext } from 'react';
 import './Inventory.css';
 import Topbar from './components/topbar';
 import AddProduct from './components/AddProduct';
+import EditQuantity from './components/EditQuantity';
+import DeleteProductModal from './components/DeleteProductModal';
+import EditProductModal from './components/EditProductModal';
 import { toast } from 'react-toastify';
 import { AppContext } from './App';
 
@@ -260,7 +263,6 @@ const Inventory = ({ setAuth }) => {
     
     const handleUpdateQuantity = async (e) => {
         e.preventDefault();
-        console.log("made it into handleupdatequantity");
         try {
             const response = await fetch(`/api/inventory/${editItem.partNumber}/quantity`, {
                 method: "PATCH",
@@ -268,12 +270,15 @@ const Inventory = ({ setAuth }) => {
                 body: JSON.stringify({ quantity_in_stock: editItem.quantityInStock })
             });
             if (response.ok) {
+                toast.success('Quantity updated successfully!');
                 setShowEditQuantityModal(false); // Close the modal on success
                 fetchProductsWithInventory(); // Refresh the inventory list
             } else {
+                toast.error('Failed to update quantity. Please try again.');
                 console.error("Failed to update item.");
             }
         } catch (error) {
+            toast.error('An error occurred while updating the quantity.');
             console.error("Error updating item:", error);
         }
     };
@@ -281,42 +286,6 @@ const Inventory = ({ setAuth }) => {
     const confirmDeleteProduct = (partNumber) => {
         setDeletePartNumber(partNumber);
         setShowDeleteModal(true);
-    };
-
-    const performDeleteProduct = async (partNumber) => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/products/${partNumber}`, {
-                method: 'DELETE',
-            });
-    
-            if (!response.ok) {
-                throw new Error('Failed to delete the product');
-            }
-    
-            toast.success('Product deleted successfully.', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-            await fetchProductsWithInventory(); // Refresh the product list
-        } catch (error) {
-            console.error('Error deleting product:', error);
-            toast.error('Error deleting product.', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-        }
     };
 
     // Example function to open the edit modal and set the state with the product's current information
@@ -337,83 +306,6 @@ const Inventory = ({ setAuth }) => {
         });
         setShowEditProductModal(true); // Display the modal for editing product details
     };
-
-    const handleUpdateProduct = async (e) => {
-        e.preventDefault();
-    
-        const {
-            originalPartNumber,
-            partNumber,
-            supplierPartNumber, // Include supplierPartNumber in the destructuring
-            radiusSize,
-            materialType,
-            color,
-            description,
-            type,
-            quantityOfItem,
-            unit,
-            price,
-            markUpPrice
-        } = editProductItem;
-    
-        // Prepare the data object for updating, including all relevant product details
-        const updateData = {
-            originalPartNumber,
-            partNumber, // If the part number is editable, otherwise omit this line
-            supplierPartNumber, // Added to update data
-            radiusSize,
-            materialType,
-            color,
-            description,
-            type,
-            quantityOfItem: parseInt(quantityOfItem, 10), // Convert quantity to integer
-            unit,
-            price: parseFloat(price), // Ensure price is a float
-            markUpPrice: parseFloat(markUpPrice), // Ensure markUpPrice is a float
-        };
-
-        try {
-            const response = await fetch(`${API_BASE_URL}/products/${originalPartNumber}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(updateData),
-            });
-    
-            if (!response.ok) {
-                throw new Error('Failed to update the product');
-            }
-    
-            const result = await response.json();
-            console.log('Product updated successfully', result);
-            toast.success('Product updated successfully.', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-            setShowEditProductModal(false); // Close the edit modal
-            await fetchProductsWithInventory(); // Refresh the products list to show the updated data
-        } catch (error) {
-            console.error('Error updating product:', error);
-            toast.error('Error updating product.', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-        }
-    };    
-
     
     return (
         <div className="inventory">
@@ -475,131 +367,32 @@ const Inventory = ({ setAuth }) => {
                     />
                 )}
                 {showEditQuantityModal && (
-                    <div className="modal-backdrop" onClick={() => setShowEditQuantityModal(false)}>
-                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                            <div className="modal-header">
-                                <h2>Edit Quantity</h2>
-                                <button onClick={() => setShowEditQuantityModal(false)} className="modal-close-button">X</button>
-                            </div>
-                            <div className="modal-body">
-                                <form onSubmit={handleUpdateQuantity}>
-                                    <input
-                                        type="number"
-                                        className="edit-quantity-modal-input"
-                                        value={editItem.quantityInStock}
-                                        onChange={(e) => setEditItem({ ...editItem, quantityInStock: parseInt(e.target.value, 10) })}
-                                    />
-                                    <div className="modal-actions">
-                                        <button type="submit" className="edit-quantity-modal-update-btn">Update</button>
-                                        <button type="button" onClick={() => setShowEditQuantityModal(false)} className="edit-quantity-modal-cancel-btn">Cancel</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+                    <EditQuantity
+                        showModal={showEditQuantityModal}
+                        setShowModal={setShowEditQuantityModal}
+                        editItem={editItem}
+                        setEditItem={setEditItem}
+                        handleUpdateQuantity={handleUpdateQuantity}
+                    />
                 )}
                 {showDeleteModal && (
-                    <div className="modal-backdrop">
-                        <div className="modal-content" onClick={e => e.stopPropagation()}>
-                            <div className="modal-header">
-                                <h2>Confirm Deletion</h2>
-                                <button onClick={() => setShowDeleteModal(false)} className="modal-close-button">X</button>
-                            </div>
-                            <div className="modal-body">
-                                Are you sure you want to delete the product with part number: {deletePartNumber}?
-                            </div>
-                            <div className="modal-actions">
-                                <button onClick={() => {
-                                    performDeleteProduct(deletePartNumber);
-                                    setShowDeleteModal(false);
-                                }} className="delete-confirm">Delete</button>
-                                <button onClick={() => setShowDeleteModal(false)} className="delete-cancel">Cancel</button>
-                            </div>
-                        </div>
-                    </div>
+                    <DeleteProductModal
+                        showModal={showDeleteModal}
+                        setShowModal={setShowDeleteModal}
+                        deletePartNumber={deletePartNumber}
+                        fetchProductsWithInventory={fetchProductsWithInventory}
+                        API_BASE_URL={API_BASE_URL}
+                    />
                 )}
                 {showEditProductModal && (
-                    <div className="modal-backdrop" onClick={() => setShowEditProductModal(false)}>
-                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                            <div className="modal-header">
-                                <h2>Edit Product</h2>
-                                <button onClick={() => setShowEditProductModal(false)} className="modal-close-button">X</button>
-                            </div>
-                            <div className="modal-body">
-                                <form onSubmit={handleUpdateProduct}>
-                                    <input
-                                        type="text"
-                                        placeholder="Part Number"
-                                        value={editProductItem.partNumber}
-                                        onChange={e => setEditProductItem({ ...editProductItem, partNumber: e.target.value })}
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="Supplier Part Number"
-                                        value={editProductItem.supplierPartNumber}
-                                        onChange={e => setEditProductItem({ ...editProductItem, supplierPartNumber: e.target.value })}
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="Radius Size"
-                                        value={editProductItem.radiusSize}
-                                        onChange={e => setEditProductItem({ ...editProductItem, radiusSize: e.target.value })}
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="Material Type"
-                                        value={editProductItem.materialType}
-                                        onChange={e => setEditProductItem({ ...editProductItem, materialType: e.target.value })}
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="Color"
-                                        value={editProductItem.color}
-                                        onChange={e => setEditProductItem({ ...editProductItem, color: e.target.value })}
-                                    />
-                                    <textarea
-                                        placeholder="Description"
-                                        value={editProductItem.description}
-                                        onChange={e => setEditProductItem({ ...editProductItem, description: e.target.value })}
-                                    ></textarea>
-                                    {/* <DropdownWithInput
-                                        options={typeOptions}
-                                        value={editProductItem.type}
-                                        onChange={(newType) => setEditProductItem({ ...editProductItem, type: newType })}
-                                        onNewOption={(newType) => setTypeOptions([...typeOptions, newType])} // Handling new types similarly
-                                    /> */}
-                                    <input
-                                        type="number"
-                                        placeholder="Quantity of Item"
-                                        value={editProductItem.quantityOfItem}
-                                        onChange={e => setEditProductItem({ ...editProductItem, quantityOfItem: e.target.value })}
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="Unit"
-                                        value={editProductItem.unit}
-                                        onChange={e => setEditProductItem({ ...editProductItem, unit: e.target.value })}
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="Price"
-                                        value={editProductItem.price}
-                                        onChange={e => setEditProductItem({ ...editProductItem, price: e.target.value })}
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="Mark Up Price"
-                                        value={editProductItem.markUpPrice}
-                                        onChange={e => setEditProductItem({ ...editProductItem, markUpPrice: e.target.value })}
-                                    />
-                                    <div className="modal-actions">
-                                        <button type="submit">Save Changes</button>
-                                        <button type="button" onClick={() => setShowEditProductModal(false)}>Cancel</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+                    <EditProductModal
+                        showModal={showEditProductModal}
+                        setShowModal={setShowEditProductModal}
+                        editProductItem={editProductItem}
+                        setEditProductItem={setEditProductItem}
+                        fetchProductsWithInventory={fetchProductsWithInventory}
+                        API_BASE_URL={API_BASE_URL}
+                    />
                 )}
             </div>
         </div>

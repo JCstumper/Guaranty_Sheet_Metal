@@ -31,7 +31,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
         setFileName(file ? file.name : '');
     };
 
-    const requiredColumns = ['radius_size', 'materialtype', 'color', 'description', 'type', 'cat_code', 'quantityofitem', 'unit'];
+    const requiredColumns = ['radiussize', 'materialtype', 'description', 'type', 'catcode', 'quantityofitem', 'unit'];
 
     const handleFileUpload = async () => {
         if (!uploadedFile) {
@@ -47,62 +47,69 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
             const worksheet = workbook.Sheets[sheetName];
             const jsonData = XLSX.utils.sheet_to_json(worksheet, { blankrows: false, header: 1 });
     
-            // Standardize the headers
             const headers = jsonData.shift().map(header => normalizeHeaderName(header, columnVariations));
             const columnIndices = headers.reduce((acc, header, index) => {
                 acc[header] = index;
                 return acc;
             }, {});
     
-            // Check if all required columns are present
-            const missingRequiredColumns = requiredColumns.filter(requiredColumn => {
-                const variations = columnVariations[requiredColumn] || [];
-                return !variations.some(variation => headers.includes(variation.toLowerCase().replace(/[^a-z0-9]+/g, '')));
-            });
+            // Track failed rows for reporting
+            let failedRows = [];
     
-            if (missingRequiredColumns.length > 0) {
-                const missingColumnsFormatted = missingRequiredColumns.map(col => columnVariations[col][0]).join(', ');
-                toast.error(`Missing required columns: ${missingColumnsFormatted}`);
-                return;
-            }
+            for (let rowIndex = 0; rowIndex < jsonData.length; rowIndex++) {
+                const row = jsonData[rowIndex];
     
-            // Process jsonData to send to backend or generate part numbers
-            try {
-                for (const item of jsonData) {
-                    let partNumberProvided = !!item[columnIndices['partnumber']];
-                    let itemData = {
-                        partNumber: sanitizeInput(item[columnIndices['partnumber']]),
-                        supplierPartNumber: sanitizeInput(item[columnIndices['supplierpartnumber']]), // Added field
-                        radiusSize: sanitizeInput(item[columnIndices['radius_size']]),
-                        materialType: sanitizeInput(item[columnIndices['materialtype']]),
-                        color: sanitizeInput(item[columnIndices['color']]),
-                        description: sanitizeInput(item[columnIndices['description']]),
-                        type: sanitizeInput(item[columnIndices['type']]),
-                        quantityOfItem: parseInt(sanitizeInput(item[columnIndices['quantityofitem']]), 10), // Ensure numeric conversion
-                        unit: sanitizeInput(item[columnIndices['unit']]),
-                        price: parseFloat(sanitizeInput(item[columnIndices['price']])), // Ensure numeric conversion
-                        markUpPrice: parseFloat(sanitizeInput(item[columnIndices['markupprice']])), // Ensure numeric conversion
-                        catCode: sanitizeInput(item[columnIndices['cat_code']])
-                    };
-                    
-                    // Generate part number if not provided
-                    if (!partNumberProvided) {
-                        setNewProductItem(prev => ({ ...prev, ...itemData }));
-                        itemData.partNumber = generatePartNumber();
-                    }
-
-                    // Send the item data to backend
-                    if (itemData.partNumber) {
-                        await sendDataToBackend(itemData);
-                    }
+                // Ensure all required columns have data
+                const missingData = requiredColumns.some(column => {
+                    return !row[columnIndices[column]] || sanitizeInput(row[columnIndices[column]].toString()).trim() === '';
+                });
+    
+                if (missingData) {
+                    // If any required data is missing, log the failure and skip this row
+                    failedRows.push(`Row ${rowIndex + 2}: Missing required data.`);
+                    continue;
                 }
     
-                setShowUploadModal(false);
-                toast.success('File uploaded successfully.');
-                fetchProductsWithInventory();
-            } catch (error) {
-                console.error('Error uploading file:', error);
-                toast.error('Failed to upload file.');
+                let itemData = {
+                    partNumber: sanitizeInput(row[columnIndices['partnumber']]),
+                    supplierPartNumber: sanitizeInput(row[columnIndices['supplierpartnumber']]),
+                    radiusSize: sanitizeInput(row[columnIndices['radiussize']]),
+                    materialType: sanitizeInput(row[columnIndices['materialtype']]),
+                    color: sanitizeInput(row[columnIndices['color']]),
+                    description: sanitizeInput(row[columnIndices['description']]),
+                    type: sanitizeInput(row[columnIndices['type']]),
+                    quantityOfItem: parseInt(sanitizeInput(row[columnIndices['quantityofitem']]), 10),
+                    unit: sanitizeInput(row[columnIndices['unit']]),
+                    price: parseFloat(sanitizeInput(row[columnIndices['price']])),
+                    markUpPrice: parseFloat(sanitizeInput(row[columnIndices['markupprice']])),
+                    catCode: sanitizeInput(row[columnIndices['catcode']])
+                };
+
+                // Generate part number if not provided
+                if (!itemData.partNumber) {
+                    itemData.partNumber = generatePartNumberBasedOnTemp(itemData); // Ensure this function exists and works as expected
+                }
+    
+                // Attempt to send the item data to the backend
+                try {
+                    await sendDataToBackend(itemData);
+                } catch (error) {
+                    // Log the failure if sendDataToBackend throws an error
+                    failedRows.push(`Row ${rowIndex + 2}: Failed to upload due to server error.`);
+                }
+            }
+    
+            // After processing all rows, report failures
+            failedRows.forEach(failureMessage => {
+                toast.error(failureMessage);
+            });
+    
+            if (failedRows.length === 0) {
+                toast.success('All items uploaded successfully.');
+            } else if (failedRows.length < jsonData.length) {
+                toast.warn('Some items failed to upload.');
+            } else {
+                toast.error('Failed to upload any items.');
             }
         };
         reader.readAsArrayBuffer(uploadedFile);
@@ -112,7 +119,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
     const columnVariations = {
         'partnumber': ['Part Number', 'partnumber', 'part #', 'P/N', 'Part No', 'Part Num'],
         'supplierpartnumber': ['Supplier Part Number', 'supplierpartnumber', 'supplier part #', 'Supplier P/N', 'Supp Part No', 'Supp Part Num'],
-        'radius_size': ['Radius Size', 'radius_size', 'Size', 'size', 'Radius', 'radius'],
+        'radiussize': ['Radius Size', 'radius_size', 'Size', 'size', 'Radius', 'radius'],
         'materialtype': ['Material Type', 'materialtype', 'Material', 'material'],
         'color': ['Color', 'color', 'Colour', 'colour'],
         'description': ['Description', 'description', 'Desc', 'desc', 'Description of Item', 'Item Description'],
@@ -120,8 +127,8 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
         'quantityofitem': ['quantity_of_item','Quantity_of_Item','Quantity of Item', 'quantityofitem', 'Quantity', 'quantity', 'Qty', 'qty', 'Amount', 'amount', 'quantity_of_items', 'Quantity_of_Items', 'Quantity of Items', 'quantityofitems'],
         'unit': ['Unit', 'unit', 'Units', 'units', 'Measurement Unit', 'measurement unit'],
         'price': ['Price', 'price', 'Cost', 'cost', 'Unit Price', 'unit price'],
-        'markupprice': ['Markup Price', 'markupprice', 'Mark Up', 'Mark-Up', 'mark up', 'Selling Price', 'selling price'],
-        'cat_code': ['Cat Code', 'cat_code', 'Category Code', 'category code', 'CatCode', 'Cat', 'cat',],
+        'markupprice': ['Markup Price', 'markupprice', 'Mark Up', 'Mark-Up', 'mark up', 'Selling Price', 'selling price', 'w_trans', 'W_Trans'],
+        'catcode': ['Cat Code', 'cat code','cat_code', 'Category Code', 'category code', 'CatCode', 'Cat', 'cat',],
         // Add any other column variations you expect here
     };
     
@@ -150,7 +157,6 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
 
     const sendDataToBackend = async (data) => {
         try {
-            console.log(data);
             const response = await fetch('https://localhost/api/products', {
                 method: 'POST',
                 headers: {
@@ -160,12 +166,10 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
             });
     
             if (!response.ok) {
-                console.log(data);
                 throw new Error('Failed to send data to the server');
             }
     
             const result = await response.json();
-            console.log('Data sent successfully', result);
             await fetchProductsWithInventory();
             return true;
         } catch (error) {
@@ -175,8 +179,6 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
     };
 
     const handleAddProducts = async () => {
-        console.log("Attempting to add inventory item...");
-
         const sanitizedNewProductItem = {
             // Sanitize each field in newProductItem before sending it
             ...Object.keys(newProductItem).reduce((acc, key) => {
@@ -321,19 +323,33 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
         'maroon': 'MN',
         'dark maroon': 'DM',
         'light maroon': 'LM',
+        '':'',
     };    
     
     const getColorCode = (colorName) => {
-        const cleanedColorName = colorName.trim().toLowerCase();
+        // Ensure colorName is a string to avoid errors calling .trim() on undefined
+        const cleanedColorName = (colorName || '').trim().toLowerCase();
         return colorCodes[cleanedColorName] || '';
+    };    
+
+    const generatePartNumberBasedOnTemp = (itemData) => {
+        const { materialType, color, radiusSize, catCode, unit, quantityOfItem } = itemData;
+        const colorCode = getColorCode(color) || ''; // Use the color code instead of the first letter
+        let partNumber = `${materialType[0] || ''}${colorCode || ''}${radiusSize}${catCode || ''}`;
+    
+        if (unit === 'ft') {
+            partNumber += quantityOfItem;
+        }
+    
+        return partNumber.toUpperCase();
     };
     
     const generatePartNumber = () => {
-        const { materialType, color, radiusSize, catCode, itemType, quantityOfItem } = newProductItem;
-        const colorCode = getColorCode(color); // Use the color code instead of the first letter
+        const { materialType, color, radiusSize, catCode, unit, quantityOfItem } = newProductItem;
+        const colorCode = getColorCode(color) || ''; // Use the color code instead of the first letter
         let partNumber = `${materialType[0] || ''}${colorCode}${radiusSize}${catCode || ''}`;
     
-        if (itemType !== 'box') {
+        if (unit === 'ft') {
             partNumber += quantityOfItem;
         }
     
@@ -498,14 +514,26 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
                     <button onClick={() => setShowModal(false)} className="modal-close-button">X</button>
                 </div>
                 <div className="modal-body">
-                {isUploading ? (
-                    <div>
-                        <label htmlFor="file-upload" className="custom-file-upload">
-                            {fileName || 'No file selected'}
-                        </label>
-                        <input id="file-upload" type="file" accept=".xlsx, .xls" onChange={handleFileChange} />
-                    </div>
-                ) : (
+                    {isUploading ? (
+                        <div>
+                            <p>Please ensure your Excel file includes the following columns:</p>
+                            <ul>
+                                <li>Radius Size</li>
+                                <li>Material Type</li>
+                                <li>Description</li>
+                                <li>Type</li>
+                                <li>CatCode</li>
+                                <li>Quantity of Item</li>
+                                <li>Unit</li>
+                                {/* List any other required columns here */}
+                            </ul>
+                            <strong>The column headers must be in row 1!</strong>
+                            <label htmlFor="file-upload" className="custom-file-upload">
+                                {fileName || 'No file selected'}
+                            </label>
+                            <input id="file-upload" type="file" accept=".xlsx, .xls" onChange={handleFileChange} />
+                        </div>
+                    ) : (
                         <div>
                             <div className="auto-generate-part">
                                 <input
