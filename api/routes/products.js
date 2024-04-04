@@ -125,7 +125,7 @@ router.put('/:originalPartNumber', async (req, res) => {
             const updateProductQuery = `
                 UPDATE products
                 SET 
-                    supplier_part_number = $1
+                    supplier_part_number = $1,
                     radius_size = $2, 
                     material_type = $3, 
                     color = $4, 
@@ -155,9 +155,8 @@ router.put('/:originalPartNumber', async (req, res) => {
             `;
             await client.query(updateInventoryQuery, [partNumber, originalPartNumber]);
 
-            // Optionally, delete the old product if no longer needed
-            // const deleteOldProductQuery = `DELETE FROM products WHERE part_number = $1;`;
-            // await client.query(deleteOldProductQuery, [originalPartNumber]);
+            const deleteOldProductQuery = `DELETE FROM products WHERE part_number = $1;`;
+            await client.query(deleteOldProductQuery, [originalPartNumber]);
         }
 
         // Commit transaction
