@@ -16,6 +16,8 @@ const EditProductModal = ({
     const handleUpdateProduct = async (e) => {
         e.preventDefault();
 
+        const token = localStorage.getItem('token');
+
         const {
             originalPartNumber,
             partNumber,
@@ -50,6 +52,7 @@ const EditProductModal = ({
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
+                    'token': token, // Include the token in the request headers
                 },
                 body: JSON.stringify(updateData),
             });
@@ -59,8 +62,8 @@ const EditProductModal = ({
             }
 
             toast.success('Product updated successfully.');
-            setShowModal(false);
-            fetchProductsWithInventory();
+            setShowModal(false); // Close the modal
+            fetchProductsWithInventory(); // Refresh the inventory list
         } catch (error) {
             toast.error('Error updating product: ' + error.message);
             console.error('Error updating product:', error);

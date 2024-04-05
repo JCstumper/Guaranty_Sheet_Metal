@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import './topbar.css';
 import logo from "../pictures/logo.png";
 import { NavLink } from 'react-router-dom';
-import { MdDashboard, MdInventory, MdShoppingCart, MdPeople, MdSettings, MdExitToApp, } from 'react-icons/md';
-import { FaHardHat, FaTruck } from 'react-icons/fa';
+import { MdDashboard, MdInventory } from 'react-icons/md';
+import { FaHardHat, FaTruck, FaHistory } from 'react-icons/fa';
 import LogoutConfirmation from './LogoutConfirmation';
 import LoadingScreen from './Loading'; // Verify this path is correct
 import { jwtDecode } from "jwt-decode";
@@ -11,7 +11,7 @@ import { Bounce, toast } from 'react-toastify';
 import EditProfile from './EditProfile';
 import { AppContext } from '../App';
 
-const buttons = ['DASHBOARD', 'INVENTORY', 'PURCHASES', 'JOBS'];
+const buttons = ['DASHBOARD', 'INVENTORY', 'PURCHASES', 'JOBS', 'LOGS'];
 
 const Topbar = ({ setAuth }) => {
     const [userName, setUserName] = useState("");
@@ -185,9 +185,7 @@ const Topbar = ({ setAuth }) => {
                     {showDropdown && (
                         <div className="user-dropdown">
                             <button onClick={() => setShowEditProfile(true)}>Edit Profile</button>
-                            <button onClick={() => setLogoutConfirmationOpen(true)}>
-                                Logout
-                            </button>
+                            <button onClick={() => setLogoutConfirmationOpen(true)}>Logout</button>
                         </div>
                     )}
                 </div>
@@ -214,6 +212,7 @@ const getButtonIcon = (button) => {
         case 'INVENTORY': return <MdInventory />;
         case 'PURCHASES': return <FaTruck />;
         case 'JOBS': return <FaHardHat />;
+        case 'LOGS': return <FaHistory />;
         default: return null;
     }
 };

@@ -35,7 +35,7 @@ router.post("/register", validInfo, async(req, res) => {
 
         //6. generating our jwt token
         
-        const token = jwtGenerator(newUser.rows[0].user_id);
+        const token = jwtGenerator(newUser.rows[0].user_id, newUser.rows[0].username);
 
         res.json({token});
 
@@ -96,8 +96,8 @@ router.post("/login", validInfo, async (req, res) => {
         await updateFailedAttempts(userId, true); //Reset the failed attempts since the user entered the correct password
 
         //5. give them the jwt token
+        const token = jwtGenerator(user.rows[0].user_id, user.rows[0].username);
 
-        const token = jwtGenerator(user.rows[0].user_id);
 
         res.json({token});
     }

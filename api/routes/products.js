@@ -2,8 +2,21 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db'); // make sure the path to db.js is correct
+const authorization = require("../middleware/authorization");
 
-router.get('/', async (req, res) => {
+async function logInventoryAction(actionType, userId, logType, changeDetails) {
+    const logQuery = `
+        INSERT INTO log (action_type, user_id, log_type, change_details) 
+        VALUES ($1, $2, $3, $4);
+    `;
+    try {
+        await pool.query(logQuery, [actionType, userId, logType, JSON.stringify(changeDetails)]);
+    } catch (err) {
+        console.error('Failed to log inventory action:', err.message);
+    }
+}
+
+router.get('/', authorization, async (req, res) => {
     try {
         const products = await pool.query(`
         SELECT * FROM products
@@ -15,7 +28,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', authorization, async (req, res) => {
     try {
         // Extracting fields from req.body based on the structure provided earlier
         const {
@@ -55,6 +68,12 @@ router.post('/', async (req, res) => {
             INSERT INTO inventory (part_number, quantity_in_stock)
             VALUES ($1, $2) RETURNING *;
         `, [partNumber, 0]); // Use the partNumber from req.body and a default quantity of 0
+        
+        // After inserting the new product and before sending the response
+        await logInventoryAction('add', req.username, 'inventory', { 
+            message: 'Product added', 
+            details: { ...req.body } 
+        });
 
         res.status(201).json({
             message: 'Product added successfully',
@@ -66,7 +85,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-router.delete('/:partNumber', async (req, res) => {
+router.delete('/:partNumber', authorization, async (req, res) => {
     try {
         const { partNumber } = req.params;
 
@@ -83,6 +102,12 @@ router.delete('/:partNumber', async (req, res) => {
             WHERE part_number = $1
             RETURNING *;
         `, [partNumber]);
+        
+        // After deleting the product and before sending the response
+        await logInventoryAction('delete', req.username, 'inventory', { 
+            message: 'Product deleted',
+            details: productDeletionResponse.rows[0]
+        });
 
         // Check if a product was actually deleted. If not, the product was not found.
         if (productDeletionResponse.rowCount === 0) {
@@ -99,7 +124,7 @@ router.delete('/:partNumber', async (req, res) => {
     }
 });
 
-router.put('/:originalPartNumber', async (req, res) => {
+router.put('/:originalPartNumber', authorization, async (req, res) => {
     const client = await pool.connect();
     try {
         const { originalPartNumber } = req.params;
@@ -159,6 +184,12 @@ router.put('/:originalPartNumber', async (req, res) => {
             await client.query(deleteOldProductQuery, [originalPartNumber]);
         }
 
+        // After updating the product and before sending the response
+        await logInventoryAction('update', req.username, 'inventory', { 
+            message: 'Product updated', 
+            details: { ...req.body } 
+        });
+
         // Commit transaction
         await client.query('COMMIT');
 
@@ -172,7 +203,7 @@ router.put('/:originalPartNumber', async (req, res) => {
     }
 });
 
-router.get('/with-inventory', async (req, res) => {
+router.get('/with-inventory', authorization, async (req, res) => {
     try {
         // Perform a SQL JOIN to fetch products with their inventory quantity
         const productsWithInventory = await pool.query(`
