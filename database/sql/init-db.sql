@@ -14,7 +14,6 @@ CREATE TABLE IF NOT EXISTS category_mappings (
     catcode VARCHAR(255) NOT NULL UNIQUE
 );
 
-
 -- CREATE TABLE IF NOT EXISTS materials (
 --     type VARCHAR(255) PRIMARY KEY
 -- );
@@ -93,4 +92,15 @@ CREATE TABLE IF NOT EXISTS used_parts (
     quantity_used DECIMAL(10, 2),
     FOREIGN KEY (job_id) REFERENCES jobs(job_id) ON DELETE CASCADE,
     FOREIGN KEY (part_number) REFERENCES products(part_number)
+);
+
+CREATE TABLE IF NOT EXISTS login_attempts (
+    user_id uuid PRIMARY KEY,
+    failed_attempts INT NOT NULL DEFAULT 0,
+    is_locked_out BOOLEAN NOT NULL DEFAULT FALSE,
+    lockout_until TIMESTAMP WITH TIME ZONE,
+    CONSTRAINT fk_user
+        FOREIGN KEY (user_id) 
+        REFERENCES users(user_id)
+        ON DELETE CASCADE
 );
