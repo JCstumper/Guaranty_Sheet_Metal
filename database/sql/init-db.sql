@@ -23,11 +23,11 @@ CREATE TABLE IF NOT EXISTS category_mappings (
 --     name VARCHAR(255) PRIMARY KEY
 -- );
 
-CREATE TABLE IF NOT EXISTS inventory_log (
+CREATE TABLE IF NOT EXISTS log (
     log_id SERIAL PRIMARY KEY,
     action_type VARCHAR(10) NOT NULL,
-    user_id INT NOT NULL,
-    product_part_number VARCHAR(255), -- Assuming part_number is a key for products
+    user_id VARCHAR(29) NOT NULL,
+    log_type VARCHAR(255),
     change_details TEXT NOT NULL,
     action_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

@@ -29,7 +29,7 @@ router.post("/register", validInfo, async(req, res) => {
 
         //5. generating our jwt token
         
-        const token = jwtGenerator(newUser.rows[0].user_id);
+        const token = jwtGenerator(newUser.rows[0].user_id, newUser.rows[0].username);
 
         res.json({token});
 
@@ -63,8 +63,8 @@ router.post("/login", validInfo, async (req, res) => {
         }
 
         //4. give them the jwt token
+        const token = jwtGenerator(user.rows[0].user_id, user.rows[0].username);
 
-        const token = jwtGenerator(user.rows[0].user_id);
 
         res.json({token});
     }

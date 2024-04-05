@@ -1,0 +1,147 @@
+.logs-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding-top: 90px; /* This offsets the content from the top bar. */
+}
+
+.logs-main {
+    display: flex;
+    margin-top: 100px;
+    margin-left: 10px;
+    padding-right: 10px; /* Adjust as needed if you have a sidebar or other content on the right */
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.logs-table {
+    flex-grow: 1;
+    background-color: #fff;
+    border: 4px solid #b3b3b3;
+    border-radius: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: hidden;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.logs-table-header {
+    background-color: #0b2b61;
+    color: #ffffff;
+    padding: 15px;
+    font-size: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 11px 11px 0 0;
+}
+
+.table-content {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.table-content table {
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: auto; /* Changed from fixed to auto */
+}
+
+.table-content th,
+.table-content td {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    white-space: nowrap; /* Prevents text from wrapping */
+    overflow: hidden; /* Hide text that can't fit */
+    text-overflow: ellipsis; /* Show ellipsis for overflowed text */
+    min-width: 120px; /* Adjust this value as needed */
+}
+
+/* Add specific min-widths for larger headers */
+.table-content th.action-type-header {
+    min-width: 150px;
+}
+
+.table-content th.user-id-header {
+    min-width: 150px;
+}
+
+.table-content th.part-number-header {
+    min-width: 150px;
+}
+
+.table-content th.change-details-header {
+    min-width: 200px; /* Change details often need more space */
+}
+
+.table-content th.timestamp-header {
+    min-width: 150px;
+}
+
+.table-content tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.table-content tr:hover {
+    background-color: #ddd;
+}
+
+.table-content::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.table-content::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+.table-content::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.filter-button {
+    background-color: #e7e7e7; /* Bootstrap's gray */
+    color: #000000; /* White text color */
+    padding: 10px 15px; /* Padding around the text */
+    font-size: 16px; /* Size of the font */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Changes the cursor to a pointer */
+    transition: background-color 0.3s ease; /* Smooth transition for the background color */
+    outline: none; /* No outline when the button is in focus */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Shadow for a 3D effect */
+    display: inline-flex; /* Allows the placement of icon and text side-by-side */
+    align-items: center; /* Centers items vertically */
+    justify-content: center; /* Centers items horizontally */
+}
+
+.filter-button:hover, .filter-button:focus {
+    background-color: #e6e6e6; /* A slightly darker gray on hover/focus */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* A slightly larger shadow for a "raised" effect on hover/focus */
+}
+
+.filter-button:active {
+    background-color: #e7e7e7; /* An even darker gray when the button is pressed */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* A smaller shadow to give a "pressed" effect */
+}
+
+.filter-button .icon {
+    margin-right: 5px; /* Space between icon and text */
+}
+
+/* Responsive adjustments for smaller screens */
+@media screen and (max-width: 768px) {
+    .logs-main {
+        flex-direction: column;
+        padding-right: 0;
+    }
+
+    .logs-table {
+        margin: 0;
+    }
+}

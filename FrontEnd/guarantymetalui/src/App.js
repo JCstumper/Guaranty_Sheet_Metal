@@ -8,6 +8,7 @@ import { jwtDecode } from "jwt-decode";
 import Dashboard from './Dashboard';
 import Orders from './Orders';
 import Customers from './Customers';
+import Logs from './Logs';
 import Inventory from './Inventory';
 import Login from './components/Login';
 import Register from './components/Register';
@@ -112,6 +113,7 @@ const ProtectedRoute = ({ children }) => {
                 <Route path="/purchases" element={<ProtectedRoute>{isAuthenticated ? (<Orders setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>}  />
                 <Route path="/jobs" element={<ProtectedRoute>{isAuthenticated ? (<Customers setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
                 <Route path="/inventory" element={<ProtectedRoute>{isAuthenticated ? (<Inventory setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
+                <Route path="/logs" element={<ProtectedRoute>{isAuthenticated ? (<Logs setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
                 <Route path="/logout" element={isAuthenticated ? (<Logout setAuth={setAuth}/>) : (<Navigate to="/login" />)} />
                 <Route path="/*" element={isAuthenticated ? (<NotFound setAuth={setAuth}/>) : (<Navigate to="/login" />)} />
               </Routes>
