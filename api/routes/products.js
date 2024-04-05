@@ -222,4 +222,28 @@ router.get('/with-inventory', authorization, async (req, res) => {
     }
 });
 
+// Add this new route to your existing routes in products.js
+
+router.get('/category/:category', authorization, async (req, res) => {
+    try {
+        const { category } = req.params;
+        // Replace 'type' with your actual column name for the category in the 'products' table.
+        const products = await pool.query(`
+            SELECT * FROM products WHERE type = $1;
+        `, [category]);
+        
+        if(products.rowCount === 0) {
+            await pool.query('DELETE FROM category_mappings WHERE category = $1 RETURNING *', [category]);
+        }
+
+        res.json({
+            message: `Products fetched successfully for category: ${category}`,
+            products: products.rows
+        });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: 'Failed to fetch products by category' });
+    }
+});
+
 module.exports = router;

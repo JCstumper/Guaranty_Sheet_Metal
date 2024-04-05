@@ -8,8 +8,7 @@ CREATE TABLE IF NOT EXISTS users(
 );
 
 CREATE TABLE IF NOT EXISTS category_mappings (
-    id SERIAL PRIMARY KEY,
-    category VARCHAR(255) NOT NULL UNIQUE,
+    category VARCHAR(255) NOT NULL PRIMARY KEY,
     keywords TEXT[] NOT NULL,
     catcode VARCHAR(255) NOT NULL UNIQUE
 );
