@@ -17,11 +17,13 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
         materialType: '',
         color: '',
         description: '',
+        catcode: '',
         type: '',
         quantityOfItem: '',
         unit: '',
         price: '',
         markUpPrice: '',
+        
     });
 
     const handleFileChange = (e) => {
@@ -77,6 +79,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
                         materialType: sanitizeInput(item[columnIndices['materialtype']]),
                         color: sanitizeInput(item[columnIndices['color']]),
                         description: sanitizeInput(item[columnIndices['description']]),
+                        catcode: sanitizeInput(item[columnIndices['catcode']]),
                         type: sanitizeInput(item[columnIndices['type']]),
                         quantityOfItem: parseInt(sanitizeInput(item[columnIndices['quantityofitem']]), 10), // Ensure numeric conversion
                         unit: sanitizeInput(item[columnIndices['unit']]),
@@ -116,6 +119,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
         'materialtype': ['Material Type', 'materialtype', 'Material', 'material'],
         'color': ['Color', 'color', 'Colour', 'colour'],
         'description': ['Description', 'description', 'Desc', 'desc', 'Description of Item', 'Item Description'],
+        'catcode' : ['cat code' , 'CatCode', 'Cat code', 'cat Code'],
         'type': ['Type', 'type', 'Category', 'category', 'Item Type', 'item type'],
         'quantityofitem': ['quantity_of_item','Quantity_of_Item','Quantity of Item', 'quantityofitem', 'Quantity', 'quantity', 'Qty', 'qty', 'Amount', 'amount', 'quantity_of_items', 'Quantity_of_Items', 'Quantity of Items', 'quantityofitems'],
         'unit': ['Unit', 'unit', 'Units', 'units', 'Measurement Unit', 'measurement unit'],
@@ -400,7 +404,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
     useEffect(() => {
         const fetchCategoryMappings = async () => {
             try {
-                const response = await fetch('/categories', {
+                const response = await fetch('https://localhost/api/categories', {
                     method: 'GET',
                     headers: {
                         'Accept': 'application/json',
@@ -435,45 +439,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
         fetchCategoryMappings();
     }, []); // Dependency array left empty to run only once on component mount
     
-
-    // Mapping of keywords to categories
-    const [categoryMappings, setCategoryMappings] = useState([]);
-    
-    const determineCategory = (description) => {
-        const descLower = description.toLowerCase();
-        let foundCategory = '';
-        let isNewCategory = true;
-
-        for (const mapping of categoryMappings) {
-            if (mapping.keywords.every(keyword => descLower.includes(keyword))) {
-                foundCategory = mapping.category;
-                isNewCategory = false;
-                break;
-            }
-        }
-
-        return { foundCategory, isNewCategory };
-    };
-
-    useEffect(() => {
-        // Find the mapping by category name
-        const mapping = categoryMappings.find(cm => cm.category === newProductItem.type);
-        // If a mapping is found, set the catCode in the state
-        if (mapping) {
-            setNewProductItem(prevState => ({
-                ...prevState,
-                catCode: mapping.catcode
-            }));
-        } else {
-            // If no mapping is found (e.g. the user types a category that is not in the list), you can decide to clear the CatCode or leave it as is.
-            // Here's how you'd clear the CatCode:
-            setNewProductItem(prevState => ({
-                ...prevState,
-                catCode: '' // Clear the CatCode if the category is not found
-            }));
-        }
-    }, [newProductItem.type, categoryMappings]);
-
+   
     const handleCatCodeChange = (e) => {
         const catCodeValue = e.target.value;
         setNewProductItem(prevState => ({
@@ -499,14 +465,15 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
                 catCode: matchingCategory.catcode
             }));
         } else {
-            // If no match is found, you might want to clear the catCode or leave it as the user has entered
-            // Decide based on your application's needs. Here's how you'd clear it:
-            setNewProductItem(prevState => ({
-                ...prevState,
-                catCode: '' // Clear the catCode or handle as necessary
-            }));
+            // // If no match is found, you might want to clear the catCode or leave it as the user has entered
+            // // Decide based on your application's needs. Here's how you'd clear it:
+            // setNewProductItem(prevState => ({
+            //     ...prevState,
+            //     catCode: '' // Clear the catCode or handle as necessary
+            // }));
         }
     };
+    
     
 
     return (
