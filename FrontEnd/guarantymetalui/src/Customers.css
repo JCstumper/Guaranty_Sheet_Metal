@@ -267,3 +267,119 @@
 .details-btn:hover {
   background-color: #083d77;
 }
+
+/* This is a new section for the parts*/
+
+/* Specific styles for the Necessary Parts and Used Parts tables */
+.necessary-parts-table, .used-parts-table {
+  margin-top: 10px;
+}
+
+/* Add custom styles for the action buttons in each section if needed */
+.add-part-btn {
+  background-color: #28a745; /* A green color for add part button */
+  color: white;
+}
+
+.add-part-btn:hover {
+  background-color: #218838; /* Darker green on hover */
+}
+.parts-section {
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.parts-section h5 {
+  margin-bottom: 10px;
+}
+
+.parts-section table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.parts-section table th, 
+.parts-section table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.parts-section table th {
+  background-color: #0b2b61;
+  color: white;
+}
+
+.parts-section .details-button-container {
+  margin-top: 5px;
+  text-align: right;
+}
+
+/* Add Part Modal Styles */
+.addPartModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050; /* Ensure it's above other modal elements */
+}
+
+.addPartModal-content {
+  background-color: white;
+  border: 2px solid #007bff;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  width: 60%; /* Adjust based on your preference */
+  max-width: 600px; /* Maximum width */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Ensures the content does not overflow the modal */
+}
+
+.addPartModal-header {
+  background-color: #0b2b61;
+  color: white;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.addPartModal-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.addPartModal-close {
+  color: white;
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-size: 1.25rem;
+}
+
+.addPartModal-body {
+  padding: 10px;
+  max-height: 400px; /* Maximum body height */
+  overflow-y: auto; /* Enable scroll if content exceeds maximum height */
+}
+
+.addPartModal-footer {
+  padding: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.addPartModal-footer .btn {
+  margin-left: 10px;
+}
