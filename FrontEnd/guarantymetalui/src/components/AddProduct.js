@@ -1,8 +1,9 @@
 // AddProducts.js
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { toast } from 'react-toastify';
 import * as XLSX from 'xlsx';
 import './AddProduct.css';
+import { AppContext } from '../App';
 
 const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
     const [uploadedFile, setUploadedFile] = useState(null);
@@ -10,6 +11,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
     const [shouldUpdateCategory, setShouldUpdateCategory] = useState(true);
     const [itemType, setItemType] = useState('box');
     const [fileName, setFileName] = useState('');
+    const {API_BASE_URL} = useContext(AppContext);
     const [newProductItem, setNewProductItem] = useState({
         partNumber: '',
         supplierPartNumber: '',
@@ -89,7 +91,22 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
                 if (!itemData.partNumber) {
                     itemData.partNumber = generatePartNumberBasedOnTemp(itemData); // Ensure this function exists and works as expected
                 }
-    
+
+                // Extract the category and catcode
+                const { type, catCode } = itemData;
+
+                // Check if the category is new and if it has a catCode
+                const isNewCategory = !categoryMappings.some(cm => cm.category.toLowerCase() === type.toLowerCase());
+                const hasCatCode = !!catCode;
+
+                if (isNewCategory && hasCatCode) {
+                    // Convert the category name into an array of keywords
+                    const keywords = type.split(' ').map(word => word.toLowerCase());
+
+                    // Send the new category mapping to the backend
+                    await sendCategoryMappingToBackend(type, catCode, keywords);
+                }
+                setShowModal(false);
                 // Attempt to send the item data to the backend
                 try {
                     await sendDataToBackend(itemData);
@@ -106,9 +123,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
     
             if (failedRows.length === 0) {
                 toast.success('All items uploaded successfully.');
-            } else if (failedRows.length < jsonData.length) {
-                toast.warn('Some items failed to upload.');
-            } else {
+            } else if (failedRows.length > jsonData.length) {
                 toast.error('Failed to upload any items.');
             }
         };
@@ -159,7 +174,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
         const token = localStorage.getItem('token');
 
         try {
-            const response = await fetch('https://localhost/api/products', {
+            const response = await fetch(`${API_BASE_URL}/products`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -178,6 +193,51 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
         } catch (error) {
             console.error('Error sending data to server:', error);
             return false;
+        }
+    };
+
+    const fetchCategoryMappings = async () => {
+        const url = `${API_BASE_URL}/categories`; // Replace with your actual API URL
+        try {
+            const response = await fetch(url, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': localStorage.getItem('token'), // Assuming token is needed and stored in localStorage
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            setCategoryMappings(data); // Assuming the backend sends the data in the correct format
+        } catch (error) {
+            console.error('Fetching category mappings failed: ', error);
+            toast.error('Failed to fetch category mappings');
+        }
+    };
+
+    const sendCategoryMappingToBackend = async (category, catcode, keywords) => {
+        // Construct the URL for the category mappings endpoint
+        const url = `${API_BASE_URL}/categories`;
+
+        try {
+            // Send a POST request to your backend
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': localStorage.getItem('token'), // Assume the token is stored in localStorage
+                },
+                body: JSON.stringify({ category, catcode, keywords }),
+            });
+
+            // Optionally, fetch the updated list of category mappings
+            fetchCategoryMappings();
+
+        } catch (error) {
+            console.error('Error sending category mapping to server:', error);
         }
     };
 
@@ -211,12 +271,19 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
 
             toast.success('Item added successfully.');
 
-            // Check if the category is new and add it to the mappings if so
-            const { type } = sanitizedNewProductItem;
-            const existingCategory = categoryMappings.find(cm => cm.category.toLowerCase() === type.toLowerCase());
+            // Extract the category and catcode
+            const { type, catCode } = newProductItem;
 
-            if (!existingCategory && type) {
-                setCategoryMappings(prevMappings => [...prevMappings, { keywords: [type.toLowerCase()], category: type }]);
+            // Check if the category is new and if it has a catCode
+            const isNewCategory = !categoryMappings.some(cm => cm.category.toLowerCase() === type.toLowerCase());
+            const hasCatCode = !!catCode;
+
+            if (isNewCategory && hasCatCode) {
+                // Convert the category name into an array of keywords
+                const keywords = type.split(' ').map(word => word.toLowerCase());
+
+                // Send the new category mapping to the backend
+                await sendCategoryMappingToBackend(type, catCode, keywords);
             }
         } else {
             toast.error('Failed to add the item. Please try again.');
@@ -417,76 +484,53 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
         }
     }, [newProductItem.price]);
 
-    // useEffect hook to run a piece of code with specific dependencies
-    useEffect(() => {
-        // Define an asynchronous function to fetch category mappings from the backend
-        const fetchCategoryMappings = async () => {
-        try {
-            // Initiating a fetch request to the '/categories' endpoint.
-            // This is a relative URL, assuming the frontend and backend are served from the same domain.
-            const response = await fetch('/categories', {
-            method: 'GET', // The HTTP method used for the request
-            headers: {
-                'Accept': 'application/json', // Tells the server we want JSON data in response
-                'Content-Type': 'application/json' // Tells the server we are sending JSON data
-            },
-            credentials: 'same-origin', // Ensures cookies are only included for requests to the same domain. Adjust as needed for your auth setup.
-            });
-    
-            // Check if the response was successful (status in the range 200-299)
-            if (!response.ok) {
-            // If not successful, throw an error to jump to the catch block
-            throw new Error('Failed to fetch category mappings');
-            }
-    
-            // Parse the JSON response body and update the categoryMappings state with it
-            const data = await response.json();
-            setCategoryMappings(data); // Updates state with the fetched data. Adjust this line if your state variable is named differently.
-        } catch (error) {
-            // Log any errors to the console and show an error message to the user
-            console.error('Error fetching category mappings:', error);
-            toast.error('Failed to fetch categories. Please check your connection and try again.');
-        }
-        };
-        // Call the fetchCategoryMappings function to execute the fetch operation
-        fetchCategoryMappings();
-    }, []); // An empty dependency array means this effect runs once on component mount, similar to componentDidMount in class components
-
-
     // Mapping of keywords to categories
     const [categoryMappings, setCategoryMappings] = useState([]);
-    
-    const determineCategory = (description) => {
-        const descLower = description.toLowerCase();
-        let foundCategory = '';
-        let isNewCategory = true;
-
-        for (const mapping of categoryMappings) {
-            if (mapping.keywords.every(keyword => descLower.includes(keyword))) {
-                foundCategory = mapping.category;
-                isNewCategory = false;
-                break;
-            }
-        }
-
-        return { foundCategory, isNewCategory };
-    };
 
     useEffect(() => {
-        // Find the mapping by category name
+        // Call the fetch function
+        fetchCategoryMappings();
+    }, []);
+
+    useEffect(() => {
+        const updateCategoryAndCatCode = description => {
+            const sortedMappings = [...categoryMappings].sort((a, b) => b.keywords.length - a.keywords.length);
+            
+            for (const mapping of sortedMappings) {
+                if (mapping.keywords.every(keyword => description.toLowerCase().includes(keyword.toLowerCase()))) {
+                setNewProductItem(prev => ({
+                    ...prev,
+                    type: mapping.category,
+                    catCode: mapping.catcode
+                }));
+                return;
+                }
+            }
+            
+            setNewProductItem(prev => ({
+                ...prev,
+                type: '',
+                catCode: ''
+            }));
+        };
+    
+        if (shouldUpdateCategory) {
+            updateCategoryAndCatCode(newProductItem.description);
+        }
+        
+    }, [newProductItem.description, categoryMappings, shouldUpdateCategory]);
+
+    useEffect(() => {
         const mapping = categoryMappings.find(cm => cm.category === newProductItem.type);
-        // If a mapping is found, set the catCode in the state
         if (mapping) {
             setNewProductItem(prevState => ({
                 ...prevState,
                 catCode: mapping.catcode
             }));
         } else {
-            // If no mapping is found (e.g. the user types a category that is not in the list), you can decide to clear the CatCode or leave it as is.
-            // Here's how you'd clear the CatCode:
             setNewProductItem(prevState => ({
                 ...prevState,
-                catCode: '' // Clear the CatCode if the category is not found
+                catCode: ''
             }));
         }
     }, [newProductItem.type, categoryMappings]);
