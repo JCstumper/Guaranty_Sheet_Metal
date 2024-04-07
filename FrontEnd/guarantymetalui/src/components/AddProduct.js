@@ -168,7 +168,6 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
             return value;
         }
     };
-    
 
     const sendDataToBackend = async (data) => {
         const token = localStorage.getItem('token');
@@ -476,11 +475,11 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
 
         // Check if price is a number and not empty
         if (newProductItem.price && !isNaN(newProductItem.price)) {
-        const markupPrice = calculateMarkup(newProductItem.price);
-        setNewProductItem(prevState => ({
-            ...prevState,
-            markUpPrice: markupPrice
-        }));
+            const markupPrice = calculateMarkup(newProductItem.price);
+            setNewProductItem(prevState => ({
+                ...prevState,
+                markUpPrice: markupPrice
+            }));
         }
     }, [newProductItem.price]);
 
