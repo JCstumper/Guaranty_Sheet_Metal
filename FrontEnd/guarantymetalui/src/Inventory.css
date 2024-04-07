@@ -422,21 +422,63 @@ text-decoration: none;
     background-color: #c82333; /* Darker red on hover */
 }
 
-
 @media screen and (max-width: 768px) {
     .inventory-main {
         flex-direction: column;
         padding-right: 0;
+        margin-top: 0; 
     }
 
-    .product-table {
-        margin: 0 0 20px 0;
+    .product-table,
+    .filtering-box {
+        margin: 0; 
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .table-content {
+        width: 100%;
+    }
+
+    .table-content table {
+        width: 100%;
     }
 
     .filtering-box {
         position: static;
-        width: 100%;
         height: auto;
-        margin-top: 20px;
+        padding: 20px;
+        overflow-y: auto;
     }
+
+    .filtering-box .search-input,
+    .filtering-box .action-button,
+    .filtering-box select {
+        width: calc(100% - 40px);
+        margin-bottom: 20px;
+    }
+
+    .product-action-buttons,
+    .product-action-button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    .inventory-main::before,
+    .inventory-main::after {
+        display: none;
+    }
+}
+
+
+/* Improve the look of the dropdown elements for a cleaner appearance */
+.custom-dropdown::after,
+.custom-select {
+    display: none; /* Simplify design by removing custom dropdown styles */
+}
+
+/* Make the add button easier to tap */
+.add-button {
+    padding: 8px 12px; /* Increase padding for a larger tap area */
+    font-size: 16px; /* Slightly larger font for visibility */
 }
