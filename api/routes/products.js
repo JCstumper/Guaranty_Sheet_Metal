@@ -193,5 +193,25 @@ router.get('/with-inventory', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch products with inventory' });
     }
 });
+router.get('/search', async (req, res) => {
+    const searchTerm = req.query.term;
+    if (!searchTerm) {
+        return res.status(400).json({ error: "Search term is required" });
+    }
+
+    try {
+        const query = `
+            SELECT part_number, description
+            FROM products
+            WHERE description ILIKE $1
+            ORDER BY description;
+        `;
+        const results = await pool.query(query, [`%${searchTerm}%`]);
+        res.json(results.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error searching for products' });
+    }
+});
 
 module.exports = router;

@@ -25,11 +25,15 @@ const AddPartModal = ({ isOpen, onClose, onAddPart, API_BASE_URL }) => {
 
     const handleSearch = debounce(async () => {
         setError('');
+        if (!searchTerm.trim()) {
+            setSearchResults([]);
+            return;
+        }
         try {
-            const response = await fetch(`${API_BASE_URL}/inventory/search?term=${encodeURIComponent(searchTerm.trim())}`);
+            const response = await fetch(`${API_BASE_URL}/products/search?term=${encodeURIComponent(searchTerm.trim())}`);
             if (response.ok) {
                 const data = await response.json();
-                setSearchResults(data.parts || []);
+                setSearchResults(data || []); // Adjust according to the actual response structure
             } else {
                 console.error('Failed to fetch parts');
                 setError('Failed to fetch parts');
@@ -38,7 +42,8 @@ const AddPartModal = ({ isOpen, onClose, onAddPart, API_BASE_URL }) => {
             console.error('Error fetching parts:', error);
             setError('Error fetching parts');
         }
-    }, 500);  // 500 ms delay
+    }, 500); // 500 ms delay
+    
 
     const handleAdd = (part) => {
         onAddPart(part);
