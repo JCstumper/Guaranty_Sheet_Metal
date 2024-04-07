@@ -42,7 +42,7 @@ router.post('/', authorization, async (req, res) => {
             quantityOfItem,  // Maps to 'quantity_of_item', adjusted for decimal type
             unit,            // Maps to 'unit'
             price,           // Maps to 'price', note: handling MONEY type correctly is important
-            markUpPrice      // Maps to 'mark_up_price', same note on MONEY type
+            markUpPrice,      // Maps to 'mark_up_price', same note on MONEY type
         } = req.body;
 
         // Ensure the SQL query matches your database schema
@@ -136,10 +136,12 @@ router.put('/:originalPartNumber', authorization, async (req, res) => {
             color,           // Maps to 'color'
             description,     // Maps to 'description'
             type,            // Maps to 'type'
+            oldType,
             quantityOfItem,  // Maps to 'quantity_of_item'
             unit,            // Maps to 'unit'
             price,           // Maps to 'price'
-            markUpPrice      // Maps to 'mark_up_price'
+            markUpPrice,      // Maps to 'mark_up_price'
+            catCode
         } = req.body;
 
         // Begin transaction
@@ -182,6 +184,35 @@ router.put('/:originalPartNumber', authorization, async (req, res) => {
 
             const deleteOldProductQuery = `DELETE FROM products WHERE part_number = $1;`;
             await client.query(deleteOldProductQuery, [originalPartNumber]);
+        }
+
+        if (oldType !== type) {
+            // Check if the old type still exists in other products
+            const checkForOldType = `SELECT * FROM products WHERE type = $1;`;
+            const resultOldType = await client.query(checkForOldType, [oldType]);
+            if (resultOldType.rows.length === 0) {
+                // If old type no longer exists, remove it from category_mappings
+                const deleteFromMappings = `DELETE FROM category_mappings WHERE category = $1;`;
+                await client.query(deleteFromMappings, [oldType]);
+            }
+
+            // Check if the new type exists in category_mappings
+            const checkForNewType = `SELECT * FROM category_mappings WHERE category = $1;`;
+            const resultNewType = await client.query(checkForNewType, [type]);
+
+            if (resultNewType.rows.length === 0) {
+                // If new type does not exist, prepare to add it to category_mappings
+                // Split the 'type' into individual words for keywords
+                const keywords = type.split(/\s+/); // Splits the type into words by whitespace
+
+                // Insert the type as category and the words as keywords
+                const insertIntoMappings = `
+                    INSERT INTO category_mappings (category, keywords, catcode) 
+                    VALUES ($1, $2, $3);
+                `;
+                await client.query(insertIntoMappings, [type, keywords, catCode]);
+            }
+
         }
 
         // After updating the product and before sending the response

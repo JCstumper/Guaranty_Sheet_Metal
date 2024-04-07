@@ -29,5 +29,19 @@ router.post('/', async (req, res) => {
     }
 });
 
+router.get('/getCatCode/:category', async (req, res) => {
+    const { category } = req.params; // Get the category from the query string
+    try {
+        const categoryMapping = await pool.query(
+            'SELECT catcode FROM category_mappings WHERE category = $1;',
+            [category]
+        );
+        res.json(categoryMapping.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+});
+
 
 module.exports = router;
