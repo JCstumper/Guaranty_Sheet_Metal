@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import './topbar.css';
 import logo from "../pictures/logo.png";
 import { NavLink } from 'react-router-dom';
-import { MdDashboard, MdInventory, MdShoppingCart, MdPeople, MdSettings, MdExitToApp, } from 'react-icons/md';
-import { FaHardHat, FaTruck } from 'react-icons/fa';
+import { MdDashboard, MdInventory } from 'react-icons/md';
+import { FaHardHat, FaTruck, FaHistory, FaBars } from 'react-icons/fa';
 import LogoutConfirmation from './LogoutConfirmation';
 import LoadingScreen from './Loading'; // Verify this path is correct
 import { jwtDecode } from "jwt-decode";
@@ -11,25 +11,24 @@ import { Bounce, toast } from 'react-toastify';
 import EditProfile from './EditProfile';
 import { AppContext } from '../App';
 
-const buttons = ['DASHBOARD', 'INVENTORY', 'PURCHASES', 'JOBS'];
+const buttons = ['DASHBOARD', 'INVENTORY', 'PURCHASES', 'JOBS', 'LOGS'];
 
 const Topbar = ({ setAuth }) => {
     const [userName, setUserName] = useState("");
     const [logoutConfirmationOpen, setLogoutConfirmationOpen] = useState(false);
     const [isTokenExpired, setIsTokenExpired] = useState(false);
+    const [showNavDropdown, setShowNavDropdown] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [showEditProfile, setShowEditProfile] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef(null);
     const {API_BASE_URL} = useContext(AppContext);
 
-    function refreshPage() {
-        window.location.reload();
-    }
 
     const toggleDropdown = () => {
-        setShowDropdown(!showDropdown);
-    };      
+        setShowDropdown(prevShowDropdown => !prevShowDropdown);
+    };
+    
 
     const handleProfileUpdate = ({ newUsername, newPassword, newEmail }) => {
         // Process the form data, e.g., send it to your backend server
@@ -168,12 +167,15 @@ const Topbar = ({ setAuth }) => {
                 <div className="bottom-bar-logo-container">
                     <img src={logo} alt="Logo" className="bottom-bar-logo" />
                 </div>
-                <div className="button-list">
+                <div className="hamburger-menu" onClick={() => setShowNavDropdown(!showNavDropdown)}>
+                    <FaBars />
+                </div>
+                <div className={`${showNavDropdown ? "nav-dropdown show" : "button-list"}`}>
                     {buttons.map((button) => {
                         const path = `/${button.toLowerCase()}`;
                         const icon = getButtonIcon(button);
                         return (
-                            <NavLink to={path} key={button} className={({ isActive }) => isActive ? "list-button active" : "list-button"}>
+                            <NavLink to={path} key={button} className={({ isActive }) => isActive ? "list-button active" : "list-button"} onClick={() => setShowNavDropdown(false)}>
                                 {icon}
                                 <span>{button}</span>
                             </NavLink>
@@ -182,14 +184,10 @@ const Topbar = ({ setAuth }) => {
                 </div>
                 <div className="user-info" onClick={toggleDropdown} ref={dropdownRef}>
                     <span className="username">{userName}</span>
-                    {showDropdown && (
-                        <div className="user-dropdown">
-                            <button onClick={() => setShowEditProfile(true)}>Edit Profile</button>
-                            <button onClick={() => setLogoutConfirmationOpen(true)}>
-                                Logout
-                            </button>
-                        </div>
-                    )}
+                    <div className={`user-dropdown ${showDropdown ? 'show-dropdown' : ''}`}>
+                        <button onClick={() => setShowEditProfile(true)}>Edit Profile</button>
+                        <button onClick={() => setLogoutConfirmationOpen(true)}>Logout</button>
+                    </div>
                 </div>
                 <LogoutConfirmation 
                     isOpen={logoutConfirmationOpen} 
@@ -214,6 +212,7 @@ const getButtonIcon = (button) => {
         case 'INVENTORY': return <MdInventory />;
         case 'PURCHASES': return <FaTruck />;
         case 'JOBS': return <FaHardHat />;
+        case 'LOGS': return <FaHistory />;
         default: return null;
     }
 };

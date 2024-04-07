@@ -10,11 +10,11 @@ const authRoute = require("./routes/jwtAuth");
 const dashRoute = require("./routes/dashboard");
 const productsRoute = require('./routes/products');
 const jobsRoute = require('./routes/jobs');
+const logsRoute = require('./routes/logs');
 const purchasesRoute = require('./routes/purchases');
 const editProfileRoute = require('./routes/editProfile');
 const inventoryRoute = require('./routes/inventory');
 const categoriesRoute = require('./routes/categories');
-app.use("/categories", categoriesRoute);
 
 const cors = require('cors');
 
@@ -39,9 +39,11 @@ app.use("/auth", authRoute);
 app.use("/dashboard", dashRoute);
 app.use("/products", productsRoute);
 app.use("/jobs", jobsRoute);
+app.use("/logs", logsRoute);
 app.use("/inventory", inventoryRoute);
 app.use("/purchases", purchasesRoute);
 app.use("/edit", editProfileRoute);
+app.use("/categories", categoriesRoute);
 
 // Serve static files from the uploads directory
 app.use('/uploads', express.static('uploads'));
