@@ -445,7 +445,7 @@ text-decoration: none;
     background-color: #c82333; /* Darker red on hover */
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1023px) {
     .product-details-grid {
         grid-template-columns: 1fr;
     }

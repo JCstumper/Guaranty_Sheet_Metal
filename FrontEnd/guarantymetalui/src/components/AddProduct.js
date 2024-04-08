@@ -266,6 +266,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
                 unit: '',
                 price: '',
                 markUpPrice: '',
+                catCode: '',
             });
 
             toast.success('Item added successfully.');

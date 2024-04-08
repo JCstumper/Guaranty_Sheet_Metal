@@ -146,7 +146,6 @@ router.put('/:originalPartNumber', authorization, async (req, res) => {
 
         // Begin transaction
         await client.query('BEGIN');
-
         if (partNumber === originalPartNumber) {
             // Update existing product details
             const updateProductQuery = `
@@ -169,8 +168,7 @@ router.put('/:originalPartNumber', authorization, async (req, res) => {
             // Insert new product details with the new part number
             const insertProductQuery = `
                 INSERT INTO products (part_number, supplier_part_number, radius_size, material_type, color, description, type, quantity_of_item, unit, price, mark_up_price)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-                ON CONFLICT (part_number) DO NOTHING;
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);
             `;
             await client.query(insertProductQuery, [partNumber, supplierPartNumber, radiusSize, materialType, color, description, type, quantityOfItem, unit, price, markUpPrice]);
 
