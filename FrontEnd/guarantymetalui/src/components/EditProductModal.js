@@ -276,12 +276,6 @@ const EditProductModal = ({ showModal, setShowModal, editProductItem, setEditPro
             console.error('Error updating product:', error);
         }
     };
-
-    const handleCategoryChange = (e) => {
-        const newType = e.target.value;
-        setEditProductItem({ ...editProductItem, type: newType });
-        setIsCatCodeManuallyChanged(false);
-    };
     
       // When the catCode changes, set the manual change flag
     const handleCatCodeChange = (e) => {

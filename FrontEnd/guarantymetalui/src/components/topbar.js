@@ -150,6 +150,7 @@ const Topbar = ({ setAuth }) => {
 
     const onConfirmLogout = () => {
         setIsLoading(true); // Immediately show the loading screen on logout confirmation
+        setShowDropdown(false);
         setTimeout(() => {
             localStorage.removeItem("token");
             setAuth(false);
@@ -177,13 +178,13 @@ const Topbar = ({ setAuth }) => {
                         return (
                             <NavLink to={path} key={button} className={({ isActive }) => isActive ? "list-button active" : "list-button"} onClick={() => setShowNavDropdown(false)}>
                                 {icon}
-                                <span>{button}</span>
+                                <span><strong>{button}</strong></span>
                             </NavLink>
                         );
                     })}
                 </div>
                 <div className="user-info" onClick={toggleDropdown} ref={dropdownRef}>
-                    <span className="username">{userName}</span>
+                    <span className="username">{userName.toUpperCase()}</span>
                     <div className={`user-dropdown ${showDropdown ? 'show-dropdown' : ''}`}>
                         <button onClick={() => setShowEditProfile(true)}>Edit Profile</button>
                         <button onClick={() => setLogoutConfirmationOpen(true)}>Logout</button>
@@ -192,9 +193,7 @@ const Topbar = ({ setAuth }) => {
                 <LogoutConfirmation 
                     isOpen={logoutConfirmationOpen} 
                     onConfirm={() => {
-                        localStorage.removeItem("token");
-                        setAuth(false);
-                        setShowDropdown(false); // Close the dropdown upon logging out
+                        onConfirmLogout(); // Close the dropdown upon logging out
                     }} 
                     onCancel={() => setLogoutConfirmationOpen(false)} 
                 />
