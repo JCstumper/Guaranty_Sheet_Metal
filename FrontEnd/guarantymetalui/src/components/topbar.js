@@ -150,6 +150,7 @@ const Topbar = ({ setAuth }) => {
 
     const onConfirmLogout = () => {
         setIsLoading(true); // Immediately show the loading screen on logout confirmation
+        setShowDropdown(false);
         setTimeout(() => {
             localStorage.removeItem("token");
             setAuth(false);
@@ -177,7 +178,7 @@ const Topbar = ({ setAuth }) => {
                         return (
                             <NavLink to={path} key={button} className={({ isActive }) => isActive ? "list-button active" : "list-button"} onClick={() => setShowNavDropdown(false)}>
                                 {icon}
-                                <span>{button}</span>
+                                <span><strong>{button}</strong></span>
                             </NavLink>
                         );
                     })}
@@ -192,9 +193,7 @@ const Topbar = ({ setAuth }) => {
                 <LogoutConfirmation 
                     isOpen={logoutConfirmationOpen} 
                     onConfirm={() => {
-                        localStorage.removeItem("token");
-                        setAuth(false);
-                        setShowDropdown(false); // Close the dropdown upon logging out
+                        onConfirmLogout(); // Close the dropdown upon logging out
                     }} 
                     onCancel={() => setLogoutConfirmationOpen(false)} 
                 />
