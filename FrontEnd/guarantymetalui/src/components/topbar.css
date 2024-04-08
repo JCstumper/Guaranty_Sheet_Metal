@@ -61,7 +61,7 @@
 
 .bottom-bar-logo {
     width: auto;
-    height: 40px; 
+    height: 55px; 
 }
 
 .button-list {
@@ -106,8 +106,8 @@
 }
 
 .list-button svg {
-    width: 24px;
-    height: 24px;
+    width: 32px;
+    height: 32px;
 }
 
 .list-button:hover svg {
@@ -145,6 +145,7 @@
     overflow: hidden;
     text-overflow: ellipsis; /* Show ellipsis (...) if the username is too long */
     padding-right: 10px; /* Space before the logout button */
+    font-size: 18px;
 }
 
 /* Styles for the logout button */
