@@ -183,7 +183,7 @@ const Topbar = ({ setAuth }) => {
                     })}
                 </div>
                 <div className="user-info" onClick={toggleDropdown} ref={dropdownRef}>
-                    <span className="username">{userName}</span>
+                    <span className="username">{userName.toUpperCase()}</span>
                     <div className={`user-dropdown ${showDropdown ? 'show-dropdown' : ''}`}>
                         <button onClick={() => setShowEditProfile(true)}>Edit Profile</button>
                         <button onClick={() => setLogoutConfirmationOpen(true)}>Logout</button>
