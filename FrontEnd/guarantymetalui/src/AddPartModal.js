@@ -1,27 +1,19 @@
 import React, { useState, useEffect } from 'react';
 
 const debounce = (func, delay) => {
-  let timeoutId;
-  return (...args) => {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => {
-      func.apply(this, args);
-    }, delay);
-  };
+    let timeoutId;
+    return (...args) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+            func(...args); // Removed the use of 'this' as it's unnecessary in this context
+        }, delay);
+    };
 };
 
 const AddPartModal = ({ isOpen, onClose, onAddPart, API_BASE_URL }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [error, setError] = useState('');
-
-    useEffect(() => {
-        if (searchTerm.trim()) {
-            handleSearch();
-        } else {
-            setSearchResults([]);
-        }
-    }, [searchTerm]);
 
     const handleSearch = debounce(async () => {
         setError('');
@@ -33,7 +25,7 @@ const AddPartModal = ({ isOpen, onClose, onAddPart, API_BASE_URL }) => {
             const response = await fetch(`${API_BASE_URL}/products/search?term=${encodeURIComponent(searchTerm.trim())}`);
             if (response.ok) {
                 const data = await response.json();
-                setSearchResults(data || []); // Adjust according to the actual response structure
+                setSearchResults(data); // Assuming the API directly returns the array of parts
             } else {
                 console.error('Failed to fetch parts');
                 setError('Failed to fetch parts');
@@ -42,12 +34,15 @@ const AddPartModal = ({ isOpen, onClose, onAddPart, API_BASE_URL }) => {
             console.error('Error fetching parts:', error);
             setError('Error fetching parts');
         }
-    }, 500); // 500 ms delay
-    
+    }, 500);
+
+    useEffect(() => {
+        handleSearch();
+    }, [searchTerm]); // This effect will call handleSearch which is debounced
 
     const handleAdd = (part) => {
         onAddPart(part);
-        onClose(); // Optionally close the modal on add
+        onClose();
     };
 
     return (
@@ -76,7 +71,7 @@ const AddPartModal = ({ isOpen, onClose, onAddPart, API_BASE_URL }) => {
                             </thead>
                             <tbody>
                                 {searchResults.map(part => (
-                                    <tr key={part.id}>
+                                    <tr key={part.part_number}>
                                         <td>{part.part_number}</td>
                                         <td>{part.description}</td>
                                         <td><button onClick={() => handleAdd(part)}>Add</button></td>
@@ -92,5 +87,6 @@ const AddPartModal = ({ isOpen, onClose, onAddPart, API_BASE_URL }) => {
 };
 
 export default AddPartModal;
+
 
 
