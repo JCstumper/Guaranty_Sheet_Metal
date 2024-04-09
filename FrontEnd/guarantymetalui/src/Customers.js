@@ -290,26 +290,53 @@ const Customers = ({ setAuth }) => {
         if (!confirmMove) return;
     
         try {
-            const response = await fetch(`${API_BASE_URL}/jobs/move-to-used`, {
+            const response = await fetch(`${API_BASE_URL}/jobs/${selectedJobId}/move-to-used`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    job_id: selectedJobId,
                     part_number: part.part_number,
-                    quantity: part.quantity_required
+                    quantity_to_move: parseFloat(part.quantity_required)
                 })
             });
     
-            if (!response.ok) throw new Error('Network response was not ok.');
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error('Network response was not ok: ' + errorText);
+            }
     
-            const data = await response.json();
-            setNecessaryParts(necessaryParts.filter(p => p.id !== partId)); // Remove the part from necessary parts in UI
-            setUsedParts([...usedParts, data.usedPart]); // Add the part to used parts in UI
+            const { actualQuantityMoved, message } = await response.json();
+            alert(message); // Show the message from the backend
+    
+            if (actualQuantityMoved > 0) {
+                // Calculate the remaining quantity for necessary parts
+                const remainingQuantity = parseFloat(part.quantity_required) - actualQuantityMoved;
+                if (remainingQuantity > 0) {
+                    setNecessaryParts(necessaryParts.map(p => 
+                        p.id === partId ? { ...p, quantity_required: remainingQuantity } : p
+                    ));
+                } else {
+                    setNecessaryParts(necessaryParts.filter(p => p.id !== partId));
+                }
+            
+                // Update used parts in UI
+                const existingUsedPart = usedParts.find(p => p.part_number === part.part_number);
+                if (existingUsedPart) {
+                    setUsedParts(usedParts.map(p => 
+                        p.part_number === part.part_number
+                            ? { ...p, quantity_used: (parseFloat(p.quantity_used) || 0) + actualQuantityMoved }
+                            : p
+                    ));
+                } else {
+                    setUsedParts([...usedParts, { ...part, quantity_used: actualQuantityMoved }]);
+                }
+            }
+            
         } catch (error) {
             console.error('Error moving part to used:', error);
-            alert('Failed to move part to used.');
+            alert('Failed to move part to used. ' + error.message);
         }
     };
+    
     
     const handleEditNecessaryPart = (part) => {
         setEditingPart({...part, newQuantity: part.quantity_required});
