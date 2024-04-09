@@ -173,7 +173,7 @@
     height: 30px;
 }
 
-@media (max-width: 950px) {
+@media (max-width: 1023px) {
 
     .user-info {
         position: relative; /* Keep the parent positioned relatively */
@@ -310,7 +310,7 @@
 }
 
 /* Media query for mobile devices */
-@media (max-width: 950px) {
+@media (max-width: 1023px) {
     .topbar-container {
         bottom: 10px; /* Position at the bottom for mobile */
         top: auto; /* Reset top property */

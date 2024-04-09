@@ -1,5 +1,5 @@
 // EditProductModal.js
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { toast } from 'react-toastify';
 import './AddProduct.css';
 
@@ -9,14 +9,13 @@ const EditProductModal = ({ showModal, setShowModal, editProductItem, setEditPro
     const [markupPriceManuallySet, setMarkupPriceManuallySet] = useState(false);
     const [isCatCodeManuallyChanged, setIsCatCodeManuallyChanged] = useState(false);
     const [autoGeneratePartNumber, setAutoGeneratePartNumber] = useState(true);
-    const [initialType, setInitialType] = useState('');
+    const initialTypeRef = useRef(editProductItem.type);
 
     useEffect(() => {
         if (showModal) {
             const currentType = editProductItem.unit === 'pcs' ? 'box' : 'length';
             setItemType(currentType);
-            
-            setInitialType(editProductItem.type);
+
         }
     }, [showModal, editProductItem.unit]);
 
@@ -246,7 +245,7 @@ const EditProductModal = ({ showModal, setShowModal, editProductItem, setEditPro
             color,
             description,
             type, // This is the new type
-            oldType: initialType, // Include the old type in the update payload
+            oldType: type !== initialTypeRef.current ? initialTypeRef.current : undefined,
             quantityOfItem,
             unit,
             price,
