@@ -212,6 +212,31 @@ router.get('/:job_id/necessary-parts', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch necessary parts' });
     }
 });
+router.put('/necessary-parts/:id', async (req, res) => {
+    const { id } = req.params;
+    const { quantity_required } = req.body;
+
+    if (quantity_required < 0) {
+        return res.status(400).json({ error: 'Quantity cannot be negative.' });
+    }
+
+    try {
+        const updatedPart = await pool.query(
+            'UPDATE necessary_parts SET quantity_required = $1 WHERE id = $2 RETURNING *',
+            [quantity_required, id]
+        );
+
+        if (updatedPart.rows.length > 0) {
+            res.json(updatedPart.rows[0]);
+        } else {
+            res.status(404).json({ message: 'Necessary part not found.' });
+        }
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: 'Failed to update necessary part' });
+    }
+});
+
 
 
 

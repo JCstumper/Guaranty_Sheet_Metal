@@ -17,6 +17,8 @@ const Customers = ({ setAuth }) => {
     const [filter, setFilter] = useState("");
     const {API_BASE_URL} = useContext(AppContext);
     const [showAddPartModal, setShowAddPartModal] = useState(false);
+    const [editingPart, setEditingPart] = useState(null);
+
 
     useEffect(() => {
         fetchJobs();
@@ -271,10 +273,35 @@ const Customers = ({ setAuth }) => {
         // Logic to move a part from Necessary to Used
     };
     
-    const handleEditNecessaryPart = (partNumber) => {
-        // Logic to edit a part in the Necessary Parts list
-    };
+    const handleEditNecessaryPart = (part) => {
+        setEditingPart({...part, newQuantity: part.quantity_required});
+    };    
+    const saveEditedPart = async (part) => {
+        if (part.newQuantity < 0) {
+            alert('Quantity cannot be negative.');
+            return;
+        }
     
+        const updatedPart = {...part, quantity_required: part.newQuantity};
+        try {
+            const response = await fetch(`${API_BASE_URL}/jobs/necessary-parts/${part.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedPart)
+            });
+    
+            if (response.ok) {
+                const data = await response.json();
+                setNecessaryParts(necessaryParts.map(p => p.id === part.id ? data : p));
+                setEditingPart(null); // Reset editing part state
+            } else {
+                throw new Error('Failed to update necessary part');
+            }
+        } catch (error) {
+            console.error('Error updating necessary part:', error);
+        }
+    };
+      
     const handleRemoveNecessaryPart = (partNumber) => {
         // Logic to remove a part from the Necessary Parts list
     };
@@ -363,19 +390,34 @@ const Customers = ({ setAuth }) => {
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
-                                                                        {necessaryParts.map( part => (
-                                                                            <tr key={part.id}>
-                                                                                <td>{part.part_number}</td>
-                                                                                <td>{part.description}</td>
-                                                                                <td>{part.quantity_required}</td>
-                                                                                <td> ${parsePrice(part.price)?.toFixed(2) ?? 'N/A'} </td>
-                                                                                <td>
-                                                                                    <button onClick={() => handleMoveToUsed(part.part_number)} className="details-btn">Move to Used</button>
-                                                                                    <button onClick={() => handleEditNecessaryPart(part.part_number)} className="details-btn">Edit</button>
-                                                                                    <button onClick={() => handleRemoveNecessaryPart(part.part_number)} className="details-btn">Remove</button>
-                                                                                </td>
-                                                                            </tr>
-                                                                        ))}
+                                                                    {necessaryParts.map(part => (
+                                                                        <tr key={part.id}>
+                                                                            <td>{part.part_number}</td>
+                                                                            <td>{part.description}</td>
+                                                                            <td>
+                                                                                {editingPart && editingPart.id === part.id ? (
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        value={editingPart.newQuantity}
+                                                                                        min = "0" //min value should be 0
+                                                                                        onChange={(e) => setEditingPart({ ...editingPart, newQuantity: e.target.value })}
+                                                                                    />
+                                                                                ) : (
+                                                                                    part.quantity_required
+                                                                                )}
+                                                                            </td>
+                                                                            <td>${parsePrice(part.price)?.toFixed(2) ?? 'N/A'}</td>
+                                                                            <td>
+                                                                                <button onClick={() => handleMoveToUsed(part.part_number)} className="details-btn">Move to Used</button>
+                                                                                {editingPart && editingPart.id === part.id ? (
+                                                                                    <button onClick={() => saveEditedPart(editingPart)} className="details-btn">Save</button>
+                                                                                ) : (
+                                                                                    <button onClick={() => handleEditNecessaryPart(part)} className="details-btn">Edit</button>
+                                                                                )}
+                                                                                <button onClick={() => handleRemoveNecessaryPart(part.part_number)} className="details-btn">Remove</button>
+                                                                            </td>
+                                                                        </tr>
+                                                                    ))}
                                                                     </tbody>
                                                                 </table>
                                                                 <p>Total Cost of Necessary Parts: ${totalNecessaryCost.toFixed(2)}</p>
