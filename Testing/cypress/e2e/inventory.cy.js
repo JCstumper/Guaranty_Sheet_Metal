@@ -36,13 +36,13 @@ describe('Open application and test inventory', () => {
         cy.get('#material-type').type('Metal');
         cy.get('#color').type('Blue');
         cy.get('#description').type('This is a test product description');
-        cy.get('#type').type('Widget'); // Assuming this is how you categorize the item
+        cy.get('#type').type('Widget');
         cy.get('#catcode').invoke('val').then(val => {
             if (!val) cy.get('#catcode').type('WGT');
         });
-        cy.get('#item-type').select('length'); // or .select('length') for "Length Item"
-        cy.get('#quantity-of-item').type('20'); // Assuming this is a valid category code
-        cy.get('#price').type('3.48'); // Assuming this is a valid category code
+        cy.get('#item-type').select('length');
+        cy.get('#quantity-of-item').type('20');
+        cy.get('#price').type('3.48');
         
         cy.contains('Add Item').click();
 
