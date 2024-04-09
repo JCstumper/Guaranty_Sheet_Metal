@@ -1,22 +1,29 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { AppContext } from './App'; // Adjust the import path as necessary
+import { AppContext } from './App'; 
 import { toast } from 'react-toastify';
 import { FaFilter } from 'react-icons/fa';
 import Topbar from './components/topbar';
-import './Logs.css'; // Adjust the path as necessary
+import './Logs.css'; 
 import './components/AddProduct.css'
+
 
 const Logs = ({ setAuth }) => {
     const [logs, setLogs] = useState([]);
     const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
     const [userFilter, setUserFilter] = useState('');
     const [actionTypeFilter, setActionTypeFilter] = useState('');
-    const { API_BASE_URL } = useContext(AppContext);
+    const { API_BASE_URL, userRoles } = useContext(AppContext);
 
     const openFilterModal = () => setIsFilterModalVisible(true);
     const closeFilterModal = () => setIsFilterModalVisible(false);
 
-    // Function to fetch inventory logs
+    
+    const userHasAccess = () => {
+        // Ensure userRoles is always treated as an array
+        const roles = userRoles || [];
+        return roles.includes('admin');
+    };
+
     // Function to fetch inventory logs
     const fetchLogs = async () => {
         const token = localStorage.getItem('token');
@@ -44,7 +51,9 @@ const Logs = ({ setAuth }) => {
     };
 
     useEffect(() => {
+        if (userHasAccess()) {
         fetchLogs(); // Fetch logs when the component mounts
+        }
     }, []);
 
     const applyFilters = () => {
@@ -65,7 +74,7 @@ const Logs = ({ setAuth }) => {
         closeFilterModal();
     };
 
-    return (
+    return userHasAccess() ? (
         <div className="logs-main">
             <Topbar setAuth={setAuth} />
             <div className="logs-table">
@@ -155,7 +164,8 @@ const Logs = ({ setAuth }) => {
                 </div>
             )}
         </div>
-    );
+    ): (
+        <div> You do not have access to view this page. </div>);
 };
 
 export default Logs;

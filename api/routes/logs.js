@@ -1,19 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../db'); // make sure the path to db.js is correct
+const pool = require('../db'); 
 const authorization = require("../middleware/authorization");
+const verifyRoles = require("../middleware/verifyRoles"); 
 
-router.get('/', authorization, async (req, res) => {
+
+router.get('/', authorization, verifyRoles("admin"), async (req, res) => {
     try {
-        const logs = await pool.query(`
-        SELECT * FROM log
-        `);
-        res.json({logs});
+        const logs = await pool.query("SELECT * FROM log");
+        res.json(logs.rows); // Sending back just the rows for cleaner output
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
-
 
 module.exports = router;

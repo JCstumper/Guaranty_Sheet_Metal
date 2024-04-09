@@ -113,3 +113,29 @@ CREATE TABLE IF NOT EXISTS login_attempts (
         REFERENCES users(user_id)
         ON DELETE CASCADE
 );
+
+-- Create roles table
+CREATE TABLE IF NOT EXISTS roles (
+    role_id SERIAL PRIMARY KEY,
+    role_name VARCHAR(255) NOT NULL UNIQUE
+);
+
+-- Insert roles (admin and employee) into the roles table, avoiding duplicates
+INSERT INTO roles (role_name) VALUES ('admin'), ('employee')
+ON CONFLICT (role_name) DO NOTHING;
+
+-- Create user_roles join table to link users and their roles
+CREATE TABLE IF NOT EXISTS user_roles (
+    user_id uuid NOT NULL,
+    role_id INT NOT NULL,
+    PRIMARY KEY (user_id, role_id),
+    CONSTRAINT fk_user
+        FOREIGN KEY(user_id) 
+        REFERENCES users(user_id)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_role
+        FOREIGN KEY(role_id) 
+        REFERENCES roles(role_id)
+        ON DELETE CASCADE
+);
+

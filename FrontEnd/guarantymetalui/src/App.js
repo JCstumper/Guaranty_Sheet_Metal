@@ -1,7 +1,7 @@
 import React, {Fragment, useState, useEffect, createContext} from "react"; // Import React and necessary hooks
 import './App.css'; // Import the main stylesheet for global styles
 // Import React Router components for navigation and routing
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode";
 
 // Import all page components used in the app
@@ -9,6 +9,7 @@ import Dashboard from './Dashboard';
 import Orders from './Orders';
 import Customers from './Customers';
 import Logs from './Logs';
+import ProtectedRoute from './components/ProtectedRoute';
 import Inventory from './Inventory';
 import Login from './components/Login';
 import Register from './components/Register';
@@ -31,30 +32,67 @@ function App() {
     setIsAuthenticated(boolean);
   };
 
-  // Function to verify if the user is authenticated by checking a token in local storage
-  async function isAuth() {
-    try {
-
-      // Send a GET request to verify the user's token
-      const response = await fetch(`${API_BASE_URL}/auth/verify`, {
-        method: "GET",
-        headers: {token: localStorage.token}
-      });
-
-      const parseRes = await response.json(); // Parse the JSON response from the server
-
-      // Update the authentication state based on the server's response
-      parseRes === true ? setIsAuthenticated(true) : setIsAuthenticated(false);
-
-      if (response.status === 401 && parseRes.message === "jwt expired") {
+  const isAuth = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
         setIsAuthenticated(false);
-        return <Navigate to="/login" />;
-      }
+        return false;
+    }
 
-    } catch (err) {
-      console.error(err.message); // Log any errors to the console
+    try {
+        const response = await fetch(`${API_BASE_URL}/auth/verify`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` // Adjust based on how your server expects to receive the token
+            },
+        });
+
+        const parseRes = await response.json();
+
+        if (response.ok) {
+            // Update your context/state as needed based on the response
+            setIsAuthenticated(true);
+            // Optionally, update user roles or other relevant state here
+            return true;
+        } else {
+            setIsAuthenticated(false);
+            localStorage.removeItem('token'); // Consider removing the token if it's invalid
+            return false;
+        }
+    } catch (error) {
+        console.error("Authentication check failed:", error);
+        setIsAuthenticated(false);
+        return false;
+    }
+};
+
+
+  // Function to verify if the user is authenticated by checking a token in local storage
+  async function fetchRoles() {
+    if (localStorage.getItem('token')) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/auth/verify`, {
+          headers: { token: localStorage.getItem('token') },
+        });
+        const responseData = await response.json();
+        if (response.ok) {
+          setUserRoles(responseData.roles); // Assuming the endpoint returns an object with a roles array
+        } else {
+          console.error('Failed to fetch roles');
+        }
+      } catch (error) {
+        console.error('Error fetching roles:', error);
+      }
     }
   }
+  
+  // Update useEffect to call fetchRoles
+  useEffect(() => {
+    // existing code
+    fetchRoles();
+  }, [isAuthenticated]); // fetchRoles depends on isAuthenticated state
+  
 
   const checkTokenExpiration = (token) => {
     try {
@@ -88,16 +126,11 @@ function App() {
 
 }, []);
 
-// ProtectedRoute component
-const ProtectedRoute = ({ children }) => {
-  const isAuthenticated = !!localStorage.getItem('token'); // Immediate check based on token presence
-  // You might want to include a loading state here to wait for the `isAuth` verification to complete
-  
-  return isAuthenticated ? children : <Navigate to="/login" />;
-};
+const [userRoles, setUserRoles] = useState([]);
+
 
   return (
-    <AppContext.Provider value={{API_BASE_URL}}>
+    <AppContext.Provider value={{API_BASE_URL, isAuthenticated, userRoles, setIsAuthenticated, setUserRoles}}>
       <Fragment>
           <Router>
             <div className="container">
@@ -113,7 +146,14 @@ const ProtectedRoute = ({ children }) => {
                 <Route path="/purchases" element={<ProtectedRoute>{isAuthenticated ? (<Orders setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>}  />
                 <Route path="/jobs" element={<ProtectedRoute>{isAuthenticated ? (<Customers setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
                 <Route path="/inventory" element={<ProtectedRoute>{isAuthenticated ? (<Inventory setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
-                <Route path="/logs" element={<ProtectedRoute>{isAuthenticated ? (<Logs setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
+
+                   {/* Protected Route with Role Checking */}
+              <Route path="/logs" element={
+                <ProtectedRoute isAuthenticated={isAuthenticated} roles={['admin']}>
+                  <Logs />
+                </ProtectedRoute>
+              } />
+
                 <Route path="/logout" element={isAuthenticated ? (<Logout setAuth={setAuth}/>) : (<Navigate to="/login" />)} />
                 <Route path="/*" element={isAuthenticated ? (<NotFound setAuth={setAuth}/>) : (<Navigate to="/login" />)} />
               </Routes>

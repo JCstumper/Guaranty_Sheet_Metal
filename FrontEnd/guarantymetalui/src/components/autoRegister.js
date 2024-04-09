@@ -8,7 +8,7 @@ const registerUser = async (setIsLoading, setAuth, navigate) => {
 
         const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
 
-        const body = { username, password, email };
+        const body = { username, password, email, role: 'admin' };
         const response = await fetch(`${API_BASE_URL}/auth/register`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
