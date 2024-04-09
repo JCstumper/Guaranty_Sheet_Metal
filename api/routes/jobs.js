@@ -149,34 +149,70 @@ router.post('/necessary-parts', async (req, res) => {
     const { job_id, part_number, quantity_required } = req.body;
 
     try {
-        const newPart = await pool.query(
-            `INSERT INTO necessary_parts (job_id, part_number, quantity_required)
-             VALUES ($1, $2, $3)
-             RETURNING *;`,
-            [job_id, part_number, quantity_required]
+        // Check if the part already exists for the job
+        const existingPart = await pool.query(
+            'SELECT * FROM necessary_parts WHERE job_id = $1 AND part_number = $2',
+            [job_id, part_number]
         );
-        res.status(201).json(newPart.rows[0]);
+
+        if (existingPart.rows.length > 0) {
+            // Part exists, update the quantity
+            const newQuantity = parseFloat(existingPart.rows[0].quantity_required) + parseFloat(quantity_required);
+            await pool.query(
+                'UPDATE necessary_parts SET quantity_required = $1 WHERE job_id = $2 AND part_number = $3',
+                [newQuantity, job_id, part_number]
+            );
+        } else {
+            // Part does not exist, insert a new record
+            await pool.query(
+                'INSERT INTO necessary_parts (job_id, part_number, quantity_required) VALUES ($1, $2, $3)',
+                [job_id, part_number, quantity_required]
+            );
+        }
+
+        // Fetch and return the updated part data including the price
+        const updatedPartData = await pool.query(`
+            SELECT np.*, p.price
+            FROM necessary_parts np
+            JOIN products p ON np.part_number = p.part_number
+            WHERE np.job_id = $1 AND np.part_number = $2;
+        `, [job_id, part_number]);
+
+        if (updatedPartData.rows.length > 0) {
+            res.json(updatedPartData.rows[0]);
+        } else {
+            res.status(404).json({ message: 'Part not found after update or insert.' });
+        }
     } catch (err) {
         console.error(err.message);
-        res.status(500).json({ error: 'Failed to add necessary part' });
+        res.status(500).json({ error: 'Failed to add or update necessary part' });
     }
 });
-router.get('/jobs/:jobId/necessary-parts', async (req, res) => {
+
+
+// Make sure this matches the base URL and route structure you have defined
+router.get('/:job_id/necessary-parts', async (req, res) => {
+    const { job_id } = req.params;
+
     try {
-        const { jobId } = req.params;
-        const query = `
-            SELECT np.*, p.price, p.description
+        const necessaryPartsQuery = await pool.query(`
+            SELECT np.*, p.price
             FROM necessary_parts np
             JOIN products p ON np.part_number = p.part_number
             WHERE np.job_id = $1;
-        `;
-        const result = await pool.query(query, [jobId]);
-        res.json(result.rows);
+        `, [job_id]);
+
+        if (necessaryPartsQuery.rows.length > 0) {
+            res.json(necessaryPartsQuery.rows);
+        } else {
+            res.status(404).json({ message: 'No necessary parts found for this job.' });
+        }
     } catch (err) {
         console.error(err.message);
         res.status(500).json({ error: 'Failed to fetch necessary parts' });
     }
 });
+
 
 
 module.exports = router;

@@ -21,6 +21,11 @@ const Customers = ({ setAuth }) => {
     useEffect(() => {
         fetchJobs();
     }, []);
+    useEffect(() => {
+        if (selectedJobId) {
+            fetchNecessaryParts(selectedJobId);
+        }
+    }, [selectedJobId]); // This effect runs when selectedJobId changes
 
     useEffect(() => {
         setFilteredJobs(jobs.filter(job =>
@@ -44,14 +49,26 @@ const Customers = ({ setAuth }) => {
             console.error('Error fetching jobs:', error);
         }
     };
-
+    const fetchNecessaryParts = async (jobId) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/jobs/${jobId}/necessary-parts`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const partsData = await response.json();
+            setNecessaryParts(partsData);
+        } catch (error) {
+            console.error('Error fetching necessary parts:', error);
+        }
+    };
     const handleSelectJob = async (jobId) => {
         const isSameJob = selectedJobId === jobId;
         setSelectedJobId(isSameJob ? null : jobId);
     
         if (!isSameJob) {
+            fetchNecessaryParts(jobId); // Fetch necessary parts for the selected job
             try {
-                const response = await fetch(`https://localhost/api/jobs/check-estimate/${jobId}`);
+                const response = await fetch(`${API_BASE_URL}/jobs/check-estimate/${jobId}`);
                 if (response.ok) {
                     const { hasEstimate } = await response.json();
                     const updatedJobs = jobs.map(job => {
@@ -224,11 +241,23 @@ const Customers = ({ setAuth }) => {
     const handleAddNecessaryPart = () => {
         setShowAddPartModal(true);
     };
-    const handleAddPartToNecessary = (part) => {
-        // Assuming 'part' includes 'price' after being added through the 'handleAdd' function in 'AddPartModal'
-        setNecessaryParts(prevParts => [...prevParts, part]);
-        setShowAddPartModal(false);
-    };    
+    const handleAddPartToNecessary = (newPart) => {
+        
+        console.log('Adding new part:', newPart);
+        setNecessaryParts((prevParts) => {
+            const existingPartIndex = prevParts.findIndex(part => part.part_number === newPart.part_number);
+            if (existingPartIndex >= 0) {
+                // Part exists, update the quantity
+                const updatedParts = [...prevParts];
+                updatedParts[existingPartIndex].quantity_required = newPart.quantity_required;
+                return updatedParts;
+            } else {
+                // Part does not exist, add as new part
+                return [...prevParts, newPart];
+            }
+        });
+    };
+         
     const handleCloseAddPartModal = () => {
         setShowAddPartModal(false);
     };
@@ -265,11 +294,22 @@ const Customers = ({ setAuth }) => {
     const handleRemoveUsedPart = (partNumber) => {
         // Logic to remove a part from the Used Parts list
     };
+    const parsePrice = (priceStr) => {
+        if (!priceStr || typeof priceStr !== 'string') {
+            console.error('parsePrice called with non-string or undefined:', priceStr);
+            return 0;
+        }
+        return parseFloat(priceStr.replace(/[^\d.-]/g, '')) || 0;
+    };
+    
     // For the total costs of parts
     const totalUsedCost = usedParts.reduce((acc, part) => acc + (part.quantity_used * part.price || 0), 0);
-    const totalNecessaryCost = necessaryParts.reduce((acc, part) => acc + (part.quantity_required * part.price || 0), 0);
-
-
+    const totalNecessaryCost = necessaryParts.reduce((acc, part) => {
+        const price = part.price ? parsePrice(part.price) : 0;
+        const quantity = parseFloat(part.quantity_required) || 0;
+        return acc + (quantity * price);
+    }, 0);    
+    
     return (
         <div className="customers">
             <Topbar setAuth={setAuth} />
@@ -328,7 +368,7 @@ const Customers = ({ setAuth }) => {
                                                                                 <td>{part.part_number}</td>
                                                                                 <td>{part.description}</td>
                                                                                 <td>{part.quantity_required}</td>
-                                                                                <td>${part.price?.toFixed(2) ?? 'N/A'}</td>
+                                                                                <td> ${parsePrice(part.price)?.toFixed(2) ?? 'N/A'} </td>
                                                                                 <td>
                                                                                     <button onClick={() => handleMoveToUsed(part.part_number)} className="details-btn">Move to Used</button>
                                                                                     <button onClick={() => handleEditNecessaryPart(part.part_number)} className="details-btn">Edit</button>
@@ -473,7 +513,7 @@ const Customers = ({ setAuth }) => {
                 <AddPartModal
                     isOpen={showAddPartModal}
                     onClose={handleCloseAddPartModal}
-                    //onAddPart={handleAddPartToNecessary} // Implement this function according to your needs
+                    onAddPart={handleAddPartToNecessary} // Pass the function to update the state
                     API_BASE_URL={API_BASE_URL}
                     selectedJobId={selectedJobId}
                 />
