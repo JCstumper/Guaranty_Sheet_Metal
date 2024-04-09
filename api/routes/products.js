@@ -252,6 +252,7 @@ router.get('/with-inventory', authorization, async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch products with inventory' });
     }
 });
+
 router.get('/search', async (req, res) => {
     const searchTerm = req.query.term;
     if (!searchTerm) {
@@ -260,10 +261,10 @@ router.get('/search', async (req, res) => {
 
     try {
         const query = `
-            SELECT part_number, description
+            SELECT part_number, radius_size, description
             FROM products
-            WHERE description ILIKE $1
-            ORDER BY description;
+            WHERE part_number ILIKE $1 OR description ILIKE $1
+            ORDER BY part_number;
         `;
         const results = await pool.query(query, [`%${searchTerm}%`]);
         res.json(results.rows);
@@ -272,6 +273,7 @@ router.get('/search', async (req, res) => {
         res.status(500).json({ error: 'Error searching for products' });
     }
 });
+
 
 // Add this new route to your existing routes in products.js
 

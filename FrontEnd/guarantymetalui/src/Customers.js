@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import Topbar from './components/topbar';
 import './Customers.css';
-import AddPartModal from './AddPartModal'; // Adjust the path based on your file structure
+import AddPartModal from './AddPartModal'; 
 
 import { AppContext } from './App';
 
@@ -17,7 +17,6 @@ const Customers = ({ setAuth }) => {
     const [filter, setFilter] = useState("");
     const {API_BASE_URL} = useContext(AppContext);
     const [showAddPartModal, setShowAddPartModal] = useState(false);
-
 
     useEffect(() => {
         fetchJobs();
@@ -225,6 +224,11 @@ const Customers = ({ setAuth }) => {
     const handleAddNecessaryPart = () => {
         setShowAddPartModal(true);
     };
+    const handleAddPartToNecessary = (part) => {
+        // Assuming 'part' includes 'price' after being added through the 'handleAdd' function in 'AddPartModal'
+        setNecessaryParts(prevParts => [...prevParts, part]);
+        setShowAddPartModal(false);
+    };    
     const handleCloseAddPartModal = () => {
         setShowAddPartModal(false);
     };
@@ -262,8 +266,9 @@ const Customers = ({ setAuth }) => {
         // Logic to remove a part from the Used Parts list
     };
     // For the total costs of parts
-    const totalUsedCost = usedParts.reduce((acc, part) => acc + (part.quantity_used * part.price), 0);
-    const totalNecessaryCost = necessaryParts.reduce((acc, part) => acc + (part.quantity_required * part.price), 0);
+    const totalUsedCost = usedParts.reduce((acc, part) => acc + (part.quantity_used * part.price || 0), 0);
+    const totalNecessaryCost = necessaryParts.reduce((acc, part) => acc + (part.quantity_required * part.price || 0), 0);
+
 
     return (
         <div className="customers">
@@ -323,7 +328,7 @@ const Customers = ({ setAuth }) => {
                                                                                 <td>{part.part_number}</td>
                                                                                 <td>{part.description}</td>
                                                                                 <td>{part.quantity_required}</td>
-                                                                                <td>${part.price.toFixed(2)}</td>
+                                                                                <td>${part.price?.toFixed(2) ?? 'N/A'}</td>
                                                                                 <td>
                                                                                     <button onClick={() => handleMoveToUsed(part.part_number)} className="details-btn">Move to Used</button>
                                                                                     <button onClick={() => handleEditNecessaryPart(part.part_number)} className="details-btn">Edit</button>
@@ -355,7 +360,7 @@ const Customers = ({ setAuth }) => {
                                                                                 <td>{part.part_number}</td>
                                                                                 <td>{part.description}</td>
                                                                                 <td>{part.quantity_used}</td>
-                                                                                <td>${part.price.toFixed(2)}</td>
+                                                                                <td>${part.price ? part.price.toFixed(2) : 'N/A'}</td>
                                                                                 <td>
                                                                                     <button onClick={() => handleReturnToNecessary(part.part_number)} className="details-btn">Return to Necessary</button>
                                                                                     <button onClick={() => handleEditUsedPart(part.part_number)} className="details-btn">Edit</button>
@@ -468,8 +473,9 @@ const Customers = ({ setAuth }) => {
                 <AddPartModal
                     isOpen={showAddPartModal}
                     onClose={handleCloseAddPartModal}
-                    onAddPart={handleAddPart} // Implement this function according to your needs
+                    //onAddPart={handleAddPartToNecessary} // Implement this function according to your needs
                     API_BASE_URL={API_BASE_URL}
+                    selectedJobId={selectedJobId}
                 />
             )}
         </div>

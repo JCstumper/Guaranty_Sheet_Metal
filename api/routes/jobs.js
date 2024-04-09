@@ -145,4 +145,38 @@ router.delete('/remove-estimate/:jobId', async (req, res) => {
     }
 });
 
+router.post('/necessary-parts', async (req, res) => {
+    const { job_id, part_number, quantity_required } = req.body;
+
+    try {
+        const newPart = await pool.query(
+            `INSERT INTO necessary_parts (job_id, part_number, quantity_required)
+             VALUES ($1, $2, $3)
+             RETURNING *;`,
+            [job_id, part_number, quantity_required]
+        );
+        res.status(201).json(newPart.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: 'Failed to add necessary part' });
+    }
+});
+router.get('/jobs/:jobId/necessary-parts', async (req, res) => {
+    try {
+        const { jobId } = req.params;
+        const query = `
+            SELECT np.*, p.price, p.description
+            FROM necessary_parts np
+            JOIN products p ON np.part_number = p.part_number
+            WHERE np.job_id = $1;
+        `;
+        const result = await pool.query(query, [jobId]);
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: 'Failed to fetch necessary parts' });
+    }
+});
+
+
 module.exports = router;

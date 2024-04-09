@@ -10,7 +10,7 @@ const debounce = (func, delay) => {
     };
 };
 
-const AddPartModal = ({ isOpen, onClose, onAddPart, API_BASE_URL }) => {
+const AddPartModal = ({ isOpen, onClose, onAddPart, API_BASE_URL,selectedJobId }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [error, setError] = useState('');
@@ -40,10 +40,34 @@ const AddPartModal = ({ isOpen, onClose, onAddPart, API_BASE_URL }) => {
         handleSearch();
     }, [searchTerm]); // This effect will call handleSearch which is debounced
 
-    const handleAdd = (part) => {
-        onAddPart(part);
-        onClose();
+    const handleAdd = async (part) => {
+        const requestBody = {
+            job_id: selectedJobId, // This should come from the props or state of the parent component
+            part_number: part.part_number,
+            quantity_required: 1 // Or any other value you choose or get from user input
+        };
+    
+        try {
+            const response = await fetch(`${API_BASE_URL}/jobs/necessary-parts`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody)
+            });
+    
+            if (response.ok) {
+                const addedPart = await response.json();
+                onAddPart(addedPart); // Invoke the callback function to update the parent component's state
+                onClose(); // Close the modal
+            } else {
+                throw new Error('Failed to add the necessary part');
+            }
+        } catch (error) {
+            console.error('Error adding necessary part:', error);
+            setError('Failed to add the necessary part');
+        }
     };
+    
+     
 
     return (
         isOpen && (
@@ -65,6 +89,7 @@ const AddPartModal = ({ isOpen, onClose, onAddPart, API_BASE_URL }) => {
                             <thead>
                                 <tr>
                                     <th>Part Number</th>
+                                    <th>Radius Size</th>
                                     <th>Description</th>
                                     <th>Action</th>
                                 </tr>
@@ -73,6 +98,7 @@ const AddPartModal = ({ isOpen, onClose, onAddPart, API_BASE_URL }) => {
                                 {searchResults.map(part => (
                                     <tr key={part.part_number}>
                                         <td>{part.part_number}</td>
+                                        <td>{part.radius_size}</td>
                                         <td>{part.description}</td>
                                         <td><button onClick={() => handleAdd(part)}>Add</button></td>
                                     </tr>
