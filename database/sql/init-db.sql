@@ -33,14 +33,14 @@ CREATE TABLE IF NOT EXISTS log (
 
 CREATE TABLE IF NOT EXISTS products (
     part_number VARCHAR(50) NOT NULL,
-    supplier_part_number VARCHAR(50),
-    radius_size VARCHAR(255),
-    material_type VARCHAR(255),
+    supplier_part_number VARCHAR(50) NOT NULL,
+    radius_size VARCHAR(255) NOT NULL,
+    material_type VARCHAR(255) NOT NULL,
     color VARCHAR(255),
     description TEXT,
-    type VARCHAR(255),
-    quantity_of_item DECIMAL(10, 2),
-    unit VARCHAR(5),
+    type VARCHAR(255) NOT NULL,
+    quantity_of_item DECIMAL(10, 2) NOT NULL,
+    unit VARCHAR(5) NOT NULL,
     price MONEY,
     mark_up_price MONEY,
     PRIMARY KEY (part_number)
@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS invoice_items (
 
 
 CREATE TABLE IF NOT EXISTS inventory (
-    part_number VARCHAR(50) NOT NULL,
+    part_number VARCHAR(50) NOT NULL UNIQUE,
     quantity_in_stock INTEGER NOT NULL,
     FOREIGN KEY (part_number) REFERENCES products(part_number)
 );

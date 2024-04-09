@@ -51,7 +51,11 @@ const Inventory = ({ setAuth }) => {
             const jsonData = await response.json();
             
             if (Array.isArray(jsonData.products)) {
-                setProducts(jsonData.products);
+                // Sort products so that items with stock are at the top
+                const sortedProducts = jsonData.products.sort((a, b) => {
+                    return b.quantity_in_stock - a.quantity_in_stock;
+                });
+                setProducts(sortedProducts);
             } else {
                 console.error('Unexpected response format:', jsonData);
                 setProducts([]);
@@ -62,6 +66,7 @@ const Inventory = ({ setAuth }) => {
             setProducts([]);
         }
     };
+    
 
     useEffect(() => {
         // fetchProducts();
@@ -161,67 +166,46 @@ const Inventory = ({ setAuth }) => {
     .map((product, index) => (
         <React.Fragment key={index}>
             <tr onClick={() => toggleProductExpansion(index)}>
-                <td>{product.part_number}</td>
-                <td>{product.material_type && product.color ? `${product.material_type} / ${product.color}` : product.material_type ? product.material_type : product.color ? product.color : ''}</td>
-                <td>{product.radius_size && product.description ? `${product.radius_size}" ${product.description}` : product.description}</td>
+                <td><strong>{product.part_number}</strong></td>
+                <td><strong>{product.material_type && product.color ? `${product.material_type} / ${product.color}` : product.material_type ? product.material_type : product.color ? product.color : ''}</strong></td>
+                <td><strong>{product.radius_size && product.description ? `${product.radius_size}" ${product.description}` : product.description}</strong></td>
+                <td><strong>{product.quantity_in_stock}</strong></td>
                 <td>
-                    <div className="quantity-edit-container">
-                        {product.quantity_in_stock}
-                        <button
-                        onClick={(e) => {
-                            e.stopPropagation(); // Prevent row expansion
-                            openEditQuantityModal(product);
-                        }}
-                        className="edit-quantity-btn"
-                        >
-                        Edit Quantity
-                        </button>
+                    <div className={`status-box ${product.quantity_in_stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
+                        <strong>{product.quantity_in_stock > 0 ? 'In Stock' : 'Out of Stock'}</strong>
                     </div>
-                </td>
-                <td>
-                <div className={`status-box ${product.quantity_in_stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
-                    {product.quantity_in_stock > 0 ? 'In Stock' : 'Out of Stock'}
-                </div>
                 </td>
             </tr>
             {expandedRowIndex === index && (
                 <tr className={`product-details ${expandedRowIndex === index ? 'expanded' : ''}`}>
                     <td colSpan="5">
                         <div className="product-details-content">
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
-                                <p><strong>Part Number:</strong> {product.part_number}</p>
-                                <p><strong>Supplier Part Number:</strong> {product.supplier_part_number}</p> {/* Added Supplier Part Number */}
-                                <p><strong>Radius Size:</strong> {product.radius_size}"</p> {/* Adjusted for clarity */}
-                                <p><strong>Material/Color:</strong> {
-                                    product.material_type && product.color 
-                                    ? `${product.material_type} / ${product.color}` 
-                                    : product.material_type ? product.material_type 
-                                    : product.color ? product.color : 'N/A' // Improved handling of missing values
-                                }</p>
-                                <p><strong>Description:</strong> {product.description}</p>
-                                <p><strong>Product Type:</strong> {product.type}</p>
-                                <p><strong>Quantity of Item:</strong> {product.quantity_of_item} {product.unit}</p> {/* Simplified display */}
-                                <p><strong>Base Price:</strong> {product.price}</p>
-                                <p><strong>Mark Up Price:</strong> {product.mark_up_price}</p>
+                            <div className="product-details-grid">
+                                <div className="product-details-block">
+                                    <p><strong>Part Number:</strong> {product.part_number}</p>
+                                    <p><strong>Supplier Part Number:</strong> {product.supplier_part_number}</p>
+                                    <p><strong>Description:</strong> {product.description}</p>
+                                    <p><strong>Material:</strong> {product.material_type || 'N/A'}</p>
+                                    <p><strong>Color:</strong> {product.color || 'N/A'}</p>
+                                </div>
+                                <div className="product-details-block">
+                                    <p><strong>Radius Size:</strong> {product.radius_size}"</p>
+                                    <p><strong>Product Type:</strong> {product.type}</p>
+                                    <p><strong>Quantity of Item:</strong> {product.quantity_of_item} {product.unit}</p>
+                                    <p><strong>Base Price:</strong> {product.price}</p>
+                                    <p><strong>Mark Up Price:</strong> {product.mark_up_price}</p>
+                                </div>
                             </div>
                             <div className="product-action-buttons">
-                                <button 
-                                    className="product-action-button edit-button" 
-                                    onClick={() => openEditProductModal(product)}
-                                >
-                                    Edit
-                                </button>
-                                <button 
-                                    className="product-action-button delete-button" 
-                                    onClick={() => confirmDeleteProduct(product.part_number)}
-                                >
-                                    Delete
-                                </button>
+                                <button className="product-action-button edit-button" onClick={() => openEditProductModal(product)}>Edit</button>
+                                <button onClick={(e) => { e.stopPropagation(); openEditQuantityModal(product); }} className="product-action-button edit-button">Edit Quantity</button>
+                                <button className="product-action-button delete-button" onClick={() => confirmDeleteProduct(product.part_number)}>Delete</button>
                             </div>
                         </div>
                     </td>
                 </tr>
             )}
+
         </React.Fragment>
     ));
 
@@ -246,7 +230,7 @@ const Inventory = ({ setAuth }) => {
                             checked={activeFilters[category].includes(option)}
                             onChange={() => handleCheckboxChange(category, option)}
                         />
-                        {category === 'radius_size' && option !== '(blank)' ? `${option}"` : option}
+                        <strong>{category === 'radius_size' && option !== '(blank)' ? `${option}"` : option}</strong>
                     </label>
                 ))}
             </div>
@@ -321,7 +305,7 @@ const Inventory = ({ setAuth }) => {
             <div className="inventory-main">
                 <div className="product-table">
                     <div className="table-header">
-                        <span className="table-title">Inventory</span>
+                        <span className="table-title"><strong>INVENTORY</strong></span>
                         <button className="add-button" onClick={() => setShowModal(true)}>+</button>
                     </div>
                     <table className="table-content">

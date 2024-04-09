@@ -3,7 +3,7 @@ import './topbar.css';
 import logo from "../pictures/logo.png";
 import { NavLink } from 'react-router-dom';
 import { MdDashboard, MdInventory } from 'react-icons/md';
-import { FaHardHat, FaTruck, FaHistory } from 'react-icons/fa';
+import { FaHardHat, FaTruck, FaHistory, FaBars } from 'react-icons/fa';
 import LogoutConfirmation from './LogoutConfirmation';
 import LoadingScreen from './Loading'; // Verify this path is correct
 import { jwtDecode } from "jwt-decode";
@@ -17,19 +17,18 @@ const Topbar = ({ setAuth }) => {
     const [userName, setUserName] = useState("");
     const [logoutConfirmationOpen, setLogoutConfirmationOpen] = useState(false);
     const [isTokenExpired, setIsTokenExpired] = useState(false);
+    const [showNavDropdown, setShowNavDropdown] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [showEditProfile, setShowEditProfile] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef(null);
     const {API_BASE_URL} = useContext(AppContext);
 
-    function refreshPage() {
-        window.location.reload();
-    }
 
     const toggleDropdown = () => {
-        setShowDropdown(!showDropdown);
-    };      
+        setShowDropdown(prevShowDropdown => !prevShowDropdown);
+    };
+    
 
     const handleProfileUpdate = ({ newUsername, newPassword, newEmail }) => {
         // Process the form data, e.g., send it to your backend server
@@ -151,6 +150,7 @@ const Topbar = ({ setAuth }) => {
 
     const onConfirmLogout = () => {
         setIsLoading(true); // Immediately show the loading screen on logout confirmation
+        setShowDropdown(false);
         setTimeout(() => {
             localStorage.removeItem("token");
             setAuth(false);
@@ -168,33 +168,32 @@ const Topbar = ({ setAuth }) => {
                 <div className="bottom-bar-logo-container">
                     <img src={logo} alt="Logo" className="bottom-bar-logo" />
                 </div>
-                <div className="button-list">
+                <div className="hamburger-menu" onClick={() => setShowNavDropdown(!showNavDropdown)}>
+                    <FaBars />
+                </div>
+                <div className={`${showNavDropdown ? "nav-dropdown show" : "button-list"}`}>
                     {buttons.map((button) => {
                         const path = `/${button.toLowerCase()}`;
                         const icon = getButtonIcon(button);
                         return (
-                            <NavLink to={path} key={button} className={({ isActive }) => isActive ? "list-button active" : "list-button"}>
+                            <NavLink to={path} key={button} className={({ isActive }) => isActive ? "list-button active" : "list-button"} onClick={() => setShowNavDropdown(false)}>
                                 {icon}
-                                <span>{button}</span>
+                                <span><strong>{button}</strong></span>
                             </NavLink>
                         );
                     })}
                 </div>
                 <div className="user-info" onClick={toggleDropdown} ref={dropdownRef}>
-                    <span className="username">{userName}</span>
-                    {showDropdown && (
-                        <div className="user-dropdown">
-                            <button onClick={() => setShowEditProfile(true)}>Edit Profile</button>
-                            <button onClick={() => setLogoutConfirmationOpen(true)}>Logout</button>
-                        </div>
-                    )}
+                    <span className="username">{userName.toUpperCase()}</span>
+                    <div className={`user-dropdown ${showDropdown ? 'show-dropdown' : ''}`}>
+                        <button onClick={() => setShowEditProfile(true)}>Edit Profile</button>
+                        <button onClick={() => setLogoutConfirmationOpen(true)}>Logout</button>
+                    </div>
                 </div>
                 <LogoutConfirmation 
                     isOpen={logoutConfirmationOpen} 
                     onConfirm={() => {
-                        localStorage.removeItem("token");
-                        setAuth(false);
-                        setShowDropdown(false); // Close the dropdown upon logging out
+                        onConfirmLogout(); // Close the dropdown upon logging out
                     }} 
                     onCancel={() => setLogoutConfirmationOpen(false)} 
                 />

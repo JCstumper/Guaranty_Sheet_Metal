@@ -11,7 +11,7 @@ body {
 .inventory-main {
     display: flex;
     margin-top: 90px;
-    margin-left: 10px;
+    margin-left: 0px;
     padding-right: 250px;
     flex-direction: column;
     position: relative;
@@ -25,7 +25,7 @@ body {
     left: 0;
     right: 0;
     height: 120px; /* Height of the fade effect */
-    background: linear-gradient(to top, #364b7200 0%, #364b72 100%); /* Gradient starts transparent and becomes solid at the bottom */
+    background: linear-gradient(to top, #364b7200 0%, #05132c 100%); /* Gradient starts transparent and becomes solid at the bottom */
     z-index: 10;
     pointer-events: none; /* Ensures clicks pass through */
 }
@@ -37,7 +37,7 @@ body {
     left: 0;
     right: 0;
     height: 120px; /* Height of the fade effect */
-    background: linear-gradient(to bottom, #364b7200 0%, #364b72 100%);
+    background: linear-gradient(to bottom, #364b7200 0%, #05132c 100%);
     z-index: 10;
     pointer-events: none; /* Ensures clicks pass through */
 }
@@ -93,6 +93,7 @@ body {
     border: none;
     padding: 0;
     font: inherit;
+    font-size: 19px;
     text-align: left;
     width: 100%;
     display: block;
@@ -121,7 +122,7 @@ text-decoration: none;
 
 
 .table-header {
-    background-color: #0b2b61;
+    background-color: #081e44;
     color: #ffffff;
     padding: 15px;
     font-size: 20px;
@@ -291,9 +292,9 @@ text-decoration: none;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
-    -webkit-appearance: none; /* Removes default styling for Safari and Chrome */
-    -moz-appearance: none; /* Removes default styling for Firefox */
-    appearance: none; /* Removes default styling */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
     background-color: #f9f9f9;
     cursor: pointer;
 }
@@ -303,7 +304,6 @@ text-decoration: none;
     outline: none;
     box-shadow: 0 0 5px rgba(69, 170, 242, 0.5);
 }
-
 
 .filtering-box {
     position: fixed;
@@ -318,6 +318,7 @@ text-decoration: none;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     overflow-y: auto;
     box-sizing: border-box;
+    z-index: 900;
 }
 
 .filtering-box:hover {
@@ -381,6 +382,28 @@ text-decoration: none;
     }
 }
 
+.product-details-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 6px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.product-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.product-details-block {
+    background-color: #f7f7f7;
+    padding: 15px;
+    border-radius: 4px;
+}
+
 /* Container for Edit and Delete buttons */
 .product-action-buttons {
     display: flex;
@@ -422,21 +445,85 @@ text-decoration: none;
     background-color: #c82333; /* Darker red on hover */
 }
 
+@media screen and (max-width: 1023px) {
+    .product-details-grid {
+        grid-template-columns: 1fr;
+    }
 
-@media screen and (max-width: 768px) {
     .inventory-main {
         flex-direction: column;
         padding-right: 0;
+        margin-top: 10px;
+        margin-left: 0px;
+        margin-bottom: 90px;
     }
 
-    .product-table {
-        margin: 0 0 20px 0;
+    .product-table,
+    .filtering-box {
+        margin: 0; 
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .table-content {
+        width: 100%;
+    }
+
+    .table-content table {
+        width: 100%;
     }
 
     .filtering-box {
         position: static;
-        width: 100%;
         height: auto;
-        margin-top: 20px;
+        padding: 20px;
+        overflow-y: auto;
+        margin-top: 10px;
     }
+
+    .filtering-box .search-input,
+    .filtering-box .action-button,
+    .filtering-box select {
+        width: calc(100% - 40px);
+        margin-bottom: 20px;
+    }
+
+    .product-action-buttons,
+    .product-action-button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    .inventory-main::before,
+    .inventory-main::after {
+        display: none;
+    }
+
+    .status-box {
+        padding: 8px 0; /* Increase padding top and bottom to make the bar taller */
+        color: transparent; /* Hide the text on mobile */
+        font-size: 0; /* Collapse the text size */
+        min-width: 10vw; /* Responsive minimum width */
+        max-width: 100%; /* Prevents the bar from overflowing */
+        width: 100%; /* Full width of the container */
+    }
+
+    /* Maintain the min-width for better visibility of the status bar on mobile */
+    .status-box:after {
+        content: '';
+        display: inline-block;
+        min-width: 75px;
+    }
+}
+
+
+/* Improve the look of the dropdown elements for a cleaner appearance */
+.custom-dropdown::after{
+    display: none; /* Simplify design by removing custom dropdown styles */
+}
+
+/* Make the add button easier to tap */
+.add-button {
+    padding: 8px 12px; /* Increase padding for a larger tap area */
+    font-size: 16px; /* Slightly larger font for visibility */
 }
