@@ -1,6 +1,6 @@
-const { defineConfig } = require("cypress");
+module.exports = {
+  projectId: "j36ozu",
 
-module.exports = defineConfig({
   e2e: {
     setupNodeEvents(on, config) {
       // implement node event listeners here
@@ -9,8 +9,8 @@ module.exports = defineConfig({
 
   component: {
     devServer: {
-      framework: "create-react-app",
+      framework: "react",
       bundler: "webpack",
     },
   },
-});
+};
