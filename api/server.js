@@ -44,7 +44,6 @@ app.use("/inventory", inventoryRoute);
 app.use("/purchases", purchasesRoute);
 app.use("/edit", editProfileRoute);
 app.use("/categories", categoriesRoute);
-
 // Serve static files from the uploads directory
 app.use('/uploads', express.static('uploads'));
 
