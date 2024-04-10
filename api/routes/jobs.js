@@ -348,6 +348,61 @@ router.get('/:job_id/used-parts', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch used parts' });
     }
 });
+router.post('/:job_id/return-to-necessary', async (req, res) => {
+    const { job_id } = req.params;
+    const { part_id, quantity_used } = req.body;
+
+    try {
+        await pool.query('BEGIN');
+
+        // Fetch part_number using part_id from used_parts
+        const partRes = await pool.query('SELECT part_number FROM used_parts WHERE id = $1', [part_id]);
+        if (partRes.rows.length === 0) {
+            await pool.query('ROLLBACK');
+            return res.status(404).json({ error: 'Part not found in used_parts' });
+        }
+        const { part_number } = partRes.rows[0];
+
+        // Check if part exists in necessary_parts
+        const necessaryPartRes = await pool.query(
+            'SELECT quantity_required FROM necessary_parts WHERE job_id = $1 AND part_number = $2',
+            [job_id, part_number]
+        );
+
+        if (necessaryPartRes.rows.length > 0) {
+            // Update necessary_parts if part exists
+            await pool.query(
+                'UPDATE necessary_parts SET quantity_required = quantity_required + $1 WHERE job_id = $2 AND part_number = $3',
+                [quantity_used, job_id, part_number]
+            );
+        } else {
+            // Insert into necessary_parts if part does not exist
+            await pool.query(
+                'INSERT INTO necessary_parts (job_id, part_number, quantity_required) VALUES ($1, $2, $3)',
+                [job_id, part_number, quantity_used]
+            );
+        }
+
+        // Update inventory
+        await pool.query(
+            'UPDATE inventory SET quantity_in_stock = quantity_in_stock + $1 WHERE part_number = $2',
+            [quantity_used, part_number]
+        );
+
+        // Remove from used_parts
+        await pool.query('DELETE FROM used_parts WHERE id = $1', [part_id]);
+
+        await pool.query('COMMIT');
+        res.json({ message: 'Part returned to necessary successfully' });
+    } catch (err) {
+        await pool.query('ROLLBACK');
+        console.error('Error returning part to necessary:', err);
+        res.status(500).json({ error: 'Failed to return part to necessary', detail: err.message });
+    }
+});
+
+
+
 router.post('/:job_id/remove-from-used', async (req, res) => {
     const { job_id } = req.params;
     const { part_number, quantity_used } = req.body;
