@@ -218,18 +218,20 @@
     opacity: 0.9;
   }
   .job-details-expanded {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Adjust as needed */
     padding: 15px;
 }
 
 .job-details-section {
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    padding: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background-color: #f9f9f9; /* Light gray background for each section */
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 10px; /* Adds space between sections if needed */
 }
+
 .job-details-content {
   display: flex;
   justify-content: space-around;

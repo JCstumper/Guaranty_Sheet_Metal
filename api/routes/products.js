@@ -251,6 +251,28 @@ router.get('/with-inventory', authorization, async (req, res) => {
     }
 });
 
+router.get('/search', async (req, res) => {
+    const searchTerm = req.query.term;
+    if (!searchTerm) {
+        return res.status(400).json({ error: "Search term is required" });
+    }
+
+    try {
+        const query = `
+            SELECT part_number, radius_size, description
+            FROM products
+            WHERE part_number ILIKE $1 OR description ILIKE $1
+            ORDER BY part_number;
+        `;
+        const results = await pool.query(query, [`%${searchTerm}%`]);
+        res.json(results.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error searching for products' });
+    }
+});
+
+
 // Add this new route to your existing routes in products.js
 
 router.get('/category/:category', authorization, async (req, res) => {

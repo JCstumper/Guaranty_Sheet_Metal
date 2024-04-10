@@ -145,4 +145,238 @@ router.delete('/remove-estimate/:jobId', async (req, res) => {
     }
 });
 
+router.post('/necessary-parts', async (req, res) => {
+    const { job_id, part_number, quantity_required } = req.body;
+    const integerQuantityRequired = parseInt(quantity_required, 10); // Ensure integer conversion
+
+    try {
+        // Check if the part already exists for the job
+        const existingPart = await pool.query(
+            'SELECT * FROM necessary_parts WHERE job_id = $1 AND part_number = $2',
+            [job_id, part_number]
+        );
+
+        if (existingPart.rows.length > 0) {
+            // Part exists, update the quantity
+            const newQuantity = existingPart.rows[0].quantity_required + integerQuantityRequired;
+            await pool.query(
+                'UPDATE necessary_parts SET quantity_required = $1 WHERE job_id = $2 AND part_number = $3',
+                [newQuantity, job_id, part_number]
+            );
+        } else {
+            // Part does not exist, insert a new record
+            await pool.query(
+                'INSERT INTO necessary_parts (job_id, part_number, quantity_required) VALUES ($1, $2, $3)',
+                [job_id, part_number, quantity_required]
+            );
+        }
+
+        // Fetch and return the updated part data including the price
+        const updatedPartData = await pool.query(`
+            SELECT np.*, p.price
+            FROM necessary_parts np
+            JOIN products p ON np.part_number = p.part_number
+            WHERE np.job_id = $1 AND np.part_number = $2;
+        `, [job_id, part_number]);
+
+        if (updatedPartData.rows.length > 0) {
+            res.json(updatedPartData.rows[0]);
+        } else {
+            res.status(404).json({ message: 'Part not found after update or insert.' });
+        }
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: 'Failed to add or update necessary part' });
+    }
+});
+
+
+// Make sure this matches the base URL and route structure you have defined
+router.get('/:job_id/necessary-parts', async (req, res) => {
+    const { job_id } = req.params;
+
+    try {
+        const necessaryPartsQuery = await pool.query(`
+            SELECT np.*, p.price, p.description
+            FROM necessary_parts np
+            JOIN products p ON np.part_number = p.part_number
+            WHERE np.job_id = $1;
+        `, [job_id]);
+
+        if (necessaryPartsQuery.rows.length > 0) {
+            res.json(necessaryPartsQuery.rows);
+        } else {
+            res.status(404).json({ message: 'No necessary parts found for this job.' });
+        }
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: 'Failed to fetch necessary parts' });
+    }
+});
+router.put('/necessary-parts/:id', async (req, res) => {
+    const { id } = req.params;
+    const { quantity_required } = req.body;
+
+    if (quantity_required < 0) {
+        return res.status(400).json({ error: 'Quantity cannot be negative.' });
+    }
+
+    try {
+        const updatedPart = await pool.query(
+            'UPDATE necessary_parts SET quantity_required = $1 WHERE id = $2 RETURNING *',
+            [quantity_required, id]
+        );
+
+        if (updatedPart.rows.length > 0) {
+            res.json(updatedPart.rows[0]);
+        } else {
+            res.status(404).json({ message: 'Necessary part not found.' });
+        }
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: 'Failed to update necessary part' });
+    }
+});
+
+router.delete('/necessary-parts/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const deleteResult = await pool.query(
+            'DELETE FROM necessary_parts WHERE id = $1 RETURNING *',
+            [id]
+        );
+
+        if (deleteResult.rows.length > 0) {
+            res.json({ message: 'Necessary part removed successfully' });
+        } else {
+            res.status(404).json({ message: 'Necessary part not found' });
+        }
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: 'Failed to remove necessary part' });
+    }
+});
+router.post('/:job_id/move-to-used', async (req, res) => {
+    const { job_id } = req.params;
+    const { part_number, quantity_to_move } = req.body;
+
+    try {
+        await pool.query('BEGIN');
+
+        const inventoryResult = await pool.query(
+            'SELECT quantity_in_stock FROM inventory WHERE part_number = $1',
+            [part_number]
+        );
+
+        if (inventoryResult.rows.length === 0 || inventoryResult.rows[0].quantity_in_stock <= 0) {
+            await pool.query('ROLLBACK');
+            return res.status(400).json({ error: `No available stock for part ${part_number} or requested quantity is invalid` });
+        }
+
+        const availableStock = inventoryResult.rows[0].quantity_in_stock;
+        const actualQuantityToMove = Math.min(availableStock, quantity_to_move);
+
+        if (actualQuantityToMove <= 0) {
+            await pool.query('ROLLBACK');
+            return res.status(400).json({ error: `Cannot move part ${part_number} as the requested quantity exceeds available stock.` });
+        }
+
+        await pool.query(
+            'UPDATE inventory SET quantity_in_stock = quantity_in_stock - $1 WHERE part_number = $2',
+            [actualQuantityToMove, part_number]
+        );
+
+        const existingUsedPart = await pool.query(
+            'SELECT * FROM used_parts WHERE job_id = $1 AND part_number = $2',
+            [job_id, part_number]
+        );
+
+        if (existingUsedPart.rows.length > 0) {
+            await pool.query(
+                'UPDATE used_parts SET quantity_used = quantity_used + $1 WHERE job_id = $2 AND part_number = $3',
+                [actualQuantityToMove, job_id, part_number]
+            );
+        } else {
+            await pool.query(
+                'INSERT INTO used_parts (job_id, part_number, quantity_used) VALUES ($1, $2, $3)',
+                [job_id, part_number, actualQuantityToMove]
+            );
+        }
+
+        const updateNecessaryPartsResult = await pool.query(
+            'UPDATE necessary_parts SET quantity_required = quantity_required - $1 WHERE job_id = $2 AND part_number = $3 RETURNING quantity_required',
+            [actualQuantityToMove, job_id, part_number]
+        );
+
+        if (updateNecessaryPartsResult.rows[0].quantity_required <= 0) {
+            await pool.query(
+                'DELETE FROM necessary_parts WHERE job_id = $1 AND part_number = $2',
+                [job_id, part_number]
+            );
+        }
+
+        await pool.query('COMMIT');
+
+        res.json({
+            message: `Part moved to used successfully. ${actualQuantityToMove} of ${part_number} moved.`,
+            actualQuantityMoved: actualQuantityToMove
+        });
+    } catch (err) {
+        await pool.query('ROLLBACK');
+        console.error(err.message);
+        res.status(500).json({ error: 'Failed to move part to used', detail: err.message });
+    }
+});
+
+
+
+router.get('/:job_id/used-parts', async (req, res) => {
+    const { job_id } = req.params;
+
+    try {
+        const usedPartsQuery = await pool.query(`
+            SELECT up.*, p.price, p.description
+            FROM used_parts up
+            JOIN products p ON up.part_number = p.part_number
+            WHERE up.job_id = $1;
+        `, [job_id]);
+
+        res.json(usedPartsQuery.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: 'Failed to fetch used parts' });
+    }
+});
+router.post('/:job_id/remove-from-used', async (req, res) => {
+    const { job_id } = req.params;
+    const { part_number, quantity_used } = req.body;
+
+    try {
+        await pool.query('BEGIN');
+
+        // Add the quantity back to the inventory
+        await pool.query(
+            'UPDATE inventory SET quantity_in_stock = quantity_in_stock + $1 WHERE part_number = $2',
+            [quantity_used, part_number]
+        );
+
+        // Remove the part from the used parts
+        await pool.query(
+            'DELETE FROM used_parts WHERE job_id = $1 AND part_number = $2',
+            [job_id, part_number]
+        );
+
+        await pool.query('COMMIT');
+        res.json({ message: `Part ${part_number} removed from used.` });
+    } catch (err) {
+        await pool.query('ROLLBACK');
+        console.error(err.message);
+        res.status(500).json({ error: 'Failed to remove part from used' });
+    }
+});
+
+
+
+
 module.exports = router;
