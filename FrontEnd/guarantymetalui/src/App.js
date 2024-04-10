@@ -9,7 +9,6 @@ import Dashboard from './Dashboard';
 import Orders from './Orders';
 import Customers from './Customers';
 import Logs from './Logs';
-import ProtectedRoute from './components/ProtectedRoute';
 import Inventory from './Inventory';
 import Login from './components/Login';
 import Register from './components/Register';
@@ -68,32 +67,8 @@ function App() {
 };
 
 
-  // Function to verify if the user is authenticated by checking a token in local storage
-  async function fetchRoles() {
-    if (localStorage.getItem('token')) {
-      try {
-        const response = await fetch(`${API_BASE_URL}/auth/verify`, {
-          headers: { token: localStorage.getItem('token') },
-        });
-        const responseData = await response.json();
-        if (response.ok) {
-          setUserRoles(responseData.roles); // Assuming the endpoint returns an object with a roles array
-        } else {
-          console.error('Failed to fetch roles');
-        }
-      } catch (error) {
-        console.error('Error fetching roles:', error);
-      }
-    }
-  }
   
-  // Update useEffect to call fetchRoles
-  useEffect(() => {
-    // existing code
-    fetchRoles();
-  }, [isAuthenticated]); // fetchRoles depends on isAuthenticated state
   
-
   const checkTokenExpiration = (token) => {
     try {
       const decodedToken = jwtDecode(token);
@@ -113,18 +88,7 @@ function App() {
     }
   };
 
-  // Update to immediate state update based on localStorage
-  useEffect(() => {
-  const token = localStorage.getItem('token');
-
-  if(token && token !== '') {
-    checkTokenExpiration(token);
-  }
-
-  isAuth(); // Then verify with the backend for token validity
-  setIsLoading(false); // Update isLoading after 3 seconds
-
-}, []);
+ 
 
 const [userRoles, setUserRoles] = useState([]);
 
@@ -146,13 +110,8 @@ const [userRoles, setUserRoles] = useState([]);
                 <Route path="/purchases" element={<ProtectedRoute>{isAuthenticated ? (<Orders setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>}  />
                 <Route path="/jobs" element={<ProtectedRoute>{isAuthenticated ? (<Customers setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
                 <Route path="/inventory" element={<ProtectedRoute>{isAuthenticated ? (<Inventory setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
+                <Route path="/Logs" element={<ProtectedRoute>{isAuthenticated ? (<Inventory setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
 
-                   {/* Protected Route with Role Checking */}
-              <Route path="/logs" element={
-                <ProtectedRoute isAuthenticated={isAuthenticated} roles={['admin']}>
-                  <Logs />
-                </ProtectedRoute>
-              } />
 
                 <Route path="/logout" element={isAuthenticated ? (<Logout setAuth={setAuth}/>) : (<Navigate to="/login" />)} />
                 <Route path="/*" element={isAuthenticated ? (<NotFound setAuth={setAuth}/>) : (<Navigate to="/login" />)} />

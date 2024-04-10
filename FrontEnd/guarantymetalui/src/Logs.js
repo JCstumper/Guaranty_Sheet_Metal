@@ -50,12 +50,7 @@ const Logs = ({ setAuth }) => {
         }
     };
 
-    useEffect(() => {
-        if (userHasAccess()) {
-        fetchLogs(); // Fetch logs when the component mounts
-        }
-    }, []);
-
+  
     const applyFilters = () => {
         const filteredLogs = logs.filter((log) => {
             const matchesUser = userFilter ? log.user_id.includes(userFilter) : true;
