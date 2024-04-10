@@ -23,6 +23,7 @@ services:
   db:
     image: postgres:latest
     container_name: Postgres
+    restart: unless-stopped
     environment:
       POSTGRES_DB: GuarantyDatabase
       POSTGRES_USER: admin
@@ -35,6 +36,7 @@ services:
 
   api:
     container_name: API
+    restart: unless-stopped
     build: 
       context: ./api
       target: production
@@ -53,6 +55,7 @@ services:
 
   frontend:
     container_name: React
+    restart: unless-stopped
     build:
       context: ./FrontEnd/guarantymetalui
       target: production
