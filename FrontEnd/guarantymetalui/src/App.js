@@ -97,7 +97,12 @@ function App() {
 // ProtectedRoute component
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-  const userRoles = JSON.parse(localStorage.getItem('token')) || [];
+  let userRoles = jwtDecode(localStorage.getItem('token'));
+
+  if (userRoles = []){
+    <Navigate to="/unauthorized" />;
+  }
+
 
   const isAuthorized = isAuthenticated && allowedRoles.some(role => userRoles.includes(role));
 
