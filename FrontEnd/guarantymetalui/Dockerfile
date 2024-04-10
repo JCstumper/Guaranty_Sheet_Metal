@@ -1,5 +1,6 @@
+# === BASE STAGE ===
 # Use an official Node runtime as a parent image
-FROM node:20.11.1-bookworm-slim
+FROM node:20.11.1-bookworm-slim as base
 
 # Set the working directory in the container
 WORKDIR /app
@@ -16,10 +17,29 @@ RUN npm install xlsx
 # Bundle app source
 COPY . .
 
-# ENV HTTPS=true
+# === DEVELOPMENT STAGE ===
+FROM base as development
 
 # Expose port 3000 for the development server
 EXPOSE 3000
 
 # Command to run the app using Nodemon
 CMD ["npm", "run", "dev"]
+
+# === PRODUCTION STAGE ===
+FROM base as production
+
+# Build the React App
+RUN npm run build
+
+# Copy the server script
+COPY server.js ./
+
+#Install express to start the server
+RUN npm install express@latest
+
+# Expose port 3000 for the development server
+EXPOSE 3000
+
+#Start the server
+CMD ["node", "server.js"]
