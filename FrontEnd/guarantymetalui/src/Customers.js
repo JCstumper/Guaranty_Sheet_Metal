@@ -19,6 +19,11 @@ const Customers = ({ setAuth }) => {
     const [showAddPartModal, setShowAddPartModal] = useState(false);
     const [editingPart, setEditingPart] = useState(null); //State for tracking editing of Necessary parts
     const [editingUsedPart, setEditingUsedPart] = useState(null); // State for tracking editing of used parts
+    const [editingJob, setEditingJob] = useState(null);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [totalNecessaryCost, setTotalNecessaryCost] = useState(0);
+    const [totalUsedCost, setTotalUsedCost] = useState(0);
+
 
 
     useEffect(() => {
@@ -38,7 +43,24 @@ const Customers = ({ setAuth }) => {
             job.email.toLowerCase().includes(filter.toLowerCase())
         ));
     }, [filter, jobs]);
-
+    useEffect(() => {
+        const calculateTotal = (parts) => parts.reduce((acc, part) => {
+            // Ensure price is a float
+            const price = parseFloat(part.price);
+            const quantity = parseFloat(part.quantity_used || part.quantity_required);
+            return acc + (quantity * price);
+        }, 0);
+    
+        const newTotalNecessaryCost = calculateTotal(necessaryParts);
+        const newTotalUsedCost = calculateTotal(usedParts);
+    
+        setTotalNecessaryCost(newTotalNecessaryCost);
+        setTotalUsedCost(newTotalUsedCost);
+    }, [necessaryParts, usedParts]);
+    
+    
+    
+    
     const fetchJobs = async () => {
         try {
             const response = await fetch(`${API_BASE_URL}/jobs`);
@@ -145,6 +167,55 @@ const Customers = ({ setAuth }) => {
             console.error('Failed to add job:', err);
         }
     };
+    const handleEditJob = (jobId) => {
+        const jobToEdit = jobs.find(job => job.job_id === jobId);
+        setEditingJob(jobToEdit); // Set the job to be edited
+        setShowEditModal(true); // Show the edit modal
+    };
+    
+    const handleSaveJob = async () => {
+        const { job_id, ...updatedFields } = editingJob;
+    
+        try {
+            const response = await fetch(`${API_BASE_URL}/jobs/${job_id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedFields)
+            });
+    
+            if (response.ok) {
+                alert('Job updated successfully.');
+                fetchJobs(); // Refresh the jobs list
+                setShowEditModal(false); // Close the edit modal
+            } else {
+                throw new Error('Failed to update job.');
+            }
+        } catch (error) {
+            console.error('Error updating job:', error);
+            alert('Failed to update job. ' + error.message);
+        }
+    };
+    
+    const handleRemoveJob = async (jobId) => {
+        if (window.confirm(`Are you sure you want to remove job ${jobId}?`)) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/jobs/${jobId}`, {
+                    method: 'DELETE',
+                });
+    
+                if (response.ok) {
+                    alert(`Job ${jobId} removed successfully.`);
+                    fetchJobs(); // Re-fetch the jobs list to update the UI
+                } else {
+                    throw new Error(`Failed to remove job ${jobId}`);
+                }
+            } catch (error) {
+                console.error('Error removing job:', error);
+                alert('Failed to remove job. ' + error.message);
+            }
+        }
+    };
+    
     const handleViewEstimate = async (jobId) => {
         console.log('Viewing Estimate for job ID:', jobId);
         try {
@@ -349,8 +420,15 @@ const Customers = ({ setAuth }) => {
         setEditingPart({...part, newQuantity: part.quantity_required});
     };    
     const saveEditedPart = async (part) => {
-        if (parseInt(part.newQuantity, 10) <= 0) {
-            // If the quantity is 0 or less, remove the part
+        const newQuantity = parseInt(part.newQuantity, 10);
+    
+        if (newQuantity < 0) {
+            alert('Quantity cannot be negative.');
+            return;
+        }
+    
+        if (newQuantity === 0) {
+            // If the quantity is 0, remove the part
             if (window.confirm("Quantity is 0. This will remove the part. Continue?")) {
                 try {
                     const response = await fetch(`${API_BASE_URL}/jobs/necessary-parts/${part.id}`, {
@@ -369,17 +447,18 @@ const Customers = ({ setAuth }) => {
             }
         } else {
             // If the quantity is greater than 0, update the part
-            const updatedPart = { ...part, quantity_required: part.newQuantity };
             try {
                 const response = await fetch(`${API_BASE_URL}/jobs/necessary-parts/${part.id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(updatedPart)
+                    body: JSON.stringify({ ...part, quantity_required: newQuantity })
                 });
     
                 if (response.ok) {
-                    const data = await response.json();
-                    setNecessaryParts(necessaryParts.map(p => p.id === part.id ? data : p));
+                    const updatedParts = necessaryParts.map(p => 
+                        p.id === part.id ? { ...p, quantity_required: newQuantity } : p
+                    );
+                    setNecessaryParts(updatedParts);
                     setEditingPart(null); // Reset editing part state
                 } else {
                     throw new Error('Failed to update necessary part');
@@ -390,6 +469,7 @@ const Customers = ({ setAuth }) => {
             }
         }
     };
+    
     
       
     const handleRemoveNecessaryPart = async (partId) => {
@@ -561,28 +641,6 @@ const Customers = ({ setAuth }) => {
         }
     };
     
-    const parsePrice = (priceStr) => {
-        if (!priceStr || typeof priceStr !== 'string') {
-            console.error('parsePrice called with non-string or undefined:', priceStr);
-            return 0;
-        }
-        return parseFloat(priceStr.replace(/[^\d.-]/g, '')) || 0;
-    };
-    
-    // For the total costs of parts
-    const totalUsedCost = usedParts.reduce((acc, part) => {
-        const quantityUsed = parseInt(part.quantity_used, 10) || 0;
-        const price = parseFloat(part.price) || 0;
-        return acc + (quantityUsed * price);
-    }, 0);
-    
-    const totalNecessaryCost = necessaryParts.reduce((acc, part) => {
-        const price = parseFloat(part.price) || 0;
-        const quantity = parseInt(part.quantity_required, 10) || 0;
-        return acc + (quantity * price);
-    }, 0);
-     
-    
     return (
         <div className="customers">
             <Topbar setAuth={setAuth} />
@@ -601,6 +659,7 @@ const Customers = ({ setAuth }) => {
                                     <th>Address</th>
                                     <th>Phone</th>
                                     <th>E-mail</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -613,10 +672,14 @@ const Customers = ({ setAuth }) => {
                                             <td>{job.address}</td>
                                             <td>{job.phone}</td>
                                             <td>{job.email}</td>
+                                            <td>
+                                            <button onClick={() => handleEditJob(job.job_id)} className="edit-btn">Edit</button>
+                                            <button onClick={() => handleRemoveJob(job.job_id)} className="remove-btn">Remove</button>
+                                            </td>
                                         </tr>
                                         {selectedJobId === job.job_id && (
                                             <tr>
-                                                <td colSpan="5">
+                                                <td colSpan="6">
                                                     <div className="job-details-expanded">
                                                         {/* Estimates Section */}
                                                         <div className="job-details-section">
@@ -664,7 +727,7 @@ const Customers = ({ setAuth }) => {
                                                                                 part.quantity_required
                                                                             )}
                                                                         </td>
-                                                                        <td>${parsePrice(part.price)?.toFixed(2) ?? 'N/A'}</td>
+                                                                        <td>${part.price?.toFixed(2) ?? 'N/A'}</td>
                                                                         <td>
                                                                             <button onClick={() => handleMoveToUsed(part.id)} className="details-btn">Move to Used</button>
                                                                             {editingPart && editingPart.id === part.id ? (
@@ -711,7 +774,7 @@ const Customers = ({ setAuth }) => {
                                                                                 part.quantity_used
                                                                             )}
                                                                         </td>
-                                                                        <td>${parsePrice(part.price)?.toFixed(2) ?? 'N/A'}</td>
+                                                                        <td>${part.price?.toFixed(2) ?? 'N/A'}</td>
                                                                         <td>
                                                                             <button onClick={() => handleReturnToNecessary(part.id)} className="details-btn">Return to Necessary</button>
                                                                             {editingUsedPart && editingUsedPart.id === part.id ? (
@@ -735,7 +798,7 @@ const Customers = ({ setAuth }) => {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="5">No jobs found</td>
+                                    <td colSpan="6">No jobs found</td>
                                 </tr>
                             )}
                             </tbody>
@@ -750,7 +813,6 @@ const Customers = ({ setAuth }) => {
                         value={filter}
                         onChange={handleFilterChange}
                     />
-                    <button className="action-button">Filter</button>
                 </div>
             </div>
             {showModal && (
@@ -777,6 +839,68 @@ const Customers = ({ setAuth }) => {
                                 <div className="modalAddJob-footer">
                                     <button type="submit" className="btn btn-primary">Add Job</button>
                                     <button type="button" onClick={handleToggleModal} className="btn btn-secondary">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {showEditModal && (
+                <div className="modalAddJob">
+                    <div className="modalAddJob-content">
+                        <div className="modalAddJob-header">
+                            <h2>Edit Job</h2>
+                            <button onClick={() => setShowEditModal(false)} className="close-modalAddJob">X</button>
+                        </div>
+                        <div className="modalAddJob-body">
+                            <form onSubmit={handleSaveJob}>
+                                <label htmlFor="customerName">Customer Name:</label>
+                                <input
+                                    type="text"
+                                    id="customer_name"
+                                    name="customer_name"
+                                    placeholder='Customer Name'
+                                    required
+                                    value={editingJob?.customer_name || ''}
+                                    onChange={(e) => setEditingJob({ ...editingJob, customer_name: e.target.value })}
+                                />
+
+                                <label htmlFor="jobAddress">Address:</label>
+                                <input
+                                    type="text"
+                                    id="address"
+                                    name="address"
+                                    placeholder='Address'
+                                    required
+                                    value={editingJob?.address || ''}
+                                    onChange={(e) => setEditingJob({ ...editingJob, address: e.target.value })}
+                                />
+
+                                <label htmlFor="jobPhone">Phone:</label>
+                                <input
+                                    type="tel"
+                                    id="phone"
+                                    name="phone"
+                                    placeholder='Phone'
+                                    required
+                                    value={editingJob?.phone || ''}
+                                    onChange={(e) => setEditingJob({ ...editingJob, phone: e.target.value })}
+                                />
+
+                                <label htmlFor="jobEmail">Email:</label>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    placeholder='Email'
+                                    required
+                                    value={editingJob?.email || ''}
+                                    onChange={(e) => setEditingJob({ ...editingJob, email: e.target.value })}
+                                />
+
+                                <div className="modalAddJob-footer">
+                                    <button type="submit" className="btn btn-primary">Save Changes</button>
+                                    <button type="button" onClick={() => setShowEditModal(false)} className="btn btn-secondary">Cancel</button>
                                 </div>
                             </form>
                         </div>

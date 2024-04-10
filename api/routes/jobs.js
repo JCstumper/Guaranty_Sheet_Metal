@@ -167,20 +167,22 @@ router.post('/necessary-parts', async (req, res) => {
             // Part does not exist, insert a new record
             await pool.query(
                 'INSERT INTO necessary_parts (job_id, part_number, quantity_required) VALUES ($1, $2, $3)',
-                [job_id, part_number, quantity_required]
+                [job_id, part_number, integerQuantityRequired]
             );
         }
 
         // Fetch and return the updated part data including the price
         const updatedPartData = await pool.query(`
-            SELECT np.*, p.price
+            SELECT np.*, CAST(p.price AS NUMERIC) AS price
             FROM necessary_parts np
             JOIN products p ON np.part_number = p.part_number
             WHERE np.job_id = $1 AND np.part_number = $2;
         `, [job_id, part_number]);
 
         if (updatedPartData.rows.length > 0) {
-            res.json(updatedPartData.rows[0]);
+            const partData = updatedPartData.rows[0];
+            partData.price = parseFloat(partData.price); // Ensure price is a floating-point number
+            res.json(partData);
         } else {
             res.status(404).json({ message: 'Part not found after update or insert.' });
         }
@@ -191,20 +193,28 @@ router.post('/necessary-parts', async (req, res) => {
 });
 
 
+
 // Make sure this matches the base URL and route structure you have defined
 router.get('/:job_id/necessary-parts', async (req, res) => {
     const { job_id } = req.params;
 
     try {
         const necessaryPartsQuery = await pool.query(`
-            SELECT np.*, p.price, p.description
+            SELECT np.id, np.job_id, np.part_number, np.quantity_required, 
+                   CAST(p.price AS NUMERIC) AS price, p.description
             FROM necessary_parts np
             JOIN products p ON np.part_number = p.part_number
             WHERE np.job_id = $1;
         `, [job_id]);
 
         if (necessaryPartsQuery.rows.length > 0) {
-            res.json(necessaryPartsQuery.rows);
+            // Ensure the price is properly formatted for each part
+            const partsWithFormattedPrice = necessaryPartsQuery.rows.map(part => ({
+                ...part,
+                price: parseFloat(part.price)  // Ensure price is a floating-point number
+            }));
+
+            res.json(partsWithFormattedPrice);
         } else {
             res.status(404).json({ message: 'No necessary parts found for this job.' });
         }
@@ -213,6 +223,7 @@ router.get('/:job_id/necessary-parts', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch necessary parts' });
     }
 });
+
 router.put('/necessary-parts/:id', async (req, res) => {
     const { id } = req.params;
     const { quantity_required } = req.body;
@@ -336,18 +347,29 @@ router.get('/:job_id/used-parts', async (req, res) => {
 
     try {
         const usedPartsQuery = await pool.query(`
-            SELECT up.*, p.price, p.description
+            SELECT up.id, up.job_id, up.part_number, up.quantity_used,
+                   CAST(p.price AS NUMERIC) AS price, p.description
             FROM used_parts up
             JOIN products p ON up.part_number = p.part_number
             WHERE up.job_id = $1;
         `, [job_id]);
 
-        res.json(usedPartsQuery.rows);
+        if (usedPartsQuery.rows.length > 0) {
+            const partsWithFormattedPrice = usedPartsQuery.rows.map(part => ({
+                ...part,
+                price: parseFloat(part.price) // Ensure price is a floating-point number
+            }));
+            res.json(partsWithFormattedPrice);
+        } else {
+            res.status(404).json({ message: 'No used parts found for this job.' });
+        }
     } catch (err) {
         console.error(err.message);
         res.status(500).json({ error: 'Failed to fetch used parts' });
     }
 });
+
+
 router.post('/:job_id/return-to-necessary', async (req, res) => {
     const { job_id } = req.params;
     const { part_id, quantity_used } = req.body;
@@ -472,5 +494,49 @@ router.post('/:job_id/remove-from-used', async (req, res) => {
         res.status(500).json({ error: 'Failed to remove part from used' });
     }
 });
+
+// DELETE endpoint to remove a job
+router.delete('/:job_id', async (req, res) => {
+    const { job_id } = req.params;
+
+    try {
+        const deleteQuery = 'DELETE FROM jobs WHERE job_id = $1';
+        const result = await pool.query(deleteQuery, [job_id]);
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: `Job ${job_id} not found` });
+        }
+
+        res.status(200).json({ message: `Job ${job_id} removed successfully` });
+    } catch (err) {
+        console.error('Error removing job:', err);
+        res.status(500).json({ error: 'Failed to remove job', detail: err.message });
+    }
+});
+//to update a job
+router.put('/:job_id', async (req, res) => {
+    const { job_id } = req.params;
+    const { customer_name, address, phone, email } = req.body; // include other fields as necessary
+
+    try {
+        const updateQuery = `
+            UPDATE jobs
+            SET customer_name = $1, address = $2, phone = $3, email = $4
+            WHERE job_id = $5
+            RETURNING *;`;
+
+        const result = await pool.query(updateQuery, [customer_name, address, phone, email, job_id]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: `Job ${job_id} not found` });
+        }
+
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error('Error updating job:', err);
+        res.status(500).json({ error: 'Failed to update job', detail: err.message });
+    }
+});
+
 
 module.exports = router;

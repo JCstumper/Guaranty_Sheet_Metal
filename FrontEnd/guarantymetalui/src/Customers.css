@@ -385,3 +385,31 @@
 .addPartModal-footer .btn {
   margin-left: 10px;
 }
+.edit-btn,
+.remove-btn {
+    padding: 5px 10px;
+    margin: 2px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.edit-btn {
+    background-color: #4CAF50; /* Green background for edit */
+    color: white;
+}
+
+.edit-btn:hover {
+    background-color: #45a049; /* Darker green on hover */
+}
+
+.remove-btn {
+    background-color: #f44336; /* Red background for remove */
+    color: white;
+}
+
+.remove-btn:hover {
+    background-color: #da190b; /* Darker red on hover */
+}
+
