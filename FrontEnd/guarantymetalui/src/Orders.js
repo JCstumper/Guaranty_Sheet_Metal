@@ -42,6 +42,12 @@ const Orders = ({ setAuth }) => {
         setSelectedOrderId(selectedOrderId !== invoiceId ? invoiceId : null);
     };
 
+    // Additional function to fetch parts information
+    const fetchPartsDetails = async (orderId) => {
+        // Fetch parts details for the selected order here
+        // You may want to save this data to the state
+    };
+
     const fetchOrders = async () => {
         try {
             const response = await fetch(`${API_BASE_URL}/purchases`);
@@ -129,13 +135,20 @@ const Orders = ({ setAuth }) => {
                                                 <td colSpan="4">
                                                     {/* Placeholder for your expanded details */}
                                                     <div className="order-details-expanded">
-                                                        <div className="detail-section">
-                                                            <h4>Order Details</h4>
-                                                            {/* Future content goes here */}
-                                                        </div>
-                                                        <div className="detail-section">
-                                                            <h4>More Information</h4>
-                                                            {/* Future content goes here */}
+                                                        {/* Button to generate XLSX */}
+                                                        <button className="generate-xlsx-button">Generate XLSX</button>
+                                                        <div className="parts-section-container">
+                                                            <h4>Parts</h4>
+                                                            {/* Low Inventory Section */}
+                                                            <div className="parts-subsection">
+                                                                <h5>Low Inventory</h5>
+                                                                {/* Placeholder for Low Inventory parts list */}
+                                                            </div>
+                                                            {/* Out of Stock Section */}
+                                                            <div className="parts-subsection">
+                                                                <h5>Out of Stock</h5>
+                                                                {/* Placeholder for Out of Stock parts list */}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </td>
