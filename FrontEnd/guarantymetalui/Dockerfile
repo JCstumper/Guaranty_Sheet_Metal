@@ -29,6 +29,9 @@ CMD ["npm", "run", "dev"]
 # === PRODUCTION STAGE ===
 FROM base as production
 
+# Setting environment variable to the DNS instead of localhost
+ENV REACT_APP_API_URL=https://gsminventory.com/api
+
 # Build the React App
 RUN npm run build
 

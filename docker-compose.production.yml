@@ -59,8 +59,6 @@ services:
     build:
       context: ./FrontEnd/guarantymetalui
       target: production
-    environment:
-      - REACT_APP_API_URL=https://gsminventory.com/api
 
 volumes:
   mydbdata:
