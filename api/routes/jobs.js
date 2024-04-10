@@ -401,6 +401,48 @@ router.post('/:job_id/return-to-necessary', async (req, res) => {
     }
 });
 
+// Assuming you're adding this inside routes/jobs.js or a similar file
+
+router.post('/:job_id/update-used-part', async (req, res) => {
+    const { job_id } = req.params;
+    const { part_id, new_quantity, quantity_diff } = req.body;
+
+    try {
+        await pool.query('BEGIN');
+
+        // Fetch current data for the used part
+        const usedPartRes = await pool.query('SELECT part_number, quantity_used FROM used_parts WHERE id = $1', [part_id]);
+        if (usedPartRes.rows.length === 0) {
+            await pool.query('ROLLBACK');
+            return res.status(404).json({ error: 'Used part not found' });
+        }
+
+        const { part_number } = usedPartRes.rows[0];
+
+        // Update used parts with the new quantity
+        await pool.query('UPDATE used_parts SET quantity_used = $1 WHERE id = $2', [new_quantity, part_id]);
+
+        // Adjust inventory based on the quantity difference
+        if (quantity_diff > 0) {
+            // Decrease inventory
+            await pool.query('UPDATE inventory SET quantity_in_stock = quantity_in_stock - $1 WHERE part_number = $2', [quantity_diff, part_number]);
+        } else if (quantity_diff < 0) {
+            // Increase inventory (Note the use of ABS to make the negative diff positive)
+            await pool.query('UPDATE inventory SET quantity_in_stock = quantity_in_stock + $1 WHERE part_number = $2', [Math.abs(quantity_diff), part_number]);
+        }
+
+
+        // If necessary, update necessary parts (this part may depend on your business logic)
+        // For example, if decreasing used parts, you might want to increase necessary parts
+
+        await pool.query('COMMIT');
+        res.json({ message: 'Used part updated successfully' });
+    } catch (err) {
+        await pool.query('ROLLBACK');
+        console.error('Error updating used part:', err);
+        res.status(500).json({ error: 'Failed to update used part', detail: err.message });
+    }
+});
 
 
 router.post('/:job_id/remove-from-used', async (req, res) => {
@@ -430,8 +472,5 @@ router.post('/:job_id/remove-from-used', async (req, res) => {
         res.status(500).json({ error: 'Failed to remove part from used' });
     }
 });
-
-
-
 
 module.exports = router;

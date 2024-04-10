@@ -41,7 +41,20 @@ router.patch('/:part_number/quantity', async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
-
+// Add this route to get the inventory for a specific part number
+router.get('/:part_number', async (req, res) => {
+    const { part_number } = req.params;
+    try {
+        const inventory = await pool.query('SELECT * FROM inventory WHERE part_number = $1', [part_number]);
+        if (inventory.rows.length === 0) {
+            return res.status(404).json({ error: 'Inventory item not found' });
+        }
+        res.json(inventory.rows[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 
 module.exports = router;
