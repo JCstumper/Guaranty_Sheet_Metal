@@ -389,9 +389,45 @@ const Customers = ({ setAuth }) => {
         // Logic to add a part to the Used Parts list
     };
     
-    const handleReturnToNecessary = (partNumber) => {
-        // Logic to move a part from Used to Necessary
+    const handleReturnToNecessary = async (partId) => {
+        const part = usedParts.find(p => p.id === partId);
+        if (!part) {
+            alert('Part not found');
+            return;
+        }
+    
+        if (window.confirm(`Are you sure you want to return part ${part.part_number} to necessary?`)) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/jobs/${selectedJobId}/return-to-necessary`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ part_id: partId, quantity_used: part.quantity_used })
+                });
+    
+                if (!response.ok) {
+                    const errorResponse = await response.json();
+                    alert(errorResponse.error);
+                    return;
+                }
+    
+                const data = await response.json();
+                alert(data.message);
+    
+                // Update local state for UI
+                const updatedUsedParts = usedParts.filter(p => p.id !== partId);
+                setUsedParts(updatedUsedParts);
+                
+                // Optionally, refresh necessary parts from the server to get updated data
+                fetchNecessaryParts(selectedJobId);
+            } catch (error) {
+                console.error('Error returning part to necessary:', error);
+                alert('Failed to return part to necessary. ' + error.message);
+            }
+        }
     };
+    
+    
+    
     
     const handleEditUsedPart = (partNumber) => {
         // Logic to edit a part in the Used Parts list
@@ -540,6 +576,9 @@ const Customers = ({ setAuth }) => {
                                                                                 <button onClick={() => handleReturnToNecessary(part.part_number)} className="details-btn">Return to Necessary</button>
                                                                                 <button onClick={() => handleEditUsedPart(part.part_number)} className="details-btn">Edit</button>
                                                                                 <button onClick={() => handleRemoveUsedPart(part.part_number)} className="details-btn">Remove</button>
+                                                                                <button onClick={() => handleReturnToNecessary(part.id)} className="details-btn">Return to Necessary</button>
+                                                                                <button onClick={() => handleEditUsedPart(part.id)} className="details-btn">Edit</button>
+                                                                                <button onClick={() => handleRemoveUsedPart(part.id)} className="details-btn">Remove</button>
                                                                             </td>
                                                                         </tr>
                                                                     ))}
