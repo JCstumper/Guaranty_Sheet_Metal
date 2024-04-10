@@ -55,15 +55,21 @@ const Customers = ({ setAuth }) => {
     const fetchNecessaryParts = async (jobId) => {
         try {
             const response = await fetch(`${API_BASE_URL}/jobs/${jobId}/necessary-parts`);
-            if (!response.ok) {
+            if (response.ok) {
+                const partsData = await response.json();
+                setNecessaryParts(partsData);
+            } else if (response.status === 404) {
+                console.log(`No necessary parts found for job ${jobId}`);
+                setNecessaryParts([]); // Clear the necessary parts as none are found for this job
+            } else {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
-            const partsData = await response.json();
-            setNecessaryParts(partsData);
         } catch (error) {
             console.error('Error fetching necessary parts:', error);
+            setNecessaryParts([]); // Clear the necessary parts to handle any error
         }
     };
+    
     const fetchUsedParts = async (jobId) => {
         try {
             const response = await fetch(`${API_BASE_URL}/jobs/${jobId}/used-parts`);
@@ -257,22 +263,11 @@ const Customers = ({ setAuth }) => {
     const handleAddNecessaryPart = () => {
         setShowAddPartModal(true);
     };
-    const handleAddPartToNecessary = (newPart) => {
-        
-        console.log('Adding new part:', newPart);
-        setNecessaryParts((prevParts) => {
-            const existingPartIndex = prevParts.findIndex(part => part.part_number === newPart.part_number);
-            if (existingPartIndex >= 0) {
-                // Part exists, update the quantity
-                const updatedParts = [...prevParts];
-                updatedParts[existingPartIndex].quantity_required = newPart.quantity_required;
-                return updatedParts;
-            } else {
-                // Part does not exist, add as new part
-                return [...prevParts, newPart];
-            }
-        });
+    const handleAddPartToNecessary = async (addedPart) => {
+        // Refresh the necessary parts list from the server to get the updated data including descriptions
+        await fetchNecessaryParts(selectedJobId);
     };
+    
          
     const handleCloseAddPartModal = () => {
         setShowAddPartModal(false);
@@ -297,23 +292,21 @@ const Customers = ({ setAuth }) => {
         const confirmMove = window.confirm(`Are you sure you want to move part ${part.part_number} to used?`);
         if (!confirmMove) return;
     
+        const requestBody = {
+            part_number: part.part_number,
+            quantity_to_move: parseInt(part.quantity_required, 10) // Ensuring the quantity is an integer
+        };
+    
         try {
             const response = await fetch(`${API_BASE_URL}/jobs/${selectedJobId}/move-to-used`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    part_number: part.part_number,
-                    quantity_to_move: parseFloat(part.quantity_required)
-                })
+                body: JSON.stringify(requestBody)
             });
     
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error('Network response was not ok: ' + errorText);
-            }
-    
-            const { actualQuantityMoved, message } = await response.json();
-            alert(message); // Show the message from the backend
+            if (response.ok) {
+                const { actualQuantityMoved, message } = await response.json();
+                alert(message); // Show the message from the backend
     
                 // Update necessary parts in UI based on the actual quantity moved
                 const remainingQuantity = parseInt(part.quantity_required, 10) - actualQuantityMoved;
@@ -342,12 +335,12 @@ const Customers = ({ setAuth }) => {
             } else {
                 throw new Error(`Unhandled response status: ${response.status}`);
             }
-            
         } catch (error) {
-            // Here you can decide to not log the error to the console
             alert('Failed to move part to used. Please try again.');
+            console.error('Error moving part to used:', error);
         }
     };
+    
     
     
     
@@ -356,30 +349,48 @@ const Customers = ({ setAuth }) => {
         setEditingPart({...part, newQuantity: part.quantity_required});
     };    
     const saveEditedPart = async (part) => {
-        if (part.newQuantity < 0) {
-            alert('Quantity cannot be negative.');
-            return;
-        }
+        if (parseInt(part.newQuantity, 10) <= 0) {
+            // If the quantity is 0 or less, remove the part
+            if (window.confirm("Quantity is 0. This will remove the part. Continue?")) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/jobs/necessary-parts/${part.id}`, {
+                        method: 'DELETE'
+                    });
     
-        const updatedPart = {...part, quantity_required: part.newQuantity};
-        try {
-            const response = await fetch(`${API_BASE_URL}/jobs/necessary-parts/${part.id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updatedPart)
-            });
-    
-            if (response.ok) {
-                const data = await response.json();
-                setNecessaryParts(necessaryParts.map(p => p.id === part.id ? data : p));
-                setEditingPart(null); // Reset editing part state
-            } else {
-                throw new Error('Failed to update necessary part');
+                    if (response.ok) {
+                        setNecessaryParts(necessaryParts.filter(p => p.id !== part.id));
+                    } else {
+                        throw new Error('Failed to remove necessary part');
+                    }
+                } catch (error) {
+                    console.error('Error removing necessary part:', error);
+                    alert('Failed to remove necessary part. ' + error.message);
+                }
             }
-        } catch (error) {
-            console.error('Error updating necessary part:', error);
+        } else {
+            // If the quantity is greater than 0, update the part
+            const updatedPart = { ...part, quantity_required: part.newQuantity };
+            try {
+                const response = await fetch(`${API_BASE_URL}/jobs/necessary-parts/${part.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatedPart)
+                });
+    
+                if (response.ok) {
+                    const data = await response.json();
+                    setNecessaryParts(necessaryParts.map(p => p.id === part.id ? data : p));
+                    setEditingPart(null); // Reset editing part state
+                } else {
+                    throw new Error('Failed to update necessary part');
+                }
+            } catch (error) {
+                console.error('Error updating necessary part:', error);
+                alert('Failed to update necessary part. ' + error.message);
+            }
         }
     };
+    
       
     const handleRemoveNecessaryPart = async (partId) => {
         if (window.confirm("Are you sure you want to remove this part?")) {
@@ -403,15 +414,7 @@ const Customers = ({ setAuth }) => {
         // Logic to add a part to the Used Parts list
     };
     
-    const handleReturnToNecessary = (partNumber) => {
-        // Logic to move a part from Used to Necessary
-    };
-    
-    const handleEditUsedPart = (partNumber) => {
-        // Logic to edit a part in the Used Parts list
-    };
-    
-    const handleRemoveUsedPart = async (partId) => {
+    const handleReturnToNecessary = async (partId) => {
         const part = usedParts.find(p => p.id === partId);
         if (!part) {
             alert('Part not found');
@@ -448,16 +451,116 @@ const Customers = ({ setAuth }) => {
         }
     };
     
+    const handleEditUsedPart = (partId) => {
+        const part = usedParts.find(p => p.id === partId);
+        setEditingUsedPart(part ? { ...part, newQuantity: part.quantity_used } : null);
+    };
+    const saveEditedUsedPart = async (part) => {
+        const originalQuantity = part.quantity_used;
+        const newQuantity = parseInt(part.newQuantity, 10);
     
+        // Check for negative values
+        if (newQuantity < 0) {
+            alert('Quantity cannot be negative.');
+            return;
+        }
     
+        // Handle removing the part if the quantity is set to 0
+        if (newQuantity === 0) {
+            await handleRemoveUsedPart(part.id);
+            return;
+        }
     
-    const handleEditUsedPart = (partNumber) => {
-        // Logic to edit a part in the Used Parts list
+        const quantityDiff = newQuantity - originalQuantity;
+    
+        // If increasing the quantity, check if enough inventory exists
+        if (quantityDiff > 0) {
+            const inventoryRes = await fetch(`${API_BASE_URL}/inventory/${part.part_number}`);
+            if (!inventoryRes.ok) {
+                alert('Error fetching inventory data.');
+                return;
+            }
+            const inventoryData = await inventoryRes.json();
+            if (inventoryData.quantity_in_stock < quantityDiff) {
+                alert('Not enough inventory to increase used quantity.');
+                return;
+            }
+        }
+    
+        // Proceed to update the used part
+        try {
+            const response = await fetch(`${API_BASE_URL}/jobs/${selectedJobId}/update-used-part`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    part_id: part.id,
+                    new_quantity: newQuantity,
+                    quantity_diff: quantityDiff
+                })
+            });
+    
+            if (response.ok) {
+                const data = await response.json();
+                alert(data.message);
+    
+                // Update the local state to reflect the new quantity in the used parts list
+                setUsedParts(usedParts.map(p =>
+                    p.id === part.id ? { ...p, quantity_used: newQuantity } : p
+                ));
+    
+                // Exit editing mode
+                setEditingUsedPart(null);
+    
+                // Optionally, refresh necessary parts and inventory to reflect the changes
+                fetchNecessaryParts(selectedJobId);
+                // Assuming you have a function to fetch inventory
+            } else {
+                const errorResponse = await response.json();
+                alert(errorResponse.error);
+            }
+        } catch (error) {
+            console.error('Error updating used part:', error);
+            alert('Failed to update used part. ' + error.message);
+        }
     };
     
-    const handleRemoveUsedPart = (partNumber) => {
-        // Logic to remove a part from the Used Parts list
+    
+    
+    
+    const handleRemoveUsedPart = async (partId) => {
+        const part = usedParts.find(p => p.id === partId);
+        if (!part) return;
+    
+        const confirmRemove = window.confirm(`Are you sure you want to remove part ${part.part_number} from used?`);
+        if (!confirmRemove) return;
+    
+        try {
+            const response = await fetch(`${API_BASE_URL}/jobs/${selectedJobId}/remove-from-used`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    part_number: part.part_number,
+                    quantity_used: part.quantity_used
+                })
+            });
+    
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error('Network response was not ok: ' + errorText);
+            }
+    
+            await response.json(); // Assuming the backend sends some confirmation message
+            alert(`Part ${part.part_number} removed from used.`);
+    
+            // Update the UI by removing the part from the used parts list
+            setUsedParts(usedParts.filter(p => p.id !== partId));
+            
+        } catch (error) {
+            console.error('Error removing part from used:', error);
+            alert('Failed to remove part from used. ' + error.message);
+        }
     };
+    
     const parsePrice = (priceStr) => {
         if (!priceStr || typeof priceStr !== 'string') {
             console.error('parsePrice called with non-string or undefined:', priceStr);
@@ -467,12 +570,18 @@ const Customers = ({ setAuth }) => {
     };
     
     // For the total costs of parts
-    const totalUsedCost = usedParts.reduce((acc, part) => acc + (part.quantity_used * part.price || 0), 0);
+    const totalUsedCost = usedParts.reduce((acc, part) => {
+        const quantityUsed = parseInt(part.quantity_used, 10) || 0;
+        const price = parseFloat(part.price) || 0;
+        return acc + (quantityUsed * price);
+    }, 0);
+    
     const totalNecessaryCost = necessaryParts.reduce((acc, part) => {
-        const price = part.price ? parsePrice(part.price) : 0;
-        const quantity = parseFloat(part.quantity_required) || 0;
+        const price = parseFloat(part.price) || 0;
+        const quantity = parseInt(part.quantity_required, 10) || 0;
         return acc + (quantity * price);
-    }, 0);    
+    }, 0);
+     
     
     return (
         <div className="customers">
@@ -586,19 +695,34 @@ const Customers = ({ setAuth }) => {
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                    {usedParts.map(part => (
-                                                                        <tr key={part.id}>
-                                                                            <td>{part.part_number}</td>
-                                                                            <td>{part.description}</td>
-                                                                            <td>{part.quantity_used}</td>
-                                                                            <td>${parsePrice(part.price)?.toFixed(2) ?? 'N/A'}</td>
-                                                                            <td>
-                                                                                <button onClick={() => handleReturnToNecessary(part.part_number)} className="details-btn">Return to Necessary</button>
-                                                                                <button onClick={() => handleEditUsedPart(part.part_number)} className="details-btn">Edit</button>
-                                                                                <button onClick={() => handleRemoveUsedPart(part.id)} className="details-btn">Remove</button>
-                                                                            </td>
-                                                                        </tr>
-                                                                    ))}
+                                                                {usedParts.map(part => (
+                                                                    <tr key={part.id}>
+                                                                        <td>{part.part_number}</td>
+                                                                        <td>{part.description}</td>
+                                                                        <td>
+                                                                            {editingUsedPart && editingUsedPart.id === part.id ? (
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={editingUsedPart.newQuantity}
+                                                                                    onChange={(e) => setEditingUsedPart({ ...editingUsedPart, newQuantity: e.target.value })}
+                                                                                    min="0"
+                                                                                />
+                                                                            ) : (
+                                                                                part.quantity_used
+                                                                            )}
+                                                                        </td>
+                                                                        <td>${parsePrice(part.price)?.toFixed(2) ?? 'N/A'}</td>
+                                                                        <td>
+                                                                            <button onClick={() => handleReturnToNecessary(part.id)} className="details-btn">Return to Necessary</button>
+                                                                            {editingUsedPart && editingUsedPart.id === part.id ? (
+                                                                                <button onClick={() => saveEditedUsedPart(editingUsedPart)} className="details-btn">Save</button>
+                                                                            ) : (
+                                                                                <button onClick={() => handleEditUsedPart(part.id)} className="details-btn">Edit</button>
+                                                                            )}
+                                                                            <button onClick={() => handleRemoveUsedPart(part.id)} className="details-btn">Remove</button>
+                                                                        </td>
+                                                                    </tr>
+                                                                ))}
                                                                 </tbody>
                                                             </table>
                                                             <p>Total Cost of Used Parts: ${totalUsedCost.toFixed(2)}</p>
