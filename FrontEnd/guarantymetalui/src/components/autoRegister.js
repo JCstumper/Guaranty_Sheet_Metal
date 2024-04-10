@@ -3,12 +3,13 @@ const registerUser = async (setIsLoading, setAuth, navigate) => {
     const username = "admin"; // Replace with desired username
     const password = "Admin123!"; // Replace with desired password
     const email = "admin@gmail.com"; // Replace with desired email address
+    const role = "admin"; // Specify the role you want to assign to the user
 
     try {
-
         const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
 
-        const body = { username, password, email };
+        // Include the role in the request body
+        const body = { username, password, email, role };
         const response = await fetch(`${API_BASE_URL}/auth/register`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -19,6 +20,7 @@ const registerUser = async (setIsLoading, setAuth, navigate) => {
 
         if (parseRes.token) {
             console.log("Registration successful", parseRes);
+          
         } else {
             console.log("Registration failed", parseRes);
         }

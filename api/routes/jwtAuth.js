@@ -8,10 +8,11 @@ const { getUserLockoutStatus, updateFailedAttempts, setLockout} = require("../ut
 const moment = require("moment-timezone");
 
 router.post("/register", validInfo, async(req, res) => {
+    const client = await pool.connect();
     try {
         //1. destructure the req.body (name, email, password)
 
-        const {username, password, email} = req.body;
+        const {username, password, email, role} = req.body;
 
         //2. check if user exist (if user exist throw error)
 
@@ -29,10 +30,38 @@ router.post("/register", validInfo, async(req, res) => {
 
         const newUser = await pool.query("INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING *", [username, hashedPassword, email]);
 
+        await pool.query(
+            "INSERT INTO roles (role_name) VALUES ($1) ON CONFLICT (role_name) DO NOTHING;", [role],
+          );
+        
+        const getRole = "SELECT * FROM roles WHERE role_name = $1;";
+        const resultsGetRole = await client.query(getRole, [role]);
+        //console.log(resultsGetRole);
+        // Assuming resultsGetRole contains the role data including role_id
+        if (resultsGetRole.rows.length > 0) {
+            const roleId = resultsGetRole.rows[0].role_id; // Get the role_id from the roles table
+
+            // Now use this roleId to insert into user_roles
+            await pool.query(
+                "INSERT INTO user_roles (user_id, role_id) VALUES ($1, $2) ON CONFLICT (user_id, role_id) DO NOTHING;",
+                [newUser.rows[0].user_id, roleId] // newUser.rows[0].user_id should be the user's ID, roleId is the role_id
+            );
+        } else {
+            console.log("Role not found or failed to insert.");
+        }
+
+
+
         //5. Update the login_attempts table with the new user's user_id
 
         await pool.query("INSERT INTO login_attempts (user_id, failed_attempts, is_locked_out, lockout_until) VALUES ($1, 0, FALSE, NULL)", [newUser.rows[0].user_id])
 
+        const roleCheck = await pool.query("SELECT role_id FROM roles WHERE role_name = $1", [role]);
+        if (roleCheck.rows.length === 0) {
+            return res.status(400).json("Role does not exist"); // Or handle default role assignment
+        }
+
+        await pool.query("INSERT INTO user_roles (user_id, role_id) VALUES ($1, $2)", [newUser.rows[0].user_id, roleCheck.rows[0].role_id]);
         //6. generating our jwt token
         
         const token = jwtGenerator(newUser.rows[0].user_id, newUser.rows[0].username);

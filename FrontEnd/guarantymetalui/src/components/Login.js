@@ -35,6 +35,8 @@ const Login = ({ setAuth, setIsLoading }) => {
         try {
             const body = { username, password };
             setIsLoading(true);
+            console.log(username);
+            console.log(password);
 
             const response = await fetch(`${API_BASE_URL}/auth/login`, {
                 method: "POST",
