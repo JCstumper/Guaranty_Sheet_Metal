@@ -9,13 +9,16 @@ services:
       - 80:80
       - 443:443
     volumes:
-      - ./nginx/nginx.conf.template:/etc/nginx/nginx.conf.template:ro
+      - ./nginx/nginx.conf.productionTemplate:/etc/nginx/nginx.conf.productionTemplate:ro
       - ./nginx/ssl:/etc/nginx/ssl
       - ./nginx/generate-certs.sh:/etc/nginx/generate-certs.sh
-      - ./nginx/startup.sh:/etc/nginx/startup.sh
+      - ./nginx/startupProduction.sh:/etc/nginx/startupProduction.sh
     environment:
-      - HOST_NAME=localhost
-    entrypoint: /bin/bash -c "/etc/nginx/startup.sh"
+      - HOST_NAME=gsminventory.com
+    entrypoint: /bin/bash -c "/etc/nginx/startupProduction.sh"
+    depends_on:
+      - frontend
+      - api
 
   db:
     image: postgres:latest
@@ -34,41 +37,27 @@ services:
     container_name: API
     build: 
       context: ./api
-      target: development
+      target: production
     environment:
       - DB_HOST=db
       - DB_USER=admin
       - DB_PASSWORD=Guaranty123
       - DB_NAME=GuarantyDatabase
-      - API_URL=https://localhost
+      - API_URL=https://gsminventory.com
       - CHOKIDAR_USEPOLLING=true
     volumes:
-      - ./api/middleware:/usr/src/app/middleware:ro
-      - ./api/routes:/usr/src/app/routes:ro
-      - ./api/utils:/usr/src/app/utils:ro
-      - ./api/db.js:/usr/src/app/db.js:ro
-      - ./api/server.js:/usr/src/app/server.js:ro
       - ./nginx/ssl:/usr/src/app/ssl
       - uploads:/usr/src/app/uploads
     depends_on:
-      - nginx
       - db
 
   frontend:
     container_name: React
     build:
       context: ./FrontEnd/guarantymetalui
-      target: development
-    volumes:
-      - ./FrontEnd/guarantymetalui:/app
-      - /app/node_modules
+      target: production
     environment:
-      - NODE_ENV=development
-      - WDS_SOCKET_PORT=0
-      - REACT_APP_API_URL=https://localhost/api
-    depends_on:
-      - api
-      - nginx
+      - REACT_APP_API_URL=https://gsminventory.com/api
 
 volumes:
   mydbdata:
