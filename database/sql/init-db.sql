@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS necessary_parts (
     id SERIAL PRIMARY KEY,
     job_id INTEGER NOT NULL,
     part_number VARCHAR(50) NOT NULL,
-    quantity_required INTEGER NOT NULL,
+    quantity_required DECIMAL(10, 2),
     FOREIGN KEY (job_id) REFERENCES jobs(job_id) ON DELETE CASCADE,
     FOREIGN KEY (part_number) REFERENCES products(part_number)
 );
@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS used_parts (
     id SERIAL PRIMARY KEY,
     job_id INTEGER NOT NULL,
     part_number VARCHAR(50) NOT NULL,
-    quantity_used INTEGER NOT NULL,
+    quantity_used DECIMAL(10, 2),
     FOREIGN KEY (job_id) REFERENCES jobs(job_id) ON DELETE CASCADE,
     FOREIGN KEY (part_number) REFERENCES products(part_number)
 );
