@@ -5,7 +5,7 @@ const authorization = require("../middleware/authorization");
 const verifyRoles = require("../middleware/verifyRoles"); 
 
 
-router.get('/', authorization, verifyRoles("admin"), async (req, res) => {
+router.get('/', authorization, async (req, res) => {
     try {
         const logs = await pool.query("SELECT * FROM log");
         res.json(logs.rows); // Sending back just the rows for cleaner output
