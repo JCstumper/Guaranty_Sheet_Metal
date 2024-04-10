@@ -17,7 +17,8 @@ const Customers = ({ setAuth }) => {
     const [filter, setFilter] = useState("");
     const {API_BASE_URL} = useContext(AppContext);
     const [showAddPartModal, setShowAddPartModal] = useState(false);
-    const [editingPart, setEditingPart] = useState(null);
+    const [editingPart, setEditingPart] = useState(null); //State for tracking editing of Necessary parts
+    const [editingUsedPart, setEditingUsedPart] = useState(null); // State for tracking editing of used parts
 
 
     useEffect(() => {
@@ -284,7 +285,14 @@ const Customers = ({ setAuth }) => {
     };    
     const handleMoveToUsed = async (partId) => {
         const part = necessaryParts.find(p => p.id === partId);
-        if (!part) return;
+        if (!part) {
+            alert('Part not found');
+            return;
+        }
+        if (parseInt(part.quantity_required, 10) <= 0) {
+            alert('Cannot move to used as the quantity is 0');
+            return;
+        }
     
         const confirmMove = window.confirm(`Are you sure you want to move part ${part.part_number} to used?`);
         if (!confirmMove) return;
@@ -307,35 +315,41 @@ const Customers = ({ setAuth }) => {
             const { actualQuantityMoved, message } = await response.json();
             alert(message); // Show the message from the backend
     
-            if (actualQuantityMoved > 0) {
-                // Calculate the remaining quantity for necessary parts
-                const remainingQuantity = parseFloat(part.quantity_required) - actualQuantityMoved;
-                if (remainingQuantity > 0) {
-                    setNecessaryParts(necessaryParts.map(p => 
-                        p.id === partId ? { ...p, quantity_required: remainingQuantity } : p
-                    ));
-                } else {
-                    setNecessaryParts(necessaryParts.filter(p => p.id !== partId));
-                }
-            
+                // Update necessary parts in UI based on the actual quantity moved
+                const remainingQuantity = parseInt(part.quantity_required, 10) - actualQuantityMoved;
+                setNecessaryParts(necessaryParts.map(p => 
+                    p.id === partId ? { ...p, quantity_required: remainingQuantity } : p
+                ));
+    
                 // Update used parts in UI
                 const existingUsedPart = usedParts.find(p => p.part_number === part.part_number);
                 if (existingUsedPart) {
                     setUsedParts(usedParts.map(p => 
                         p.part_number === part.part_number
-                            ? { ...p, quantity_used: (parseFloat(p.quantity_used) || 0) + actualQuantityMoved }
+                            ? { ...p, quantity_used: p.quantity_used + actualQuantityMoved }
                             : p
                     ));
                 } else {
                     setUsedParts([...usedParts, { ...part, quantity_used: actualQuantityMoved }]);
                 }
+    
+                // Optionally, refresh the state from the server to ensure it is in sync
+                fetchNecessaryParts(selectedJobId);
+                fetchUsedParts(selectedJobId);
+            } else if (response.status === 400) {
+                const errorResponse = await response.json();
+                alert(errorResponse.error); // Show a user-friendly error message
+            } else {
+                throw new Error(`Unhandled response status: ${response.status}`);
             }
             
         } catch (error) {
-            console.error('Error moving part to used:', error);
-            alert('Failed to move part to used. ' + error.message);
+            // Here you can decide to not log the error to the console
+            alert('Failed to move part to used. Please try again.');
         }
     };
+    
+    
     
     
     const handleEditNecessaryPart = (part) => {
@@ -389,7 +403,15 @@ const Customers = ({ setAuth }) => {
         // Logic to add a part to the Used Parts list
     };
     
-    const handleReturnToNecessary = async (partId) => {
+    const handleReturnToNecessary = (partNumber) => {
+        // Logic to move a part from Used to Necessary
+    };
+    
+    const handleEditUsedPart = (partNumber) => {
+        // Logic to edit a part in the Used Parts list
+    };
+    
+    const handleRemoveUsedPart = async (partId) => {
         const part = usedParts.find(p => p.id === partId);
         if (!part) {
             alert('Part not found');
@@ -489,9 +511,7 @@ const Customers = ({ setAuth }) => {
                                                     <div className="job-details-expanded">
                                                         {/* Estimates Section */}
                                                         <div className="job-details-section">
-                                                            <h4>Estimates</h4>
-                                                            <p><strong>Estimate Number:</strong> {job.estimateNumber}</p>
-                                                            <p><strong>Date Provided:</strong> {job.estimateDate}</p>
+                                                            <h4>Job Estimate</h4>
                                                             <div className="details-button-container">
                                                                 {job.hasEstimate && (
                                                                     <>
@@ -575,9 +595,6 @@ const Customers = ({ setAuth }) => {
                                                                             <td>
                                                                                 <button onClick={() => handleReturnToNecessary(part.part_number)} className="details-btn">Return to Necessary</button>
                                                                                 <button onClick={() => handleEditUsedPart(part.part_number)} className="details-btn">Edit</button>
-                                                                                <button onClick={() => handleRemoveUsedPart(part.part_number)} className="details-btn">Remove</button>
-                                                                                <button onClick={() => handleReturnToNecessary(part.id)} className="details-btn">Return to Necessary</button>
-                                                                                <button onClick={() => handleEditUsedPart(part.id)} className="details-btn">Edit</button>
                                                                                 <button onClick={() => handleRemoveUsedPart(part.id)} className="details-btn">Remove</button>
                                                                             </td>
                                                                         </tr>
