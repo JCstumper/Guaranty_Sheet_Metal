@@ -34,34 +34,27 @@ function App() {
   // Function to verify if the user is authenticated by checking a token in local storage
   async function isAuth() {
     try {
+
+      // Send a GET request to verify the user's token
       const response = await fetch(`${API_BASE_URL}/auth/verify`, {
         method: "GET",
         headers: {token: localStorage.token}
       });
 
-      const parseRes = await response.json();
+      const parseRes = await response.json(); // Parse the JSON response from the server
 
-      if (parseRes.isAuthenticated) {
-        localStorage.setItem('isAuthenticated', 'true');
-        localStorage.setItem('userRoles', JSON.stringify(parseRes.roles)); // Assuming roles are part of the response
-      } else {
-        localStorage.setItem('isAuthenticated', 'false');
-        localStorage.removeItem('userRoles'); // Clear roles if not authenticated
-      }
+      // Update the authentication state based on the server's response
+      parseRes === true ? setIsAuthenticated(true) : setIsAuthenticated(false);
 
-      // Handle JWT expiration
       if (response.status === 401 && parseRes.message === "jwt expired") {
-        localStorage.setItem('isAuthenticated', 'false');
-        localStorage.removeItem('userRoles'); // Ensure roles are cleared if JWT is expired
-        // Redirect logic here won't work as expected; consider handling redirection in UI logic
+        setIsAuthenticated(false);
+        return <Navigate to="/login" />;
       }
 
     } catch (err) {
-      console.error(err.message);
-      localStorage.setItem('isAuthenticated', 'false');
-      localStorage.removeItem('userRoles');
+      console.error(err.message); // Log any errors to the console
     }
-}
+  }
   const checkTokenExpiration = (token) => {
     try {
       const decodedToken = jwtDecode(token);
@@ -96,20 +89,17 @@ function App() {
 
 // ProtectedRoute component
 const ProtectedRoute = ({ children, allowedRoles }) => {
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
   let userRoles = jwtDecode(localStorage.getItem('token'));
 
   if (userRoles = []){
     <Navigate to="/unauthorized" />;
   }
-
-
   const isAuthorized = isAuthenticated && allowedRoles.some(role => userRoles.includes(role));
 
   return isAuthorized ? children : <Navigate to="/unauthorized" />;
 };
 return (
-  <AppContext.Provider value={{API_BASE_URL}}>
+  <AppContext.Provider value={{API_BASE_URL, userRoles}}>
     <Fragment>
         <Router>
           <div className="container">
@@ -121,15 +111,11 @@ return (
               <Route path="/" element={<Navigate replace to="/login" />} />
               <Route path="/login" element={!isAuthenticated ? (<Login setAuth={setAuth} setIsLoading={setIsLoading}/>) : (<Navigate to="/dashboard" />)} />
               <Route path="/register" element={!isAuthenticated ? (<Register setAuth={setAuth}/>) : (<Navigate to="/login" />)} />
-              <Route path="/dashboard" element={<ProtectedRoute allowedRoles={['admin']}>{isAuthenticated ? (<Dashboard setAuth={setAuth}/> ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
-              <Route path="/purchases" element={<ProtectedRoute allowedRoles={['admin']}>{isAuthenticated ? (<Orders setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>}  />
-              <Route path="/jobs" element={<ProtectedRoute allowedRoles={['admin']}>{isAuthenticated ? (<Customers setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
-              <Route path="/inventory" element={<ProtectedRoute allowedRoles={['admin']}>{isAuthenticated ? (<Inventory setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
-              <Route path="/logs" element={
-                <ProtectedRoute allowedRoles={['admin']}>
-                  <Logs />
-                </ProtectedRoute>
-              } />
+              <Route path="/dashboard" element={<ProtectedRoute >{isAuthenticated ? (<Dashboard setAuth={setAuth}/> ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
+              <Route path="/purchases" element={<ProtectedRoute >{isAuthenticated ? (<Orders setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>}  />
+              <Route path="/jobs" element={<ProtectedRoute >{isAuthenticated ? (<Customers setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
+              <Route path="/inventory" element={<ProtectedRoute >{isAuthenticated ? (<Inventory setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
+              <Route path="/logs" element={<ProtectedRoute >{isAuthenticated ? (<Inventory setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
               <Route path="/logout" element={isAuthenticated ? (<Logout setAuth={setAuth}/>) : (<Navigate to="/login" />)} />
               <Route path="/*" element={isAuthenticated ? (<NotFound setAuth={setAuth}/>) : (<Navigate to="/login" />)} />
             </Routes>
