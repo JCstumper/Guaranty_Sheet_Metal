@@ -340,6 +340,77 @@ router.post('/:job_id/move-to-used', async (req, res) => {
     }
 });
 
+router.post('/used-parts', async (req, res) => {
+    const { job_id, part_number, quantity_used } = req.body;
+    const integerQuantityUsed = parseInt(quantity_used, 10); // Ensure integer conversion
+
+    if (integerQuantityUsed <= 0) {
+        return res.status(400).json({ error: 'Quantity used must be greater than 0.' });
+    }
+
+    try {
+        // Begin transaction
+        await pool.query('BEGIN');
+
+        // Check if the part already exists in the used_parts table for the job
+        const existingUsedPart = await pool.query(
+            'SELECT * FROM used_parts WHERE job_id = $1 AND part_number = $2',
+            [job_id, part_number]
+        );
+
+        // Check inventory stock
+        const inventoryCheck = await pool.query(
+            'SELECT quantity_in_stock FROM inventory WHERE part_number = $1',
+            [part_number]
+        );
+        if (inventoryCheck.rows.length === 0 || inventoryCheck.rows[0].quantity_in_stock < integerQuantityUsed) {
+            await pool.query('ROLLBACK');
+            return res.status(400).json({ error: 'Insufficient inventory for this part.' });
+        }
+
+        // Update inventory
+        await pool.query(
+            'UPDATE inventory SET quantity_in_stock = quantity_in_stock - $1 WHERE part_number = $2',
+            [integerQuantityUsed, part_number]
+        );
+
+        if (existingUsedPart.rows.length > 0) {
+            // Part exists in used_parts, update the quantity_used
+            await pool.query(
+                'UPDATE used_parts SET quantity_used = quantity_used + $1 WHERE job_id = $2 AND part_number = $3',
+                [integerQuantityUsed, job_id, part_number]
+            );
+        } else {
+            // Part does not exist in used_parts, insert a new record
+            await pool.query(
+                'INSERT INTO used_parts (job_id, part_number, quantity_used) VALUES ($1, $2, $3)',
+                [job_id, part_number, integerQuantityUsed]
+            );
+        }
+
+        // Fetch and return the updated part data including the price
+        const updatedUsedPartData = await pool.query(`
+            SELECT up.*, CAST(p.price AS NUMERIC) AS price
+            FROM used_parts up
+            JOIN products p ON up.part_number = p.part_number
+            WHERE up.job_id = $1 AND up.part_number = $2;
+        `, [job_id, part_number]);
+
+        await pool.query('COMMIT');
+
+        if (updatedUsedPartData.rows.length > 0) {
+            const partData = updatedUsedPartData.rows[0];
+            partData.price = parseFloat(partData.price); // Ensure price is a floating-point number
+            res.json(partData);
+        } else {
+            res.status(404).json({ message: 'Part not found after update or insert.' });
+        }
+    } catch (err) {
+        await pool.query('ROLLBACK');
+        console.error(err.message);
+        res.status(500).json({ error: 'Failed to add or update used part' });
+    }
+});
 
 
 router.get('/:job_id/used-parts', async (req, res) => {

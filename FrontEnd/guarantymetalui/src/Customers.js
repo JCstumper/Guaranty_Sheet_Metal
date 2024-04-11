@@ -23,8 +23,7 @@ const Customers = ({ setAuth }) => {
     const [showEditModal, setShowEditModal] = useState(false);
     const [totalNecessaryCost, setTotalNecessaryCost] = useState(0);
     const [totalUsedCost, setTotalUsedCost] = useState(0);
-
-
+    const [partActionType, setPartActionType] = useState('necessary'); // 'necessary' or 'used'
 
     useEffect(() => {
         fetchJobs();
@@ -332,13 +331,23 @@ const Customers = ({ setAuth }) => {
         }
     };
     const handleAddNecessaryPart = () => {
+        setPartActionType('necessary');
         setShowAddPartModal(true);
     };
     const handleAddPartToNecessary = async (addedPart) => {
-        // Refresh the necessary parts list from the server to get the updated data including descriptions
+        // Assuming addedPart is the part returned from the server with the necessary details
+        setNecessaryParts(prevParts => [...prevParts, addedPart]);
+        // Optionally refresh from server if needed
         await fetchNecessaryParts(selectedJobId);
     };
-    
+    const handleAddPartToUsed = async (addedPart) => {
+        // Add the part to the used parts state
+        setUsedParts(prevParts => [...prevParts, addedPart]);
+        // Decrement the inventory (considering the added part's quantity)
+        // Here, you should also make an API call to update the inventory in the backend
+        // await updateInventory(addedPart.part_number, -addedPart.quantity_used);
+        await fetchUsedParts(selectedJobId); // To refresh the used parts from the server
+    };
          
     const handleCloseAddPartModal = () => {
         setShowAddPartModal(false);
@@ -491,8 +500,9 @@ const Customers = ({ setAuth }) => {
     };
     
     const handleAddUsedPart = () => {
-        // Logic to add a part to the Used Parts list
-    };
+        setPartActionType('used');
+        setShowAddPartModal(true);
+    };    
     
     const handleReturnToNecessary = async (partId) => {
         const part = usedParts.find(p => p.id === partId);
@@ -931,9 +941,10 @@ const Customers = ({ setAuth }) => {
                 <AddPartModal
                     isOpen={showAddPartModal}
                     onClose={handleCloseAddPartModal}
-                    onAddPart={handleAddPartToNecessary} // Pass the function to update the state
+                    onAddPart={partActionType === 'necessary' ? handleAddPartToNecessary : handleAddPartToUsed}
                     API_BASE_URL={API_BASE_URL}
                     selectedJobId={selectedJobId}
+                    partActionType={partActionType} // Make sure partActionType is defined in your parent component
                 />
             )}
         </div>
