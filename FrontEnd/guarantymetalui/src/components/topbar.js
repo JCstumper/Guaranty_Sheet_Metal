@@ -122,7 +122,22 @@ const Topbar = ({ setAuth }) => {
     useEffect(() => {
         setIsLoading(true); // Optionally trigger loading immediately, adjust based on actual need
 
-        const token = localStorage.token;
+        const token = localStorage.getItem("token");
+        if (token) {
+            try {
+                const decodedToken = jwtDecode(token);
+                // Assuming your JWT structure has a 'role' field.
+                // Update the buttons array based on the user's role.
+                if (decodedToken.role !== "admin") {
+                    // Filter out the "LOGS" button for non-admin users.
+                    buttons = buttons.filter(button => button !== "LOGS");
+                }
+            } catch (error) {
+                console.error('Error decoding token:', error);
+            }
+            
+            checkTokenExpiration(token);
+        }
 
         const interval = setInterval(() => {
         if (token) {

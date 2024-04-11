@@ -1,10 +1,5 @@
 // AutoRegister.js
-const registerUser = async (setIsLoading, setAuth, navigate) => {
-    const username = "admin"; // Replace with desired username
-    const password = "Admin123!"; // Replace with desired password
-    const email = "admin@gmail.com"; // Replace with desired email address
-    const role = "admin"; // Specify the role you want to assign to the user
-
+const registerUser = async (username, password, email, role, setIsLoading, setAuth, navigate) => {
     try {
         const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
 
@@ -19,14 +14,29 @@ const registerUser = async (setIsLoading, setAuth, navigate) => {
         const parseRes = await response.json();
 
         if (parseRes.token) {
-            console.log("Registration successful", parseRes);
-          
+            console.log(`Registration successful for ${role}`, parseRes);
+            // Optionally, set auth state, navigate, or handle the token here
+            // For example:
+            // setAuth(true);
+            // navigate("/dashboard"); // Navigate to dashboard or another page as required
         } else {
-            console.log("Registration failed", parseRes);
+            console.log(`Registration failed for ${role}`, parseRes);
         }
     } catch (error) {
-        console.error("Registration error:", error);
+        console.error(`Registration error for ${role}:`, error);
     }
 };
+
+const autoRegisterUsers = async (setIsLoading, setAuth, navigate) => {
+    // Register the admin user
+    await registerUser("admin", "Admin123!", "admin@gmail.com", "admin", setIsLoading, setAuth, navigate);
+
+    // Auto-register another user with the role of "employee"
+    await registerUser("employee", "Employee123!", "employee@example.com", "employee", setIsLoading, setAuth, navigate);
+};
+
+// Example usage:
+// autoRegisterUsers(setIsLoading, setAuth, navigate);
+
 
 export default registerUser;

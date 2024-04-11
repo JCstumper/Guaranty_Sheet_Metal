@@ -60,11 +60,12 @@ router.post("/register", validInfo, async(req, res) => {
             return res.status(400).json("Role does not exist"); // Or handle default role assignment
         }
 
-        //6. generating our jwt token
-        
-        const token = jwtGenerator(newUser.rows[0].user_id, newUser.rows[0].username, newUser.rows[0].roleId);
+        console.log(role);
 
-        res.json({token});
+        //6. generating our jwt token
+        // const token = jwtGenerator(newUser.rows[0].user_id, newUser.rows[0].username, role);
+
+        res.json("User was successfully registered!");
 
     }
     catch (err) {
@@ -123,7 +124,7 @@ router.post("/login", validInfo, async (req, res) => {
         await updateFailedAttempts(userId, true); //Reset the failed attempts since the user entered the correct password
 
         //5. give them the jwt token
-        const token = jwtGenerator(user.rows[0].user_id, user.rows[0].username);
+        const token = jwtGenerator(user.rows[0].user_id, user.rows[0].username, 'admin');
 
 
         res.json({token});
