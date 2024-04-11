@@ -23,6 +23,7 @@ const Topbar = ({ setAuth }) => {
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef(null);
     const {API_BASE_URL} = useContext(AppContext);
+    const [role, setRole] = useState('');
 
 
     const toggleDropdown = () => {
@@ -126,16 +127,11 @@ const Topbar = ({ setAuth }) => {
         if (token) {
             try {
                 const decodedToken = jwtDecode(token);
-                // Assuming your JWT structure has a 'role' field.
-                // Update the buttons array based on the user's role.
-                if (decodedToken.role !== "admin") {
-                    // Filter out the "LOGS" button for non-admin users.
-                    buttons = buttons.filter(button => button !== "LOGS");
-                }
+                setRole(decodedToken.role); // Update role state
             } catch (error) {
                 console.error('Error decoding token:', error);
             }
-            
+
             checkTokenExpiration(token);
         }
 
@@ -174,6 +170,8 @@ const Topbar = ({ setAuth }) => {
         }, 1000); // Delay to keep the loading screen visible for 1 second
     };
 
+    const filteredButtons = role !== "admin" ? buttons.filter(button => button !== "LOGS") : buttons;
+
     return (
         <>
             <div className={`loading-overlay ${isLoading ? '' : 'hide'}`}>
@@ -187,7 +185,7 @@ const Topbar = ({ setAuth }) => {
                     <FaBars />
                 </div>
                 <div className={`${showNavDropdown ? "nav-dropdown show" : "button-list"}`}>
-                    {buttons.map((button) => {
+                    {filteredButtons.map((button) => {
                         const path = `/${button.toLowerCase()}`;
                         const icon = getButtonIcon(button);
                         return (

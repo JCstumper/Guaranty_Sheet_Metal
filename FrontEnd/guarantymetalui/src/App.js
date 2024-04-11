@@ -101,6 +101,9 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     }
   }
 
+  console.log(allowedRoles);
+  console.log(userRoles);
+  
   if (!token) {
     return <Navigate to="/unauthorized" />;
   }

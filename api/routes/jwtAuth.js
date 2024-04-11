@@ -46,7 +46,7 @@ router.post("/register", validInfo, async(req, res) => {
                 [newUser.rows[0].user_id, roleId] // newUser.rows[0].user_id should be the user's ID, roleId is the role_id
             );
         } else {
-            console.log("Role not found or failed to insert.");
+            console.error("Role not found or failed to insert.");
         }
 
 
@@ -59,8 +59,6 @@ router.post("/register", validInfo, async(req, res) => {
         if (roleCheck.rows.length === 0) {
             return res.status(400).json("Role does not exist"); // Or handle default role assignment
         }
-
-        console.log(role);
 
         //6. generating our jwt token
         // const token = jwtGenerator(newUser.rows[0].user_id, newUser.rows[0].username, role);
@@ -82,7 +80,14 @@ router.post("/login", validInfo, async (req, res) => {
 
         //2. check if user doesn't exist (if not then we throw error)
 
-        const user = await pool.query("SELECT * FROM users WHERE username = $1", [username]);
+        const userQuery = `
+            SELECT users.user_id, users.password, roles.role_name
+            FROM users
+            JOIN user_roles ON users.user_id = user_roles.user_id
+            JOIN roles ON user_roles.role_id = roles.role_id
+            WHERE username = $1
+        `;
+        const user = await pool.query(userQuery, [username]);
 
         if (user.rows.length === 0) {
             return res.status(401).json("Username or Password is incorrect");
@@ -123,8 +128,9 @@ router.post("/login", validInfo, async (req, res) => {
 
         await updateFailedAttempts(userId, true); //Reset the failed attempts since the user entered the correct password
 
+        const role = user.rows[0].role_name;
         //5. give them the jwt token
-        const token = jwtGenerator(user.rows[0].user_id, user.rows[0].username, 'admin');
+        const token = jwtGenerator(user.rows[0].user_id, user.rows[0].username, role);
 
 
         res.json({token});
