@@ -9,6 +9,7 @@ import LoadingScreen from './Loading'; // Verify this path is correct
 import { jwtDecode } from "jwt-decode";
 import { Bounce, toast } from 'react-toastify';
 import EditProfile from './EditProfile';
+import ManageUsers from './ManagerUsers';
 import { AppContext } from '../App';
 
 const buttons = ['DASHBOARD', 'INVENTORY', 'PURCHASES', 'JOBS', 'LOGS'];
@@ -23,9 +24,9 @@ const Topbar = ({ setAuth }) => {
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef(null);
     const {API_BASE_URL} = useContext(AppContext);
-    const [isAdmin, setIsAdmin] = userState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
     const [showManageUsers, setShowManageUsers] = useState(false); // State to control the ManageUsers modal
-
+    const [role, setRole] = useState('');
 
     const toggleDropdown = () => {
         setShowDropdown(prevShowDropdown => !prevShowDropdown);
@@ -128,17 +129,14 @@ const Topbar = ({ setAuth }) => {
         if (token) {
             try {
                 const decodedToken = jwtDecode(token);
-                if (decodedToken.role === "admin") {
-                    setIsAdmin(true); // Set admin state to true if the role is admin
-                } else {
-                    setIsAdmin(false); // Ensure isAdmin is false for non-admin roles
-                }
                 setRole(decodedToken.role); // Update role state
             } catch (error) {
                 console.error('Error decoding token:', error);
-                setIsAdmin(false); // Ensure isAdmin is reset on error
             }
+
+            checkTokenExpiration(token);
         }
+
         const interval = setInterval(() => {
         if (token) {
             checkTokenExpiration(token);
@@ -175,39 +173,38 @@ const Topbar = ({ setAuth }) => {
     };
 
     const filteredButtons = role !== "admin" ? buttons.filter(button => button !== "LOGS") : buttons;
-
     return (
         <>
             <div className={`loading-overlay ${isLoading ? '' : 'hide'}`}>
                 <LoadingScreen />
             </div>
             <aside className="topbar-container">
-                {/* Other UI elements... */}
-                
+                <div className="bottom-bar-logo-container">
+                    <img src={logo} alt="Logo" className="bottom-bar-logo" />
+                </div>
+                <div className="hamburger-menu" onClick={() => setShowNavDropdown(!showNavDropdown)}>
+                    <FaBars />
+                </div>
+                <div className={`${showNavDropdown ? "nav-dropdown show" : "button-list"}`}>
+                    {filteredButtons.map((button) => {
+                        const path = `/${button.toLowerCase()}`;
+                        const icon = getButtonIcon(button);
+                        return (
+                            <NavLink to={path} key={button} className={({ isActive }) => isActive ? "list-button active" : "list-button"} onClick={() => setShowNavDropdown(false)}>
+                                {icon}
+                                <span><strong>{button}</strong></span>
+                            </NavLink>
+                        );
+                    })}
+                </div>
                 <div className="user-info" onClick={toggleDropdown} ref={dropdownRef}>
                     <span className="username">{userName.toUpperCase()}</span>
                     <div className={`user-dropdown ${showDropdown ? 'show-dropdown' : ''}`}>
                         <button onClick={() => setShowEditProfile(true)}>Edit Profile</button>
-                        {isAdmin && <button onClick={() => setShowManageUsers(true)}>Manage Users</button>}
+                        <button onClick={() => setShowManageUsers(true)}>Manage Users</button>
                         <button onClick={() => setLogoutConfirmationOpen(true)}>Logout</button>
                     </div>
                 </div>
-
-                {/* EditProfile modal as before */}
-                <EditProfile isOpen={showEditProfile} onSave={handleProfileUpdate} onClose={() => setShowEditProfile(false)} />
-
-                {/* ManageUsers modal integrated directly */}
-                {showManageUsers && (
-                    <div className="modal">
-                        <div className="modal-content">
-                            <h2>Manage Users</h2>
-                            {/* User management functionality goes here */}
-                            <button onClick={() => setShowManageUsers(false)}>Close</button>
-                        </div>
-                    </div>
-                )}
-
-                {/* LogoutConfirmation as before */}
                 <LogoutConfirmation 
                     isOpen={logoutConfirmationOpen} 
                     onConfirm={() => {
@@ -215,6 +212,8 @@ const Topbar = ({ setAuth }) => {
                     }} 
                     onCancel={() => setLogoutConfirmationOpen(false)} 
                 />
+                <EditProfile isOpen={showEditProfile} onSave={handleProfileUpdate} onClose={() => setShowEditProfile(false)} />
+                <ManageUsers isOpen={showManageUsers} onClose={() => setShowManageUsers(false)} />
             </aside>
         </>
     );
@@ -232,3 +231,6 @@ const getButtonIcon = (button) => {
         default: return null;
     }
 };
+
+
+
