@@ -1,0 +1,22 @@
+name: Deploy to Production Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+        
+    - name: Deploy to Server
+      run: |
+        ssh "Brandon Bejarano"@68.119.69.160 "cd 'C:\Users\Brandon Bejarano\Documents\GitHub'; docker-compose down; git pull; docker-compose -f docker-compose.production.yml up --build -d"
