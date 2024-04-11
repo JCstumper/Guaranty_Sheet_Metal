@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS category_mappings (
 
 CREATE TABLE IF NOT EXISTS log (
     log_id SERIAL PRIMARY KEY,
-    action_type VARCHAR(10) NOT NULL,
+    action_type VARCHAR(50) NOT NULL,
     user_id VARCHAR(29) NOT NULL,
     log_type VARCHAR(255),
     change_details TEXT NOT NULL,

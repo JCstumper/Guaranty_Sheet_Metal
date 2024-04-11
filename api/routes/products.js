@@ -71,8 +71,8 @@ router.post('/', authorization, async (req, res) => {
         `, [partNumber, 0]); // Use the partNumber from req.body and a default quantity of 0
         
         // After inserting the new product and before sending the response
-        await logInventoryAction('add', req.username, 'inventory', { 
-            message: 'Product added', 
+        await logInventoryAction('Add Product', req.username, 'inventory', { 
+            message: 'Product Added', 
             details: { ...req.body } 
         });
 
@@ -105,8 +105,8 @@ router.delete('/:partNumber', authorization, async (req, res) => {
         `, [partNumber]);
         
         // After deleting the product and before sending the response
-        await logInventoryAction('delete', req.username, 'inventory', { 
-            message: 'Product deleted',
+        await logInventoryAction('Delete Product', req.username, 'inventory', { 
+            message: 'Product Deleted',
             details: productDeletionResponse.rows[0]
         });
 
@@ -214,8 +214,8 @@ router.put('/:originalPartNumber', authorization, async (req, res) => {
         }
 
         // After updating the product and before sending the response
-        await logInventoryAction('update', req.username, 'inventory', { 
-            message: 'Product updated', 
+        await logInventoryAction('Update Product', req.username, 'inventory', { 
+            message: 'Product Information Updated', 
             details: { ...req.body } 
         });
 
