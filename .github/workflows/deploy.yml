@@ -12,10 +12,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
       
-    - name: Setup SSH
-      uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+    - name: Add SSH host key
+      run: |
+        mkdir -p ~/.ssh
+        echo "$SERVER_HOST_KEY" >> ~/.ssh/known_hosts
+        chmod 600 ~/.ssh/known_hosts
+      env:
+        SERVER_HOST_KEY: ${{ secrets.SERVER_HOST_KEY }}
         
     - name: Deploy to Server
       run: |
