@@ -19,4 +19,4 @@ jobs:
         
     - name: Deploy to Server
       run: |
-        ssh "Brandon Bejarano"@68.119.69.160 "cd 'C:\Users\Brandon Bejarano\Documents\GitHub'; docker-compose down; git pull; docker-compose -f docker-compose.production.yml up --build -d"
+        ssh "Brandon Bejarano"@gsminventory.com "cd 'C:\Users\Brandon Bejarano\Documents\GitHub'; docker-compose down; git pull; docker-compose -f docker-compose.production.yml up --build -d"
