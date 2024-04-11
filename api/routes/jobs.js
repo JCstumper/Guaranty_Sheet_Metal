@@ -28,6 +28,28 @@ router.get('/', async (req, res) => {
         res.status(500).json('Server error');
     }
 });
+// In your jobs router (e.g., jobs.js)
+
+router.get('/search', async (req, res) => {
+    const { query } = req.query;  // Assuming you pass the search term as a query parameter
+
+    try {
+        const searchQuery = `
+            SELECT * FROM jobs
+            WHERE
+                CAST(job_id AS TEXT) ILIKE $1 OR
+                customer_name ILIKE $1 OR
+                address ILIKE $1 OR
+                phone ILIKE $1 OR
+                email ILIKE $1;
+        `;
+        const searchResults = await pool.query(searchQuery, [`%${query}%`]);
+        res.json(searchResults.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
 
 router.get('/estimate/:job_id', async (req, res) => {
     try {

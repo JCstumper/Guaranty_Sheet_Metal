@@ -8,7 +8,7 @@
     display: flex;
     margin-top: 90px;
     margin-left: 10px;
-    padding-right: 250px;
+    padding-right: 10px;
     flex-direction: column;
 }
 
@@ -412,4 +412,27 @@
 .remove-btn:hover {
     background-color: #da190b; /* Darker red on hover */
 }
+.filtering-box-jobs {
+  margin-bottom: 10px;
+  top: 0; /* Align to the top of its container */
+  left: 0; /* Align to the left of its container */
+  width: 33%; /* Take up 1/3rd of the screen width */
+  padding: 10px; /* Adjust padding to your preference */
+  background-color: #fff; /* Keep the background color */
+  border: 2px solid #b3b3b3; /* Adjust border thickness */
+  border-radius: 10px; /* Adjust border-radius for rounded corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+.search-input-jobs {
+  width: 100%; /* Input field takes full width of its container */
+  padding: 8px; /* Padding inside the input field */
+  margin-top: 5px; /* Margin at the top of the input field */
+  border: 1px solid #ccc; /* Border around the input field */
+  border-radius: 5px; /* Rounded corners for the input field */
+}
+
+
+
 

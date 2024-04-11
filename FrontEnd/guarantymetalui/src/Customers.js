@@ -27,7 +27,8 @@ const Customers = ({ setAuth }) => {
 
     useEffect(() => {
         fetchJobs();
-    }, []);
+    }, [filter]);
+    
     useEffect(() => {
         if (selectedJobId) {
             fetchNecessaryParts(selectedJobId);
@@ -61,18 +62,19 @@ const Customers = ({ setAuth }) => {
     
     
     const fetchJobs = async () => {
+        const endpoint = filter.trim() ? `${API_BASE_URL}/jobs/search?query=${encodeURIComponent(filter.trim())}` : `${API_BASE_URL}/jobs`;
         try {
-            const response = await fetch(`${API_BASE_URL}/jobs`);
+            const response = await fetch(endpoint);
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
             const data = await response.json();
-            setJobs(data.jobs || data);
-            setFilteredJobs(data.jobs || data);
+            setFilteredJobs(data);
         } catch (error) {
             console.error('Error fetching jobs:', error);
         }
     };
+    
     const fetchNecessaryParts = async (jobId) => {
         try {
             const response = await fetch(`${API_BASE_URL}/jobs/${jobId}/necessary-parts`);
@@ -614,9 +616,6 @@ const Customers = ({ setAuth }) => {
         }
     };
     
-    
-    
-    
     const handleRemoveUsedPart = async (partId) => {
         const part = usedParts.find(p => p.id === partId);
         if (!part) return;
@@ -655,6 +654,15 @@ const Customers = ({ setAuth }) => {
         <div className="customers">
             <Topbar setAuth={setAuth} />
             <div className="customers-main">
+            <div className="filtering-box-jobs">
+                    <input
+                        type="text"
+                        className="search-input-jobs"
+                        placeholder="Search jobs..."
+                        value={filter}
+                        onChange={handleFilterChange}
+                    />
+                </div>
                 <div className="customer-table">
                     <div className="table-header">
                         <span className="table-title"><strong>JOBS</strong></span>
@@ -814,15 +822,6 @@ const Customers = ({ setAuth }) => {
                             </tbody>
                         </table>
                     </div>
-                </div>
-                <div className="filtering-box">
-                    <input
-                        type="text"
-                        className="search-input"
-                        placeholder="Search jobs..."
-                        value={filter}
-                        onChange={handleFilterChange}
-                    />
                 </div>
             </div>
             {showModal && (
