@@ -290,7 +290,7 @@ const EditProductModal = ({ showModal, setShowModal, editProductItem, setEditPro
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
                     <h2>Edit Product</h2>
-                    <button onClick={() => setShowModal(false)} className="modal-close-button">X</button>
+                    <button onClick={() => setShowModal(false)} className="modal-close-button">×</button>
                 </div>
                 <div className="modal-body">
                     <form onSubmit={handleUpdateProduct}>
