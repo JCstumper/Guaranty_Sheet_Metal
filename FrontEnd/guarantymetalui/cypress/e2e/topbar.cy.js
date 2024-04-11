@@ -27,8 +27,24 @@ describe('Open application and test inventory', () => {
         cy.get('.table-title').contains('INVENTORY').should('be.visible');
     });
 
-    it('Navigate to purchases', () => { 
-        cy.contains('PURCHASES').click();
+    it('Navigate to inventory', () => { 
+        cy.get('.list-button').contains('INVENTORY').click();
         cy.get('.table-title').contains('INVENTORY').should('be.visible');
+    });
+
+    it('Navigate to purchases', () => { 
+        cy.get('.list-button').contains('PURCHASES').click();
+        cy.get('.table-title').contains('ORDERS').should('be.visible');
+    });
+
+    it('Navigate to jobs', () => { 
+        cy.get('.list-button').contains('JOBS').click();
+        cy.get('.table-title').contains('JOBS').should('be.visible');
+    });
+
+    it('Navigate to logs', () => { 
+        cy.wait(6000);
+        cy.get('.list-button').contains('LOGS').click();
+        cy.get('.table-title').contains('INVENTORY LOGS').should('be.visible');
     });
 });  

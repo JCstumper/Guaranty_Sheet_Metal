@@ -99,7 +99,7 @@ const Orders = ({ setAuth }) => {
             <div className="orders-main">
                 <div className="order-table">
                     <div className="table-header">
-                        <span>Orders</span>
+                        <span className="table-title"><strong>ORDERS</strong></span>
                         <button onClick={handleToggleModal} className="add-button">Add Order</button>
                     </div>
                     <div className="table-content">
