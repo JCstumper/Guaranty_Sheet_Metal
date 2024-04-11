@@ -9,7 +9,7 @@ import LoadingScreen from './Loading'; // Verify this path is correct
 import { jwtDecode } from "jwt-decode";
 import { Bounce, toast } from 'react-toastify';
 import EditProfile from './EditProfile';
-import ManageUsers from './ManagerUsers';
+// import ManageUsers from './ManagerUsers';
 import { AppContext } from '../App';
 
 const buttons = ['DASHBOARD', 'INVENTORY', 'PURCHASES', 'JOBS', 'LOGS'];
@@ -213,7 +213,7 @@ const Topbar = ({ setAuth }) => {
                     onCancel={() => setLogoutConfirmationOpen(false)} 
                 />
                 <EditProfile isOpen={showEditProfile} onSave={handleProfileUpdate} onClose={() => setShowEditProfile(false)} />
-                <ManageUsers isOpen={showManageUsers} onClose={() => setShowManageUsers(false)} />
+                {/* <ManageUsers isOpen={showManageUsers} onClose={() => setShowManageUsers(false)} /> */}
             </aside>
         </>
     );
