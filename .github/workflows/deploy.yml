@@ -20,7 +20,12 @@ jobs:
         chmod 600 ~/.ssh/known_hosts
       env:
         SERVER_HOST_KEY: ${{ secrets.SERVER_HOST_KEY }}
+
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
         
     - name: Deploy to Server
       run: |
-        ssh "Brandon Bejarano"@gsminventory.com "cd 'C:\Users\Brandon Bejarano\Documents\GitHub'; docker-compose down; git pull; docker-compose -f docker-compose.production.yml up --build -d"
+        ssh Brandon\ Bejarano@gsminventory.com "cd 'C:\\Users\\Brandon Bejarano\\Documents\\GitHub'; docker-compose down; git pull; docker-compose -f docker-compose.production.yml up --build -d"
