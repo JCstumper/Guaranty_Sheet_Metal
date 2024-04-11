@@ -55,7 +55,6 @@ function App() {
       console.error(err.message); // Log any errors to the console
     }
   }
-
   const checkTokenExpiration = (token) => {
     try {
       const decodedToken = jwtDecode(token);
@@ -89,40 +88,65 @@ function App() {
 }, []);
 
 // ProtectedRoute component
-const ProtectedRoute = ({ children }) => {
-  const isAuthenticated = !!localStorage.getItem('token'); // Immediate check based on token presence
-  // You might want to include a loading state here to wait for the `isAuth` verification to complete
+const ProtectedRoute = ({ children, allowedRoles }) => {
+  const token = localStorage.getItem('token');
+  let userRoles = '';
+
+  if (token) {
+    try {
+      const decodedToken = jwtDecode(token);
+      userRoles = decodedToken.role ? decodedToken.role : '';
+    } catch (error) {
+      console.error('Error decoding token:', error);
+    }
+  }
+
+  console.log(allowedRoles);
+  console.log(userRoles);
   
-  return isAuthenticated ? children : <Navigate to="/login" />;
+  if (!token) {
+    return <Navigate to="/unauthorized" />;
+  }
+
+  let isAuthorized = false;
+  if (allowedRoles.length === 0) {
+    isAuthorized = isAuthenticated;
+  } else {
+    if(allowedRoles === userRoles) {
+      isAuthorized = true;
+    }
+  }
+
+  return isAuthorized ? children : <Navigate to="/unauthorized" />;
 };
 
-  return (
-    <AppContext.Provider value={{API_BASE_URL}}>
-      <Fragment>
-          <Router>
-            <div className="container">
-              {isLoading ? (
-                <Loading />
-              ) : (
-              <Routes>
-                {/* Route definitions, redirecting or granting access based on the authentication state */}
-                <Route path="/" element={<Navigate replace to="/login" />} />
-                <Route path="/login" element={!isAuthenticated ? (<Login setAuth={setAuth} setIsLoading={setIsLoading}/>) : (<Navigate to="/dashboard" />)} />
-                <Route path="/register" element={!isAuthenticated ? (<Register setAuth={setAuth}/>) : (<Navigate to="/login" />)} />
-                <Route path="/dashboard" element={<ProtectedRoute>{isAuthenticated ? (<Dashboard setAuth={setAuth}/> ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
-                <Route path="/purchases" element={<ProtectedRoute>{isAuthenticated ? (<Orders setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>}  />
-                <Route path="/jobs" element={<ProtectedRoute>{isAuthenticated ? (<Customers setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
-                <Route path="/inventory" element={<ProtectedRoute>{isAuthenticated ? (<Inventory setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
-                <Route path="/logs" element={<ProtectedRoute>{isAuthenticated ? (<Logs setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
-                <Route path="/logout" element={isAuthenticated ? (<Logout setAuth={setAuth}/>) : (<Navigate to="/login" />)} />
-                <Route path="/*" element={isAuthenticated ? (<NotFound setAuth={setAuth}/>) : (<Navigate to="/login" />)} />
-              </Routes>
-              )}
-            </div>
-          </Router>
-      </Fragment>
-    </AppContext.Provider>
-  );
+return (
+  <AppContext.Provider value={{API_BASE_URL}}>
+    <Fragment>
+        <Router>
+          <div className="container">
+            {isLoading ? (
+              <Loading />
+            ) : (
+            <Routes>
+              {/* Route definitions, redirecting or granting access based on the authentication state */}
+              <Route path="/" element={<Navigate replace to="/login" />} />
+              <Route path="/login" element={!isAuthenticated ? (<Login setAuth={setAuth} setIsLoading={setIsLoading}/>) : (<Navigate to="/dashboard" />)} />
+              <Route path="/register" element={!isAuthenticated ? (<Register setAuth={setAuth}/>) : (<Navigate to="/login" />)} />
+              <Route path="/dashboard" element={isAuthenticated ? (<Dashboard setAuth={setAuth}/> ) : (<Navigate to="/login" />)} />
+              <Route path="/purchases" element={isAuthenticated ? (<Orders setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}  />
+              <Route path="/jobs" element={isAuthenticated ? (<Customers setAuth={setAuth}/>  ) : (<Navigate to="/login" />)} />
+              <Route path="/inventory" element={isAuthenticated ? (<Inventory setAuth={setAuth}/>  ) : (<Navigate to="/login" />)} />
+              <Route path="/logs" element={<ProtectedRoute allowedRoles={'admin'}>{isAuthenticated ? (<Logs setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}</ProtectedRoute>} />
+              <Route path="/logout" element={isAuthenticated ? (<Logout setAuth={setAuth}/>) : (<Navigate to="/login" />)} />
+              <Route path="/*" element={isAuthenticated ? (<NotFound setAuth={setAuth}/>) : (<Navigate to="/login" />)} />
+            </Routes>
+            )}
+          </div>
+        </Router>
+    </Fragment>
+  </AppContext.Provider>
+);
 }
 
 export default App; // Export the App component for use in index.js

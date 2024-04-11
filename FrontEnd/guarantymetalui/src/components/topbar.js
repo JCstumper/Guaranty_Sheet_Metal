@@ -9,6 +9,7 @@ import LoadingScreen from './Loading'; // Verify this path is correct
 import { jwtDecode } from "jwt-decode";
 import { Bounce, toast } from 'react-toastify';
 import EditProfile from './EditProfile';
+// import ManageUsers from './ManagerUsers';
 import { AppContext } from '../App';
 
 const buttons = ['DASHBOARD', 'INVENTORY', 'PURCHASES', 'JOBS', 'LOGS'];
@@ -23,7 +24,9 @@ const Topbar = ({ setAuth }) => {
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef(null);
     const {API_BASE_URL} = useContext(AppContext);
-
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [showManageUsers, setShowManageUsers] = useState(false); // State to control the ManageUsers modal
+    const [role, setRole] = useState('');
 
     const toggleDropdown = () => {
         setShowDropdown(prevShowDropdown => !prevShowDropdown);
@@ -122,7 +125,17 @@ const Topbar = ({ setAuth }) => {
     useEffect(() => {
         setIsLoading(true); // Optionally trigger loading immediately, adjust based on actual need
 
-        const token = localStorage.token;
+        const token = localStorage.getItem("token");
+        if (token) {
+            try {
+                const decodedToken = jwtDecode(token);
+                setRole(decodedToken.role); // Update role state
+            } catch (error) {
+                console.error('Error decoding token:', error);
+            }
+
+            checkTokenExpiration(token);
+        }
 
         const interval = setInterval(() => {
         if (token) {
@@ -159,6 +172,7 @@ const Topbar = ({ setAuth }) => {
         }, 1000); // Delay to keep the loading screen visible for 1 second
     };
 
+    const filteredButtons = role !== "admin" ? buttons.filter(button => button !== "LOGS") : buttons;
     return (
         <>
             <div className={`loading-overlay ${isLoading ? '' : 'hide'}`}>
@@ -172,7 +186,7 @@ const Topbar = ({ setAuth }) => {
                     <FaBars />
                 </div>
                 <div className={`${showNavDropdown ? "nav-dropdown show" : "button-list"}`}>
-                    {buttons.map((button) => {
+                    {filteredButtons.map((button) => {
                         const path = `/${button.toLowerCase()}`;
                         const icon = getButtonIcon(button);
                         return (
@@ -187,6 +201,7 @@ const Topbar = ({ setAuth }) => {
                     <span className="username"><strong>{userName.toUpperCase()}</strong></span>
                     <div className={`user-dropdown ${showDropdown ? 'show-dropdown' : ''}`}>
                         <button onClick={() => setShowEditProfile(true)}>Edit Profile</button>
+                        <button onClick={() => setShowManageUsers(true)}>Manage Users</button>
                         <button onClick={() => setLogoutConfirmationOpen(true)}>Logout</button>
                     </div>
                 </div>
@@ -198,6 +213,7 @@ const Topbar = ({ setAuth }) => {
                     onCancel={() => setLogoutConfirmationOpen(false)} 
                 />
                 <EditProfile isOpen={showEditProfile} onSave={handleProfileUpdate} onClose={() => setShowEditProfile(false)} />
+                {/* <ManageUsers isOpen={showManageUsers} onClose={() => setShowManageUsers(false)} /> */}
             </aside>
         </>
     );
@@ -215,3 +231,6 @@ const getButtonIcon = (button) => {
         default: return null;
     }
 };
+
+
+
