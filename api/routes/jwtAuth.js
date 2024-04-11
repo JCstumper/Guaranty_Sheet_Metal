@@ -130,7 +130,7 @@ router.post("/login", validInfo, async (req, res) => {
 
         const role = user.rows[0].role_name;
         //5. give them the jwt token
-        const token = jwtGenerator(user.rows[0].user_id, user.rows[0].username, role);
+        const token = jwtGenerator(user.rows[0].user_id, username, role);
 
 
         res.json({token});
