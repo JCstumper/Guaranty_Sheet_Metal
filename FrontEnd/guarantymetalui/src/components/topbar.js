@@ -23,6 +23,8 @@ const Topbar = ({ setAuth }) => {
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef(null);
     const {API_BASE_URL} = useContext(AppContext);
+    const [isAdmin, setIsAdmin] = userState(false);
+    const [showManageUsers, setShowManageUsers] = useState(false); // State to control the ManageUsers modal
 
 
     const toggleDropdown = () => {
@@ -126,19 +128,16 @@ const Topbar = ({ setAuth }) => {
         if (token) {
             try {
                 const decodedToken = jwtDecode(token);
-                // Assuming your JWT structure has a 'role' field.
-                // Update the buttons array based on the user's role.
-                if (decodedToken.role !== "admin") {
-                    // Filter out the "LOGS" button for non-admin users.
-                    buttons = buttons.filter(button => button !== "LOGS");
+                if (decodedToken.role === "admin") {
+                    setIsAdmin(true); // Set admin state to true if the role is admin
+                } else {
+                    setIsAdmin(false); // Ensure isAdmin is false for non-admin roles
                 }
             } catch (error) {
                 console.error('Error decoding token:', error);
+                setIsAdmin(false); // Ensure isAdmin is reset on error
             }
-            
-            checkTokenExpiration(token);
         }
-
         const interval = setInterval(() => {
         if (token) {
             checkTokenExpiration(token);
@@ -180,31 +179,32 @@ const Topbar = ({ setAuth }) => {
                 <LoadingScreen />
             </div>
             <aside className="topbar-container">
-                <div className="bottom-bar-logo-container">
-                    <img src={logo} alt="Logo" className="bottom-bar-logo" />
-                </div>
-                <div className="hamburger-menu" onClick={() => setShowNavDropdown(!showNavDropdown)}>
-                    <FaBars />
-                </div>
-                <div className={`${showNavDropdown ? "nav-dropdown show" : "button-list"}`}>
-                    {buttons.map((button) => {
-                        const path = `/${button.toLowerCase()}`;
-                        const icon = getButtonIcon(button);
-                        return (
-                            <NavLink to={path} key={button} className={({ isActive }) => isActive ? "list-button active" : "list-button"} onClick={() => setShowNavDropdown(false)}>
-                                {icon}
-                                <span><strong>{button}</strong></span>
-                            </NavLink>
-                        );
-                    })}
-                </div>
+                {/* Other UI elements... */}
+                
                 <div className="user-info" onClick={toggleDropdown} ref={dropdownRef}>
                     <span className="username">{userName.toUpperCase()}</span>
                     <div className={`user-dropdown ${showDropdown ? 'show-dropdown' : ''}`}>
                         <button onClick={() => setShowEditProfile(true)}>Edit Profile</button>
+                        {isAdmin && <button onClick={() => setShowManageUsers(true)}>Manage Users</button>}
                         <button onClick={() => setLogoutConfirmationOpen(true)}>Logout</button>
                     </div>
                 </div>
+
+                {/* EditProfile modal as before */}
+                <EditProfile isOpen={showEditProfile} onSave={handleProfileUpdate} onClose={() => setShowEditProfile(false)} />
+
+                {/* ManageUsers modal integrated directly */}
+                {showManageUsers && (
+                    <div className="modal">
+                        <div className="modal-content">
+                            <h2>Manage Users</h2>
+                            {/* User management functionality goes here */}
+                            <button onClick={() => setShowManageUsers(false)}>Close</button>
+                        </div>
+                    </div>
+                )}
+
+                {/* LogoutConfirmation as before */}
                 <LogoutConfirmation 
                     isOpen={logoutConfirmationOpen} 
                     onConfirm={() => {
@@ -212,7 +212,6 @@ const Topbar = ({ setAuth }) => {
                     }} 
                     onCancel={() => setLogoutConfirmationOpen(false)} 
                 />
-                <EditProfile isOpen={showEditProfile} onSave={handleProfileUpdate} onClose={() => setShowEditProfile(false)} />
             </aside>
         </>
     );
