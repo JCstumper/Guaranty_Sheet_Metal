@@ -677,6 +677,7 @@ const Customers = ({ setAuth }) => {
                                     <th>Address</th>
                                     <th>Phone</th>
                                     <th>E-mail</th>
+                                    <th>Date Created</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -690,6 +691,7 @@ const Customers = ({ setAuth }) => {
                                             <td>{job.address}</td>
                                             <td>{job.phone}</td>
                                             <td>{job.email}</td>
+                                            <td>{new Date(job.date_created).toLocaleDateString()}</td>
                                             <td>
                                             <button onClick={() => handleEditJob(job.job_id)} className="edit-btn">Edit</button>
                                             <button onClick={() => handleRemoveJob(job.job_id)} className="remove-btn">Remove</button>
@@ -697,7 +699,7 @@ const Customers = ({ setAuth }) => {
                                         </tr>
                                         {selectedJobId === job.job_id && (
                                             <tr>
-                                                <td colSpan="6">
+                                                <td colSpan="7">
                                                     <div className="job-details-expanded">
                                                         {/* Estimates Section */}
                                                         <div className="job-details-section">
@@ -816,7 +818,7 @@ const Customers = ({ setAuth }) => {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="6">No jobs found</td>
+                                    <td colSpan="7">No jobs found</td>
                                 </tr>
                             )}
                             </tbody>

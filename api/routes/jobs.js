@@ -21,7 +21,8 @@ const upload = multer({ storage: storage });
 
 router.get('/', async (req, res) => {
     try {
-        const allJobs = await pool.query('SELECT * FROM jobs ORDER BY job_id DESC');
+        const allJobsQuery = 'SELECT *, to_char(date_created, \'YYYY-MM-DD HH24:MI:SS\') AS formatted_date FROM jobs ORDER BY job_id DESC';
+        const allJobs = await pool.query(allJobsQuery);
         res.json(allJobs.rows);
     } catch (err) {
         console.error(err.message);
@@ -32,16 +33,16 @@ router.get('/', async (req, res) => {
 
 router.get('/search', async (req, res) => {
     const { query } = req.query;  // Assuming you pass the search term as a query parameter
-
     try {
         const searchQuery = `
-            SELECT * FROM jobs
+            SELECT *, to_char(date_created, 'YYYY-MM-DD HH24:MI:SS') AS formatted_date FROM jobs
             WHERE
                 CAST(job_id AS TEXT) ILIKE $1 OR
                 customer_name ILIKE $1 OR
                 address ILIKE $1 OR
                 phone ILIKE $1 OR
-                email ILIKE $1;
+                email ILIKE $1 OR
+                to_char(date_created, 'YYYY-MM-DD HH24:MI:SS') ILIKE $1;
         `;
         const searchResults = await pool.query(searchQuery, [`%${query}%`]);
         res.json(searchResults.rows);
@@ -50,6 +51,7 @@ router.get('/search', async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 });
+
 
 router.get('/estimate/:job_id', async (req, res) => {
     try {
@@ -95,16 +97,12 @@ router.post('/', async (req, res) => {
         const { customer_name, address, phone, email } = req.body;
 
         // Insert a new job into the database with the provided fields
-        const newJob = await pool.query(`
-            INSERT INTO jobs (
-                customer_name, 
-                address, 
-                phone, 
-                email
-            )
-            VALUES ($1, $2, $3, $4)
-            RETURNING *;
-        `, [customer_name, address, phone, email]);
+        const newJobQuery = `
+            INSERT INTO jobs (customer_name, address, phone, email, date_created)
+            VALUES ($1, $2, $3, $4, NOW())
+            RETURNING *, to_char(date_created, 'YYYY-MM-DD HH24:MI:SS') AS formatted_date;
+        `;
+        const newJob = await pool.query(newJobQuery, [customer_name, address, phone, email]);
 
         // Respond with the newly added job and a success message
         res.status(201).json({

@@ -51,7 +51,8 @@ CREATE TABLE IF NOT EXISTS jobs (
     customer_name VARCHAR(255) NOT NULL,
     address TEXT,
     phone VARCHAR(255),
-    email VARCHAR(255)
+    email VARCHAR(255),
+    date_created TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS invoices (
