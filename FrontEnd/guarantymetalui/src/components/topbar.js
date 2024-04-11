@@ -133,6 +133,7 @@ const Topbar = ({ setAuth }) => {
                 } else {
                     setIsAdmin(false); // Ensure isAdmin is false for non-admin roles
                 }
+                setRole(decodedToken.role); // Update role state
             } catch (error) {
                 console.error('Error decoding token:', error);
                 setIsAdmin(false); // Ensure isAdmin is reset on error
@@ -172,6 +173,8 @@ const Topbar = ({ setAuth }) => {
             setIsLoading(false); // Hide the loading screen after 1 second
         }, 1000); // Delay to keep the loading screen visible for 1 second
     };
+
+    const filteredButtons = role !== "admin" ? buttons.filter(button => button !== "LOGS") : buttons;
 
     return (
         <>
