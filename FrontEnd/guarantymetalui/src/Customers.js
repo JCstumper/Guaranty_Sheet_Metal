@@ -657,8 +657,8 @@ const Customers = ({ setAuth }) => {
             <div className="customers-main">
                 <div className="customer-table">
                     <div className="table-header">
-                        <span>Jobs</span>
-                        <button onClick={handleToggleModal} className="add-button">Add Job</button>
+                        <span className="table-title"><strong>JOBS</strong></span>
+                        <button onClick={handleToggleModal} className="add-button">+</button>
                     </div>
                     <div className="table-content">
                         <table>

@@ -197,7 +197,6 @@ router.put('/:originalPartNumber', authorization, async (req, res) => {
             // Check if the new type exists in category_mappings
             const checkForNewType = `SELECT * FROM category_mappings WHERE category = $1;`;
             const resultNewType = await client.query(checkForNewType, [type]);
-
             if (resultNewType.rows.length === 0) {
                 // If new type does not exist, prepare to add it to category_mappings
                 // Split the 'type' into individual words for keywords
