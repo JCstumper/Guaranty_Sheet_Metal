@@ -4,6 +4,7 @@ const router = express.Router();
 const pool = require('../db'); // make sure the path to db.js is correct
 const authorization = require("../middleware/authorization");
 
+
 async function logInventoryAction(actionType, userId, logType, changeDetails) {
     const logQuery = `
         INSERT INTO log (action_type, user_id, log_type, change_details) 

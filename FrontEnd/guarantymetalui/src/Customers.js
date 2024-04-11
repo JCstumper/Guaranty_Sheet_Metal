@@ -69,11 +69,12 @@ const Customers = ({ setAuth }) => {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
             const data = await response.json();
+            setJobs(data); // Make sure to update jobs state as well
             setFilteredJobs(data);
         } catch (error) {
             console.error('Error fetching jobs:', error);
         }
-    };
+    };    
     
     const fetchNecessaryParts = async (jobId) => {
         try {

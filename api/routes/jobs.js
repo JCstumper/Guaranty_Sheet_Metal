@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path'); // Import path module
 const router = express.Router();
 const pool = require('../db'); // make sure the path to db.js is correct
+//const { logInventoryAction } = require('./products'); // Adjust the path to where your products.js file is located
 
 // Configure storage for multer
 const storage = multer.diskStorage({
@@ -578,7 +579,8 @@ router.post('/:job_id/remove-from-used', async (req, res) => {
         );
 
         await pool.query('COMMIT');
-        res.json({ message: `Part ${part_number} removed from used.` });
+
+        res.json({ message: `Part ${part_number} removed from used and quantity added back to inventory.` });
     } catch (err) {
         await pool.query('ROLLBACK');
         console.error(err.message);
