@@ -272,15 +272,30 @@
         cursor: pointer;
     }
 
-.generate-xlsx-button {
-    padding: 5px 15px;
-    background-color: #007bff; /* Bootstrap primary color for example */
+.status {
+    padding: 5px 10px;
     color: white;
-    border: none;
+    font-weight: bold;
+    text-align: center;
     border-radius: 5px;
-    cursor: pointer;
-    position: absolute; /* Position it relative to its nearest positioned ancestor or the container */
+    display: inline-block;
+    width: 100px; /* Or whatever width you prefer */
+}
+
+.low-stock {
+    background-color: yellow;
+}
+
+.out-of-stock {
+    background-color: red;
+}
+
+.generate-xlsx-button {
+    /* Your previous button styles here */
+    /* Position the button in the top right corner of the modal */
+    position: absolute;
     top: 10px;
     right: 10px;
-    /* Ensure the parent container is relative */
 }
+
+/* Add any other styles as needed */
