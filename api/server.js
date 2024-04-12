@@ -15,6 +15,7 @@ const purchasesRoute = require('./routes/purchases');
 const editProfileRoute = require('./routes/editProfile');
 const inventoryRoute = require('./routes/inventory');
 const categoriesRoute = require('./routes/categories');
+const userRoute = require('./routes/users');
 
 const cors = require('cors');
 
@@ -46,6 +47,7 @@ app.use("/edit", editProfileRoute);
 app.use("/categories", categoriesRoute);
 // Serve static files from the uploads directory
 app.use('/uploads', express.static('uploads'));
+app.use('/users', userRoute);
 
 
 

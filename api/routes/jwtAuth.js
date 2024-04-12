@@ -36,8 +36,7 @@ router.post("/register", validInfo, async(req, res) => {
         
         const getRole = "SELECT * FROM roles WHERE role_name = $1;";
         const resultsGetRole = await client.query(getRole, [role]);
-        //console.log(resultsGetRole);
-        // Assuming resultsGetRole contains the role data including role_id
+       
         const roleId = resultsGetRole.rows[0].role_id;
         if (resultsGetRole.rows.length > 0) {
             // Now use this roleId to insert into user_roles
@@ -59,9 +58,6 @@ router.post("/register", validInfo, async(req, res) => {
         if (roleCheck.rows.length === 0) {
             return res.status(400).json("Role does not exist"); // Or handle default role assignment
         }
-
-        //6. generating our jwt token
-        // const token = jwtGenerator(newUser.rows[0].user_id, newUser.rows[0].username, role);
 
         res.json("User was successfully registered!");
 
@@ -101,8 +97,6 @@ router.post("/login", validInfo, async (req, res) => {
         const lockoutUntilCST = moment.tz(lockoutStatus.lockout_until, "America/Chicago");
         const nowCST = moment().tz("America/Chicago");
 
-        // console.log(lockoutUntilCST.format());
-        // console.log(nowCST.format());
         
         if (lockoutStatus && lockoutStatus.is_locked_out && lockoutUntilCST > nowCST) {
             return res.status(403).json("Account locked. Try again later.");

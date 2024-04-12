@@ -1,10 +1,25 @@
 /* General modal styles */
+.manage-users-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
 .modal-backdrop {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
     background-color: rgba(0, 0, 0, 0.6);
     display: flex;
     justify-content: center;
@@ -12,33 +27,18 @@
     z-index: 1050;
 }
 
-.modal-content {
-    position: relative;
+.manage-users-container {
+    padding: 20px;
     background-color: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-    width: auto;
-    width: 500px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 600px; /* Adjust the width as needed */
     max-height: 80vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.modal-header, .modal-body, .modal-actions {
-    transition: all 0.3s ease;
-}
-
-.plus-icon::after {
-    content: "+"; /* Creates a plus sign */
-    font-size: 16px; /* Adjust size as needed */
-    line-height: 1;
-    /* Additional styling to make the plus sign look like an icon */
+    overflow: auto;
 }
 
 .modal-header {
-    margin-bottom: 20px;
+    padding-bottom: 10px;
     border-bottom: 1px solid #eaeaea;
     display: flex;
     justify-content: space-between;
@@ -64,26 +64,77 @@
 
 .modal-body {
     overflow-y: auto;
+    padding-top: 15px;
+}
+
+.user-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.user-item:hover {
+    background-color: #f9f9f9;
+}
+
+.user-item span {
     flex-grow: 1;
+    margin-right: 10px;
+}
+
+.user-item select {
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.user-item button {
+    padding: 6px 12px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    background-color: #dc3545;
+    color: white;
+}
+
+.user-item button:hover {
+    background-color: #c82333;
 }
 
 .modal-actions {
+    padding-top: 10px;
     display: flex;
     justify-content: space-between;
-    margin-top: 20px;
 }
 
 .modal-actions button {
-    padding: 10px 20px;
+    margin-right: 10px;
+    padding: 8px 16px;
     border-radius: 5px;
     border: none;
     cursor: pointer;
     font-weight: 600;
-}
-
-.modal-actions .btn-primary {
     background-color: #007bff;
     color: white;
+    transition: background-color 0.3s;
+}
+.manage-users-container .save-changes-button {
+    margin-right: 10px;
+    cursor: pointer; /* Change cursor to pointer to indicate clickable */
+    background-color: #007bff; /* Example button color */
+    color: white; /* Text color for contrast */
+    border-color: #007bff; /* Border color to match background */
+    border-radius: 2px; /* Adjust this value to increase or decrease roundness */
+}
+
+.manage-users-container .save-changes-button:hover {
+    background-color: #0056b3;
 }
 
 .modal-actions .btn-secondary {
@@ -91,206 +142,6 @@
     color: #333;
 }
 
-.modal-actions .btn-primary:hover {
-    background-color: #0056b3;
-}
-
 .modal-actions .btn-secondary:hover {
     background-color: #e2e2e2;
 }
-
-.category-fields {
-    display: flex;
-}
-
-.category-fields .form-group.category {
-    flex: 0 0 75%; /* grow | shrink | basis */
-    margin-right: 10px; /* Adjust the margin as needed */
-}
-
-.category-fields .form-group.catcode {
-    flex: 0 0 20%; /* Adjust the third value if needed to account for margin */
-}
-
-/* Form and dropdown styles */
-.form-group {
-    margin-bottom: 20px;
-}
-
-.input-icon-wrapper {
-    position: relative;
-    display: flex;
-}
-
-.input-icon-wrapper input {
-    flex: 1;
-    padding-right: 30px; /* Make room for the icon inside the input */
-}
-
-.input-icon-wrapper .icon {
-    position: absolute;
-    right: 10px; /* Spacing from the right end of the input */
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-}
-
-.form-group label {
-    font-size: 16px;
-    color: #333;
-    margin-bottom: 8px;
-}
-
-.form-group input, .form-group select, .form-group textarea {
-    width: 100%;
-    padding: 12px 15px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-.custom-file-upload {
-    background-color: #007bff;
-    color: #fff;
-    padding: 8px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.custom-file-upload:hover {
-    background-color: #0056b3;
-}
-
-.custom-select-wrapper {
-    position: relative;
-    display: inline-block;
-    width: 100%;
-}
-
-.custom-select {
-    width: 100%;
-    padding: 12px 15px; /* You may need to adjust the padding */
-    font-size: 16px;
-    line-height: 1.25; /* Line height ensures proper space for text */
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    height: auto; /* Changed from a fixed height to auto */
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-}
-
-.custom-select-wrapper::after {
-    content: '▼';
-    position: absolute;
-    top: 50%; /* Center vertically */
-    right: 10px;
-    transform: translateY(-50%); /* Adjust vertical positioning to truly center */
-    pointer-events: none; /* This ensures clicks are not intercepted by the arrow */
-    z-index: 1;
-    font-size: 8px; /* Adjust the size of the arrow as needed */
-}
-
-/* Hide the default file input */
-input[type='file'] {
-    display: none;
-}
-
-.input-wrapper {
-    position: relative;
-}
-
-.input-wrapper::before {
-    content: '$';
-    position: absolute;
-    left: 5px; /* Adjust as needed */
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-    margin-right: 5px; /* Add right margin to create space after the $ */
-}
-
-.dollar-input {
-    padding-left: 30px; /* Increase padding to accommodate the $ and the space */
-}
-
-.input-with-unit {
-    display: flex;
-    align-items: center;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-.quantity-input {
-    flex-grow: 1;
-    border: none;
-    padding: 12px 15px;
-    font-size: 16px;
-    border-radius: 4px 0 0 4px; /* Rounded corners on the left side only */
-    /* Adjust the right padding to ensure the text doesn't go under the unit label */
-    padding-right: 50px; /* This should be equal or larger than the width of .unit-label */
-}
-
-.unit-label {
-    background-color: #e9ecef; /* To match the input background or your preference */
-    padding: 12px 15px; /* Match input padding */
-    border-left: 1px solid #ccc; /* To match the input border */
-    border-radius: 0 4px 4px 0; /* Rounded corners on the right side only */
-    pointer-events: none; /* Makes it non-interactive */
-    color: #495057; /* Text color for the unit */
-    white-space: nowrap; /* Prevents the unit from wrapping */
-}
-
-/* Ensures that the quantity input does not outline on focus */
-.quantity-input:focus {
-    outline: none;
-    box-shadow: none;
-}
-
-
-/* Style the label to look like a button */
-.custom-file-upload {
-    display: block; /* Change to block to center the button */
-    padding: 6px 12px;
-    cursor: pointer;
-    background-color: #007bff; /* Change to the desired button color */
-    color: white; /* Change text color to white for better contrast */
-    border-radius: 4px;
-    text-align: center; /* Center the text inside the button */
-    margin: 0 auto; /* Center the button */
-    width: fit-content; /* Fit the content of the button */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Optional: Adds a shadow for depth */
-    border: none; /* Optional: Remove border if it's not needed */
-    outline: none; /* Optional: Remove outline to match the styling */
-    transition: background-color 0.3s; /* Smooth transition for hover effect */
-}
-
-.custom-file-upload:hover {
-    background-color: #0056b3; /* Slightly darker blue on hover */
-}
-
-/* Style for the auto-generate part number container */
-.auto-generate-part {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px; /* Adjust the margin as needed */
-    font-size: 0.9rem; /* Adjust the font size as needed */
-}
-
-/* Style for the checkbox */
-.auto-generate-part input[type='checkbox'] {
-    margin-right: 10px; /* Space between checkbox and label text */
-}
-
-/* Style for the label text to make it look like a question */
-.auto-generate-part label {
-    margin: 0;
-    user-select: none; /* Prevent text selection */
-    cursor: pointer; /* Change cursor to pointer to indicate clickable area */
-}
-
-
-
-
