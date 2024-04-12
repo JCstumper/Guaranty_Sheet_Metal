@@ -32,5 +32,5 @@ jobs:
     - name: Deploy to Server
       run: |
         ssh "Brandon Bejarano"@gsminventory.com "echo 'Connection Successful'"
-        ssh "Brandon Bejarano"@gsminventory.com "cd C:/Users/Brandon Bejarano/Documents/GitHub/Guaranty_Sheet_Metal/nginx"
+        ssh "Brandon Bejarano"@gsminventory.com "bash C:/Users/Brandon Bejarano/Documents/GitHub/Guaranty_Sheet_Metal/nginx/deploy.sh"
         
