@@ -26,8 +26,8 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-    - name: List SSH keys to confirm
-      run: ssh-add -L
+    - name: Test directory change
+      run: ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal && echo 'Directory Changed Successfully'"
       
     - name: Deploy to Server
       run: |
