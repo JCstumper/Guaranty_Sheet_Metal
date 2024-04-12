@@ -9,8 +9,11 @@ const Orders = ({ setAuth }) => {
     const [filteredOrders, setFilteredOrders] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const { API_BASE_URL } = useContext(AppContext);
-    const [lowInventory, setLowInventory] = useState([]);
-    const [outOfStock, setOutOfStock] = useState([]);
+    const [lowInventoryItems, setLowInventoryItems] = useState([]);
+    const [outOfStockItems, setOutOfStockItems] = useState([]);
+    const [newOrderItems, setNewOrderItems] = useState([]);
+
+
 
     // State to track the selected order ID for expansion
     const [selectedOrderId, setSelectedOrderId] = useState(null);
@@ -43,32 +46,6 @@ const Orders = ({ setAuth }) => {
         // If the same order is clicked again, it will toggle (close)
         setSelectedOrderId(selectedOrderId !== invoiceId ? invoiceId : null);
     };
-
-
-    // Function to fetch parts details
-    const fetchPartsDetails = async () => {
-        try {
-            // Fetching all inventory details without an orderId
-            const response = await fetch(`${API_BASE_URL}/inventory`);
-            const inventoryData = await response.json();
-            if (response.ok && inventoryData) {
-                setLowInventory(inventoryData.filter(item => item.quantity_in_stock > 0 && item.quantity_in_stock <= 15));
-                setOutOfStock(inventoryData.filter(item => item.quantity_in_stock === 0));
-            } else {
-                throw new Error('Failed to fetch inventory details');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
-
-    // Invoke this function when an order is selected, for example in a useEffect hook
-    useEffect(() => {
-        if (selectedOrderId != null) {
-            fetchPartsDetails();
-        }
-    }, [selectedOrderId]); // Dependency on selectedOrderId
-
 
 
     const fetchOrders = async () => {
@@ -128,6 +105,99 @@ const Orders = ({ setAuth }) => {
         // You might use a library like xlsx or SheetJS for this.
     };
 
+    useEffect(() => {
+        fetchLowInventoryItems();
+        fetchOutOfStockItems();
+    }, []); // The empty array ensures these run only once when the component mounts
+
+    const fetchLowInventoryItems = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/purchases/low-inventory`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            setLowInventoryItems(data);
+        } catch (error) {
+            console.error('Error fetching low inventory items:', error);
+            // Optionally, set lowInventoryItems to an empty array or handle the error as needed
+        }
+    };
+
+    const fetchOutOfStockItems = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/purchases/out-of-stock`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            setOutOfStockItems(data);
+        } catch (error) {
+            console.error('Error fetching out of stock items:', error);
+            // Optionally, set outOfStockItems to an empty array or handle the error as needed
+        }
+    };
+
+    const handleAddToNewOrder = (item, source) => {
+        setNewOrderItems(prevItems => [...prevItems, item]);
+        if (source === 'lowInventory') {
+            setLowInventoryItems(prevItems => prevItems.filter(i => i.part_number !== item.part_number));
+        } else if (source === 'outOfStock') {
+            setOutOfStockItems(prevItems => prevItems.filter(i => i.part_number !== item.part_number));
+        }
+    };
+
+
+    const handleRemoveFromNewOrder = (index) => {
+        const item = newOrderItems[index];
+        setNewOrderItems(prevItems => prevItems.filter((_, i) => i !== index));
+
+        if (item.quantity_in_stock > 0 && item.quantity_in_stock <= 15) {
+            setLowInventoryItems(prevItems => {
+                const newItems = [...prevItems, item];
+                return newItems.sort((a, b) => a.quantity_in_stock - b.quantity_in_stock);
+            });
+        } else if (item.quantity_in_stock === 0) {
+            setOutOfStockItems(prevItems => {
+                const newItems = [...prevItems, item];
+                return newItems.sort((a, b) => a.part_number.localeCompare(b.part_number));
+            });
+        }
+    };
+
+
+
+    const handleAddAllToNewOrder = (items, source) => {
+        setNewOrderItems(prevItems => [...prevItems, ...items]);
+        if (source === 'lowInventory') {
+            setLowInventoryItems([]);
+        } else if (source === 'outOfStock') {
+            setOutOfStockItems([]);
+        }
+    };
+
+    const updateOrderStatus = async (orderId, newStatus) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/purchases/${orderId}/status`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ status: newStatus }),
+            });
+
+            if (response.ok) {
+                // Assuming you have a method to re-fetch orders after status update
+                fetchOrders();
+            } else {
+                // Handle error
+                alert('Failed to update order status');
+            }
+        } catch (error) {
+            console.error('Error updating order status:', error);
+        }
+    };
+
 
     return (
         <div className="orders">
@@ -151,12 +221,31 @@ const Orders = ({ setAuth }) => {
                             <tbody>
                                 {filteredOrders.map((order, index) => (
                                     <React.Fragment key={order.invoice_id}>
-                                        <tr onClick={() => handleSelectOrder(order.invoice_id)}>
+                                        <tr key={order.invoice_id} onClick={() => handleSelectOrder(order.invoice_id)}>
                                             <td>{order.supplier_name}</td>
                                             <td>{order.total_cost}</td>
                                             <td>{order.invoice_date}</td>
-                                            <td>{order.status}</td>
+                                            <td>
+                                                {order.status}
+                                                {order.status === "Building" && (
+                                                    <button onClick={(e) => {
+                                                        e.stopPropagation(); // Prevent triggering handleSelectOrder
+                                                        updateOrderStatus(order.invoice_id, "Generated");
+                                                    }}>
+                                                        Mark as Generated
+                                                    </button>
+                                                )}
+                                                {order.status === "Generated" && (
+                                                    <button onClick={(e) => {
+                                                        e.stopPropagation(); // Prevent triggering handleSelectOrder
+                                                        updateOrderStatus(order.invoice_id, "Received");
+                                                    }}>
+                                                        Mark as Received
+                                                    </button>
+                                                )}
+                                            </td>
                                         </tr>
+
                                         {selectedOrderId === order.invoice_id && (
                                             <tr className="expanded-details">
                                                 <td colSpan="4">
@@ -168,31 +257,95 @@ const Orders = ({ setAuth }) => {
                                                         <div className="parts-section-container">
                                                             <h4>Parts</h4>
                                                             {/* Low Inventory Section */}
-                                                            <div className="parts-subsection low-inventory">
+                                                            <div className="parts-subsection low-stock">
                                                                 <h5>Low Inventory</h5>
-                                                                {lowInventory.map((item, index) => (
-                                                                    <div key={index} className="inventory-item">
-                                                                        <span>{item.part_number}</span>
-                                                                        <span>{`${item.material_type} / ${item.color}`}</span>
-                                                                        <span>{`${item.radius_size}" ${item.description}`}</span>
-                                                                        <span className={`status ${item.quantity_in_stock <= 15 ? 'low-stock' : 'in-stock'}`}>
-                                                                            {item.quantity_in_stock <= 15 ? 'Low Stock' : 'In Stock'}
-                                                                        </span>
-                                                                    </div>
-                                                                ))}
+                                                                <button onClick={() => handleAddAllToNewOrder(lowInventoryItems, 'lowInventory')}>Add All to Order</button>
+                                                                <table>
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Part Number</th>
+                                                                            <th>Material</th>
+                                                                            <th>Description</th>
+                                                                            <th>Quantity in Stock</th>
+                                                                            <th>Action</th> {/* For add button */}
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {lowInventoryItems.map((item) => (
+                                                                            <tr key={item.part_number}>
+                                                                                <td>{item.part_number}</td>
+                                                                                <td>{item.material_type}</td>
+                                                                                <td>{item.description}</td>
+                                                                                <td>{item.quantity_in_stock}</td>
+                                                                                <td>
+                                                                                    <button onClick={() => handleAddToNewOrder(item, 'lowInventory')}>Add to Order</button>
+                                                                                </td>
+                                                                            </tr>
+                                                                        ))}
+                                                                    </tbody>
+                                                                </table>
                                                             </div>
+
                                                             {/* Out of Stock Section */}
                                                             <div className="parts-subsection out-of-stock">
                                                                 <h5>Out of Stock</h5>
-                                                                {outOfStock.map((item, index) => (
-                                                                    <div key={index} className="inventory-item">
-                                                                        <span>{item.part_number}</span>
-                                                                        <span>{`${item.material_type} / ${item.color}`}</span>
-                                                                        <span>{`${item.radius_size}" ${item.description}`}</span>
-                                                                        <span className="status out-of-stock">Out of Stock</span>
-                                                                    </div>
-                                                                ))}
+                                                                <button onClick={() => handleAddAllToNewOrder(outOfStockItems, 'outOfStock')}>Add All to Order</button>
+                                                                <table>
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Part Number</th>
+                                                                            <th>Material</th>
+                                                                            <th>Description</th>
+                                                                            <th>Quantity in Stock</th>
+                                                                            <th>Action</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {outOfStockItems.map((item) => (
+                                                                            <tr key={item.part_number}>
+                                                                                <td>{item.part_number}</td>
+                                                                                <td>{item.material_type}</td>
+                                                                                <td>{item.description}</td>
+                                                                                <td>{item.quantity_in_stock}</td>
+                                                                                <td>
+                                                                                    <button onClick={() => handleAddToNewOrder(item, 'outOfStock')}>Add to Order</button>
+
+                                                                                </td>
+                                                                            </tr>
+                                                                        ))}
+                                                                    </tbody>
+                                                                </table>
                                                             </div>
+
+                                                            {/* New Order Section */}
+                                                            <div className="parts-subsection new-order">
+                                                                <h5>New Order</h5>
+                                                                <table>
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Part Number</th>
+                                                                            <th>Material</th>
+                                                                            <th>Description</th>
+                                                                            <th>Quantity in Stock</th>
+                                                                            <th>Action</th> {/* For remove button */}
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {newOrderItems.map((item, index) => (
+                                                                            <tr key={index}>
+                                                                                <td>{item.part_number}</td>
+                                                                                <td>{item.material_type}</td>
+                                                                                <td>{item.description}</td>
+                                                                                <td>{item.quantity_in_stock}</td>
+                                                                                <td>
+                                                                                    <button onClick={() => handleRemoveFromNewOrder(index)}>Remove</button>
+                                                                                </td>
+                                                                            </tr>
+                                                                        ))}
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+
                                                         </div>
                                                     </div>
                                                 </td>

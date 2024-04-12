@@ -272,6 +272,12 @@
         cursor: pointer;
     }
 
+    .low-stock,
+    .out-of-stock,
+    .new-order {
+        background-color: #fff !important; /* Set to white */
+    }
+
 .status {
     padding: 5px 10px;
     color: white;
@@ -282,13 +288,8 @@
     width: 100px; /* Or whatever width you prefer */
 }
 
-.low-stock {
-    background-color: yellow;
-}
 
-.out-of-stock {
-    background-color: red;
-}
+
 
 .generate-xlsx-button {
     /* Your previous button styles here */
