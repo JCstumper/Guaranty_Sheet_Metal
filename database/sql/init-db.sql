@@ -127,3 +127,14 @@ CREATE TABLE IF NOT EXISTS user_roles (
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
     FOREIGN KEY (role_id) REFERENCES roles(role_id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS app_settings (
+    setting_key VARCHAR(255) PRIMARY KEY,
+    setting_value BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+INSERT INTO app_settings (setting_key, setting_value)
+VALUES ('first_registration_completed', FALSE)
+ON CONFLICT (setting_key) DO NOTHING;
+
+

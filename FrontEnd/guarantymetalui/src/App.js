@@ -76,16 +76,16 @@ function App() {
 
   // Update to immediate state update based on localStorage
   useEffect(() => {
-  const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token');
 
-  if(token && token !== '') {
-    checkTokenExpiration(token);
-  }
+    if(token && token !== '') {
+      checkTokenExpiration(token);
+    }
 
-  isAuth(); // Then verify with the backend for token validity
-  setIsLoading(false); // Update isLoading after 3 seconds
+    isAuth(); // Then verify with the backend for token validity
+    setIsLoading(false); // Update isLoading after 3 seconds
 
-}, []);
+  }, []);
 
 // ProtectedRoute component
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -100,9 +100,6 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
       console.error('Error decoding token:', error);
     }
   }
-
-  console.log(allowedRoles);
-  console.log(userRoles);
   
   if (!token) {
     return <Navigate to="/unauthorized" />;
