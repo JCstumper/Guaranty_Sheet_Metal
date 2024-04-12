@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS category_mappings (
 
 CREATE TABLE IF NOT EXISTS log (
     log_id SERIAL PRIMARY KEY,
-    action_type VARCHAR(10) NOT NULL,
+    action_type VARCHAR(50) NOT NULL,
     user_id VARCHAR(29) NOT NULL,
     log_type VARCHAR(255),
     change_details TEXT NOT NULL,
@@ -51,7 +51,8 @@ CREATE TABLE IF NOT EXISTS jobs (
     customer_name VARCHAR(255) NOT NULL,
     address TEXT,
     phone VARCHAR(255),
-    email VARCHAR(255)
+    email VARCHAR(255),
+    date_created TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS invoices (
@@ -113,3 +114,27 @@ CREATE TABLE IF NOT EXISTS login_attempts (
         REFERENCES users(user_id)
         ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS roles (
+    role_id SERIAL PRIMARY KEY,
+    role_name VARCHAR(255) UNIQUE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS user_roles (
+    user_id uuid,
+    role_id INT,
+    PRIMARY KEY (user_id, role_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (role_id) REFERENCES roles(role_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS app_settings (
+    setting_key VARCHAR(255) PRIMARY KEY,
+    setting_value BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+INSERT INTO app_settings (setting_key, setting_value)
+VALUES ('first_registration_completed', FALSE)
+ON CONFLICT (setting_key) DO NOTHING;
+
+

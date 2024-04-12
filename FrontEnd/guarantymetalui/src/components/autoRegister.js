@@ -1,30 +1,28 @@
 // AutoRegister.js
-const registerUser = async (setIsLoading, setAuth, navigate) => {
-    const username = "admin"; // Replace with desired username
-    const password = "Admin123!"; // Replace with desired password
-    const email = "admin@gmail.com"; // Replace with desired email address
+const registerUsers = async (setIsLoading, setAuth, navigate) => {
+    const users = [
+        { username: "admin", password: "Admin123!", email: "admin@gmail.com", role: "admin" },
+    ];
 
-    try {
+    const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
 
-        const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
+    for (const user of users) {
+        try {
+            // Include the role in the request body
+            const body = { ...user };
+            await fetch(`${API_BASE_URL}/auth/firstregister`, {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json",
+                    token: localStorage.token
+                },
+                body: JSON.stringify(body)
+            });
 
-        const body = { username, password, email };
-        const response = await fetch(`${API_BASE_URL}/auth/register`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body)
-        });
-
-        const parseRes = await response.json();
-
-        if (parseRes.token) {
-            console.log("Registration successful", parseRes);
-        } else {
-            console.log("Registration failed", parseRes);
+        } catch (error) {
+            console.error(`Registration error for ${user.role}:`, error);
         }
-    } catch (error) {
-        console.error("Registration error:", error);
     }
 };
 
-export default registerUser;
+export default registerUsers;

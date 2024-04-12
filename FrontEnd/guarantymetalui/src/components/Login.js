@@ -35,7 +35,7 @@ const Login = ({ setAuth, setIsLoading }) => {
         try {
             const body = { username, password };
             setIsLoading(true);
-
+            
             const response = await fetch(`${API_BASE_URL}/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -99,9 +99,7 @@ const Login = ({ setAuth, setIsLoading }) => {
                         onChange={e => onChange(e)}
                     />
                     <button type="submit" className="login-button">Login</button>
-                    <a href="#" className="forgot-password">Forgot Password?</a>
                 </form>
-                <Link to="/register">Register</Link>
             </div>
         </Fragment>
     );

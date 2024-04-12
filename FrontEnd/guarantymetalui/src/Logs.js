@@ -70,7 +70,7 @@ const Logs = ({ setAuth }) => {
             <Topbar setAuth={setAuth} />
             <div className="logs-table">
                 <div className="table-header">
-                    <span>Inventory Logs</span>
+                    <span className="table-title"><strong>INVENTORY LOGS</strong></span>
                     <button className="filter-button" onClick={openFilterModal}><FaFilter /></button>
                 </div>
                 <div className="table-content">

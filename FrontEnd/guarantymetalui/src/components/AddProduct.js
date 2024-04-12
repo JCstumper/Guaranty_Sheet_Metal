@@ -557,7 +557,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
             <div className="modal-content" onClick={e => e.stopPropagation()}>
                 <div className="modal-header">
                     <h2>{isUploading ? 'Upload Excel File' : 'Add New Inventory Item'}</h2>
-                    <button onClick={() => setShowModal(false)} className="modal-close-button">X</button>
+                    <button onClick={() => setShowModal(false)} className="modal-close-button">×</button>
                 </div>
                 <div className="modal-body">
                     {isUploading ? (

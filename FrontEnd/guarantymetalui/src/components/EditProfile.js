@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import "./EditProfile.css";
+import "./AddProduct.css"; // Assuming this CSS file contains styles for `.form-group`
 
 const EditProfilePopup = ({ isOpen, onSave, onClose }) => {
   const [newUsername, setNewUsername] = useState('');
@@ -14,29 +14,44 @@ const EditProfilePopup = ({ isOpen, onSave, onClose }) => {
   };
 
   return (
-    <div className="edit-profile-overlay">
-        <div className="edit-profile-container">
+    <div className="modal-backdrop">
+        <div className="modal-content">
             <form onSubmit={handleSave}>
-                <input
-                    type="text"
-                    placeholder="New username"
-                    value={newUsername}
-                    onChange={(e) => setNewUsername(e.target.value)}
-                />
-                <input
-                    type="password"
-                    placeholder="New password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                />
-                <input
-                    type="e-mail"
-                    placeholder="New email"
-                    value={newEmail}
-                    onChange={(e) => setNewEmail(e.target.value)}
-                />
-                <button type="submit">Save Changes</button>
-                <button type="button" onClick={onClose}>Cancel</button>
+                <div className="modal-header">
+                    <h2>Edit Profile</h2>
+                    <button onClick={onClose} className="modal-close-button">×</button>
+                </div>
+                <div className="modal-body">
+                    {/* Wrap each input with the form-group class */}
+                    <div className="form-group">
+                        <input
+                            type="text"
+                            placeholder="New username"
+                            value={newUsername}
+                            onChange={(e) => setNewUsername(e.target.value)}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <input
+                            type="password"
+                            placeholder="New password"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <input
+                            type="email"
+                            placeholder="New email"
+                            value={newEmail}
+                            onChange={(e) => setNewEmail(e.target.value)}
+                        />
+                    </div>
+                </div>
+                <div className="modal-actions">
+                    <button type="submit" className="btn-primary">Save Changes</button>
+                    <button type="button" onClick={onClose} className="btn-secondary">Cancel</button>
+                </div>
             </form>
         </div>
     </div>

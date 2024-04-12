@@ -135,8 +135,8 @@ const Orders = ({ setAuth }) => {
             <div className="orders-main">
                 <div className="order-table">
                     <div className="table-header">
-                        <span>Orders</span>
-                        <button onClick={handleToggleModal} className="add-button">Add Order</button>
+                        <span className="table-title"><strong>ORDERS</strong></span>
+                        <button onClick={handleToggleModal} className="add-button">+</button>
                     </div>
                     <div className="table-content">
                         <table>

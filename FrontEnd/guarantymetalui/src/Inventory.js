@@ -255,10 +255,14 @@ const Inventory = ({ setAuth }) => {
     
     const handleUpdateQuantity = async (e) => {
         e.preventDefault();
+        const token = localStorage.getItem('token');
         try {
             const response = await fetch(`/api/inventory/${editItem.partNumber}/quantity`, {
                 method: "PATCH",
-                headers: { "Content-Type": "application/json" },
+                headers: { 
+                    "Content-Type": "application/json",
+                    'token': token,
+                },
                 body: JSON.stringify({ quantity_in_stock: editItem.quantityInStock })
             });
             if (response.ok) {

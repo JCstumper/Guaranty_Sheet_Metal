@@ -7,11 +7,129 @@ const authorization = require("../middleware/authorization");
 const { getUserLockoutStatus, updateFailedAttempts, setLockout} = require("../utils/lockout");
 const moment = require("moment-timezone");
 
-router.post("/register", validInfo, async(req, res) => {
+async function logAddUserAction(actionType, userId, logType, changeDetails) {
+    const logQuery = `
+        INSERT INTO log (action_type, user_id, log_type, change_details) 
+        VALUES ($1, $2, $3, $4);
+    `;
+    try {
+        await pool.query(logQuery, [actionType, userId, logType, JSON.stringify(changeDetails)]);
+    } catch (err) {
+        console.error('Failed to log inventory action:', err.message);
+    }
+}
+
+router.get("/check-initial-setup", async (req, res) => {
+    try {
+        const { rows } = await pool.query("SELECT setting_value FROM app_settings WHERE setting_key = 'first_registration_completed'");
+        const isSetupCompleted = rows[0] ? rows[0].setting_value : false;
+        res.json({ initialSetupComplete: isSetupCompleted });
+    } catch (err) {
+        console.error('Error checking initial setup status:', err.message);
+        res.status(500).send("Server Error");
+    }
+});
+
+router.post("/update-initial-setup", validInfo, async (req, res) => {
+    const client = await pool.connect();
+    try {
+        // First, ensure the initial setup hasn't been completed
+        const settingResult = await client.query("SELECT setting_value FROM app_settings WHERE setting_key = 'first_registration_completed'");
+        if (settingResult.rows[0].setting_value) {
+            return res.status(403).json({ message: "Initial setup has already been completed." });
+        }
+
+        const { username, password, email } = req.body;
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Query to find an admin user's UUID
+        const findAdminQuery = `
+            SELECT u.user_id
+            FROM users u
+            JOIN user_roles ur ON u.user_id = ur.user_id
+            JOIN roles r ON ur.role_id = r.role_id
+            WHERE r.role_name = 'admin'
+            LIMIT 1;
+        `;
+
+        const adminResult = await client.query(findAdminQuery);
+        if (adminResult.rows.length === 0) {
+            return res.status(404).json({ message: "Admin user not found." });
+        }
+
+        // Admin's UUID
+        const adminUserId = adminResult.rows[0].user_id;
+
+        // Update the admin user's credentials
+        await client.query(
+            "UPDATE users SET username = $1, password = $2, email = $3 WHERE user_id = $4",
+            [username, hashedPassword, email, adminUserId]
+        );
+
+        // Set the initial setup flag to true
+        await client.query(
+            "UPDATE app_settings SET setting_value = TRUE WHERE setting_key = 'first_registration_completed'"
+        );
+
+        res.json({ message: "Initial setup completed and admin credentials updated successfully." });
+    } catch (err) {
+        console.error('Error updating initial setup:', err.message);
+        res.status(500).send("Server Error");
+    } finally {
+        client.release();
+    }
+});
+
+
+router.post("/firstregister", validInfo, async(req, res) => {
+    const client = await pool.connect();
+    try {
+        // Check if the first registration has already been completed
+        const { rows } = await client.query("SELECT setting_value FROM app_settings WHERE setting_key = 'first_registration_completed'");
+        if (rows[0].setting_value) {
+            return;  // If the registration has already been completed, exit silently
+        }
+
+        const { username, password, email, role } = req.body;
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newUser = await client.query(
+            "INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING *",
+            [username, hashedPassword, email]
+        );
+
+        await client.query("INSERT INTO roles (role_name) VALUES ($1) ON CONFLICT (role_name) DO NOTHING;", [role]);
+        
+        const getRole = "SELECT * FROM roles WHERE role_name = $1;";
+        const resultsGetRole = await client.query(getRole, [role]);
+        if (resultsGetRole.rows.length > 0) {
+            const roleId = resultsGetRole.rows[0].role_id;
+            await client.query(
+                "INSERT INTO user_roles (user_id, role_id) VALUES ($1, $2) ON CONFLICT (user_id, role_id) DO NOTHING;",
+                [newUser.rows[0].user_id, roleId]
+            );
+        }
+
+        await client.query(
+            "INSERT INTO login_attempts (user_id, failed_attempts, is_locked_out, lockout_until) VALUES ($1, 0, FALSE, NULL)",
+            [newUser.rows[0].user_id]
+        );
+
+        res.json({ message: "Initial user was successfully registered!" });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Server Error");
+    } finally {
+        client.release();
+    }
+});
+
+router.post("/register", validInfo, authorization, async(req, res) => {
+    const client = await pool.connect();
     try {
         //1. destructure the req.body (name, email, password)
 
-        const {username, password, email} = req.body;
+        const {username, password, email, role} = req.body;
 
         //2. check if user exist (if user exist throw error)
 
@@ -29,15 +147,45 @@ router.post("/register", validInfo, async(req, res) => {
 
         const newUser = await pool.query("INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING *", [username, hashedPassword, email]);
 
+        await pool.query(
+            "INSERT INTO roles (role_name) VALUES ($1) ON CONFLICT (role_name) DO NOTHING;", [role],
+        );
+        
+        const getRole = "SELECT * FROM roles WHERE role_name = $1;";
+        const resultsGetRole = await client.query(getRole, [role]);
+        //console.log(resultsGetRole);
+        // Assuming resultsGetRole contains the role data including role_id
+        const roleId = resultsGetRole.rows[0].role_id;
+        if (resultsGetRole.rows.length > 0) {
+            // Now use this roleId to insert into user_roles
+            await pool.query(
+                "INSERT INTO user_roles (user_id, role_id) VALUES ($1, $2) ON CONFLICT (user_id, role_id) DO NOTHING;",
+                [newUser.rows[0].user_id, roleId] // newUser.rows[0].user_id should be the user's ID, roleId is the role_id
+            );
+        } else {
+            console.error("Role not found or failed to insert.");
+        }
+
+
+
         //5. Update the login_attempts table with the new user's user_id
 
         await pool.query("INSERT INTO login_attempts (user_id, failed_attempts, is_locked_out, lockout_until) VALUES ($1, 0, FALSE, NULL)", [newUser.rows[0].user_id])
 
-        //6. generating our jwt token
-        
-        const token = jwtGenerator(newUser.rows[0].user_id, newUser.rows[0].username);
+        const roleCheck = await pool.query("SELECT role_id FROM roles WHERE role_name = $1", [role]);
+        if (roleCheck.rows.length === 0) {
+            return res.status(400).json("Role does not exist"); // Or handle default role assignment
+        }
 
-        res.json({token});
+        await logAddUserAction('Added User', req.username, 'Add User', { 
+            message: 'Added User to Application Whitelist', 
+            details: { ...req.body } 
+        });
+
+        //6. generating our jwt token
+        // const token = jwtGenerator(newUser.rows[0].user_id, newUser.rows[0].username, role);
+
+        res.json("User was successfully registered!");
 
     }
     catch (err) {
@@ -54,7 +202,14 @@ router.post("/login", validInfo, async (req, res) => {
 
         //2. check if user doesn't exist (if not then we throw error)
 
-        const user = await pool.query("SELECT * FROM users WHERE username = $1", [username]);
+        const userQuery = `
+            SELECT users.user_id, users.password, roles.role_name
+            FROM users
+            JOIN user_roles ON users.user_id = user_roles.user_id
+            JOIN roles ON user_roles.role_id = roles.role_id
+            WHERE username = $1
+        `;
+        const user = await pool.query(userQuery, [username]);
 
         if (user.rows.length === 0) {
             return res.status(401).json("Username or Password is incorrect");
@@ -95,8 +250,9 @@ router.post("/login", validInfo, async (req, res) => {
 
         await updateFailedAttempts(userId, true); //Reset the failed attempts since the user entered the correct password
 
+        const role = user.rows[0].role_name;
         //5. give them the jwt token
-        const token = jwtGenerator(user.rows[0].user_id, user.rows[0].username);
+        const token = jwtGenerator(user.rows[0].user_id, username, role);
 
 
         res.json({token});
