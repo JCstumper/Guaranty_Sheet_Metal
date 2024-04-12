@@ -5,7 +5,17 @@ const authorization = require("../middleware/authorization"); // Optional, if yo
 // Route to get all users
 router.get('/', authorization, async (req, res) => {
     try {
-        const allUsersQuery = 'SELECT u.username, r.role_name FROM user_roles ur JOIN users u ON ur.user_id = u.user_id JOIN roles r ON ur.role_id = r.role_id;';
+        const allUsersQuery = `
+            SELECT 
+                u.user_id,  
+                u.username, 
+                r.role_name 
+            FROM 
+                user_roles ur 
+                JOIN users u ON ur.user_id = u.user_id 
+                JOIN roles r ON ur.role_id = r.role_id;
+        `;
+    
         const result = await pool.query(allUsersQuery);
         res.json(result.rows);
     } catch (err) {
@@ -14,19 +24,19 @@ router.get('/', authorization, async (req, res) => {
     }
 });
 router.post('/updateRole', authorization, async (req, res) => {
-    const { user_id, new_role } = req.body;
+    const { user_id, role } = req.body;
 
         try {
             // First, find the role ID for the new role name
             const roleQuery = 'SELECT role_id FROM roles WHERE role_name = $1';
-            const roleRes = await pool.query(roleQuery, [new_role]);
-            console.log("made it here");
+            const roleRes = await pool.query(roleQuery, [role]);
+           
             // Check if the role exists in the database
             if (roleRes.rows.length === 0) {
-                console.log("Role not found in the database:", new_role);
+                console.log("Role not found in the database:", role);
                 return res.status(404).send('Role not found');
             }
-
+            console.log("made it here");
             const role_id = roleRes.rows[0].role_id;
             
             // Then, update the user's role in the user_roles table

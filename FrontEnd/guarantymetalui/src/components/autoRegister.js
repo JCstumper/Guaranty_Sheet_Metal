@@ -20,12 +20,12 @@ const registerUsers = async (setIsLoading, setAuth, navigate) => {
             const parseRes = await response.json();
 
             if (parseRes.token) {
-                console.log(`Registration successful for ${user.role}`, parseRes);
+                console.log(`Registration successful `);
             } else {
-                console.log(`Registration failed for ${user.role}`, parseRes);
+                console.log(`Registration failed`);
             }
         } catch (error) {
-            console.error(`Registration error for ${user.role}:`, error);
+            console.error(`Registration error `);
         }
     }
 };

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import "./ManageUsers.css";
+import { jwtDecode } from "jwt-decode";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
 
@@ -7,6 +8,7 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  
 
   useEffect(() => {
     if (isOpen) {
@@ -22,6 +24,7 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
             throw new Error(`HTTP error! status: ${response.status}`);
           }
           const data = await response.json();
+          console.log(data);
           setUsers(data);
         } catch (e) {
           console.error('Fetching users failed:', e);
@@ -55,17 +58,35 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
 };
 
 
-  const handleChangeRole = async (id, newRole) => {
-    // Call API to update the user role in the backend database
+const handleChangeRole = async (id, newRole) => {
     try {
+        // Decode the JWT token from localStorage
+        console.log(newRole);
+        console.log(id);
+        const token = localStorage.getItem('token');
+        const decoded = jwtDecode(token);
+        console.log('Decoded JWT:', decoded);  // Just an example to see the decoded token
+
+        // Optionally use any decoded information, e.g., user roles, permissions, etc.
+        // if (!decoded.isAdmin) {
+        //     console.error('Unauthorized: Only admins can change roles');
+        //     setError('Unauthorized: Only admins can change roles');
+        //     return;
+        // }
+
         const response = await fetch(`${API_BASE_URL}/users/updateRole`, {
             method: 'POST',
-            headers: {token: localStorage.token},
-            body: JSON.stringify({ user_id: id, new_role: newRole })
+            headers: {
+                'Content-Type': 'application/json',
+                'token': token
+            },
+            body: JSON.stringify({ user_id: id, role: newRole })
         });
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
+
         // On successful update, update state
         setUsers(prevUsers => prevUsers.map(user =>
             user.user_id === id ? { ...user, role_name: newRole } : user
