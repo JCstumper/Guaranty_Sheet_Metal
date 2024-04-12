@@ -6,9 +6,9 @@ const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
 
 const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
   const [users, setUsers] = useState([]);
+  const [tempUsers, setTempUsers] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
 
   useEffect(() => {
     if (isOpen) {
@@ -18,14 +18,17 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
         try {
           const response = await fetch(`${API_BASE_URL}/users`, {
             method: 'GET',
-            headers: {token: localStorage.token}
+            headers: { token: localStorage.token }
           });
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
           }
           const data = await response.json();
-          console.log(data);
           setUsers(data);
+          setTempUsers(data.reduce((acc, user) => {
+            acc[user.user_id] = { ...user };
+            return acc;
+          }, {}));
         } catch (e) {
           console.error('Fetching users failed:', e);
           setError('Failed to load users');
@@ -35,9 +38,7 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
       };
       fetchUsers();
     }
-  }, [isOpen]); // This effect runs when the modal opens
-
-  if (!isOpen) return null;
+  }, [isOpen]);
 
   const handleRemoveUser = async (id) => {
     try {
@@ -57,47 +58,41 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
     }
 };
 
+  const handleChangeRole = (userId, newRole) => {
+    setTempUsers(prev => ({
+      ...prev,
+      [userId]: { ...prev[userId], role_name: newRole }
+    }));
+  };
 
-const handleChangeRole = async (id, newRole) => {
+  const saveChanges = async () => {
+    setLoading(true);
+    setError(null);
     try {
-        // Decode the JWT token from localStorage
-        console.log(newRole);
-        console.log(id);
-        const token = localStorage.getItem('token');
-        const decoded = jwtDecode(token);
-        console.log('Decoded JWT:', decoded);  // Just an example to see the decoded token
-
-        // Optionally use any decoded information, e.g., user roles, permissions, etc.
-        // if (!decoded.isAdmin) {
-        //     console.error('Unauthorized: Only admins can change roles');
-        //     setError('Unauthorized: Only admins can change roles');
-        //     return;
-        // }
-
-        const response = await fetch(`${API_BASE_URL}/users/updateRole`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'token': token
-            },
-            body: JSON.stringify({ user_id: id, role: newRole })
+      // Update roles on the backend
+      await Promise.all(Object.values(tempUsers).filter(user => {
+        const originalUser = users.find(u => u.user_id === user.user_id);
+        return originalUser.role_name !== user.role_name;
+      }).map(user => {
+        return fetch(`${API_BASE_URL}/users/updateRole`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'token': localStorage.token
+          },
+          body: JSON.stringify({ user_id: user.user_id, role: user.role_name })
         });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        // On successful update, update state
-        setUsers(prevUsers => prevUsers.map(user =>
-            user.user_id === id ? { ...user, role_name: newRole } : user
-        ));
+      }));
+      setUsers(Object.values(tempUsers));  // Update local state after changes
     } catch (e) {
-        console.error('Failed to update role:', e);
-        setError('Failed to update user role');
+      console.error('Failed to save changes:', e);
+      setError('Failed to save changes');
+    } finally {
+      setLoading(false);
     }
-};
+  };
 
-
+  if (!isOpen) return null;
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
@@ -105,20 +100,20 @@ const handleChangeRole = async (id, newRole) => {
     <div className="manage-users-overlay">
       <div className="manage-users-container">
         <h2>Manage Users</h2>
-        {users.map((user, index) => (
-        <div key={`${user.user_id}-${index}`} className="user-item">
+        {Object.values(tempUsers).map((user, index) => (
+          <div key={`${user.user_id}-${index}`} className="user-item">
             <span>{user.username}</span>
             <select
-            value={user.role_name}
-            onChange={(e) => handleChangeRole(user.user_id, e.target.value)}
+              value={user.role_name}
+              onChange={(e) => handleChangeRole(user.user_id, e.target.value)}
             >
-            <option value="admin">admin</option>
-            <option value="employee">employee</option>
+              <option value="admin">admin</option>
+              <option value="employee">employee</option>
             </select>
             <button onClick={() => handleRemoveUser(user.user_id)}>Remove</button>
-        </div>
+          </div>
         ))}
-        <button type="submit" className="save-changes-button">Save Changes</button>
+        <button type="submit" onClick={saveChanges} className="save-changes-button">Save Changes</button>
         <button onClick={onClose}>Close</button>
       </div>
     </div>
