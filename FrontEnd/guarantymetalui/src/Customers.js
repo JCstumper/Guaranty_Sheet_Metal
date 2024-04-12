@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import Topbar from './components/topbar';
 import './Customers.css';
+import './components/AddProduct.css';
 import AddPartModal from './AddPartModal'; 
 
 import { AppContext } from './App';
@@ -828,91 +829,111 @@ const Customers = ({ setAuth }) => {
                 </div>
             </div>
             {showModal && (
-                <div className="modalAddJob">
-                    <div className="modalAddJob-content">
-                        <div className="modalAddJob-header">
-                            <h2>Add New Job</h2>
-                            <button onClick={handleToggleModal} className="close-modalAddJob">X</button>
-                        </div>
-                        <div className="modalAddJob-body">
-                            <form onSubmit={handleAddJob}>
-                                <label htmlFor="customerName">Customer Name:</label>
-                                <input type="text" id="customer_name" name="customer_name" placeholder='Customer Name' required />
-
-                                <label htmlFor="jobAddress">Address:</label>
-                                <input type="text" id="address" name="address" placeholder='Address' required />
-
-                                <label htmlFor="jobPhone">Phone:</label>
-                                <input type="tel" id="phone" name="phone" placeholder='Phone' required />
-
-                                <label htmlFor="jobEmail">Email:</label>
-                                <input type="email" id="email" name="email" placeholder='Email' required />
-
-                                <div className="modalAddJob-footer">
-                                    <button type="submit" className="btn btn-primary">Add Job</button>
-                                    <button type="button" onClick={handleToggleModal} className="btn btn-secondary">Cancel</button>
+                // Assuming the CSS provided is already included in your project
+                <div className="modal-backdrop">
+                    <div className="modal-content">
+                        <form onSubmit={handleAddJob}>
+                            <div className="modal-header">
+                                <h2>Add New Job</h2>
+                                <button onClick={handleToggleModal} className="modal-close-button">×</button>
+                            </div>
+                            <div className="modal-body">
+                                <div className="form-group">
+                                    <label htmlFor="customerName">Customer Name:</label>
+                                    <input type="text" id="customer_name" name="customer_name" placeholder='Customer Name' required className="form-control" />
                                 </div>
-                            </form>
-                        </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="jobAddress">Address:</label>
+                                    <input type="text" id="address" name="address" placeholder='Address' required className="form-control" />
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="jobPhone">Phone:</label>
+                                    <input type="tel" id="phone" name="phone" placeholder='Phone' required className="form-control" />
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="jobEmail">Email:</label>
+                                    <input type="email" id="email" name="email" placeholder='Email' required className="form-control" />
+                                </div>
+                            </div>
+                            <div className="modal-actions">
+                                <button type="submit" className="btn-primary">Add Job</button>
+                                <button type="button" onClick={handleToggleModal} className="btn-secondary">Cancel</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}
             {showEditModal && (
-                <div className="modalAddJob">
-                    <div className="modalAddJob-content">
-                        <div className="modalAddJob-header">
+                <div className="modal-backdrop">
+                    <div className="modal-content">
+                        <div className="modal-header">
                             <h2>Edit Job</h2>
-                            <button onClick={() => setShowEditModal(false)} className="close-modalAddJob">X</button>
+                            <button onClick={() => setShowEditModal(false)} className="modal-close-button">X</button>
                         </div>
-                        <div className="modalAddJob-body">
+                        <div className="modal-body">
                             <form onSubmit={handleSaveJob}>
-                                <label htmlFor="customerName">Customer Name:</label>
-                                <input
-                                    type="text"
-                                    id="customer_name"
-                                    name="customer_name"
-                                    placeholder='Customer Name'
-                                    required
-                                    value={editingJob?.customer_name || ''}
-                                    onChange={(e) => setEditingJob({ ...editingJob, customer_name: e.target.value })}
-                                />
-
-                                <label htmlFor="jobAddress">Address:</label>
-                                <input
-                                    type="text"
-                                    id="address"
-                                    name="address"
-                                    placeholder='Address'
-                                    required
-                                    value={editingJob?.address || ''}
-                                    onChange={(e) => setEditingJob({ ...editingJob, address: e.target.value })}
-                                />
-
-                                <label htmlFor="jobPhone">Phone:</label>
-                                <input
-                                    type="tel"
-                                    id="phone"
-                                    name="phone"
-                                    placeholder='Phone'
-                                    required
-                                    value={editingJob?.phone || ''}
-                                    onChange={(e) => setEditingJob({ ...editingJob, phone: e.target.value })}
-                                />
-
-                                <label htmlFor="jobEmail">Email:</label>
-                                <input
-                                    type="email"
-                                    id="email"
-                                    name="email"
-                                    placeholder='Email'
-                                    required
-                                    value={editingJob?.email || ''}
-                                    onChange={(e) => setEditingJob({ ...editingJob, email: e.target.value })}
-                                />
-
-                                <div className="modalAddJob-footer">
-                                    <button type="submit" className="btn btn-primary">Save Changes</button>
-                                    <button type="button" onClick={() => setShowEditModal(false)} className="btn btn-secondary">Cancel</button>
+                                <div className="form-group">
+                                    <label htmlFor="customerName">Customer Name:</label>
+                                    <input
+                                        type="text"
+                                        id="customer_name"
+                                        name="customer_name"
+                                        placeholder='Customer Name'
+                                        required
+                                        value={editingJob?.customer_name || ''}
+                                        onChange={(e) => setEditingJob({ ...editingJob, customer_name: e.target.value })}
+                                        className="form-control"
+                                    />
+                                </div>
+                
+                                <div className="form-group">
+                                    <label htmlFor="jobAddress">Address:</label>
+                                    <input
+                                        type="text"
+                                        id="address"
+                                        name="address"
+                                        placeholder='Address'
+                                        required
+                                        value={editingJob?.address || ''}
+                                        onChange={(e) => setEditingJob({ ...editingJob, address: e.target.value })}
+                                        className="form-control"
+                                    />
+                                </div>
+                
+                                <div className="form-group">
+                                    <label htmlFor="jobPhone">Phone:</label>
+                                    <input
+                                        type="tel"
+                                        id="phone"
+                                        name="phone"
+                                        placeholder='Phone'
+                                        required
+                                        value={editingJob?.phone || ''}
+                                        onChange={(e) => setEditingJob({ ...editingJob, phone: e.target.value })}
+                                        className="form-control"
+                                    />
+                                </div>
+                
+                                <div className="form-group">
+                                    <label htmlFor="jobEmail">Email:</label>
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        name="email"
+                                        placeholder='Email'
+                                        required
+                                        value={editingJob?.email || ''}
+                                        onChange={(e) => setEditingJob({ ...editingJob, email: e.target.value })}
+                                        className="form-control"
+                                    />
+                                </div>
+                
+                                <div className="modal-actions">
+                                    <button type="submit" className="btn-primary">Save Changes</button>
+                                    <button type="button" onClick={() => setShowEditModal(false)} className="btn-secondary">Cancel</button>
                                 </div>
                             </form>
                         </div>
@@ -920,22 +941,24 @@ const Customers = ({ setAuth }) => {
                 </div>
             )}
             {showEstimateModal && (
-                <div className="modalAddJob">
-                    <div className="modalAddJob-content">
-                        <div className="modalAddJob-header">
-                            <h2>Add Estimate</h2>
-                            <button onClick={() => setShowEstimateModal(false)} className="close-modalAddJob">X</button>
-                        </div>
-                        <div className="modalAddJob-body">
-                            <form onSubmit={handleUploadEstimate}>
-                                <label htmlFor="estimatePdf"class="custom-file-upload">Choose PDF:</label>
-                                <input type="file" id="estimatePdf" name="estimatePdf" onChange={handleFileChange} required accept="application/pdf" style={{ display: 'none' }} />
-                                <div className="modalAddJob-footer">
-                                    <button type="submit" className="btn btn-primary">Upload Estimate</button>
-                                    <button type="button" onClick={() => setShowEstimateModal(false)} className="btn btn-secondary">Cancel</button>
+                <div className="modal-backdrop">
+                    <div className="modal-content">
+                        <form onSubmit={handleUploadEstimate}>
+                            <div className="modal-header">
+                                <h2>Add Estimate</h2>
+                                <button onClick={() => setShowEstimateModal(false)} className="modal-close-button">×</button>
+                            </div>
+                            <div className="modal-body">
+                                <div className="form-group">
+                                    <label htmlFor="estimatePdf" className="custom-file-upload">Upload PDF</label>
+                                    <input type="file" id="estimatePdf" name="estimatePdf" onChange={handleFileChange} required accept="application/pdf" style={{ display: 'none' }} />
                                 </div>
-                            </form>
-                        </div>
+                            </div>
+                            <div className="modal-actions">
+                                <button type="submit" className="btn-primary">Upload Estimate</button>
+                                <button type="button" onClick={() => setShowEstimateModal(false)} className="btn-secondary">Cancel</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}

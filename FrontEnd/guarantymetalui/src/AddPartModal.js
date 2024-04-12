@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './components/AddProduct.css'
 
 const debounce = (func, delay) => {
     let timeoutId;
@@ -78,19 +79,22 @@ const AddPartModal = ({ isOpen, onClose, onAddPart, API_BASE_URL,selectedJobId,p
 
     return (
         isOpen && (
-            <div className="addPartModal">
-                <div className="addPartModal-content">
-                    <div className="addPartModal-header">
+            <div className="modal-backdrop">
+                <div className="modal-content">
+                    <div className="modal-header">
                         <h2>Add Part</h2>
-                        <button onClick={onClose} className="addPartModal-close">X</button>
+                        <button onClick={onClose} className="modal-close-button">X</button>
                     </div>
-                    <div className="addPartModal-body">
-                        <input
-                            type="text"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            placeholder="Search for parts"
-                        />
+                    <div className="modal-body">
+                        <div className="form-group">
+                            <input
+                                type="text"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                placeholder="Search for parts"
+                                className="form-control"
+                            />
+                        </div>
                         {error && <div className="error-message">{error}</div>}
                         <table>
                             <thead>
@@ -107,7 +111,7 @@ const AddPartModal = ({ isOpen, onClose, onAddPart, API_BASE_URL,selectedJobId,p
                                         <td>{part.part_number}</td>
                                         <td>{part.radius_size}</td>
                                         <td>{part.description}</td>
-                                        <td><button onClick={() => handleAdd(part)}>Add</button></td>
+                                        <td><button onClick={() => handleAdd(part)} className="btn-primary">Add</button></td>
                                     </tr>
                                 ))}
                             </tbody>
