@@ -99,9 +99,7 @@ const Login = ({ setAuth, setIsLoading }) => {
                         onChange={e => onChange(e)}
                     />
                     <button type="submit" className="login-button">Login</button>
-                    <a href="#" className="forgot-password">Forgot Password?</a>
                 </form>
-                <Link to="/register">Register</Link>
             </div>
         </Fragment>
     );

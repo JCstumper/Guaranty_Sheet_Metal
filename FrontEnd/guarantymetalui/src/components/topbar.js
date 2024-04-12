@@ -9,6 +9,7 @@ import LoadingScreen from './Loading'; // Verify this path is correct
 import { jwtDecode } from "jwt-decode";
 import { Bounce, toast } from 'react-toastify';
 import EditProfile from './EditProfile';
+import AddUser from './addUser';
 // import ManageUsers from './ManagerUsers';
 import { AppContext } from '../App';
 
@@ -26,6 +27,7 @@ const Topbar = ({ setAuth }) => {
     const {API_BASE_URL} = useContext(AppContext);
     const [isAdmin, setIsAdmin] = useState(false);
     const [showManageUsers, setShowManageUsers] = useState(false); // State to control the ManageUsers modal
+    const [showRegisterUser, setShowRegisterUser] = useState(false); // State for the RegisterUserPopup
     const [role, setRole] = useState('');
 
     const toggleDropdown = () => {
@@ -200,6 +202,7 @@ const Topbar = ({ setAuth }) => {
                 <div className="user-info" onClick={toggleDropdown} ref={dropdownRef}>
                     <span className="username"><strong>{userName.toUpperCase()}</strong></span>
                     <div className={`user-dropdown ${showDropdown ? 'show-dropdown' : ''}`}>
+                        <button onClick={() => setShowRegisterUser(true)}>Add a User</button>
                         <button onClick={() => setShowEditProfile(true)}>Edit Profile</button>
                         <button onClick={() => setShowManageUsers(true)}>Manage Users</button>
                         <button onClick={() => setLogoutConfirmationOpen(true)}>Logout</button>
@@ -214,6 +217,7 @@ const Topbar = ({ setAuth }) => {
                 />
                 <EditProfile isOpen={showEditProfile} onSave={handleProfileUpdate} onClose={() => setShowEditProfile(false)} />
                 {/* <ManageUsers isOpen={showManageUsers} onClose={() => setShowManageUsers(false)} /> */}
+                <AddUser isOpen={showRegisterUser} onClose={() => setShowRegisterUser(false)} />
             </aside>
         </>
     );

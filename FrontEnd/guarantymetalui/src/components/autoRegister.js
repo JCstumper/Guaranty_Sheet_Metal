@@ -2,7 +2,6 @@
 const registerUsers = async (setIsLoading, setAuth, navigate) => {
     const users = [
         { username: "admin", password: "Admin123!", email: "admin@gmail.com", role: "admin" },
-        { username: "employee", password: "Employee123!", email: "employee@gmail.com", role: "employee" }
     ];
 
     const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
@@ -11,19 +10,15 @@ const registerUsers = async (setIsLoading, setAuth, navigate) => {
         try {
             // Include the role in the request body
             const body = { ...user };
-            const response = await fetch(`${API_BASE_URL}/auth/register`, {
+            await fetch(`${API_BASE_URL}/auth/firstregister`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { 
+                    "Content-Type": "application/json",
+                    token: localStorage.token
+                },
                 body: JSON.stringify(body)
             });
 
-            const parseRes = await response.json();
-
-            if (parseRes.token) {
-                console.log(`Registration successful for ${user.role}`, parseRes);
-            } else {
-                console.log(`Registration failed for ${user.role}`, parseRes);
-            }
         } catch (error) {
             console.error(`Registration error for ${user.role}:`, error);
         }
