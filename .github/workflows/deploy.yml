@@ -41,8 +41,10 @@ jobs:
 
     - name: Set executable permissions on scripts
       run: |
-        ssh "Brandon Bejarano"@gsminventory.com "chmod +x 'C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal\\nginx\\startupProduction.sh'"
-        ssh "Brandon Bejarano"@gsminventory.com "chmod +x 'C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal\\nginx\\generate-certs.sh'"
+        ssh "Brandon Bejarano"@gsminventory.com "powershell -Command 'Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser'"
+        ssh "Brandon Bejarano"@gsminventory.com "powershell -Command 'Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process'"
+        ssh "Brandon Bejarano"@gsminventory.com "powershell -Command 'Get-Item C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal\\nginx\\startupProduction.sh | Unblock-File'"
+        ssh "Brandon Bejarano"@gsminventory.com "powershell -Command 'Get-Item C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal\\nginx\\generate-certs.sh | Unblock-File'"
       
     - name: Deploy to Server
       run: |
