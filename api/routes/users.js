@@ -57,6 +57,8 @@ router.post('/updateRole', authorization, async (req, res) => {
 router.post('/remove', authorization, async (req, res) => {
     const { user_id } = req.body;
     try {
+        console.log("User ID in /remove");
+        console.log(user_id);
         // Deleting user from users table; also ensure you handle cascading deletions or manually delete from related tables if needed
         const deleteQuery = 'DELETE FROM users WHERE user_id = $1';
         const deleteRes = await pool.query(deleteQuery, [user_id]);

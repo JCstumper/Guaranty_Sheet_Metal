@@ -40,23 +40,40 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
     }
   }, [isOpen]);
 
-  const handleRemoveUser = async (id) => {
+  const handleRemoveUser = async (userId) => {
+    const userToRemove = users.find(user => user.user_id === userId);
+    if (!userToRemove) {
+        console.error('User not found');
+        setError('User not found');
+        return;
+    }
+
+    // Optional: Confirm dialog logic here
+    if (!window.confirm(`Are you sure you want to remove ${userToRemove.username}?`)) {
+        return; // Stop if the user cancels the action
+    }
+
     try {
         const response = await fetch(`${API_BASE_URL}/users/remove`, {
             method: 'POST',
-            headers: {token: localStorage.token},
-            body: JSON.stringify({ user_id: id })
+            headers: {
+                'Content-Type': 'application/json',
+                'token': localStorage.token
+            },
+            body: JSON.stringify({ user_id: userId })
         });
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        // On successful removal, update state
-        setUsers(prevUsers => prevUsers.filter(user => user.user_id !== id));
+        // On successful removal, update state to remove the user
+        setUsers(prevUsers => prevUsers.filter(user => user.user_id !== userId));
     } catch (e) {
         console.error('Failed to remove user:', e);
         setError('Failed to remove user');
     }
 };
+
 
   const handleChangeRole = (userId, newRole) => {
     setTempUsers(prev => ({
