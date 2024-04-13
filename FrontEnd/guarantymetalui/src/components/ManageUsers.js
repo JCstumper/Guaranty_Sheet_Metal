@@ -52,6 +52,16 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
     const confirmDelete = async () => {
       if (!currentUserToDelete) return;
   
+      // Check if the user being deleted is the last admin
+      const adminCount = users.filter(user => user.role_name === 'admin').length;
+      const userIsAdmin = users.find(user => user.user_id === currentUserToDelete).role_name === 'admin';
+  
+      if (userIsAdmin && adminCount <= 1) {
+          toast.error('Cannot delete the last admin.');
+          setShowConfirmUsers(false);
+          return;
+      }
+  
       try {
           const response = await fetch(`${API_BASE_URL}/users/remove`, {
               method: 'POST',
