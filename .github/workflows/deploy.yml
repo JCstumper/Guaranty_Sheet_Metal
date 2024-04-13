@@ -44,5 +44,5 @@ jobs:
         ssh "Brandon Bejarano"@gsminventory.com "echo 'Connection Successful'"
         ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal" && docker-compose down
         ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal" && git pull
-        #ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal" && docker-compose -f docker-compose.production.yml up --build
+        ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal" && docker-compose -f docker-compose.production.yml up --build
         
