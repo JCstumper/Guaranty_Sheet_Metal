@@ -10,7 +10,7 @@ import { jwtDecode } from "jwt-decode";
 import { Bounce, toast } from 'react-toastify';
 import EditProfile from './EditProfile';
 import AddUser from './addUser';
-// import ManageUsers from './ManagerUsers';
+import ManageUsers from './ManageUsers';
 import { AppContext } from '../App';
 
 const buttons = ['DASHBOARD', 'INVENTORY', 'PURCHASES', 'JOBS', 'LOGS'];
