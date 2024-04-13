@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import "./ManageUsers.css";
 import  ConfirmUsers from "./ConfirmUsers";
-import { jwtDecode } from "jwt-decode";
+import { toast } from 'react-toastify';
+
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
 
@@ -49,30 +50,40 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
     };
 
     const confirmDelete = async () => {
-        if (!currentUserToDelete) return;
-
-        try {
-            const response = await fetch(`${API_BASE_URL}/users/remove`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'token': localStorage.token
-                },
-                body: JSON.stringify({ user_id: currentUserToDelete })
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            setUsers(prevUsers => prevUsers.filter(user => user.user_id !== currentUserToDelete));
-            setShowConfirmUsers(false);
-            setCurrentUserToDelete(null);
-        } catch (e) {
-            console.error('Failed to remove user:', e);
-            setError('Failed to remove user');
-        }
-    };
-
+      if (!currentUserToDelete) return;
+  
+      try {
+          const response = await fetch(`${API_BASE_URL}/users/remove`, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'token': localStorage.token
+              },
+              body: JSON.stringify({ user_id: currentUserToDelete })
+          });
+  
+          if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+          }
+  
+          // On successful removal, update the users and tempUsers state
+          setUsers(prevUsers => prevUsers.filter(user => user.user_id !== currentUserToDelete));
+          setTempUsers(prevTempUsers => {
+              const updatedTempUsers = { ...prevTempUsers };
+              delete updatedTempUsers[currentUserToDelete];
+              return updatedTempUsers;
+          });
+  
+          setShowConfirmUsers(false);
+          setCurrentUserToDelete(null);
+          toast.success('User successfully removed');  // Notify the user of successful deletion
+      } catch (e) {
+          console.error('Failed to remove user:', e);
+          setError('Failed to remove user');
+          toast.error(`Error: ${e.message}`);  // Notify the user of an error
+      }
+  };
+  
 
   const handleChangeRole = (userId, newRole) => {
     setTempUsers(prev => ({
@@ -85,28 +96,38 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
     setLoading(true);
     setError(null);
     try {
-      // Update roles on the backend
-      await Promise.all(Object.values(tempUsers).filter(user => {
-        const originalUser = users.find(u => u.user_id === user.user_id);
-        return originalUser.role_name !== user.role_name;
-      }).map(user => {
-        return fetch(`${API_BASE_URL}/users/updateRole`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'token': localStorage.token
-          },
-          body: JSON.stringify({ user_id: user.user_id, role: user.role_name })
+        // Filter out users who are no longer present in the main users array before attempting to update roles
+        const validUpdates = Object.values(tempUsers).filter(tempUser => {
+            const userStillExists = users.some(user => user.user_id === tempUser.user_id);
+            return userStillExists && users.find(user => user.user_id === tempUser.user_id).role_name !== tempUser.role_name;
         });
-      }));
-      setUsers(Object.values(tempUsers));  // Update local state after changes
+
+        await Promise.all(validUpdates.map(user => {
+            return fetch(`${API_BASE_URL}/users/updateRole`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': localStorage.token
+                },
+                body: JSON.stringify({ user_id: user.user_id, role: user.role_name })
+            });
+        }));
+
+        // Update local state after changes
+        setUsers(Object.values(tempUsers).filter(tempUser => users.some(user => user.user_id === tempUser.user_id)));
+
+        toast.success('Changes saved successfully');
+        onClose();  // Close the modal on successful save
     } catch (e) {
-      console.error('Failed to save changes:', e);
-      setError('Failed to save changes');
+        console.error('Failed to save changes:', e);
+        setError('Failed to save changes');
+        toast.error(`Failed to save changes: ${e.message}`);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
+
+
 
   if (!isOpen) return null;
   if (loading) return <div>Loading...</div>;
