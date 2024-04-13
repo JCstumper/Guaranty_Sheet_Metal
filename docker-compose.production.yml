@@ -15,7 +15,7 @@ services:
       - ./nginx/startupProduction.sh:/etc/nginx/startupProduction.sh
     environment:
       - HOST_NAME=gsminventory.com
-    entrypoint: /bin/bash -c "chmod +x /etc/nginx/startupProduction.sh && chmod +x /etc/nginx/generate-certs.sh && /etc/nginx/startupProduction.sh"
+    entrypoint: /bin/bash -c "chmod +x /etc/nginx/startupProduction.sh && chmod +x /etc/nginx/generate-certs.sh && dos2unix /etc/nginx/startupProduction.sh && dos2unix /etc/nginx/generate-certs.sh && /etc/nginx/startupProduction.sh"
     depends_on:
       - frontend
       - api
