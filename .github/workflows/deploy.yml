@@ -31,17 +31,19 @@ jobs:
 
     #- name: Check GitHub Actions runner user
     #  run: ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal" && echo 'Connected Successfully' && "whoami"
+
+    - name: Updating File Scripts
+      run: |
+        ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal\\nginx" dos2unix startupProduction.sh
+        ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal\\nginx" && echo 'starupProduction.sh updated'
+        ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal\\nginx" dos2unix generate-certs.sh
+        ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal\\nginx" && echo 'generate-certs.sh updated'
       
     - name: Deploy to Server
       run: |
         ssh "Brandon Bejarano"@gsminventory.com "echo 'Connection Successful'"
         ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal" && docker-compose down
         ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal" && git pull
-        ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal\\nginx" dos2unix startupProduction.sh
-        ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal\\nginx" && echo 'starupProduction.sh updated'
-        ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal\\nginx" dos2unix generate-certs.sh
-        ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal\\nginx" && echo 'generate-certs.sh updated'
-        ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal" && docker-compose -f docker-compose.production.yml up --build
-        ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal" dos2unix filename
+        #ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal" && docker-compose -f docker-compose.production.yml up --build
 
         
