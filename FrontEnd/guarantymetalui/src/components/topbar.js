@@ -220,7 +220,7 @@ const Topbar = ({ setAuth }) => {
                     onCancel={() => setLogoutConfirmationOpen(false)} 
                 />
                 <EditProfile isOpen={showEditProfile} onSave={handleProfileUpdate} onClose={() => setShowEditProfile(false)} />
-                {/* <ManageUsers isOpen={showManageUsers} onClose={() => setShowManageUsers(false)} /> */}
+                <ManageUsers isOpen={showManageUsers} onClose={() => setShowManageUsers(false)} /> 
                 <AddUser isOpen={showRegisterUser} onClose={() => setShowRegisterUser(false)} />
             </aside>
         </>
