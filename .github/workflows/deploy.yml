@@ -34,7 +34,7 @@ jobs:
 
     - name: Updating File Scripts
       run: |
-        ssh "Brandon Bejarano"@gsminventory.com "powershell -Command \"(Get-Content C:\\\\Users\\\\Brandon Bejarano\\\\Documents\\\\GitHub\\\\Guaranty_Sheet_Metal\\\\nginx\\\\startupProduction.sh) -replace '\`r\`n', '\`n' | Set-Content C:\\\\Users\\\\Brandon Bejarano\\\\Documents\\\\GitHub\\\\Guaranty_Sheet_Metal\\\\nginx\\\\startupProduction.sh\""
+        ssh "Brandon Bejarano"@gsminventory.com "powershell -Command \"(Get-Content 'C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal\\nginx\\startupProduction.sh') -replace '\`r\`n', '\`n' | Set-Content 'C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal\\nginx\\startupProduction.sh'\""
         ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal\\nginx" && echo 'starupProduction.sh updated'
     #    ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal\\nginx && dos2unix startupProduction.sh"
     #    ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal\\nginx" && echo 'starupProduction.sh updated'
@@ -47,5 +47,4 @@ jobs:
         ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal" && docker-compose down
         ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal" && git pull
         #ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal" && docker-compose -f docker-compose.production.yml up --build
-
         
