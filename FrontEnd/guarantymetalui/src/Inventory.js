@@ -171,7 +171,7 @@ const Inventory = ({ setAuth }) => {
                 <td><strong>{product.radius_size && product.description ? `${product.radius_size}" ${product.description}` : product.description}</strong></td>
                 <td><strong>{product.quantity_in_stock}</strong></td>
                 <td>
-                    <div className={`status-box ${product.quantity_in_stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
+                    <div className={`status-box ${product.quantity_in_stock > 0 ? 'inv-in-stock' : 'inv-out-of-stock'}`}>
                         <strong>{product.quantity_in_stock > 0 ? 'In Stock' : 'Out of Stock'}</strong>
                     </div>
                 </td>
@@ -255,10 +255,14 @@ const Inventory = ({ setAuth }) => {
     
     const handleUpdateQuantity = async (e) => {
         e.preventDefault();
+        const token = localStorage.getItem('token');
         try {
             const response = await fetch(`/api/inventory/${editItem.partNumber}/quantity`, {
                 method: "PATCH",
-                headers: { "Content-Type": "application/json" },
+                headers: { 
+                    "Content-Type": "application/json",
+                    'token': token,
+                },
                 body: JSON.stringify({ quantity_in_stock: editItem.quantityInStock })
             });
             if (response.ok) {

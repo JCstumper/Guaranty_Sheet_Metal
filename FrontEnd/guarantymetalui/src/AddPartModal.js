@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './components/AddProduct.css'
 
 const debounce = (func, delay) => {
     let timeoutId;
@@ -10,7 +11,7 @@ const debounce = (func, delay) => {
     };
 };
 
-const AddPartModal = ({ isOpen, onClose, onAddPart, API_BASE_URL,selectedJobId }) => {
+const AddPartModal = ({ isOpen, onClose, onAddPart, API_BASE_URL,selectedJobId,partActionType }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [error, setError] = useState('');
@@ -41,14 +42,19 @@ const AddPartModal = ({ isOpen, onClose, onAddPart, API_BASE_URL,selectedJobId }
     }, [searchTerm]); // This effect will call handleSearch which is debounced
 
     const handleAdd = async (part) => {
-        const requestBody = {
-            job_id: selectedJobId, // This should come from the props or state of the parent component
-            part_number: part.part_number,
-            quantity_required: 1 // Or any other value you choose or get from user input
-        };
+        // Define requestBody based on partActionType
+        const requestBody = partActionType === 'necessary'
+            ? { job_id: selectedJobId, part_number: part.part_number, quantity_required: 1 }
+            : { job_id: selectedJobId, part_number: part.part_number, quantity_used: 1 };
     
         try {
-            const response = await fetch(`${API_BASE_URL}/jobs/necessary-parts`, {
+            // Determine the appropriate endpoint based on partActionType
+            const endpoint = partActionType === 'necessary'
+                ? `${API_BASE_URL}/jobs/necessary-parts`
+                : `${API_BASE_URL}/jobs/used-parts`;
+    
+            // Make the API request to add the part
+            const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(requestBody)
@@ -56,34 +62,39 @@ const AddPartModal = ({ isOpen, onClose, onAddPart, API_BASE_URL,selectedJobId }
     
             if (response.ok) {
                 const addedPart = await response.json();
-                onAddPart(addedPart); // Invoke the callback function to update the parent component's state
-                onClose(); // Close the modal
+                // Invoke the callback function to update the state in the parent component
+                onAddPart(addedPart);
+                onClose(); // Close the modal after successful operation
             } else {
-                throw new Error('Failed to add the necessary part');
+                // Handle errors such as failure to add the part
+                throw new Error(`Failed to add ${partActionType} part`);
             }
         } catch (error) {
-            console.error('Error adding necessary part:', error);
-            setError('Failed to add the necessary part');
+            // Log and display errors related to the add operation
+            console.error(`Error adding ${partActionType} part:`, error);
+            setError(`Failed to add the ${partActionType} part`);
         }
     };
     
-     
 
     return (
         isOpen && (
-            <div className="addPartModal">
-                <div className="addPartModal-content">
-                    <div className="addPartModal-header">
+            <div className="modal-backdrop">
+                <div className="modal-content">
+                    <div className="modal-header">
                         <h2>Add Part</h2>
-                        <button onClick={onClose} className="addPartModal-close">X</button>
+                        <button onClick={onClose} className="modal-close-button">X</button>
                     </div>
-                    <div className="addPartModal-body">
-                        <input
-                            type="text"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            placeholder="Search for parts"
-                        />
+                    <div className="modal-body">
+                        <div className="form-group">
+                            <input
+                                type="text"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                placeholder="Search for parts"
+                                className="form-control"
+                            />
+                        </div>
                         {error && <div className="error-message">{error}</div>}
                         <table>
                             <thead>
@@ -100,7 +111,7 @@ const AddPartModal = ({ isOpen, onClose, onAddPart, API_BASE_URL,selectedJobId }
                                         <td>{part.part_number}</td>
                                         <td>{part.radius_size}</td>
                                         <td>{part.description}</td>
-                                        <td><button onClick={() => handleAdd(part)}>Add</button></td>
+                                        <td><button onClick={() => handleAdd(part)} className="btn-primary">Add</button></td>
                                     </tr>
                                 ))}
                             </tbody>

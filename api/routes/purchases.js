@@ -32,4 +32,99 @@ router.post('/', async (req, res) => {
     }
 });
 
+//Get all low inventory
+router.get('/low-inventory', async (req, res) => {
+    try {
+        const lowInventoryItems = await pool.query(
+            'SELECT p.part_number, p.material_type, p.description, i.quantity_in_stock FROM products p JOIN inventory i ON p.part_number = i.part_number WHERE i.quantity_in_stock BETWEEN 1 AND 15 ORDER BY i.quantity_in_stock ASC'
+        );
+        res.json(lowInventoryItems.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json('Server error');
+    }
+});
+
+
+// Get all Out of stock inventory
+router.get('/out-of-stock', async (req, res) => {
+    try {
+        const outOfStockItems = await pool.query(
+            'SELECT p.part_number, p.material_type, p.description, i.quantity_in_stock FROM products p JOIN inventory i ON p.part_number = i.part_number WHERE i.quantity_in_stock = 0 ORDER BY p.part_number ASC'
+        );
+        res.json(outOfStockItems.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json('Server error');
+    }
+});
+
+// Endpoint to update the status of an order (invoice)
+router.patch('/:invoiceId/status', async (req, res) => {
+    const { invoiceId } = req.params;
+    const { status } = req.body; // Expected to be one of "Building", "Generated", "Received"
+
+    try {
+        // Fetch the current status of the order
+        const orderResult = await pool.query('SELECT status FROM invoices WHERE invoice_id = $1', [invoiceId]);
+        if (orderResult.rows.length === 0) {
+            return res.status(404).json({ message: "Order not found." });
+        }
+
+        const currentStatus = orderResult.rows[0].status;
+
+        // Prevent modifications if the order is in "Generated" status, except to change it to "Received"
+        if (currentStatus === 'Generated' && status !== 'Received') {
+            return res.status(400).json({ message: "Order is generated and cannot be modified except to be received." });
+        }
+
+        // Update the order status
+        await pool.query('UPDATE invoices SET status = $1 WHERE invoice_id = $2', [status, invoiceId]);
+
+        // If the status is updated to "Received", add logic here to update inventory based on the order's items
+        // Assuming 'status' is 'Received'
+        if (status === 'Received') {
+            // Start a transaction to ensure data integrity
+            await pool.query('BEGIN');
+
+            try {
+                // Fetch the items associated with the invoice/order
+                const itemsResult = await pool.query(`
+            SELECT part_number, quantity 
+            FROM invoice_items 
+            WHERE invoice_id = $1`,
+                    [invoiceId]
+                );
+
+                // Update the inventory for each item associated with the invoice/order
+                for (const item of itemsResult.rows) {
+                    await pool.query(`
+                UPDATE inventory 
+                SET quantity_in_stock = quantity_in_stock + $1 
+                WHERE part_number = $2`,
+                        [item.quantity, item.part_number]
+                    );
+                }
+
+                // Commit the transaction if all inventory updates are successful
+                await pool.query('COMMIT');
+            } catch (error) {
+                // Rollback the transaction in case of any error
+                await pool.query('ROLLBACK');
+                // Log the error or notify accordingly
+                console.error('Transaction failed: ', error);
+                // Optionally rethrow the error or handle it as per your error handling policy
+                throw error;
+            }
+        }
+
+
+        res.json({ message: "Order status updated successfully." });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json('Server error');
+    }
+});
+
+
 module.exports = router;

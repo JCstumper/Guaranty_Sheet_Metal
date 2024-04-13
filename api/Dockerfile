@@ -1,5 +1,6 @@
+# === BASE STAGE ===
 # Use an official Node.js runtime as a parent image
-FROM node:lts
+FROM node:lts as base
 
 # Set the working directory in the container
 WORKDIR /usr/src/app
@@ -15,6 +16,17 @@ RUN npm audit fix --force
 COPY . .
 
 # Your app listens on some port, so you'll expose that port
+
+# === DEVELOPMENT STAGE ===
+FROM base as development
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]
+
+# === PRODUCTION STAGE ===
+FROM base as production
+
 EXPOSE 3000
 
 CMD ["npm", "start"]

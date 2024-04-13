@@ -70,6 +70,24 @@ describe('Open application and test inventory', () => {
         cy.contains('Product updated successfully').should('be.visible');
     });
 
+    it('Filters products based on search input', () => {
+        cy.contains('INVENTORY').click();
+        
+        cy.get('.search-input').type('ABL7CAT123');
+
+        cy.contains('td', 'ABL7CAT123').should('be.visible');
+        cy.contains('td', 'C5G20').should('not.exist');
+    });
+
+    it('Filters products based on checkbox selections', () => {
+        cy.contains('INVENTORY').click();
+    
+        cy.contains('label', '7"').find('input[type="checkbox"]').check({force: true});
+    
+        cy.contains('td', '7" Updated description for the product').should('be.visible');
+    });
+    
+
     it('Successfully edit product quantity in stock', () => {
         cy.contains('INVENTORY').click();
         cy.contains('ABL7CAT123').click();

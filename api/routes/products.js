@@ -4,6 +4,7 @@ const router = express.Router();
 const pool = require('../db'); // make sure the path to db.js is correct
 const authorization = require("../middleware/authorization");
 
+
 async function logInventoryAction(actionType, userId, logType, changeDetails) {
     const logQuery = `
         INSERT INTO log (action_type, user_id, log_type, change_details) 
@@ -70,8 +71,8 @@ router.post('/', authorization, async (req, res) => {
         `, [partNumber, 0]); // Use the partNumber from req.body and a default quantity of 0
         
         // After inserting the new product and before sending the response
-        await logInventoryAction('add', req.username, 'inventory', { 
-            message: 'Product added', 
+        await logInventoryAction('Add Product', req.username, 'inventory', { 
+            message: 'Product Added', 
             details: { ...req.body } 
         });
 
@@ -104,8 +105,8 @@ router.delete('/:partNumber', authorization, async (req, res) => {
         `, [partNumber]);
         
         // After deleting the product and before sending the response
-        await logInventoryAction('delete', req.username, 'inventory', { 
-            message: 'Product deleted',
+        await logInventoryAction('Delete Product', req.username, 'inventory', { 
+            message: 'Product Deleted',
             details: productDeletionResponse.rows[0]
         });
 
@@ -197,7 +198,6 @@ router.put('/:originalPartNumber', authorization, async (req, res) => {
             // Check if the new type exists in category_mappings
             const checkForNewType = `SELECT * FROM category_mappings WHERE category = $1;`;
             const resultNewType = await client.query(checkForNewType, [type]);
-
             if (resultNewType.rows.length === 0) {
                 // If new type does not exist, prepare to add it to category_mappings
                 // Split the 'type' into individual words for keywords
@@ -214,8 +214,8 @@ router.put('/:originalPartNumber', authorization, async (req, res) => {
         }
 
         // After updating the product and before sending the response
-        await logInventoryAction('update', req.username, 'inventory', { 
-            message: 'Product updated', 
+        await logInventoryAction('Update Product', req.username, 'inventory', { 
+            message: 'Product Information Updated', 
             details: { ...req.body } 
         });
 
