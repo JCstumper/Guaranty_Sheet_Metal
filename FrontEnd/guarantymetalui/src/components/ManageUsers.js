@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import "./ManageUsers.css";
+import  ConfirmUsers from "./ConfirmUsers";
 import { jwtDecode } from "jwt-decode";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
@@ -9,6 +10,8 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
   const [tempUsers, setTempUsers] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showConfirmUsers, setShowConfirmUsers] = useState(false);
+  const [currentUserToDelete, setCurrentUserToDelete] = useState(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -41,38 +44,34 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
   }, [isOpen]);
 
   const handleRemoveUser = async (userId) => {
-    const userToRemove = users.find(user => user.user_id === userId);
-    if (!userToRemove) {
-        console.error('User not found');
-        setError('User not found');
-        return;
-    }
+        setShowConfirmUsers(true);
+        setCurrentUserToDelete(userId);
+    };
 
-    // Optional: Confirm dialog logic here
-    if (!window.confirm(`Are you sure you want to remove ${userToRemove.username}?`)) {
-        return; // Stop if the user cancels the action
-    }
+    const confirmDelete = async () => {
+        if (!currentUserToDelete) return;
 
-    try {
-        const response = await fetch(`${API_BASE_URL}/users/remove`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'token': localStorage.token
-            },
-            body: JSON.stringify({ user_id: userId })
-        });
+        try {
+            const response = await fetch(`${API_BASE_URL}/users/remove`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': localStorage.token
+                },
+                body: JSON.stringify({ user_id: currentUserToDelete })
+            });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            setUsers(prevUsers => prevUsers.filter(user => user.user_id !== currentUserToDelete));
+            setShowConfirmUsers(false);
+            setCurrentUserToDelete(null);
+        } catch (e) {
+            console.error('Failed to remove user:', e);
+            setError('Failed to remove user');
         }
-        // On successful removal, update state to remove the user
-        setUsers(prevUsers => prevUsers.filter(user => user.user_id !== userId));
-    } catch (e) {
-        console.error('Failed to remove user:', e);
-        setError('Failed to remove user');
-    }
-};
+    };
 
 
   const handleChangeRole = (userId, newRole) => {
@@ -129,6 +128,13 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
               <option value="employee">employee</option>
             </select>
             <button onClick={() => handleRemoveUser(user.user_id)}>Remove</button>
+            <ConfirmUsers
+                isOpen={showConfirmUsers}
+                onClose={() => setShowConfirmUsers(false)}
+                onConfirm={confirmDelete}
+            >
+                Are you sure you want to delete this user?
+            </ConfirmUsers>
           </div>
         ))}
         <button type="submit" onClick={saveChanges} className="save-changes-button">Save Changes</button>

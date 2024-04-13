@@ -25,7 +25,6 @@ const Topbar = ({ setAuth }) => {
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef(null);
     const {API_BASE_URL} = useContext(AppContext);
-    const [isAdmin, setIsAdmin] = useState(false);
     const [showManageUsers, setShowManageUsers] = useState(false); // State to control the ManageUsers modal
     const [showRegisterUser, setShowRegisterUser] = useState(false); // State for the RegisterUserPopup
     const [role, setRole] = useState('');
