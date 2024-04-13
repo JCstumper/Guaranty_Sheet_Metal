@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import "./AddProduct.css"; // Assuming this CSS file contains styles for `.form-group`
 import { toast } from 'react-toastify';
 import { AppContext } from '../App';
@@ -9,6 +9,16 @@ const AddUser = ({ isOpen, onClose }) => {
     const [email, setEmail] = useState('');
     const [role, setRole] = useState('employee'); // Default to 'employee'
     const {API_BASE_URL} = useContext(AppContext);
+
+    useEffect(() => {
+        // Reset state when modal is opened
+        if (isOpen) {
+            setUsername('');
+            setPassword('');
+            setEmail('');
+            setRole('employee');
+        }
+    }, [isOpen]); // Dependency on isOpen means this effect runs when isOpen changes
 
     if (!isOpen) return null;
 
