@@ -7,6 +7,7 @@ import './Logs.css'; // Adjust the path as necessary
 import './components/AddProduct.css'
 
 const Logs = ({ setAuth }) => {
+    const [originalLogs, setOriginalLogs] = useState([]); // Store the original dataset
     const [logs, setLogs] = useState([]);
     const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
     const [userFilter, setUserFilter] = useState('');
@@ -16,7 +17,6 @@ const Logs = ({ setAuth }) => {
     const openFilterModal = () => setIsFilterModalVisible(true);
     const closeFilterModal = () => setIsFilterModalVisible(false);
 
-    // Function to fetch inventory logs
     // Function to fetch inventory logs
     const fetchLogs = async () => {
         const token = localStorage.getItem('token');
@@ -31,9 +31,11 @@ const Logs = ({ setAuth }) => {
             const jsonData = await response.json();
 
             if (jsonData.logs && Array.isArray(jsonData.logs.rows)) {
-                setLogs(jsonData.logs.rows);
+                setOriginalLogs(jsonData.logs.rows); // Set original logs
+                setLogs(jsonData.logs.rows); // Set logs for display
             } else {
                 console.error('Data fetched is not an array:', jsonData);
+                setOriginalLogs([]); // Reset original logs
                 setLogs([]);
                 toast.error('Failed to fetch logs.');
             }
@@ -48,9 +50,9 @@ const Logs = ({ setAuth }) => {
     }, []);
 
     const applyFilters = () => {
-        const filteredLogs = logs.filter((log) => {
+        const filteredLogs = originalLogs.filter((log) => {
             const matchesUser = userFilter ? log.user_id.includes(userFilter) : true;
-            const matchesActionType = actionTypeFilter ? log.action_type === actionTypeFilter : true;
+            const matchesActionType = actionTypeFilter ? log.action_type.toLowerCase().includes(actionTypeFilter.toLowerCase()) : true;
             return matchesUser && matchesActionType;
         });
         
@@ -61,7 +63,7 @@ const Logs = ({ setAuth }) => {
     const resetFilters = () => {
         setUserFilter('');
         setActionTypeFilter('');
-        fetchLogs(); // Refetch all logs
+        setLogs(originalLogs); // Reset to original logs
         closeFilterModal();
     };
 

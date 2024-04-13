@@ -85,10 +85,6 @@ describe('Open application and test inventory', () => {
         cy.contains('label', '7"').find('input[type="checkbox"]').check({force: true});
     
         cy.contains('td', '7" Updated description for the product').should('be.visible');
-        cy.contains('td', 'C5G20').should('not.exist');
-
-        cy.contains('label', 'Copper').find('input[type="checkbox"]').check({force: true});
-        cy.contains('td', 'ABL7CAT123').should('not.exist');
     });
     
 

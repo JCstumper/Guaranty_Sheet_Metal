@@ -109,13 +109,13 @@ text-decoration: none;
 
 
 /* Styles for items in stock */
-.in-stock {
+.inv-in-stock {
     background-color: #28a745; /* Green */
     content: "In Stock";
 }
 
 /* Styles for items out of stock */
-.out-of-stock {
+.inv-out-of-stock {
     background-color: #dc3545; /* Red */
     content: "Out of Stock";
 }
