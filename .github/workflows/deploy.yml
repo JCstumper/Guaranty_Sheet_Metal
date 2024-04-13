@@ -30,7 +30,7 @@ jobs:
       #run: ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal && echo 'Directory Changed Successfully'"
 
     - name: Check GitHub Actions runner user
-      run: ssh "Brandon Bejarano"@gsminventory.com && echo 'Conneted Successfully' && "whoami"
+      run: ssh "Brandon Bejarano"@gsminventory.com && "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal" && echo 'Connected Successfully' && "whoami"
       
     #- name: Deploy to Server
     #  run: |
