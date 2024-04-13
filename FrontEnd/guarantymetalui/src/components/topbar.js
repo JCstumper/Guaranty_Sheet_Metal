@@ -201,7 +201,9 @@ const Topbar = ({ setAuth }) => {
                     <span className="username">{userName.toUpperCase()}</span>
                     <div className={`user-dropdown ${showDropdown ? 'show-dropdown' : ''}`}>
                         <button onClick={() => setShowEditProfile(true)}>Edit Profile</button>
-                        <button onClick={() => setShowManageUsers(true)}>Manage Users</button>
+                        {role === 'admin' && (
+                            <button onClick={() => setShowManageUsers(true)}>Manage Users</button>
+                        )}
                         <button onClick={() => setLogoutConfirmationOpen(true)}>Logout</button>
                     </div>
                 </div>
