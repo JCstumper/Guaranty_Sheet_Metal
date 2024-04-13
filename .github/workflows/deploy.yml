@@ -38,6 +38,11 @@ jobs:
         ssh "Brandon Bejarano"@gsminventory.com && echo 'starupProduction.sh updated'
         ssh "Brandon Bejarano"@gsminventory.com "powershell -Command \"(Get-Content 'C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal\\nginx\\generate-certs.sh') -replace '\`r\`n', '\`n' | Set-Content 'C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal\\nginx\\generate-certs.sh'\""
         ssh "Brandon Bejarano"@gsminventory.com && echo 'generate-certs.sh updated'
+
+    - name: Set executable permissions on scripts
+      run: |
+        ssh "Brandon Bejarano"@gsminventory.com "chmod +x 'C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal\\nginx\\startupProduction.sh'"
+        ssh "Brandon Bejarano"@gsminventory.com "chmod +x 'C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal\\nginx\\generate-certs.sh'"
       
     - name: Deploy to Server
       run: |
