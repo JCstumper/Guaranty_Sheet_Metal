@@ -13,8 +13,6 @@ const Orders = ({ setAuth }) => {
     const [outOfStockItems, setOutOfStockItems] = useState([]);
     const [newOrderItems, setNewOrderItems] = useState([]);
 
-
-
     // State to track the selected order ID for expansion
     const [selectedOrderId, setSelectedOrderId] = useState(null);
 
