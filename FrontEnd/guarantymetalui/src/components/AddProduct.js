@@ -618,7 +618,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
                                 <label htmlFor="radius-size">Radius Size:</label>
                                 <input
                                     id="radius-size"
-                                    type="text"
+                                    type="number"
                                     placeholder="Radius Size"
                                     value={newProductItem.radiusSize}
                                     onChange={e => setNewProductItem({ ...newProductItem, radiusSize: e.target.value })}
@@ -700,7 +700,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
                                 <div className="input-with-unit">
                                     <input
                                         id="quantity-of-item"
-                                        type="text"
+                                        type="number"
                                         placeholder={itemType === 'box' ? 'Enter quantity' : 'Enter length'}
                                         value={newProductItem.quantityOfItem}
                                         onChange={e => setNewProductItem({ ...newProductItem, quantityOfItem: e.target.value })}
