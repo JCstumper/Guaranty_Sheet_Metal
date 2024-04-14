@@ -1,33 +1,84 @@
-import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
-import './BarCard.css';
+import React, { useState, useEffect } from 'react';
+import './BarCard.css'; // Make sure to rename the corresponding CSS file as well
 
-// Sample data
-const data = [
-  { name: 'Round End Cap', inStock: 4000, outOfStock: 2400 },
-  { name: 'Round Hanger', inStock: 3000, outOfStock: 1398 },
-  { name: 'Downspout', inStock: 2000, outOfStock: 9800 },
-  { name: 'Elbow 40 Degree', inStock: 2780, outOfStock: 3908 },
-  { name: 'Drop Outlet', inStock: 1890, outOfStock: 4800 },
-  { name: 'Inline Cleanout', inStock: 2390, outOfStock: 3800 },
-  { name: 'Wire Strainer', inStock: 3490, outOfStock: 4300 },
-  { name: 'Y Connector', inStock: 2000, outOfStock: 3000 },
-];
+const BarCard = ({ API_BASE_URL }) => {
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(false);
 
-const GraphCard = () => (
-  <div className="graph">
-    <h2>Inventory Status</h2>
-    <BarChart width={600} height={300} data={data}
-              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-      <CartesianGrid strokeDasharray="3 3" />
-      <XAxis dataKey="name" />
-      <YAxis />
-      <Tooltip />
-      <Legend />
-      <Bar dataKey="inStock" fill="green" />
-      <Bar dataKey="outOfStock" fill="red" />
-    </BarChart>
-  </div>
-);
+    // Function to fetch inventory items based on stock status
+    const fetchInventory = async () => {
+        setLoading(true);
+        try {
+            const token = localStorage.getItem('token');
+            // Fetch low inventory items
+            const lowResponse = await fetch(`${API_BASE_URL}/low-inventory`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+            });
+            const lowInventory = await lowResponse.json();
 
-export default GraphCard;
+            // Fetch out of stock items
+            const outResponse = await fetch(`${API_BASE_URL}/out-of-stock`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+            });
+            const outOfStockInventory = await outResponse.json();
+
+            // Combine both lists and update the state
+            setProducts([...lowInventory, ...outOfStockInventory]);
+        } catch (error) {
+            console.error('Error fetching inventory:', error);
+        }
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        fetchInventory();
+        // Set up a timer to refresh inventory every 5 minutes
+        const interval = setInterval(fetchInventory, 300000); // 300000 ms = 5 minutes
+        return () => clearInterval(interval); // Cleanup interval on component unmount
+    }, [API_BASE_URL]);
+
+    return (
+        <div className="bar-card">
+            {loading ? (
+                <p>Loading inventory...</p>
+            ) : (
+                <div className="bar-card-main">
+                    <div className="product-table">
+                        <table className="bar-content">
+                            <thead>
+                                <tr>
+                                    <th>Part Number</th>
+                                    <th>Material/Type</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {products.map((product, index) => (
+                                    <tr key={index}>
+                                        <td>{product.part_number}</td>
+                                        <td>{product.material_type}</td>
+                                        <td>{product.description}</td>
+                                        <td>
+                                            <div className={`status-box ${product.quantity_in_stock === 0 ? 'red' : 'yellow'}`}>
+                                                {product.quantity_in_stock === 0 ? 'Out of Stock' : 'Low Stock'}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default BarCard;

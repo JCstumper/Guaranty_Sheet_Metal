@@ -1,42 +1,39 @@
-/* Styles for the card container */
-.graph {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+/* Styles for the bar-card container */
+.bar-card {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     background-color: #fff;
-    width: fit-content;
+    width: 80%; /* Example: Change to a percentage or fixed width */
+    max-width: 800px; /* Prevents the card from becoming too wide on larger screens */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
-  }
-  
-  /* Title styling within the card */
-  .graph h2 {
-    margin: 0 0 20px 0;
-    color: #333;
-    font-size: 24px;
-    text-align: center;
-  }
-  
-  /* Ensure the graph fits within the card */
-  .recharts-wrapper {
-    box-sizing: border-box;
-    width: 100%;
-    max-width: 600px; /* Adjust based on your layout */
-  }
-  
-  /* Tooltip styling */
-  .recharts-tooltip-wrapper {
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    background-color: #fff;
-    padding: 10px;
-  }
-  
-  /* Legend styling */
-  .recharts-legend-wrapper {
-    padding: 10px;
-  }
-  
-  /* Customize further as needed */
-  
+    min-height: 400px; /* Ensure enough vertical space for the graph */
+}
+
+.bar-card h2 {
+  margin: 0 0 20px 0;
+  color: #333;
+  font-size: 20px;
+  text-align: center;
+}
+
+/* Table Styles */
+.bar-content {
+  width: 100%;
+  max-width: 600px; /* Match max width to graph settings */
+  box-sizing: border-box; /* Ensures padding and borders are included in width calculation */
+}
+
+/* Table header and rows styling to fit the design */
+.bar-content th, .bar-content td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd; /* subtle line for separating rows */
+}
+
+/* Hover effects for table rows */
+.bar-content tr:hover {
+  background-color: #f5f5f5;
+}
