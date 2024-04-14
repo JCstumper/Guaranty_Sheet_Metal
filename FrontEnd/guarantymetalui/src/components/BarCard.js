@@ -44,13 +44,14 @@ const BarCard = ({ API_BASE_URL }) => {
     }, [API_BASE_URL]);
 
     return (
-        <div className="bar-card">
+        <div className="bar-card-container">
             {loading ? (
                 <p>Loading inventory...</p>
             ) : (
-                <div className="bar-card-main">
-                    <div className="product-table">
-                        <table className="bar-content">
+                  <div className="bar-card">
+                    <h2>Inventory Details</h2>  {/* Ensure this is present */}
+                    <div className="bar-content"> {/* This should wrap the table */}
+                        <table>
                             <thead>
                                 <tr>
                                     <th>Part Number</th>
