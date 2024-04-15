@@ -41,7 +41,7 @@ const Dashboard = ({ setAuth }) => {
                 </div>
                 <div className="scard">
                     <div className="card-content">
-                        <h3 className="card-title">Sales</h3>
+                        <h3 className="card-title">Purchases</h3>
                         <p className="card-info">376</p>
                     </div>
                 </div>
@@ -51,17 +51,10 @@ const Dashboard = ({ setAuth }) => {
                         <p className="card-info">579</p>
                     </div>
                 </div>
-                <div className="Tcard">
-                    <div className="card-content">
-                        <h3 className="card-title">Pending Jobs</h3>
-                        <p className="card-info">18</p>
-                    </div>
-                </div>
             </div>
             <div className="graph-container">
                 {/* Place GraphCard components inside this container */}
                 <BarCard />
-                <PieCard />
                 {/* You can add more GraphCard components or different types of graph components here */}
             </div>
         </div>
