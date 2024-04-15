@@ -12,7 +12,7 @@
   min-height: 400px;
  
 }
-
+/*Inventory Details header */
 .bar-card h2 {
   color: #333;
   font-size: 24px;
@@ -27,17 +27,40 @@
   border-radius: 15px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   overflow: hidden;
-  margin: 0 20px 20px 0;
   display: flex;
   flex-direction: column;
 }
 
 .bar-content table {
-  width: 100%;
+  text-align: center;
+  width: 725px;
   border-collapse: collapse;
 }
 
 
 .bar-content tr:hover {
   background-color: #f5f5f5;
+}
+
+
+.red
+{
+  background-color: #dc3545; /* Red */
+  content: "Out of Stock";
+}
+
+.yellow
+{
+  background-color: #dadd1a; /* Yellow */
+  content: "Out of Stock";
+}
+
+.status-box {
+  display: inline-block;
+  padding: 5px 10px;
+  color: white;
+  font-weight: bold;
+  border-radius: 5px;
+  text-align: center;
+  min-width: 75px;
 }

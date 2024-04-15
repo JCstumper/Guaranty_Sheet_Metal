@@ -1,56 +1,61 @@
-import React, { useState, useEffect } from 'react';
-import './BarCard.css'; // Make sure to rename the corresponding CSS file as well
+import React, { useState, useEffect, useContext } from 'react';
+import { AppContext } from '../App'; // Adjust the import based on your actual context file path
+import './BarCard.css';
 
-const BarCard = ({ API_BASE_URL }) => {
+const BarCard = () => {
+    const { API_BASE_URL } = useContext(AppContext); // Assuming the base URL is provided by the AppContext
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [lowInventoryItems, setLowInventoryItems] = useState([]);
+    const [outOfStockItems, setOutOfStockItems] = useState([]);
 
-    // Function to fetch inventory items based on stock status
-    const fetchInventory = async () => {
+    useEffect(() => {
+        fetchInventoryItems();
+        fetchLowInventoryItems();
+        fetchOutOfStockItems();
+    }, []); // Dependency array is empty to ensure this runs only once
+
+    const fetchInventoryItems = async () => {
         setLoading(true);
-        try {
-            const token = localStorage.getItem('token');
-            // Fetch low inventory items
-            const lowResponse = await fetch(`${API_BASE_URL}/low-inventory`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'token': token,
-                },
-            });
-            const lowInventory = await lowResponse.json();
-
-            // Fetch out of stock items
-            const outResponse = await fetch(`${API_BASE_URL}/out-of-stock`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'token': token,
-                },
-            });
-            const outOfStockInventory = await outResponse.json();
-
-            // Combine both lists and update the state
-            setProducts([...lowInventory, ...outOfStockInventory]);
-        } catch (error) {
-            console.error('Error fetching inventory:', error);
-        }
+        await fetchLowInventoryItems();
+        await fetchOutOfStockItems();
         setLoading(false);
     };
 
-    useEffect(() => {
-        fetchInventory();
-        // Set up a timer to refresh inventory every 5 minutes
-        const interval = setInterval(fetchInventory, 300000); // 300000 ms = 5 minutes
-        return () => clearInterval(interval); // Cleanup interval on component unmount
-    }, [API_BASE_URL]);
+    const fetchLowInventoryItems = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/purchases/low-inventory`);
+            const data = await response.json();
+            if (response.ok) {
+                setLowInventoryItems(data);
+            } else {
+                throw new Error('Failed to fetch low inventory items');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    const fetchOutOfStockItems = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/purchases/out-of-stock`);
+            const data = await response.json();
+            if (response.ok) {
+                setOutOfStockItems(data);
+            } else {
+                throw new Error('Failed to fetch out of stock items');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
 
     return (
         <div className="bar-card-container">
-            {loading ? (
-                <p>Loading inventory...</p>
-            ) : (
-                  <div className="bar-card">
-                    <h2>Inventory Details</h2>  {/* Ensure this is present */}
-                    <div className="bar-content"> {/* This should wrap the table */}
+            {loading ? <p>Loading inventory...</p> : (
+                <div className="bar-card">
+                    <h2>Inventory Details</h2>
+                    <div className="bar-content">
                         <table>
                             <thead>
                                 <tr>
@@ -61,14 +66,14 @@ const BarCard = ({ API_BASE_URL }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {products.map((product, index) => (
+                                {[...lowInventoryItems, ...outOfStockItems].map((item, index) => (
                                     <tr key={index}>
-                                        <td>{product.part_number}</td>
-                                        <td>{product.material_type}</td>
-                                        <td>{product.description}</td>
+                                        <td>{item.part_number}</td>
+                                        <td>{item.material_type}</td>
+                                        <td>{item.description}</td>
                                         <td>
-                                            <div className={`status-box ${product.quantity_in_stock === 0 ? 'red' : 'yellow'}`}>
-                                                {product.quantity_in_stock === 0 ? 'Out of Stock' : 'Low Stock'}
+                                            <div className={`status-box ${item.quantity_in_stock === 0 ? 'red' : 'yellow'}`}>
+                                                {item.quantity_in_stock === 0 ? 'Out of Stock' : 'Low Stock'}
                                             </div>
                                         </td>
                                     </tr>
