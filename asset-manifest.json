@@ -1,15 +1,45 @@
 {
   "files": {
     "main.css": "/Guaranty_Sheet_Metal/static/css/main.815d43e8.css",
-    "main.js": "/Guaranty_Sheet_Metal/static/js/main.33ea74c6.js",
+    "main.js": "/Guaranty_Sheet_Metal/static/js/main.b6942311.js",
     "static/media/logo.png": "/Guaranty_Sheet_Metal/static/media/logo.a8f6846b04690eefa5ce.png",
+    "static/media/CUSTOMERS.md": "/Guaranty_Sheet_Metal/static/media/CUSTOMERS.06e12511023f94fca552.md",
+    "static/media/JOBS.md": "/Guaranty_Sheet_Metal/static/media/JOBS.90f5dc24db67281289b5.md",
+    "static/media/INVENTORY.md": "/Guaranty_Sheet_Metal/static/media/INVENTORY.628c7cdc37a5479853bf.md",
+    "static/media/ADDPARTMODAL.md": "/Guaranty_Sheet_Metal/static/media/ADDPARTMODAL.8af9331f3bf1e9fe275a.md",
+    "static/media/EDITPRODUCTMODAL.md": "/Guaranty_Sheet_Metal/static/media/EDITPRODUCTMODAL.aebf17b3f91f5a30afb8.md",
+    "static/media/ADDPRODUCT.md": "/Guaranty_Sheet_Metal/static/media/ADDPRODUCT.dbe6cbda9f6987756f17.md",
     "static/media/APP.md": "/Guaranty_Sheet_Metal/static/media/APP.e057b917750d8dbc5cde.md",
+    "static/media/ORDERS.md": "/Guaranty_Sheet_Metal/static/media/ORDERS.efa000d742430d3ec3a6.md",
+    "static/media/TOPBAR.md": "/Guaranty_Sheet_Metal/static/media/TOPBAR.5e647a5492ed242966c9.md",
+    "static/media/ADDUSER.md": "/Guaranty_Sheet_Metal/static/media/ADDUSER.0a342c725cdb8fef1bb9.md",
+    "static/media/JWTAUTH.md": "/Guaranty_Sheet_Metal/static/media/JWTAUTH.7509753822b97893c48f.md",
+    "static/media/EDITQUANTITY.md": "/Guaranty_Sheet_Metal/static/media/EDITQUANTITY.274c0013e5d511753703.md",
+    "static/media/LOGS.md": "/Guaranty_Sheet_Metal/static/media/LOGS.9508f2f88cedefcbc745.md",
+    "static/media/EDITPROFILE.md": "/Guaranty_Sheet_Metal/static/media/EDITPROFILE.af82943291bf4a4ec6cd.md",
+    "static/media/MANAGEUSERS.md": "/Guaranty_Sheet_Metal/static/media/MANAGEUSERS.f7a9d5a4494574c7b363.md",
+    "static/media/INDEX.md": "/Guaranty_Sheet_Metal/static/media/INDEX.bfb128a6b9a3d452da0e.md",
+    "static/media/DELETEPRODUCTMODAL.md": "/Guaranty_Sheet_Metal/static/media/DELETEPRODUCTMODAL.aae0f3115f479e2a36aa.md",
+    "static/media/INITIALSETUPMODAL.md": "/Guaranty_Sheet_Metal/static/media/INITIALSETUPMODAL.31fd1eecb5d57e9f631d.md",
+    "static/media/AUTOREGISTER.md": "/Guaranty_Sheet_Metal/static/media/AUTOREGISTER.f60215e411114892a86e.md",
+    "static/media/REGISTER.md": "/Guaranty_Sheet_Metal/static/media/REGISTER.9a879cccf97649354bb8.md",
+    "static/media/CONFIRMUSERS.md": "/Guaranty_Sheet_Metal/static/media/CONFIRMUSERS.d518dd272d5d8f46cf26.md",
+    "static/media/PIECARD.md": "/Guaranty_Sheet_Metal/static/media/PIECARD.1de7817c0c385c0635d6.md",
+    "static/media/VALIDINFO.md": "/Guaranty_Sheet_Metal/static/media/VALIDINFO.34bf39337888a3698dbf.md",
+    "static/media/NOTFOUND.md": "/Guaranty_Sheet_Metal/static/media/NOTFOUND.485ebb088139561901b5.md",
+    "static/media/LOGIN.md": "/Guaranty_Sheet_Metal/static/media/LOGIN.ba97afbc5a41f93fcdb2.md",
+    "static/media/AUTHORIZATION.md": "/Guaranty_Sheet_Metal/static/media/AUTHORIZATION.bfeea678ff4f3068a609.md",
+    "static/media/CATEGORIES.md": "/Guaranty_Sheet_Metal/static/media/CATEGORIES.43443b8174e464ead28c.md",
+    "static/media/LOADING.md": "/Guaranty_Sheet_Metal/static/media/LOADING.2eeac0ec5824b017e83f.md",
+    "static/media/LOGOUTCONFIRMATION.md": "/Guaranty_Sheet_Metal/static/media/LOGOUTCONFIRMATION.01c1bd04ce8bb251668d.md",
+    "static/media/DASHBOARD.md": "/Guaranty_Sheet_Metal/static/media/DASHBOARD.39f3fb3daa463b5aa320.md",
+    "static/media/BARCARD.md": "/Guaranty_Sheet_Metal/static/media/BARCARD.d44769fd78a32d0fdf68.md",
     "index.html": "/Guaranty_Sheet_Metal/index.html",
     "main.815d43e8.css.map": "/Guaranty_Sheet_Metal/static/css/main.815d43e8.css.map",
-    "main.33ea74c6.js.map": "/Guaranty_Sheet_Metal/static/js/main.33ea74c6.js.map"
+    "main.b6942311.js.map": "/Guaranty_Sheet_Metal/static/js/main.b6942311.js.map"
   },
   "entrypoints": [
     "static/css/main.815d43e8.css",
-    "static/js/main.33ea74c6.js"
+    "static/js/main.b6942311.js"
   ]
 }
