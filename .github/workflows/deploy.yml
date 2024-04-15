@@ -8,23 +8,23 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    #- name: Checkout code
+    #  uses: actions/checkout@v2
       
-    - name: Add SSH host key
-      run: |
-        mkdir -p ~/.ssh
-        echo "$SERVER_HOST_KEY" >> ~/.ssh/known_hosts
-        chmod 600 ~/.ssh/known_hosts
-      env:
-        SERVER_HOST_KEY: ${{ secrets.SERVER_HOST_KEY }}
+    #- name: Add SSH host key
+    #  run: |
+    #    mkdir -p ~/.ssh
+    #    echo "$SERVER_HOST_KEY" >> ~/.ssh/known_hosts
+    #    chmod 600 ~/.ssh/known_hosts
+    #  env:
+    #    SERVER_HOST_KEY: ${{ secrets.SERVER_HOST_KEY }}
 
-    - name: Setup SSH
-      uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+    #- name: Setup SSH
+    #  uses: webfactory/ssh-agent@v0.5.3
+    #  with:
+    #    ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
     #- name: Test directory change
       #run: ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal && echo 'Directory Changed Successfully'"
@@ -46,10 +46,15 @@ jobs:
     #    ssh "Brandon Bejarano"@gsminventory.com "powershell -Command \"Get-Item 'C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal\\nginx\\startupProduction.sh' | Unblock-File\""
     #    ssh "Brandon Bejarano"@gsminventory.com "powershell -Command \"Get-Item 'C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal\\nginx\\generate-certs.sh' | Unblock-File\""
       
-    - name: Deploy to Server
-      run: |
-        ssh "Brandon Bejarano"@gsminventory.com "echo 'Connection Successful'"
-        ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal" && docker-compose down
-        ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal" && git pull
-        ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal" && docker-compose -f docker-compose.production.yml up --build -d
+   # - name: Deploy to Server
+   #   run: |
+   #     ssh "Brandon Bejarano"@gsminventory.com "echo 'Connection Successful'"
+   #     ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal" && docker-compose down
+   #     ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal" && git pull
+   #     ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal" && docker-compose -f docker-compose.production.yml up --build -d
         
+    - name: List directory contents
+      run: ls -l  
+
+    - name: Run a one-line script
+      run: echo "Hello, world! The runner is working!"
