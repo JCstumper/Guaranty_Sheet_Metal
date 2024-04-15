@@ -8,48 +8,17 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-      
-    - name: Add SSH host key
-      run: |
-        mkdir -p ~/.ssh
-        echo "$SERVER_HOST_KEY" >> ~/.ssh/known_hosts
-        chmod 600 ~/.ssh/known_hosts
-      env:
-        SERVER_HOST_KEY: ${{ secrets.SERVER_HOST_KEY }}
-
-    - name: Setup SSH
-      uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-    #- name: Test directory change
-      #run: ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal && echo 'Directory Changed Successfully'"
-
-    #- name: Check GitHub Actions runner user
-    #  run: ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal" && echo 'Connected Successfully' && "whoami"
-
-    #- name: Updating File Scripts
-    #  run: |
-    #    ssh "Brandon Bejarano"@gsminventory.com "powershell -Command \"(Get-Content 'C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal\\nginx\\startupProduction.sh') -replace '\`r\`n', '\`n' | Set-Content 'C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal\\nginx\\startupProduction.sh'\""
-    #    ssh "Brandon Bejarano"@gsminventory.com && echo 'starupProduction.sh updated'
-    #    ssh "Brandon Bejarano"@gsminventory.com "powershell -Command \"(Get-Content 'C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal\\nginx\\generate-certs.sh') -replace '\`r\`n', '\`n' | Set-Content 'C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal\\nginx\\generate-certs.sh'\""
-    #    ssh "Brandon Bejarano"@gsminventory.com && echo 'generate-certs.sh updated'
-
-    #- name: Set executable permissions on scripts
-    #  run: |
-    #    ssh "Brandon Bejarano"@gsminventory.com "powershell -Command \"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser\""
-    #    ssh "Brandon Bejarano"@gsminventory.com "powershell -Command \"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process\""
-    #    ssh "Brandon Bejarano"@gsminventory.com "powershell -Command \"Get-Item 'C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal\\nginx\\startupProduction.sh' | Unblock-File\""
-    #    ssh "Brandon Bejarano"@gsminventory.com "powershell -Command \"Get-Item 'C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal\\nginx\\generate-certs.sh' | Unblock-File\""
-      
+    runs-on: self-hosted
+    steps:  
     - name: Deploy to Server
       run: |
-        ssh "Brandon Bejarano"@gsminventory.com "echo 'Connection Successful'"
-        ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal" && docker-compose down
-        ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal" && git pull
-        ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal" && docker-compose -f docker-compose.production.yml up --build -d
+        "echo 'Connection Successful'"
+        cd "C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal"
+        docker ps
+        docker-compose down
+        "echo 'Containers Shutdown Successfully'"
+        git pull
+        "echo 'Updated Main Successfully'"
+        docker-compose -f docker-compose.production.yml up --build -d
+        "echo 'Updated Containers Successfully'"
         
