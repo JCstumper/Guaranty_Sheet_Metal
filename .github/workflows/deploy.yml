@@ -54,7 +54,7 @@ jobs:
    #     ssh "Brandon Bejarano"@gsminventory.com "cd C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal" && docker-compose -f docker-compose.production.yml up --build -d
         
     - name: List directory contents
-      run: ls -l  
+      run: ls  
 
     - name: Run a one-line script
       run: echo "Hello, world! The runner is working!"
