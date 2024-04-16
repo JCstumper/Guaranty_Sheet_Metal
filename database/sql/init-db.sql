@@ -64,11 +64,13 @@ CREATE TABLE IF NOT EXISTS invoices (
 );
 
 CREATE TABLE IF NOT EXISTS invoice_items (
-    product_id INT,
+    invoice_item_id SERIAL PRIMARY KEY,
     invoice_id INT,
+    part_number VARCHAR(50),
     quantity INT,
     price_per_unit DECIMAL(10, 2),
-    FOREIGN KEY (invoice_id) REFERENCES invoices(invoice_id)
+    FOREIGN KEY (invoice_id) REFERENCES invoices(invoice_id),
+    FOREIGN KEY (part_number) REFERENCES products(part_number)
 );
 
 

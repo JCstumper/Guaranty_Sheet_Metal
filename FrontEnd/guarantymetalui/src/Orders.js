@@ -9,8 +9,9 @@ const Orders = ({ setAuth }) => {
     const [filteredOrders, setFilteredOrders] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const { API_BASE_URL } = useContext(AppContext);
-    const [lowInventoryItems, setLowInventoryItems] = useState([]);
-    const [outOfStockItems, setOutOfStockItems] = useState([]);
+    // Remove global states for lowInventoryItems and outOfStockItems
+    // Replace with an order-specific parts mapping
+    const [orderParts, setOrderParts] = useState({}); // Make sure any code accessing orderParts[x] initializes it as {} if it could be undefined.
     const [newOrderItems, setNewOrderItems] = useState([]);
 
     // State to track the selected order ID for expansion
@@ -21,7 +22,7 @@ const Orders = ({ setAuth }) => {
         supplier_name: '',
         total_cost: '',
         invoice_date: '',
-        status: ''
+        status: 'Building'
     });
 
     useEffect(() => {
@@ -39,11 +40,49 @@ const Orders = ({ setAuth }) => {
         setFilteredOrders(filtered);
     }, [filter, orders]);
 
-    const handleSelectOrder = (invoiceId) => {
-        // Set the selectedOrderId to the clicked order's ID
-        // If the same order is clicked again, it will toggle (close)
-        setSelectedOrderId(selectedOrderId !== invoiceId ? invoiceId : null);
+    const handleSelectOrder = async (invoiceId) => {
+        // Deselect if the same order is clicked
+        if (selectedOrderId === invoiceId) {
+            setSelectedOrderId(null);
+            // Optionally reset or clear the previous order's data here if necessary
+        } else {
+            // Select the new order and fetch its details
+            setSelectedOrderId(invoiceId);
+            await fetchOrderParts(invoiceId);
+        }
     };
+
+
+    const fetchOrderParts = async (orderId) => {
+        try {
+            // These URLs should match the actual endpoints defined in your backend.
+            const lowInventoryResponse = await fetch(`${API_BASE_URL}/purchases/inventory/low`);
+            const outOfStockResponse = await fetch(`${API_BASE_URL}/purchases/inventory/out-of-stock`);
+
+            if (!lowInventoryResponse.ok || !outOfStockResponse.ok) throw new Error('Failed to fetch parts data');
+
+            const lowInventoryItems = await lowInventoryResponse.json();
+            const outOfStockItems = await outOfStockResponse.json();
+
+            // Initialize or update parts for the selected order.
+            // Note: You might want to consider how orderId is used since these endpoints no longer depend on it.
+            setOrderParts(prev => ({
+                ...prev,
+                [orderId]: {
+                    ...prev[orderId],
+                    lowInventoryItems: lowInventoryItems.map(item => ({ ...item, source: 'lowInventoryItems' })),
+                    outOfStockItems: outOfStockItems.map(item => ({ ...item, source: 'outOfStockItems' })),
+                    // Preserves newOrderItems previously added or initializes if none.
+                    newOrderItems: prev[orderId]?.newOrderItems || []
+                }
+            }));
+        } catch (error) {
+            console.error('Error fetching parts data:', error);
+        }
+    };
+
+
+
 
 
     const fetchOrders = async () => {
@@ -108,92 +147,171 @@ const Orders = ({ setAuth }) => {
         fetchOutOfStockItems();
     }, []); // The empty array ensures these run only once when the component mounts
 
-    const fetchLowInventoryItems = async () => {
+    const fetchLowInventoryItems = async (orderId) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/purchases/low-inventory`);
+            const response = await fetch(`${API_BASE_URL}/purchases/${orderId}/low-inventory`);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
             const data = await response.json();
-            setLowInventoryItems(data);
+            // Update the orderParts state with the fetched data
+            setOrderParts(prevOrderParts => ({
+                ...prevOrderParts,
+                [orderId]: {
+                    ...prevOrderParts[orderId],
+                    lowInventoryItems: data,
+                },
+            }));
         } catch (error) {
-            console.error('Error fetching low inventory items:', error);
-            // Optionally, set lowInventoryItems to an empty array or handle the error as needed
+            console.error(`Error fetching low inventory items for order ${orderId}:`, error);
         }
     };
 
-    const fetchOutOfStockItems = async () => {
+
+    const fetchOutOfStockItems = async (orderId) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/purchases/out-of-stock`);
+            const response = await fetch(`${API_BASE_URL}/purchases/${orderId}/out-of-stock`);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
             const data = await response.json();
-            setOutOfStockItems(data);
+            // Update the orderParts state with the fetched data
+            setOrderParts(prevOrderParts => ({
+                ...prevOrderParts,
+                [orderId]: {
+                    ...prevOrderParts[orderId],
+                    outOfStockItems: data,
+                },
+            }));
         } catch (error) {
-            console.error('Error fetching out of stock items:', error);
-            // Optionally, set outOfStockItems to an empty array or handle the error as needed
+            console.error(`Error fetching out of stock items for order ${orderId}:`, error);
         }
     };
+
 
     const handleAddToNewOrder = (item, source) => {
-        setNewOrderItems(prevItems => [...prevItems, item]);
-        if (source === 'lowInventory') {
-            setLowInventoryItems(prevItems => prevItems.filter(i => i.part_number !== item.part_number));
-        } else if (source === 'outOfStock') {
-            setOutOfStockItems(prevItems => prevItems.filter(i => i.part_number !== item.part_number));
-        }
+        if (!selectedOrderId) return;
+
+        setOrderParts(prev => {
+            // Ensure we're working with a defined object for the current order.
+            const currentOrderParts = prev[selectedOrderId] || { lowInventoryItems: [], outOfStockItems: [], newOrderItems: [] };
+
+            // Double-check that the source list exists and is an array.
+            const sourceList = Array.isArray(currentOrderParts[source]) ? currentOrderParts[source] : [];
+
+            // Create a new item with an ensured orderQuantity property.
+            const newItem = { ...item, orderQuantity: item.orderQuantity || 1 };
+
+            // Filter the source list to exclude the item being moved to newOrderItems.
+            const updatedSourceList = sourceList.filter(i => i.part_number !== item.part_number);
+
+            // Add the new item to the newOrderItems array.
+            const updatedNewOrderItems = [...currentOrderParts.newOrderItems, newItem];
+
+            return {
+                ...prev,
+                [selectedOrderId]: {
+                    ...currentOrderParts,
+                    [source]: updatedSourceList,
+                    newOrderItems: updatedNewOrderItems,
+                },
+            };
+        });
     };
+
 
 
     const handleRemoveFromNewOrder = (index) => {
-        const item = newOrderItems[index];
-        setNewOrderItems(prevItems => prevItems.filter((_, i) => i !== index));
+        if (!selectedOrderId) return;
 
-        if (item.quantity_in_stock > 0 && item.quantity_in_stock <= 15) {
-            setLowInventoryItems(prevItems => {
-                const newItems = [...prevItems, item];
-                return newItems.sort((a, b) => a.quantity_in_stock - b.quantity_in_stock);
-            });
-        } else if (item.quantity_in_stock === 0) {
-            setOutOfStockItems(prevItems => {
-                const newItems = [...prevItems, item];
-                return newItems.sort((a, b) => a.part_number.localeCompare(b.part_number));
-            });
-        }
+        setOrderParts(prevOrderParts => {
+            const currentOrderParts = prevOrderParts[selectedOrderId];
+            if (!currentOrderParts) return prevOrderParts;
+
+            const itemToRemove = currentOrderParts.newOrderItems[index];
+            if (!itemToRemove) return prevOrderParts;
+
+            // Remove the item from newOrderItems
+            const updatedNewOrderItems = currentOrderParts.newOrderItems.filter((_, i) => i !== index);
+
+            // Decide where to return the removed item based on its quantity_in_stock
+            const updatedSource = itemToRemove.quantity_in_stock > 0 && itemToRemove.quantity_in_stock <= 15
+                ? 'lowInventoryItems'
+                : 'outOfStockItems';
+
+            // Return the removed item to its source list, if applicable
+            const updatedSourceList = [...(currentOrderParts[updatedSource] || []), itemToRemove];
+
+            return {
+                ...prevOrderParts,
+                [selectedOrderId]: {
+                    ...currentOrderParts,
+                    newOrderItems: updatedNewOrderItems,
+                    [updatedSource]: updatedSourceList
+                }
+            };
+        });
     };
 
 
 
-    const handleAddAllToNewOrder = (items, source) => {
-        setNewOrderItems(prevItems => [...prevItems, ...items]);
-        if (source === 'lowInventory') {
-            setLowInventoryItems([]);
-        } else if (source === 'outOfStock') {
-            setOutOfStockItems([]);
-        }
+
+
+
+    const handleAddAllToNewOrder = (source) => {
+        if (!selectedOrderId) return;
+
+        setOrderParts(prev => {
+            const currentOrderParts = prev[selectedOrderId] || { lowInventoryItems: [], outOfStockItems: [], newOrderItems: [] };
+            // Move all items from the source list to the newOrderItems list
+            const allItems = currentOrderParts[source].map(item => ({ ...item, orderQuantity: 1 }));
+            const updatedNewOrderItems = [...currentOrderParts.newOrderItems, ...allItems];
+
+            return {
+                ...prev,
+                [selectedOrderId]: {
+                    ...currentOrderParts,
+                    [source]: [], // Clear the source list
+                    newOrderItems: updatedNewOrderItems
+                }
+            };
+        });
     };
 
-    const updateOrderStatus = async (orderId, newStatus) => {
+
+
+    const updateOrderStatus = async (orderId, newStatus, items) => {
         try {
             const response = await fetch(`${API_BASE_URL}/purchases/${orderId}/status`, {
                 method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ status: newStatus }),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus, items }),
             });
 
             if (response.ok) {
-                // Assuming you have a method to re-fetch orders after status update
+                // Assuming you have a method to re-fetch and update the list of orders in your state
                 fetchOrders();
+                console.log('Order status updated successfully');
+                // Optionally, navigate the user to a different page or show a success message
             } else {
-                // Handle error
-                alert('Failed to update order status');
+                // When the server responded with a status code that falls out of the range of 2xx
+                console.error('Failed to update order status');
+                // Show an error message to the user
+                alert('Failed to update order status. Please try again.');
             }
         } catch (error) {
+            // When there was an error sending the request
             console.error('Error updating order status:', error);
+            alert('Error updating order status. Please check your internet connection and try again.');
         }
+    };
+
+
+    // Method to update order quantity for a specific item
+    const updateOrderQuantity = (index, quantity) => {
+        setNewOrderItems(prevItems =>
+            prevItems.map((item, idx) => idx === index ? { ...item, orderQuantity: quantity } : item)
+        );
     };
 
 
@@ -244,7 +362,7 @@ const Orders = ({ setAuth }) => {
                                             </td>
                                         </tr>
 
-                                        {selectedOrderId === order.invoice_id && (
+                                        {selectedOrderId === order.invoice_id && orderParts[selectedOrderId] && (
                                             <tr className="expanded-details">
                                                 <td colSpan="4">
                                                     <div className="order-details-expanded">
@@ -257,7 +375,7 @@ const Orders = ({ setAuth }) => {
                                                             {/* Low Inventory Section */}
                                                             <div className="parts-subsection low-stock">
                                                                 <h5>Low Inventory</h5>
-                                                                <button onClick={() => handleAddAllToNewOrder(lowInventoryItems, 'lowInventory')}>Add All to Order</button>
+                                                                <button onClick={() => handleAddAllToNewOrder(orderParts[selectedOrderId].lowInventoryItems, 'lowInventory')}>Add All to Order</button>
                                                                 <table>
                                                                     <thead>
                                                                         <tr>
@@ -269,7 +387,7 @@ const Orders = ({ setAuth }) => {
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
-                                                                        {lowInventoryItems.map((item) => (
+                                                                        {orderParts[selectedOrderId]?.lowInventoryItems?.map((item) => (
                                                                             <tr key={item.part_number}>
                                                                                 <td>{item.part_number}</td>
                                                                                 <td>{item.material_type}</td>
@@ -279,7 +397,7 @@ const Orders = ({ setAuth }) => {
                                                                                     <button onClick={() => handleAddToNewOrder(item, 'lowInventory')}>Add to Order</button>
                                                                                 </td>
                                                                             </tr>
-                                                                        ))}
+                                                                        )) ?? <tr><td colSpan="5">No low inventory items found</td></tr>}
                                                                     </tbody>
                                                                 </table>
                                                             </div>
@@ -287,7 +405,7 @@ const Orders = ({ setAuth }) => {
                                                             {/* Out of Stock Section */}
                                                             <div className="parts-subsection out-of-stock">
                                                                 <h5>Out of Stock</h5>
-                                                                <button onClick={() => handleAddAllToNewOrder(outOfStockItems, 'outOfStock')}>Add All to Order</button>
+                                                                <button onClick={() => handleAddAllToNewOrder(orderParts[selectedOrderId].outOfStockItems, 'outOfStock')}>Add All to Order</button>
                                                                 <table>
                                                                     <thead>
                                                                         <tr>
@@ -299,7 +417,7 @@ const Orders = ({ setAuth }) => {
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
-                                                                        {outOfStockItems.map((item) => (
+                                                                        {orderParts[selectedOrderId]?.outOfStockItems?.map((item) => (
                                                                             <tr key={item.part_number}>
                                                                                 <td>{item.part_number}</td>
                                                                                 <td>{item.material_type}</td>
@@ -310,7 +428,7 @@ const Orders = ({ setAuth }) => {
 
                                                                                 </td>
                                                                             </tr>
-                                                                        ))}
+                                                                        )) ?? <tr><td colSpan="5">No out of stock items found</td></tr>}
                                                                     </tbody>
                                                                 </table>
                                                             </div>
@@ -325,16 +443,25 @@ const Orders = ({ setAuth }) => {
                                                                             <th>Material</th>
                                                                             <th>Description</th>
                                                                             <th>Quantity in Stock</th>
+                                                                            <th>Amount to Order</th> {/* New column for amount to order */}
                                                                             <th>Action</th> {/* For remove button */}
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
-                                                                        {newOrderItems.map((item, index) => (
+                                                                        {selectedOrderId && orderParts[selectedOrderId]?.newOrderItems.map((item, index) => (
                                                                             <tr key={index}>
                                                                                 <td>{item.part_number}</td>
                                                                                 <td>{item.material_type}</td>
                                                                                 <td>{item.description}</td>
                                                                                 <td>{item.quantity_in_stock}</td>
+                                                                                <td>
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        value={item.orderQuantity}
+                                                                                        onChange={(e) => updateOrderQuantity(index, parseInt(e.target.value, 10))}
+                                                                                        min="1"
+                                                                                    />
+                                                                                </td>
                                                                                 <td>
                                                                                     <button onClick={() => handleRemoveFromNewOrder(index)}>Remove</button>
                                                                                 </td>
@@ -343,7 +470,6 @@ const Orders = ({ setAuth }) => {
                                                                     </tbody>
                                                                 </table>
                                                             </div>
-
                                                         </div>
                                                     </div>
                                                 </td>
@@ -391,7 +517,8 @@ const Orders = ({ setAuth }) => {
                                     <input type="date" id="invoice_date" name="invoice_date" value={newOrder.invoice_date} onChange={handleInputChange} required />
 
                                     <label htmlFor="status">Status:</label>
-                                    <input type="text" id="status" name="status" placeholder="Paid/Unpaid/Ordered" value={newOrder.status} onChange={handleInputChange} required />
+                                    {/* Display the status as a non-editable field */}
+                                    <input type="text" id="status" name="status" value={newOrder.status} disabled />
 
                                     <div className="modalAddOrder-footer">
                                         <button type="submit" className="btn btn-primary">Add Order</button>
@@ -408,4 +535,3 @@ const Orders = ({ setAuth }) => {
 };
 
 export default Orders;
-
