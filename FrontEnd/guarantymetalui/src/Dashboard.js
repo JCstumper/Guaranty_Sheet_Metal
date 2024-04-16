@@ -1,26 +1,44 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { AppContext } from './App';
-import Topbar from './components/topbar'; // Adjust the path as necessary
-import BarCard from './components/BarCard'; // Make sure the path to GraphCard is correct
-import PieCard from './components/PieCard'; // Make sure the path to GraphCard is correct
+import Topbar from './components/topbar';
+import BarCard from './components/BarCard';
 import InitialSetupModal from './components/InitialSetupModal';
-import './Dashboard.css'; // Assuming you have specific styles for Dashboard
-
+import './Dashboard.css';
 
 const Dashboard = ({ setAuth }) => {
+    const { API_BASE_URL } = useContext(AppContext);
     const [showInitialSetup, setShowInitialSetup] = useState(false);
-    const {API_BASE_URL} = useContext(AppContext);
+    const [dashboardData, setDashboardData] = useState({
+        customers: 0,
+        purchases: 0,
+        products: 0
+    });
 
     useEffect(() => {
-        const checkInitialSetup = async () => {
-            const response = await fetch(`${API_BASE_URL}/auth/check-initial-setup`);
-            const data = await response.json();
-            if (!data.initialSetupComplete) {
-                setShowInitialSetup(true);
+        const fetchData = async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/dashboard/counts`, {
+                    method: "GET",
+                    headers: { token: localStorage.token }
+                });
+                const data = await response.json();
+                setDashboardData({
+                    customers: data.customers,
+                    products: data.products,
+                    purchases: data.purchases
+                });
+
+                const setupResponse = await fetch(`${API_BASE_URL}/auth/check-initial-setup`);
+                const setupData = await setupResponse.json();
+                if (!setupData.initialSetupComplete) {
+                    setShowInitialSetup(true);
+                }
+            } catch (error) {
+                console.error('Failed to fetch dashboard data:', error);
             }
         };
 
-        checkInitialSetup();
+        fetchData();
     }, [API_BASE_URL]);
 
     return (
@@ -32,30 +50,27 @@ const Dashboard = ({ setAuth }) => {
                 API_BASE_URL={API_BASE_URL}
             />
             <div className="card-container">
-                {/* Your existing cards */}
                 <div className="cxcard">
                     <div className="card-content">
                         <h3 className="card-title">Customers</h3>
-                        <p className="card-info">172</p>
+                        <p className="card-info">{dashboardData.customers}</p>
                     </div>
                 </div>
                 <div className="scard">
                     <div className="card-content">
                         <h3 className="card-title">Purchases</h3>
-                        <p className="card-info">376</p>
+                        <p className="card-info">{dashboardData.purchases}</p>
                     </div>
                 </div>
                 <div className="pcard">
                     <div className="card-content">
                         <h3 className="card-title">Products</h3>
-                        <p className="card-info">579</p>
+                        <p className="card-info">{dashboardData.products}</p>
                     </div>
                 </div>
             </div>
             <div className="graph-container">
-                {/* Place GraphCard components inside this container */}
                 <BarCard />
-                {/* You can add more GraphCard components or different types of graph components here */}
             </div>
         </div>
     );
