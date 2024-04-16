@@ -5,6 +5,7 @@ import Home from './Home';
 import Deliverables from './Deliverables';
 import Team from './Team';
 import './App.css';
+import Documentation from './Documentation';
 
 function App() {
   return (
@@ -12,7 +13,8 @@ function App() {
       <NavBar /> {/* This includes the NavBar on every page */}
       <Routes>
         <Route path="/" element={<Navigate replace to="/home" />} />
-        <Route path="/home" element={<Home />} />
+        <Route path="/Home" element={<Home />} />
+        <Route path="/Documentation" element={<Documentation />} />
         <Route path="/Deliverables" element={<Deliverables />} />
         <Route path="/Team" element={<Team />} />
       </Routes>

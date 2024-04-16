@@ -9,6 +9,7 @@ function NavBar() {
             <img src={logo} alt="Guaranty Sheet Metal & Roofing" className="navbar-logo" />
             <div className="navbar-links">
                 <Link to="/Home" className="nav-link">Home</Link>
+                <Link to="/Documentation" className="nav-link">App Documentation</Link>
                 <Link to="/Deliverables" className="nav-link">Deliverables</Link>
                 <Link to="/Team" className="nav-link">Team</Link>
             </div>
