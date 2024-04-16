@@ -1,4 +1,4 @@
-describe('Open application and test login', () => {
+describe('Test login', () => {
   it('Page Opened!', () => {
       cy.visit('https://localhost/login')
   });

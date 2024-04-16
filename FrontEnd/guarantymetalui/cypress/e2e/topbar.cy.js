@@ -1,4 +1,4 @@
-describe('Open application and test inventory', () => {
+describe('Test navigation', () => {
     beforeEach(() => {
         cy.viewport(1280, 720);
 
@@ -45,7 +45,7 @@ describe('Open application and test inventory', () => {
 
     it('Navigate to dashboard', () => { 
         cy.get('.list-button').contains('DASHBOARD').click();
-        cy.contains('Revenue Breakdown').should('be.visible');
+        cy.contains('Inventory Details').should('be.visible');
     });
 
     it('Navigate to different pages', () => { 
@@ -63,6 +63,6 @@ describe('Open application and test inventory', () => {
         cy.get('.table-title').contains('INVENTORY LOGS').should('be.visible');
 
         cy.get('.list-button').contains('DASHBOARD').click();
-        cy.contains('Revenue Breakdown').should('be.visible');
+        cy.contains('Inventory Details').should('be.visible');
     });
 });  
