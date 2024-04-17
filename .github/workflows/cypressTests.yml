@@ -24,7 +24,7 @@ jobs:
       - name: Run Cypress tests
         uses: cypress-io/github-action@v2
         with:
-          start: ./start-server.sh
+          start: bash ./start-server.sh
           wait-on: https://localhost
           wait-on-timeout: 300 # Adjust the timeout based on your application's start-up time
         env:
