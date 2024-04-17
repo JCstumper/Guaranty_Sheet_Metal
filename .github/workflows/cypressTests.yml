@@ -27,6 +27,7 @@ jobs:
           ls
       
       - name: Run Cypress tests
+        run: cd FrontEnd/guarantymetalui
         uses: cypress-io/github-action@v2
         with:
           start: npm start
