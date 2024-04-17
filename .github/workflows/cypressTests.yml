@@ -20,6 +20,12 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+
+      - name: Starting Project
+        run: docker-compose up --build -d
+
+      - name: Running Cypress Command
+        run: npx cypress run --spec "./cypress/e2e/*.cy.js" --reporter json > "C:/Users/Jake Carney/Documents/Guaranty_Sheet_Metal/FrontEnd/guarantymetalui/cypress/results/results.json"
       
       - name: Run Cypress tests
         uses: cypress-io/github-action@v2
