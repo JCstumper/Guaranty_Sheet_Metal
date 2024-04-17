@@ -22,7 +22,9 @@ jobs:
         run: npm install
 
       - name: Navigate to GuarantyMetalUI
-        run: ls
+        run: | 
+          cd FrontEnd
+          ls
       
       - name: Run Cypress tests
         uses: cypress-io/github-action@v2
