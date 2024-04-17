@@ -5,7 +5,7 @@ Welcome to the FAQ section for our Internal Inventory Management Site. Here you 
 ## General Questions
 
 ### Q1: How do I access the inventory site?
-**A**: You can access the inventory site by visiting [http://gsminventory.com](Guaranty Sheet Metal).
+**A**: You can access the inventory site by visiting [Guaranty Sheet Metal](http://gsminventory.com).
 
 ### Q2: Who has access to the inventory site?
 **A**: Only administrators at the moment
