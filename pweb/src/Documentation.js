@@ -30,7 +30,6 @@ import LOGIN from './Documentation/components/LOGIN.md';
 import LOGOUTCONFIRM from './Documentation/components/LOGOUTCONFIRMATION.md';
 import MANAGEUSERS from './Documentation/components/MANAGEUSERS.md';
 import NOTFOUND from './Documentation/components/NOTFOUND.md';
-import PIECARD from './Documentation/components/PIECARD.md';
 import REGISTER from './Documentation/components/REGISTER.md';
 import TOPBAR from './Documentation/components/TOPBAR.md';
 
@@ -85,7 +84,6 @@ const markdownFiles = {
         'LOGOUTCONFIRM': LOGOUTCONFIRM,
         'MANAGEUSERS': MANAGEUSERS,
         'NOTFOUND': NOTFOUND,
-        'PIECARD': PIECARD,
         'REGISTER': REGISTER,
         'TOPBAR': TOPBAR,
     },
