@@ -66,7 +66,7 @@ const markdownFiles = {
         },
     },
 
-    components:{
+    components: {
         // components
         'ADDPARTMODAL': ADDPARTMODAL,
         'ADDPRODUCT': ADDPRODUCT,
@@ -118,36 +118,43 @@ function Documentation() {
             [sectionPath]: !prev[sectionPath]
         }));
     };
-
     function renderGroup(group, path = []) {
-    return Object.entries(group).map(([key, value]) => {
-        const currentPath = path.concat(key).join('.');
-        if (typeof value === 'object') {
-            // Check if the current section is expanded
+        return Object.entries(group).map(([key, value]) => {
+            const currentPath = path.concat(key).join('.');
             const isExpanded = expandedSections[currentPath];
+    
             return (
                 <div key={key}>
-                    <h4 onClick={() => toggleSection(currentPath)} style={{cursor: 'pointer'}}>
+                    <h4 onClick={() => toggleSection(currentPath)}>
                         {key.toUpperCase()} {isExpanded ? '-' : '+'}
                     </h4>
-                    {isExpanded && <ul>{renderGroup(value, path.concat(key))}</ul>}
+                    {isExpanded && (
+                        <ul>
+                            {Object.entries(value).map(([subKey, subValue]) => {
+                                if (typeof subValue === 'object') {
+                                    // Recursive call for nested groups
+                                    return <li key={subKey}>{renderGroup(subValue, path.concat(key))}</li>;
+                                } else {
+                                    // It's a file, render a clickable button
+                                    return (
+                                        <li key={subKey}>
+                                            <button
+                                                onClick={() => handleFileSelect(subValue)}
+                                                className={subValue === selectedFile ? 'active' : ''}
+                                            >
+                                                {subKey.replace('.md', '')}
+                                            </button>
+                                        </li>
+                                    );
+                                }
+                            })}
+                        </ul>
+                    )}
                 </div>
             );
-        } else {
-            // It's a file, render a clickable button
-            return (
-                <li key={key}>
-                    <button
-                        onClick={() => handleFileSelect(value)}
-                        className={value === selectedFile ? 'active' : ''}
-                    >
-                        {key.replace('.md', '')}
-                    </button>
-                </li>
-            );
-        }
-    });
-}
+        });
+    }
+    
 
     
     
