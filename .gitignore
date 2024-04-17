@@ -2,6 +2,14 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/nginx/ssl/privkey.pem
-/nginx/ssl/csr.pem
-/nginx/ssl/fullchain.pem
+#### ROOT FOLDER ####
+
+.env
+
+#### API FOLDER ####
+
+/api/.env
+
+#### NGINX FOLDER ####
+
+/nginx/ssl/
