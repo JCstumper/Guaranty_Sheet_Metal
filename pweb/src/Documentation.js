@@ -44,7 +44,7 @@ import ORDERS from './Documentation/pages/ORDERS.md';
 
 import './Documentation.css'
 
-const [expandedSections, setExpandedSections] = useState({});
+
 
 
 const markdownFiles = {
@@ -102,6 +102,7 @@ const markdownFiles = {
 };
 
 function Documentation() {
+    const [expandedSections, setExpandedSections] = useState({});
     const [selectedFile, setSelectedFile] = useState('');
     const [markdownText, setMarkdownText] = useState('');
 
