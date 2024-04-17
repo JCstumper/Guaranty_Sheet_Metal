@@ -9,10 +9,6 @@ Welcome to the comprehensive feature guide for [Software Name]. This document ou
 - **Instant Updates**: The dashboard is updated in real time as soon as new entries are added to their respective pages—products, jobs, and customers. This ensures that all information displayed is current and accurate.
 - **User-Friendly Interface**: The dashboard layout is intuitive and user-friendly, making it easy for users to get a comprehensive view of business operations at a glance.
 
-### Visualization of Data
-- **Charts and Graphs**: The dashboard includes various visual representations, such as charts and graphs, that provide a quick overview of business metrics and trends.
-- **Customizable Views**: Users can customize the dashboard to display the information that is most relevant to them, enhancing their operational efficiency.
-
 ## Inventory Tracking
 
 ### Low and Out of Stock Alerts

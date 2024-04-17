@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/Guaranty_Sheet_Metal/static/css/main.60440209.css",
-    "main.js": "/Guaranty_Sheet_Metal/static/js/main.b63de8e8.js",
+    "main.js": "/Guaranty_Sheet_Metal/static/js/main.dc4a2c1b.js",
     "static/media/logo.png": "/Guaranty_Sheet_Metal/static/media/logo.a8f6846b04690eefa5ce.png",
     "static/media/Software.md": "/Guaranty_Sheet_Metal/static/media/Software.37ed17bad9bc7f912610.md",
     "static/media/CUSTOMERS.md": "/Guaranty_Sheet_Metal/static/media/CUSTOMERS.06e12511023f94fca552.md",
@@ -20,7 +20,6 @@
     "static/media/LOGS.md": "/Guaranty_Sheet_Metal/static/media/LOGS.9508f2f88cedefcbc745.md",
     "static/media/EDITPROFILE.md": "/Guaranty_Sheet_Metal/static/media/EDITPROFILE.af82943291bf4a4ec6cd.md",
     "static/media/MANAGEUSERS.md": "/Guaranty_Sheet_Metal/static/media/MANAGEUSERS.f7a9d5a4494574c7b363.md",
-    "static/media/Features.md": "/Guaranty_Sheet_Metal/static/media/Features.88ec32f405efeaa225e2.md",
     "static/media/INDEX.md": "/Guaranty_Sheet_Metal/static/media/INDEX.bfb128a6b9a3d452da0e.md",
     "static/media/DELETEPRODUCTMODAL.md": "/Guaranty_Sheet_Metal/static/media/DELETEPRODUCTMODAL.aae0f3115f479e2a36aa.md",
     "static/media/INITIALSETUPMODAL.md": "/Guaranty_Sheet_Metal/static/media/INITIALSETUPMODAL.31fd1eecb5d57e9f631d.md",
@@ -28,6 +27,7 @@
     "static/media/REGISTER.md": "/Guaranty_Sheet_Metal/static/media/REGISTER.9a879cccf97649354bb8.md",
     "static/media/CONFIRMUSERS.md": "/Guaranty_Sheet_Metal/static/media/CONFIRMUSERS.d518dd272d5d8f46cf26.md",
     "static/media/VALIDINFO.md": "/Guaranty_Sheet_Metal/static/media/VALIDINFO.34bf39337888a3698dbf.md",
+    "static/media/Features.md": "/Guaranty_Sheet_Metal/static/media/Features.1b2510995ab4c2d86414.md",
     "static/media/NOTFOUND.md": "/Guaranty_Sheet_Metal/static/media/NOTFOUND.485ebb088139561901b5.md",
     "static/media/LOGIN.md": "/Guaranty_Sheet_Metal/static/media/LOGIN.ba97afbc5a41f93fcdb2.md",
     "static/media/AUTHORIZATION.md": "/Guaranty_Sheet_Metal/static/media/AUTHORIZATION.bfeea678ff4f3068a609.md",
@@ -39,10 +39,10 @@
     "static/media/FAQS.md": "/Guaranty_Sheet_Metal/static/media/FAQS.be9affda673c82eb80d5.md",
     "index.html": "/Guaranty_Sheet_Metal/index.html",
     "main.60440209.css.map": "/Guaranty_Sheet_Metal/static/css/main.60440209.css.map",
-    "main.b63de8e8.js.map": "/Guaranty_Sheet_Metal/static/js/main.b63de8e8.js.map"
+    "main.dc4a2c1b.js.map": "/Guaranty_Sheet_Metal/static/js/main.dc4a2c1b.js.map"
   },
   "entrypoints": [
     "static/css/main.60440209.css",
-    "static/js/main.b63de8e8.js"
+    "static/js/main.dc4a2c1b.js"
   ]
 }
