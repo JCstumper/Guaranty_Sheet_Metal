@@ -4,16 +4,14 @@ Welcome to the developer guide for modifying or extending [Software Name]. This 
 
 ## Overview
 
-Before you begin modifying [Software Name], it is important to understand its architecture and the principles upon which it has been built. This section provides a high-level overview of the software's design and the key components that can be customized or extended.
+Before you begin modifying Guaranty Sheet Metal, it is important to understand its architecture and the principles upon which it has been built. This section provides a high-level overview of the software's design and the key components that can be customized or extended.
 
 ## Prerequisites
 
 Ensure you have the following installed and set up before you start:
 
-- Development Environment: [Specify required IDEs, compilers, etc.]
+- Development Environment: [See Software page]
 - Source Code: [Instructions on where to access the source code, e.g., GitHub repository]
-- Documentation: [Link to API documentation or developer manuals]
-
 
 ## Git Workflow Guide
 
