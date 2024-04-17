@@ -23,6 +23,7 @@
 .toc h3 {
     margin-top: 0;
     color: #ffffff; /* Dark grey color for headings */
+    text-decoration: underline; /* Underline the heading */
 }
 
 .toc h4 {
