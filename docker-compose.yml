@@ -17,18 +17,15 @@ services:
       - HOST_NAME=localhost
     entrypoint: /bin/bash -c "/etc/nginx/startup.sh"
 
-  db:
+  postgres:
     image: postgres:latest
     container_name: Postgres
-    environment:
-      POSTGRES_DB: GuarantyDatabase
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: Guaranty123
     ports:
       - "5432:5432"
     volumes:
       - mydbdata:/var/lib/postgresql/data
       - ./database/sql:/docker-entrypoint-initdb.d
+      - ./.env:/.env
 
   api:
     container_name: API
@@ -36,10 +33,6 @@ services:
       context: ./api
       target: development
     environment:
-      - DB_HOST=db
-      - DB_USER=admin
-      - DB_PASSWORD=Guaranty123
-      - DB_NAME=GuarantyDatabase
       - API_URL=https://localhost
       - CHOKIDAR_USEPOLLING=true
     volumes:
@@ -50,9 +43,10 @@ services:
       - ./api/server.js:/usr/src/app/server.js:ro
       - ./nginx/ssl:/usr/src/app/ssl
       - uploads:/usr/src/app/uploads
+      - ./.env:/usr/src/app/.env
     depends_on:
       - nginx
-      - db
+      - postgres
 
   frontend:
     container_name: React
