@@ -24,7 +24,7 @@ jobs:
       - name: Starting Docker Compose
         run: docker-compose up --build -d
 
-       - name: Wait for services to be ready
+      - name: Wait for services to be ready
         run: |
           until curl --output /dev/null --silent --head --fail http://localhost; do
             printf '.'
