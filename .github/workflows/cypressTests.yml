@@ -31,15 +31,15 @@ jobs:
       - name: Starting Docker Compose
         run: docker-compose up --build -d
 
-      #- name: Display Nginx logs
-      #  run: docker logs Nginx
+      - name: Display Nginx logs
+        run: docker logs Nginx
 
-      #- name: Wait for services to be ready
-      #  run: |
-      #    until curl --output /dev/null --silent --head --fail --insecure https://localhost; do
-      #      printf '.'
-      #      sleep 5
-      #    done
+      - name: Wait for services to be ready
+        run: |
+          until curl --output /dev/null --silent --head --fail --insecure https://localhost; do
+            printf '.'
+            sleep 5
+          done
 
       - name: Running Cypress Command
         run: |
