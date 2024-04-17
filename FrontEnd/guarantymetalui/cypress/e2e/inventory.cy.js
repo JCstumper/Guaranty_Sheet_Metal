@@ -13,7 +13,7 @@ describe('Open application and test inventory', () => {
 
         cy.wait('@verifyAuth');
 
-        cy.get('input[name="username"]').type('admin');
+        cy.get('input[name="username"]').type('admin22');
         cy.get('input[name="password"]').type('Admin123!');
         cy.get('.login-button').click();
 
