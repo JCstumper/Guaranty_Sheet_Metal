@@ -50,7 +50,7 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           working-directory: FrontEnd/guarantymetalui
-          wait-on: http://localhost:3000
+          wait-on: https://localhost
           wait-on-timeout: 60 # Adjust the timeout based on your application's start-up time
           config-file: cypress.config.js
         env:
