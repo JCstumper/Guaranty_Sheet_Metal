@@ -127,7 +127,7 @@ function Documentation() {
                 cursor: 'pointer'
             };
             const itemStyle = {
-                paddingLeft: `${level * 1 + 10}px`, // Items are further indented than headers
+                paddingLeft: `${level * 1 + 5}px`, // Items are further indented than headers
             };
     
             if (typeof value === 'object') {
