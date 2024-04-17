@@ -6,6 +6,10 @@
 
 .env
 
+#### API FOLDER ####
+
+/api/.env
+
 #### NGINX FOLDER ####
 
 /nginx/ssl/
