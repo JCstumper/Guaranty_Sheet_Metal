@@ -41,44 +41,61 @@ const Orders = ({ setAuth }) => {
 
     const handleSelectOrder = async (invoiceId) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/purchases/${invoiceId}`);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const orderDetails = await response.json();
-
-            // Ensure orderDetails is not null and has a status property before accessing it.
-            if (orderDetails && orderDetails.status) {
-                // Logic that depends on orderDetails.status
-                if (orderDetails.status === 'Building') {
-                    // If the order is in 'Building' status, update low inventory and out of stock.
-                    await fetch(`${API_BASE_URL}/purchases/update-low-inventory`, { method: 'POST' });
-                    await fetch(`${API_BASE_URL}/purchases/update-out-of-stock`, { method: 'POST' });
-                }
-
-                // Continue with selecting the order.
+            const status = await updateInventoryItems(invoiceId);
+            if (status) {
+                await fetchInventoryAndOutOfStockItems(invoiceId);
                 setSelectedOrderId(selectedOrderId !== invoiceId ? invoiceId : null);
             } else {
                 console.error('Order details not found or missing status.');
-                // Handle case where order details are not found or missing necessary information
             }
         } catch (error) {
-            console.error('Error fetching order details:', error);
+            console.error('Error handling order selection:', error);
         }
     };
 
 
-    const fetchOrderDetails = async (invoiceId) => {
+    const updateInventoryItems = async (invoiceId) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/purchases/${invoiceId}`);
-            if (!response.ok) {
-                throw new Error('Failed to fetch order details');
+            const orderDetailsResponse = await fetch(`${API_BASE_URL}/purchases/${invoiceId}`);
+            if (!orderDetailsResponse.ok) {
+                throw new Error(`HTTP error! status: ${orderDetailsResponse.status}`);
             }
-            const orderDetails = await response.json();
-            return orderDetails;
+            const orderDetails = await orderDetailsResponse.json();
+
+            if (orderDetails && orderDetails.status === 'Building') {
+                // If order is in 'Building' status, update low inventory and out-of-stock
+                await Promise.all([
+                    fetch(`${API_BASE_URL}/purchases/${invoiceId}/update-low-inventory`, { method: 'POST' }),
+                    fetch(`${API_BASE_URL}/purchases/${invoiceId}/update-out-of-stock`, { method: 'POST' })
+                ]);
+            }
+
+            return orderDetails.status;
         } catch (error) {
-            console.error('Error fetching order details:', error);
-            return null; // or handle the error as you see fit
+            console.error('Error updating inventory items:', error);
+        }
+    };
+
+    const fetchInventoryAndOutOfStockItems = async (invoiceId) => {
+        try {
+            // Fetch related low inventory and out-of-stock items for the invoice
+            const [lowInventoryResponse, outOfStockResponse] = await Promise.all([
+                fetch(`${API_BASE_URL}/purchases/${invoiceId}/low-inventory`),
+                fetch(`${API_BASE_URL}/purchases/${invoiceId}/out-of-stock`)
+            ]);
+
+            if (!lowInventoryResponse.ok || !outOfStockResponse.ok) {
+                throw new Error('Failed to fetch items');
+            }
+
+            const lowInventoryData = await lowInventoryResponse.json();
+            const outOfStockData = await outOfStockResponse.json();
+
+            // Update state with fetched data
+            setLowInventoryItems(lowInventoryData);
+            setOutOfStockItems(outOfStockData);
+        } catch (error) {
+            console.error('Error fetching inventory and out-of-stock items:', error);
         }
     };
 
@@ -139,65 +156,70 @@ const Orders = ({ setAuth }) => {
         // You might use a library like xlsx or SheetJS for this.
     };
 
-    useEffect(() => {
-        fetchLowInventoryItems();
-        fetchOutOfStockItems();
-    }, []); // The empty array ensures these run only once when the component mounts
 
-    const fetchLowInventoryItems = async () => {
+    const handleAddToNewOrder = async (item, source) => {
+        // Assuming 'selectedOrderId' is the current invoice ID you're working with
         try {
-            const response = await fetch(`${API_BASE_URL}/purchases/low-inventory`);
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
+            await fetch(`${API_BASE_URL}/purchases/add-to-new-order/${selectedOrderId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    partNumber: item.part_number,
+                    quantity: item.quantity,
+                    source: source,
+                }),
+            });
+
+            // Update UI accordingly
+            setNewOrderItems(prevItems => [...prevItems, item]);
+            if (source === 'lowInventory') {
+                setLowInventoryItems(prevItems => prevItems.filter(i => i.part_number !== item.part_number));
+            } else if (source === 'outOfStock') {
+                setOutOfStockItems(prevItems => prevItems.filter(i => i.part_number !== item.part_number));
             }
-            const data = await response.json();
-            setLowInventoryItems(data);
         } catch (error) {
-            console.error('Error fetching low inventory items:', error);
-            // Optionally, set lowInventoryItems to an empty array or handle the error as needed
-        }
-    };
-
-    const fetchOutOfStockItems = async () => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/purchases/out-of-stock`);
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            const data = await response.json();
-            setOutOfStockItems(data);
-        } catch (error) {
-            console.error('Error fetching out of stock items:', error);
-            // Optionally, set outOfStockItems to an empty array or handle the error as needed
-        }
-    };
-
-    const handleAddToNewOrder = (item, source) => {
-        setNewOrderItems(prevItems => [...prevItems, item]);
-        if (source === 'lowInventory') {
-            setLowInventoryItems(prevItems => prevItems.filter(i => i.part_number !== item.part_number));
-        } else if (source === 'outOfStock') {
-            setOutOfStockItems(prevItems => prevItems.filter(i => i.part_number !== item.part_number));
+            console.error('Error adding item to new order:', error);
         }
     };
 
 
-    const handleRemoveFromNewOrder = (index) => {
+
+    const handleRemoveFromNewOrder = async (index) => {
         const item = newOrderItems[index];
-        setNewOrderItems(prevItems => prevItems.filter((_, i) => i !== index));
 
-        if (item.quantity_in_stock > 0 && item.quantity_in_stock <= 15) {
-            setLowInventoryItems(prevItems => {
-                const newItems = [...prevItems, item];
-                return newItems.sort((a, b) => a.quantity_in_stock - b.quantity_in_stock);
+        // Determine the correct source based on the item's quantity
+        const source = item.quantity <= 15 ? 'lowInventory' : 'outOfStock';
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/purchases/remove-from-new-order/${selectedOrderId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    partNumber: item.part_number,
+                    quantity: item.quantity,
+                    source: source,
+                }),
             });
-        } else if (item.quantity_in_stock === 0) {
-            setOutOfStockItems(prevItems => {
-                const newItems = [...prevItems, item];
-                return newItems.sort((a, b) => a.part_number.localeCompare(b.part_number));
-            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            // Remove the item from the newOrderItems state to update the UI
+            setNewOrderItems((prevItems) => prevItems.filter((_, i) => i !== index));
+
+            // Re-fetch low inventory and out-of-stock items to update the state
+            await fetchInventoryAndOutOfStockItems(selectedOrderId);
+
+        } catch (error) {
+            console.error('Error removing item from new order:', error);
         }
     };
+
 
 
 
@@ -310,7 +332,7 @@ const Orders = ({ setAuth }) => {
                                                                                 <td>{item.part_number}</td>
                                                                                 <td>{item.material_type}</td>
                                                                                 <td>{item.description}</td>
-                                                                                <td>{item.quantity_in_stock}</td>
+                                                                                <td>{item.quantity}</td>
                                                                                 <td>
                                                                                     <button onClick={() => handleAddToNewOrder(item, 'lowInventory')}>Add to Order</button>
                                                                                 </td>
@@ -340,7 +362,7 @@ const Orders = ({ setAuth }) => {
                                                                                 <td>{item.part_number}</td>
                                                                                 <td>{item.material_type}</td>
                                                                                 <td>{item.description}</td>
-                                                                                <td>{item.quantity_in_stock}</td>
+                                                                                <td>{item.quantity}</td>
                                                                                 <td>
                                                                                     <button onClick={() => handleAddToNewOrder(item, 'outOfStock')}>Add to Order</button>
 
@@ -370,7 +392,7 @@ const Orders = ({ setAuth }) => {
                                                                                 <td>{item.part_number}</td>
                                                                                 <td>{item.material_type}</td>
                                                                                 <td>{item.description}</td>
-                                                                                <td>{item.quantity_in_stock}</td>
+                                                                                <td>{item.quantity}</td>
                                                                                 <td>
                                                                                     <button onClick={() => handleRemoveFromNewOrder(index)}>Remove</button>
                                                                                 </td>

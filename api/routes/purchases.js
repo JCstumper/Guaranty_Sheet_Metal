@@ -60,41 +60,81 @@ router.get('/out-of-stock', async (req, res) => {
     }
 });
 
-// API endpoint to update low inventory items
-router.post('/update-low-inventory', async (req, res) => {
+// API endpoint to update low inventory items for a specific invoice
+router.post('/:invoiceId/update-low-inventory', async (req, res) => {
+    const { invoiceId } = req.params; // Extract invoiceId from request parameters
     try {
         await pool.query(
-            `INSERT INTO low_inventory (part_number, quantity, price_per_unit)
-            SELECT i.part_number, i.quantity_in_stock, p.price
+            `INSERT INTO low_inventory (invoice_id, part_number, quantity)
+            SELECT $1, i.part_number, i.quantity_in_stock
             FROM inventory i
             INNER JOIN products p ON i.part_number = p.part_number
             WHERE i.quantity_in_stock BETWEEN 1 AND 15
             ON CONFLICT (part_number) DO UPDATE
-            SET quantity = EXCLUDED.quantity`,
+            SET quantity = EXCLUDED.quantity`, [invoiceId]
         );
-        res.json({ message: "Low inventory items updated successfully." });
+        res.json({ message: "Low inventory items updated successfully for invoice " + invoiceId });
     } catch (err) {
-        console.error('Error executing query:', error.stack);
+        console.error('Error executing query:', err.stack);
         return res.status(500).json('Server error');
     }
 });
 
-// API endpoint to update out of stock items
-router.post('/update-out-of-stock', async (req, res) => {
+// API endpoint to update out of stock items for a specific invoice
+router.post('/:invoiceId/update-out-of-stock', async (req, res) => {
+    const { invoiceId } = req.params; // Extract invoiceId from request parameters
     try {
         await pool.query(
-            `INSERT INTO out_of_stock (part_number, quantity, price_per_unit)
-            SELECT i.part_number, i.quantity_in_stock, p.price
+            `INSERT INTO out_of_stock (invoice_id, part_number, quantity)
+            SELECT $1, i.part_number, i.quantity_in_stock
             FROM inventory i
             INNER JOIN products p ON i.part_number = p.part_number
             WHERE i.quantity_in_stock = 0
             ON CONFLICT (part_number) DO UPDATE
-            SET quantity = EXCLUDED.quantity`,
+            SET quantity = EXCLUDED.quantity`, [invoiceId]
         );
-        res.json({ message: "Out of stock items updated successfully." });
+        res.json({ message: "Out of stock items updated successfully for invoice " + invoiceId });
     } catch (err) {
-        console.error('Error executing query:', error.stack);
+        console.error('Error executing query:', err.stack);
         return res.status(500).json('Server error');
+    }
+});
+
+// Fetch low inventory items for a specific invoice
+router.get('/:invoiceId/low-inventory', async (req, res) => {
+    const { invoiceId } = req.params;
+
+    try {
+        const lowInventoryItems = await pool.query(`
+            SELECT li.invoice_item_id, li.invoice_id, li.part_number, li.quantity, p.material_type, p.description
+            FROM low_inventory li
+            JOIN products p ON li.part_number = p.part_number
+            WHERE li.invoice_id = $1
+        `, [invoiceId]);
+
+        res.json(lowInventoryItems.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json('Server error');
+    }
+});
+
+// Fetch out-of-stock items for a specific invoice
+router.get('/:invoiceId/out-of-stock', async (req, res) => {
+    const { invoiceId } = req.params;
+
+    try {
+        const outOfStockItems = await pool.query(`
+            SELECT oos.invoice_item_id, oos.invoice_id, oos.part_number, oos.quantity, p.material_type, p.description
+            FROM out_of_stock oos
+            JOIN products p ON oos.part_number = p.part_number
+            WHERE oos.invoice_id = $1
+        `, [invoiceId]);
+
+        res.json(outOfStockItems.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json('Server error');
     }
 });
 
@@ -186,6 +226,89 @@ router.patch('/:invoiceId/status', async (req, res) => {
         res.status(500).json('Server error');
     }
 });
+
+// Add an item to the new order
+router.post('/add-to-new-order/:invoiceId', async (req, res) => {
+    const { invoiceId } = req.params;
+    const { partNumber, quantity, source } = req.body; // source is 'lowInventory' or 'outOfStock'
+
+    try {
+        // Start transaction
+        await pool.query('BEGIN');
+
+        // Insert item into new_order
+        await pool.query(`
+            INSERT INTO new_orders (invoice_id, part_number, quantity)
+            VALUES ($1, $2, $3)
+        `, [invoiceId, partNumber, quantity]);
+
+        // Remove item from its original table
+        if (source === 'lowInventory') {
+            await pool.query(`
+                DELETE FROM low_inventory WHERE part_number = $1
+            `, [partNumber]);
+        } else if (source === 'outOfStock') {
+            await pool.query(`
+                DELETE FROM out_of_stock WHERE part_number = $1
+            `, [partNumber]);
+        }
+
+        // Commit transaction
+        await pool.query('COMMIT');
+
+        res.json({ message: "Item added to new order successfully." });
+    } catch (err) {
+        await pool.query('ROLLBACK');
+        console.error('Error executing query:', err.stack);
+        res.status(500).json('Server error');
+    }
+});
+
+// Remove an item from the new order
+router.post('/remove-from-new-order/:invoiceId', async (req, res) => {
+    const { invoiceId } = req.params;
+    const { partNumber, quantity, source } = req.body;
+
+    // Begin transaction
+    await pool.query('BEGIN');
+
+    try {
+        // Remove item from new_orders
+        await pool.query(
+            `DELETE FROM new_orders WHERE part_number = $1`,
+            [partNumber]
+        );
+
+        // Insert item back into its original table based on 'source'
+        if (source === 'lowInventory') {
+            await pool.query(
+                `INSERT INTO low_inventory (invoice_id, part_number, quantity)
+                 VALUES ($1, $2, $3)
+                 ON CONFLICT (part_number) DO
+                 UPDATE SET quantity = EXCLUDED.quantity;`,
+                [invoiceId, partNumber, quantity]
+            );
+        } else if (source === 'outOfStock') {
+            await pool.query(
+                `INSERT INTO out_of_stock (invoice_id, part_number, quantity)
+                 VALUES ($1, $2, $3)
+                 ON CONFLICT (part_number) DO
+                 UPDATE SET quantity = EXCLUDED.quantity;`,
+                [invoiceId, partNumber, quantity]
+            );
+        }
+
+        // Commit the transaction
+        await pool.query('COMMIT');
+        res.json({ message: "Item moved back successfully." });
+    } catch (error) {
+        // Roll back the transaction in case of any error
+        await pool.query('ROLLBACK');
+        console.error('Error during transaction', error);
+        res.status(500).json({ message: 'Server error during transaction' });
+    }
+});
+
 
 
 module.exports = router;
