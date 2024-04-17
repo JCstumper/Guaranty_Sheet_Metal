@@ -25,6 +25,9 @@ jobs:
         run: |
           echo "${{ secrets.ENV_FILE }}" > .env
 
+      - name: Setting Permissions
+        run: chmod +x ./nginx/startup.sh && chmod +x ./nginx/generate-certs.sh 
+
       - name: Starting Docker Compose
         run: docker-compose up --build -d
 
