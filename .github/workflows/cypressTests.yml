@@ -13,13 +13,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '20.11.0' # Adjust the Node.js version as needed for your project
+      #- name: Setup Node.js
+      #  uses: actions/setup-node@v2
+      #  with:
+      #    node-version: '20.11.0' # Adjust the Node.js version as needed for your project
 
-      - name: Install dependencies
-        run: npm install
+      #- name: Install dependencies
+      #  run: npm install
 
       - name: Create .env file
         run: |
@@ -41,16 +41,17 @@ jobs:
       #      sleep 5
       #    done
 
-      - name: Running Cypress Command
-        run: |
-          cd FrontEnd/guarantymetalui
-          npx cypress run --spec "./cypress/e2e/*.cy.js"
+      #- name: Running Cypress Command
+      #  run: |
+      #    cd FrontEnd/guarantymetalui
+      #    npx cypress run --spec "./cypress/e2e/*.cy.js"
       
-      #- name: Run Cypress tests
-      #  uses: cypress-io/github-action@v2
-      #  with:
-      #    start: bash ./start-server.sh
-      #    wait-on: http://localhost:3000
-      #    wait-on-timeout: 300 # Adjust the timeout based on your application's start-up time
-      #  env:
-      #    CI: true
+      - name: Run Cypress tests
+        uses: cypress-io/github-action@v2
+        with:
+          working-directory: FrontEnd/guarantymetalui
+          wait-on: http://localhost:3000
+          wait-on-timeout: 60 # Adjust the timeout based on your application's start-up time
+          config-file: cypress.config.js
+        env:
+          CI: true
