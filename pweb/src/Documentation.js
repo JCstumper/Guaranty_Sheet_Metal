@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Component, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 // Imports for api/middleware
 import AUTHORIZATION from './Documentation/api/middleware/AUTHORIZATION.md';
@@ -46,36 +46,48 @@ import './Documentation.css'
 
 const markdownFiles = {
     // api/middleware
-    'AUTHORIZATION': AUTHORIZATION,
-    'VALIDINFO': VALIDINFO,
-    // api/routes
-    'CATEGORIESAPI': CATEGORIESAPI,
-    'DASHBOARDAPI': DASHBOARDAPI,
-    'EDITPROFILEAPI': EDITPROFILEAPI,
-    'INVENTORYAPI': INVENTORYAPI,
-    'JOBSAPI': JOBSAPI,
-    'JWTAUTHAPI': JWTAUTHAPI,
-    'LOGSAPI': LOGSAPI,
-    // components
-    'ADDPARTMODAL': ADDPARTMODAL,
-    'ADDPRODUCT': ADDPRODUCT,
-    'ADDUSER': ADDUSER,
-    'AUTOREGISTER': AUTOREGISTER,
-    'BARCARD': BARCARD,
-    'CONFIRMUSERS': CONFIRMUSERS,
-    'DELETEPRODUCTMODAL': DELETEPRODUCTMODAL,
-    'EDITPRODUCTMODAL': EDITPRODUCTMODAL,
-    'EDITPROFILE_COMPONENT': EDITPROFILE, // Renamed to avoid conflict with 'EDITPROFILE' from routes
-    'EDITQUANTITY': EDITQUANTITY,
-    'INITIALSETUPMODAL': INITIALSETUPMODAL,
-    'LOADING': LOADING,
-    'LOGIN': LOGIN,
-    'LOGOUTCONFIRM': LOGOUTCONFIRM,
-    'MANAGEUSERS': MANAGEUSERS,
-    'NOTFOUND': NOTFOUND,
-    'PIECARD': PIECARD,
-    'REGISTER': REGISTER,
-    'TOPBAR': TOPBAR,
+    api: {
+        middleware: {
+        'AUTHORIZATION': AUTHORIZATION,
+        'VALIDINFO': VALIDINFO,
+        },
+    
+        routes:{
+        // api/routes
+        'CATEGORIESAPI': CATEGORIESAPI,
+        'DASHBOARDAPI': DASHBOARDAPI,
+        'EDITPROFILEAPI': EDITPROFILEAPI,
+        'INVENTORYAPI': INVENTORYAPI,
+        'JOBSAPI': JOBSAPI,
+        'JWTAUTHAPI': JWTAUTHAPI,
+        'LOGSAPI': LOGSAPI,
+        },
+    },
+
+    components:{
+        // components
+        'ADDPARTMODAL': ADDPARTMODAL,
+        'ADDPRODUCT': ADDPRODUCT,
+        'ADDUSER': ADDUSER,
+        'AUTOREGISTER': AUTOREGISTER,
+        'BARCARD': BARCARD,
+        'CONFIRMUSERS': CONFIRMUSERS,
+        'DELETEPRODUCTMODAL': DELETEPRODUCTMODAL,
+        'EDITPRODUCTMODAL': EDITPRODUCTMODAL,
+        'EDITPROFILE_COMPONENT': EDITPROFILE, // Renamed to avoid conflict with 'EDITPROFILE' from routes
+        'EDITQUANTITY': EDITQUANTITY,
+        'INITIALSETUPMODAL': INITIALSETUPMODAL,
+        'LOADING': LOADING,
+        'LOGIN': LOGIN,
+        'LOGOUTCONFIRM': LOGOUTCONFIRM,
+        'MANAGEUSERS': MANAGEUSERS,
+        'NOTFOUND': NOTFOUND,
+        'PIECARD': PIECARD,
+        'REGISTER': REGISTER,
+        'TOPBAR': TOPBAR,
+    },
+
+    pages:{
     // pages
     'APP_PAGE': APP, // Renamed to avoid conflict with 'APP' from components
     'CUSTOMERS': CUSTOMERS,
@@ -83,37 +95,55 @@ const markdownFiles = {
     'INVENTORY_PAGE': INVENTORY, // Renamed to avoid conflict with 'INVENTORY' from routes
     'LOGS_PAGE': LOGS, // Renamed to avoid conflict with 'LOGS' from routes
     'ORDERS': ORDERS,
+    },
 };
 
 function Documentation() {
     const [selectedFile, setSelectedFile] = useState('');
     const [markdownText, setMarkdownText] = useState('');
 
-    const handleFileSelect = (fileName) => {
-        setSelectedFile(fileName);
-        fetch(markdownFiles[fileName])
+    const handleFileSelect = (group, subGroup, fileName) => {
+        const file = markdownFiles[group][subGroup][fileName];
+        fetch(file)
             .then(response => response.text())
             .then(text => setMarkdownText(text))
             .catch(err => console.error('Error fetching markdown content:', err));
+        setSelectedFile(fileName); // Set the selected file for active styling
     };
+
+    function renderGroup(group, path = []) {
+        return Object.entries(group).map(([key, value]) => {
+            if (typeof value === 'object') {
+                // If the value is an object, recurse
+                return (
+                    <div key={key}>
+                        <h4>{key.toUpperCase()}</h4>
+                        {renderGroup(value, path.concat(key))}
+                    </div>
+                );
+            } else {
+                // Otherwise, it's a file
+                return (
+                    <li key={key}>
+                        <button
+                            onClick={() => handleFileSelect(...path, key)}
+                            className={key === selectedFile ? 'active' : ''}
+                        >
+                            {key.replace('.md', '')}
+                        </button>
+                    </li>
+                );
+            }
+        });
+    }
+    
     
 
     return (
         <div className="documentation-container">
             <div className="toc">
                 <h3>Table of Contents</h3>
-                <ul>
-                    {Object.keys(markdownFiles).map(fileName => (
-                        <li key={fileName}>
-                            <button 
-                                onClick={() => handleFileSelect(fileName)}
-                                className={fileName === selectedFile ? 'active' : ''}
-                            >
-                                {fileName.replace('.md', '')}
-                            </button>
-                        </li>
-                    ))}
-                </ul>
+                {renderGroup(markdownFiles)}
             </div>
             <div className="content">
                 <ReactMarkdown className="react-markdown">
