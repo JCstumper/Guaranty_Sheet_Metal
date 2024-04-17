@@ -123,7 +123,7 @@ function Documentation() {
             const currentPath = path.concat(key).join('.');
             const isExpanded = expandedSections[currentPath];
             const headerStyle = {
-                paddingLeft: `${level * 10}px`, // Increase padding for headers based on depth level
+                paddingLeft: `${level * 5}px`, // Increase padding for headers based on depth level
                 cursor: 'pointer'
             };
             const itemStyle = {
