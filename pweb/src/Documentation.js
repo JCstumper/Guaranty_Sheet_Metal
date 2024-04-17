@@ -41,6 +41,15 @@ import INVENTORY from './Documentation/pages/INVENTORY.md';
 import LOGS from './Documentation/pages/LOGS.md';
 import ORDERS from './Documentation/pages/ORDERS.md';
 
+//Required files for our PWEB
+
+import Software from './Documentation/Software.md';
+import Features from './Documentation/Features.md';
+import Modify from './Documentation/Modify.md';
+import FAQS from './Documentation/FAQS.md';
+
+
+
 import './Documentation.css'
 
 
@@ -96,6 +105,13 @@ const markdownFiles = {
     'INVENTORY_PAGE': INVENTORY, // Renamed to avoid conflict with 'INVENTORY' from routes
     'LOGS_PAGE': LOGS, // Renamed to avoid conflict with 'LOGS' from routes
     'ORDERS': ORDERS,
+    },
+
+    required:{
+    'SOFTWARE': Software,
+    'FEATURES': Features,
+    'MODIFY': Modify,
+    'FAQS': FAQS,
     },
 };
 
