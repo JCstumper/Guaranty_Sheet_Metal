@@ -41,17 +41,17 @@ jobs:
       #      sleep 5
       #    done
 
-      #- name: Running Cypress Command
-      #  run: |
-      #    cd FrontEnd/guarantymetalui
-      #    npx cypress run --spec "./cypress/e2e/*.cy.js"
+      - name: Running Cypress Command
+        run: |
+          cd FrontEnd/guarantymetalui
+          npx cypress run --spec "./cypress/e2e/*.cy.js"
       
-      - name: Run Cypress tests
-        uses: cypress-io/github-action@v2
-        with:
-          working-directory: FrontEnd/guarantymetalui
-          wait-on: https://localhost
-          wait-on-timeout: 60 # Adjust the timeout based on your application's start-up time
-          config-file: cypress.config.js
-        env:
-          CI: true
+      #- name: Run Cypress tests
+      #  uses: cypress-io/github-action@v2
+      #  with:
+      #    working-directory: FrontEnd/guarantymetalui
+      #    wait-on: https://localhost
+      #    wait-on-timeout: 60 # Adjust the timeout based on your application's start-up time
+      #    config-file: cypress.config.js
+      #  env:
+      #    CI: true
