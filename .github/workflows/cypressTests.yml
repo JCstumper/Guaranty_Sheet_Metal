@@ -21,6 +21,10 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Create .env file
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > .env
+
       - name: Starting Docker Compose
         run: docker-compose up --build -d
 
