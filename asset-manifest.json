@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/Guaranty_Sheet_Metal/static/css/main.60440209.css",
-    "main.js": "/Guaranty_Sheet_Metal/static/js/main.7b3e6864.js",
+    "main.js": "/Guaranty_Sheet_Metal/static/js/main.65745d18.js",
     "static/media/logo.png": "/Guaranty_Sheet_Metal/static/media/logo.a8f6846b04690eefa5ce.png",
     "static/media/Software.md": "/Guaranty_Sheet_Metal/static/media/Software.37ed17bad9bc7f912610.md",
     "static/media/CUSTOMERS.md": "/Guaranty_Sheet_Metal/static/media/CUSTOMERS.06e12511023f94fca552.md",
     "static/media/JOBS.md": "/Guaranty_Sheet_Metal/static/media/JOBS.90f5dc24db67281289b5.md",
     "static/media/INVENTORY.md": "/Guaranty_Sheet_Metal/static/media/INVENTORY.628c7cdc37a5479853bf.md",
     "static/media/ADDPARTMODAL.md": "/Guaranty_Sheet_Metal/static/media/ADDPARTMODAL.8af9331f3bf1e9fe275a.md",
-    "static/media/Modify.md": "/Guaranty_Sheet_Metal/static/media/Modify.a3cef5bfa289ae1b70c8.md",
+    "static/media/Modify.md": "/Guaranty_Sheet_Metal/static/media/Modify.08d9bb709a408c9051df.md",
     "static/media/EDITPRODUCTMODAL.md": "/Guaranty_Sheet_Metal/static/media/EDITPRODUCTMODAL.aebf17b3f91f5a30afb8.md",
     "static/media/ADDPRODUCT.md": "/Guaranty_Sheet_Metal/static/media/ADDPRODUCT.dbe6cbda9f6987756f17.md",
     "static/media/APP.md": "/Guaranty_Sheet_Metal/static/media/APP.e057b917750d8dbc5cde.md",
@@ -28,21 +28,21 @@
     "static/media/CONFIRMUSERS.md": "/Guaranty_Sheet_Metal/static/media/CONFIRMUSERS.d518dd272d5d8f46cf26.md",
     "static/media/VALIDINFO.md": "/Guaranty_Sheet_Metal/static/media/VALIDINFO.34bf39337888a3698dbf.md",
     "static/media/NOTFOUND.md": "/Guaranty_Sheet_Metal/static/media/NOTFOUND.485ebb088139561901b5.md",
-    "static/media/FAQS.md": "/Guaranty_Sheet_Metal/static/media/FAQS.485b18b1e71a027704c9.md",
     "static/media/LOGIN.md": "/Guaranty_Sheet_Metal/static/media/LOGIN.ba97afbc5a41f93fcdb2.md",
     "static/media/AUTHORIZATION.md": "/Guaranty_Sheet_Metal/static/media/AUTHORIZATION.bfeea678ff4f3068a609.md",
-    "static/media/Features.md": "/Guaranty_Sheet_Metal/static/media/Features.240720e76998bf24cf49.md",
     "static/media/CATEGORIES.md": "/Guaranty_Sheet_Metal/static/media/CATEGORIES.43443b8174e464ead28c.md",
     "static/media/LOADING.md": "/Guaranty_Sheet_Metal/static/media/LOADING.2eeac0ec5824b017e83f.md",
     "static/media/LOGOUTCONFIRMATION.md": "/Guaranty_Sheet_Metal/static/media/LOGOUTCONFIRMATION.01c1bd04ce8bb251668d.md",
     "static/media/DASHBOARD.md": "/Guaranty_Sheet_Metal/static/media/DASHBOARD.39f3fb3daa463b5aa320.md",
     "static/media/BARCARD.md": "/Guaranty_Sheet_Metal/static/media/BARCARD.d44769fd78a32d0fdf68.md",
+    "static/media/Features.md": "/Guaranty_Sheet_Metal/static/media/Features.32dfd1f8cbe7fc438b0d.md",
+    "static/media/FAQS.md": "/Guaranty_Sheet_Metal/static/media/FAQS.bfd61b217a6ed37ebd32.md",
     "index.html": "/Guaranty_Sheet_Metal/index.html",
     "main.60440209.css.map": "/Guaranty_Sheet_Metal/static/css/main.60440209.css.map",
-    "main.7b3e6864.js.map": "/Guaranty_Sheet_Metal/static/js/main.7b3e6864.js.map"
+    "main.65745d18.js.map": "/Guaranty_Sheet_Metal/static/js/main.65745d18.js.map"
   },
   "entrypoints": [
     "static/css/main.60440209.css",
-    "static/js/main.7b3e6864.js"
+    "static/js/main.65745d18.js"
   ]
 }

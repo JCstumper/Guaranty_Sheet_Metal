@@ -1,6 +1,6 @@
 # Modifying/Extending Guaranty Sheet Metal
 
-Welcome to the developer guide for modifying or extending [Software Name]. This document provides detailed instructions and guidelines for developers interested in customizing the software to fit specific needs or in contributing to its development.
+Welcome to the developer guide for modifying or extending Guaranty Sheet Metal repository. This document provides detailed instructions and guidelines for developers interested in customizing the software to fit specific needs or in contributing to its development.
 
 ## Overview
 
