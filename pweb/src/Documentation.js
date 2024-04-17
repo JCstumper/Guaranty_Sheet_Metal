@@ -156,10 +156,6 @@ function Documentation() {
     }
     
     
-
-    
-    
-
     return (
         <div className="documentation-container">
             <div className="toc">
