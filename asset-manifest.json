@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/Guaranty_Sheet_Metal/static/css/main.60440209.css",
-    "main.js": "/Guaranty_Sheet_Metal/static/js/main.bf10b934.js",
+    "main.js": "/Guaranty_Sheet_Metal/static/js/main.b63de8e8.js",
     "static/media/logo.png": "/Guaranty_Sheet_Metal/static/media/logo.a8f6846b04690eefa5ce.png",
     "static/media/Software.md": "/Guaranty_Sheet_Metal/static/media/Software.37ed17bad9bc7f912610.md",
     "static/media/CUSTOMERS.md": "/Guaranty_Sheet_Metal/static/media/CUSTOMERS.06e12511023f94fca552.md",
@@ -20,6 +20,7 @@
     "static/media/LOGS.md": "/Guaranty_Sheet_Metal/static/media/LOGS.9508f2f88cedefcbc745.md",
     "static/media/EDITPROFILE.md": "/Guaranty_Sheet_Metal/static/media/EDITPROFILE.af82943291bf4a4ec6cd.md",
     "static/media/MANAGEUSERS.md": "/Guaranty_Sheet_Metal/static/media/MANAGEUSERS.f7a9d5a4494574c7b363.md",
+    "static/media/Features.md": "/Guaranty_Sheet_Metal/static/media/Features.88ec32f405efeaa225e2.md",
     "static/media/INDEX.md": "/Guaranty_Sheet_Metal/static/media/INDEX.bfb128a6b9a3d452da0e.md",
     "static/media/DELETEPRODUCTMODAL.md": "/Guaranty_Sheet_Metal/static/media/DELETEPRODUCTMODAL.aae0f3115f479e2a36aa.md",
     "static/media/INITIALSETUPMODAL.md": "/Guaranty_Sheet_Metal/static/media/INITIALSETUPMODAL.31fd1eecb5d57e9f631d.md",
@@ -35,14 +36,13 @@
     "static/media/LOGOUTCONFIRMATION.md": "/Guaranty_Sheet_Metal/static/media/LOGOUTCONFIRMATION.01c1bd04ce8bb251668d.md",
     "static/media/DASHBOARD.md": "/Guaranty_Sheet_Metal/static/media/DASHBOARD.39f3fb3daa463b5aa320.md",
     "static/media/BARCARD.md": "/Guaranty_Sheet_Metal/static/media/BARCARD.d44769fd78a32d0fdf68.md",
-    "static/media/Features.md": "/Guaranty_Sheet_Metal/static/media/Features.32dfd1f8cbe7fc438b0d.md",
     "static/media/FAQS.md": "/Guaranty_Sheet_Metal/static/media/FAQS.be9affda673c82eb80d5.md",
     "index.html": "/Guaranty_Sheet_Metal/index.html",
     "main.60440209.css.map": "/Guaranty_Sheet_Metal/static/css/main.60440209.css.map",
-    "main.bf10b934.js.map": "/Guaranty_Sheet_Metal/static/js/main.bf10b934.js.map"
+    "main.b63de8e8.js.map": "/Guaranty_Sheet_Metal/static/js/main.b63de8e8.js.map"
   },
   "entrypoints": [
     "static/css/main.60440209.css",
-    "static/js/main.bf10b934.js"
+    "static/js/main.b63de8e8.js"
   ]
 }

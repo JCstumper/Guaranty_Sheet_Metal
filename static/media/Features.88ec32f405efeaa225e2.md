@@ -2,11 +2,22 @@
 
 Welcome to the comprehensive feature guide for [Software Name]. This document outlines the core functionalities and unique features that make [Software Name] a powerful tool for [brief description of what the software does and its target users].
 
-## Core Features
 
-### Feature 1: [Feature Name]
-![Feature 1 Image](https://example.com/feature1.png)
-**Description**: [Provide a detailed description of the feature, how it works, and its benefits to the user.]
+## Real-Time Dashboard
+
+### Persistent Tracking
+- **Instant Updates**: The dashboard is updated in real time as soon as new entries are added to their respective pages—products, jobs, and customers. This ensures that all information displayed is current and accurate.
+- **User-Friendly Interface**: The dashboard layout is intuitive and user-friendly, making it easy for users to get a comprehensive view of business operations at a glance.
+
+### Visualization of Data
+- **Charts and Graphs**: The dashboard includes various visual representations, such as charts and graphs, that provide a quick overview of business metrics and trends.
+- **Customizable Views**: Users can customize the dashboard to display the information that is most relevant to them, enhancing their operational efficiency.
+
+## Inventory Tracking
+
+### Low and Out of Stock Alerts
+- **Automated Notifications**: The system automatically tracks inventory levels and alerts users when items are low or out of stock. These notifications help prevent stockouts and ensure timely replenishment.
+- **Visual Indicators**: Low and out of stock items are clearly marked with visual indicators on the inventory page, making it easy to identify items that need immediate attention.
 
 ### Feature 2: [Feature Name]
 ![Feature 2 Image](https://example.com/feature2.png)
