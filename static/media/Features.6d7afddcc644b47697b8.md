@@ -1,4 +1,4 @@
-# Features of Guaranty Sheet Metal
+# Features
 
 Welcome to the comprehensive feature guide for Guaranty Sheet Metal site. This document outlines the core functionalities and unique features that make GSM a powerful internal tool for tracking inventory, jobs, and customers.
 
