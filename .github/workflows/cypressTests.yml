@@ -25,7 +25,9 @@ jobs:
         run: docker-compose up --build -d
 
       - name: Running Cypress Command
-        run: npx cypress run --spec "./cypress/e2e/*.cy.js"
+        run: |
+          cd FrontEnd/guarantymetalui
+          npx cypress run --spec "./cypress/e2e/*.cy.js"
       
       - name: Run Cypress tests
         uses: cypress-io/github-action@v2
