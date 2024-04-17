@@ -1,4 +1,4 @@
-# Frequently Asked Questions (FAQs) for Guaranty Sheet Metal
+# Frequently Asked Questions (FAQs)
 
 Welcome to the FAQ section for our Internal Inventory Management Site. Here you will find answers to common questions about how to use the site, manage inventory, and solve common issues.
 
