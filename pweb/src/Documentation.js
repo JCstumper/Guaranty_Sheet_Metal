@@ -118,42 +118,39 @@ function Documentation() {
             [sectionPath]: !prev[sectionPath]
         }));
     };
-    function renderGroup(group, path = []) {
+    function renderGroup(group, level = 0) {
         return Object.entries(group).map(([key, value]) => {
-            const currentPath = path.concat(key).join('.');
-            const isExpanded = expandedSections[currentPath];
+            const isExpanded = expandedSections[key];
+            const style = {
+                marginLeft: `${level * 20}px`, // Increase indentation based on depth level
+                cursor: 'pointer'
+            };
     
-            return (
-                <div key={key}>
-                    <h4 onClick={() => toggleSection(currentPath)}>
-                        {key.toUpperCase()} {isExpanded ? '-' : '+'}
-                    </h4>
-                    {isExpanded && (
-                        <ul>
-                            {Object.entries(value).map(([subKey, subValue]) => {
-                                if (typeof subValue === 'object') {
-                                    // Recursive call for nested groups
-                                    return <li key={subKey}>{renderGroup(subValue, path.concat(key))}</li>;
-                                } else {
-                                    // It's a file, render a clickable button
-                                    return (
-                                        <li key={subKey}>
-                                            <button
-                                                onClick={() => handleFileSelect(subValue)}
-                                                className={subValue === selectedFile ? 'active' : ''}
-                                            >
-                                                {subKey.replace('.md', '')}
-                                            </button>
-                                        </li>
-                                    );
-                                }
-                            })}
-                        </ul>
-                    )}
-                </div>
-            );
+            if (typeof value === 'object') {
+                return (
+                    <div key={key}>
+                        <h4 style={style} onClick={() => toggleSection(key)}>
+                            {key.toUpperCase()} {isExpanded ? '-' : '+'}
+                        </h4>
+                        {isExpanded && <ul>{renderGroup(value, level + 1)}</ul>}
+                    </div>
+                );
+            } else {
+                // It's a file, render a clickable button
+                return (
+                    <li key={key} style={{ marginLeft: `${(level + 1) * 20}px` }}>
+                        <button
+                            onClick={() => handleFileSelect(value)}
+                            className={value === selectedFile ? 'active' : ''}
+                        >
+                            {key.replace('.md', '')}
+                        </button>
+                    </li>
+                );
+            }
         });
     }
+    
     
 
     
