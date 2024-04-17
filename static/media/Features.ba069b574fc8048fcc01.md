@@ -1,6 +1,6 @@
-# Features of [Software Name]
+# Features of Guaranty Sheet Metal
 
-Welcome to the comprehensive feature guide for [Software Name]. This document outlines the core functionalities and unique features that make [Software Name] a powerful tool for [brief description of what the software does and its target users].
+Welcome to the comprehensive feature guide for Guaranty Sheet Metal site. This document outlines the core functionalities and unique features that make GSM a powerful internal tool for tracking inventory, jobs, and customers.
 
 
 ## Real-Time Dashboard
