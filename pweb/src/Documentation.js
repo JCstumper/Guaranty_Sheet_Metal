@@ -44,6 +44,9 @@ import ORDERS from './Documentation/pages/ORDERS.md';
 
 import './Documentation.css'
 
+const [expandedSections, setExpandedSections] = useState({});
+
+
 const markdownFiles = {
     // api/middleware
     api: {
@@ -102,40 +105,51 @@ function Documentation() {
     const [selectedFile, setSelectedFile] = useState('');
     const [markdownText, setMarkdownText] = useState('');
 
-    const handleFileSelect = (group, subGroup, fileName) => {
-        const file = markdownFiles[group][subGroup][fileName];
-        fetch(file)
+    const handleFileSelect = (filePath) => {
+        fetch(filePath)
             .then(response => response.text())
             .then(text => setMarkdownText(text))
             .catch(err => console.error('Error fetching markdown content:', err));
-        setSelectedFile(fileName); // Set the selected file for active styling
+        setSelectedFile(filePath); // Update the selected file path for active styling
+    };
+
+    const toggleSection = (sectionPath) => {
+        setExpandedSections(prev => ({
+            ...prev,
+            [sectionPath]: !prev[sectionPath]
+        }));
     };
 
     function renderGroup(group, path = []) {
-        return Object.entries(group).map(([key, value]) => {
-            if (typeof value === 'object') {
-                // If the value is an object, recurse
-                return (
-                    <div key={key}>
-                        <h4>{key.toUpperCase()}</h4>
-                        {renderGroup(value, path.concat(key))}
-                    </div>
-                );
-            } else {
-                // Otherwise, it's a file
-                return (
-                    <li key={key}>
-                        <button
-                            onClick={() => handleFileSelect(...path, key)}
-                            className={key === selectedFile ? 'active' : ''}
-                        >
-                            {key.replace('.md', '')}
-                        </button>
-                    </li>
-                );
-            }
-        });
-    }
+    return Object.entries(group).map(([key, value]) => {
+        const currentPath = path.concat(key).join('.');
+        if (typeof value === 'object') {
+            // Check if the current section is expanded
+            const isExpanded = expandedSections[currentPath];
+            return (
+                <div key={key}>
+                    <h4 onClick={() => toggleSection(currentPath)} style={{cursor: 'pointer'}}>
+                        {key.toUpperCase()} {isExpanded ? '-' : '+'}
+                    </h4>
+                    {isExpanded && <ul>{renderGroup(value, path.concat(key))}</ul>}
+                </div>
+            );
+        } else {
+            // It's a file, render a clickable button
+            return (
+                <li key={key}>
+                    <button
+                        onClick={() => handleFileSelect(value)}
+                        className={value === selectedFile ? 'active' : ''}
+                    >
+                        {key.replace('.md', '')}
+                    </button>
+                </li>
+            );
+        }
+    });
+}
+
     
     
 
