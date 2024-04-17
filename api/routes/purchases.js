@@ -32,6 +32,7 @@ router.post('/', async (req, res) => {
     }
 });
 
+
 //Get all low inventory
 router.get('/low-inventory', async (req, res) => {
     try {
@@ -53,6 +54,66 @@ router.get('/out-of-stock', async (req, res) => {
             'SELECT p.part_number, p.material_type, p.description, i.quantity_in_stock FROM products p JOIN inventory i ON p.part_number = i.part_number WHERE i.quantity_in_stock = 0 ORDER BY p.part_number ASC'
         );
         res.json(outOfStockItems.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json('Server error');
+    }
+});
+
+// API endpoint to update low inventory items
+router.post('/update-low-inventory', async (req, res) => {
+    try {
+        await pool.query(
+            `INSERT INTO low_inventory (part_number, quantity, price_per_unit)
+            SELECT i.part_number, i.quantity_in_stock, p.price
+            FROM inventory i
+            INNER JOIN products p ON i.part_number = p.part_number
+            WHERE i.quantity_in_stock BETWEEN 1 AND 15
+            ON CONFLICT (part_number) DO UPDATE
+            SET quantity = EXCLUDED.quantity`,
+        );
+        res.json({ message: "Low inventory items updated successfully." });
+    } catch (err) {
+        console.error('Error executing query:', error.stack);
+        return res.status(500).json('Server error');
+    }
+});
+
+// API endpoint to update out of stock items
+router.post('/update-out-of-stock', async (req, res) => {
+    try {
+        await pool.query(
+            `INSERT INTO out_of_stock (part_number, quantity, price_per_unit)
+            SELECT i.part_number, i.quantity_in_stock, p.price
+            FROM inventory i
+            INNER JOIN products p ON i.part_number = p.part_number
+            WHERE i.quantity_in_stock = 0
+            ON CONFLICT (part_number) DO UPDATE
+            SET quantity = EXCLUDED.quantity`,
+        );
+        res.json({ message: "Out of stock items updated successfully." });
+    } catch (err) {
+        console.error('Error executing query:', error.stack);
+        return res.status(500).json('Server error');
+    }
+});
+
+
+// API endpoint to get the details of a specific order
+router.get('/:invoiceId', async (req, res) => {
+    const { invoiceId } = req.params;
+
+    try {
+        const orderDetails = await pool.query(
+            'SELECT * FROM invoices WHERE invoice_id = $1',
+            [invoiceId]
+        );
+
+        if (orderDetails.rows.length > 0) {
+            res.json(orderDetails.rows[0]);
+        } else {
+            res.status(404).json({ message: "Order not found." });
+        }
     } catch (err) {
         console.error(err.message);
         res.status(500).json('Server error');

@@ -21,7 +21,7 @@ const Orders = ({ setAuth }) => {
         supplier_name: '',
         total_cost: '',
         invoice_date: '',
-        status: ''
+        status: 'Building'
     });
 
     useEffect(() => {
@@ -39,12 +39,48 @@ const Orders = ({ setAuth }) => {
         setFilteredOrders(filtered);
     }, [filter, orders]);
 
-    const handleSelectOrder = (invoiceId) => {
-        // Set the selectedOrderId to the clicked order's ID
-        // If the same order is clicked again, it will toggle (close)
-        setSelectedOrderId(selectedOrderId !== invoiceId ? invoiceId : null);
+    const handleSelectOrder = async (invoiceId) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/purchases/${invoiceId}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const orderDetails = await response.json();
+
+            // Ensure orderDetails is not null and has a status property before accessing it.
+            if (orderDetails && orderDetails.status) {
+                // Logic that depends on orderDetails.status
+                if (orderDetails.status === 'Building') {
+                    // If the order is in 'Building' status, update low inventory and out of stock.
+                    await fetch(`${API_BASE_URL}/purchases/update-low-inventory`, { method: 'POST' });
+                    await fetch(`${API_BASE_URL}/purchases/update-out-of-stock`, { method: 'POST' });
+                }
+
+                // Continue with selecting the order.
+                setSelectedOrderId(selectedOrderId !== invoiceId ? invoiceId : null);
+            } else {
+                console.error('Order details not found or missing status.');
+                // Handle case where order details are not found or missing necessary information
+            }
+        } catch (error) {
+            console.error('Error fetching order details:', error);
+        }
     };
 
+
+    const fetchOrderDetails = async (invoiceId) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/purchases/${invoiceId}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch order details');
+            }
+            const orderDetails = await response.json();
+            return orderDetails;
+        } catch (error) {
+            console.error('Error fetching order details:', error);
+            return null; // or handle the error as you see fit
+        }
+    };
 
     const fetchOrders = async () => {
         try {
@@ -391,7 +427,8 @@ const Orders = ({ setAuth }) => {
                                     <input type="date" id="invoice_date" name="invoice_date" value={newOrder.invoice_date} onChange={handleInputChange} required />
 
                                     <label htmlFor="status">Status:</label>
-                                    <input type="text" id="status" name="status" placeholder="Paid/Unpaid/Ordered" value={newOrder.status} onChange={handleInputChange} required />
+                                    {/* Display the status as a non-editable field */}
+                                    <input type="text" id="status" name="status" value={newOrder.status} disabled />
 
                                     <div className="modalAddOrder-footer">
                                         <button type="submit" className="btn btn-primary">Add Order</button>
