@@ -20,16 +20,12 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-
-      - name: Navigate to GuarantyMetalUI
-        run: | 
-          cd FrontEnd/guarantymetalui
-          ls
       
       - name: Run Cypress tests
         uses: cypress-io/github-action@v2
         with:
-          start: cd FrontEnd/guarantymetalui && npm start
+          start: |
+            cd FrontEnd/guarantymetalui && npm start
           wait-on: https://localhost
           wait-on-timeout: 300 # Adjust the timeout based on your application's start-up time
         env:
