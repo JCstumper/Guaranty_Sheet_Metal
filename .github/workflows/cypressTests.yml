@@ -20,6 +20,9 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+
+      - name: Navigate to GuarantyMetalUI
+        run: cd /FrontEnd/guarantymetalui
       
       - name: Run Cypress tests
         uses: cypress-io/github-action@v2
