@@ -220,7 +220,9 @@ This guide provides detailed instructions for installing pgAdmin, a comprehensiv
 ## Dependencies
 
 - Now you can run:
+   ````bash
    npm install
+   ```
 - You will then perform an install that gives you the required node modules for this repository
 
 
