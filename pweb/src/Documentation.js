@@ -123,11 +123,11 @@ function Documentation() {
             const currentPath = path.concat(key).join('.');
             const isExpanded = expandedSections[currentPath];
             const headerStyle = {
-                paddingLeft: `${level * 20}px`, // Increase padding for headers based on depth level
+                paddingLeft: `${level * 10}px`, // Increase padding for headers based on depth level
                 cursor: 'pointer'
             };
             const itemStyle = {
-                paddingLeft: `${level * 20 + 20}px`, // Items are further indented than headers
+                paddingLeft: `${level * 10 + 10}px`, // Items are further indented than headers
             };
     
             if (typeof value === 'object') {
