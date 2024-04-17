@@ -31,8 +31,8 @@ jobs:
       - name: Starting Docker Compose
         run: docker-compose up --build -d
 
-      - name: Display Nginx logs
-        run: docker logs Nginx
+      #- name: Display Nginx logs
+      #  run: docker logs Nginx
 
       #- name: Wait for services to be ready
       #  run: |
