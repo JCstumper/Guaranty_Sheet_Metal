@@ -1,8 +1,9 @@
 {
   "files": {
     "main.css": "/Guaranty_Sheet_Metal/static/css/main.60440209.css",
-    "main.js": "/Guaranty_Sheet_Metal/static/js/main.1115484d.js",
+    "main.js": "/Guaranty_Sheet_Metal/static/js/main.8cdb37a6.js",
     "static/media/logo.png": "/Guaranty_Sheet_Metal/static/media/logo.a8f6846b04690eefa5ce.png",
+    "static/media/Features.md": "/Guaranty_Sheet_Metal/static/media/Features.e21a98c6675d686ffecf.md",
     "static/media/Software.md": "/Guaranty_Sheet_Metal/static/media/Software.37ed17bad9bc7f912610.md",
     "static/media/CUSTOMERS.md": "/Guaranty_Sheet_Metal/static/media/CUSTOMERS.06e12511023f94fca552.md",
     "static/media/JOBS.md": "/Guaranty_Sheet_Metal/static/media/JOBS.90f5dc24db67281289b5.md",
@@ -28,7 +29,6 @@
     "static/media/CONFIRMUSERS.md": "/Guaranty_Sheet_Metal/static/media/CONFIRMUSERS.d518dd272d5d8f46cf26.md",
     "static/media/VALIDINFO.md": "/Guaranty_Sheet_Metal/static/media/VALIDINFO.34bf39337888a3698dbf.md",
     "static/media/NOTFOUND.md": "/Guaranty_Sheet_Metal/static/media/NOTFOUND.485ebb088139561901b5.md",
-    "static/media/Features.md": "/Guaranty_Sheet_Metal/static/media/Features.ba069b574fc8048fcc01.md",
     "static/media/LOGIN.md": "/Guaranty_Sheet_Metal/static/media/LOGIN.ba97afbc5a41f93fcdb2.md",
     "static/media/AUTHORIZATION.md": "/Guaranty_Sheet_Metal/static/media/AUTHORIZATION.bfeea678ff4f3068a609.md",
     "static/media/CATEGORIES.md": "/Guaranty_Sheet_Metal/static/media/CATEGORIES.43443b8174e464ead28c.md",
@@ -39,10 +39,10 @@
     "static/media/FAQS.md": "/Guaranty_Sheet_Metal/static/media/FAQS.be9affda673c82eb80d5.md",
     "index.html": "/Guaranty_Sheet_Metal/index.html",
     "main.60440209.css.map": "/Guaranty_Sheet_Metal/static/css/main.60440209.css.map",
-    "main.1115484d.js.map": "/Guaranty_Sheet_Metal/static/js/main.1115484d.js.map"
+    "main.8cdb37a6.js.map": "/Guaranty_Sheet_Metal/static/js/main.8cdb37a6.js.map"
   },
   "entrypoints": [
     "static/css/main.60440209.css",
-    "static/js/main.1115484d.js"
+    "static/js/main.8cdb37a6.js"
   ]
 }
