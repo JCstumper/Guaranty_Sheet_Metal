@@ -1,6 +1,6 @@
 # Installing Software Guide
 
-This guide will walk you through the process of installing Guaranty Sheet Metal site  on Windows.
+This guide will walk you through the process of installing Guaranty Sheet Metal repo
 
 ## Prerequisites
 
@@ -11,24 +11,24 @@ Before beginning the installation, ensure you meet the following requirements:
 - Necessary Permissions: Administrator access is required for installation.
 - IDE: Visual Studio Code is required.
 
-### GitHub
+## GitHub
+
+### Prerequisites
+
+- You must have administrative access to install software on your machine.
+- Ensure you have permissions to access the GitHub repository.
+
+
+### Git Installation and Access Guide
+
+This guide provides detailed instructions on how to install Git, configure it, and access a GitHub repository using an access token. Ensure you have been granted access to the repository before proceeding.
 
 #### Prerequisites
 
 - You must have administrative access to install software on your machine.
 - Ensure you have permissions to access the GitHub repository.
 
-
-#### Git Installation and Access Guide
-
-This guide provides detailed instructions on how to install Git, configure it, and access a GitHub repository using an access token. Ensure you have been granted access to the repository before proceeding.
-
-##### Prerequisites
-
-- You must have administrative access to install software on your machine.
-- Ensure you have permissions to access the GitHub repository.
-
-##### Step 1: Installing Git
+#### Step 1: Installing Git
 
 1. **Download Git**: Visit the [official Git website](https://git-scm.com/) and download the Git installer suitable for your operating system.
 
@@ -43,7 +43,7 @@ This guide provides detailed instructions on how to install Git, configure it, a
    git --version
    ```
 
-##### Step 2: Configuring Git
+#### Step 2: Configuring Git
 
 1. **Set Your Git Username and Email**:
    Configure your Git username and email using the following commands. Replace `Your Name` and `your.email@example.com` with your information.
@@ -52,7 +52,7 @@ This guide provides detailed instructions on how to install Git, configure it, a
    git config --global user.email "your.email@example.com"
    ```
 
-##### Step 3: Generating a GitHub Access Token
+#### Step 3: Generating a GitHub Access Token
 
 1. **Login to GitHub**: Log in to your GitHub account.
 
@@ -65,7 +65,7 @@ This guide provides detailed instructions on how to install Git, configure it, a
 3. **Copy the Access Token**:
    - **Important**: Copy your new personal access token. You will not be able to see it again after you leave this page.
 
-##### Step 4: Cloning a Repository Using an Access Token
+#### Step 4: Cloning a Repository Using an Access Token
 
 1. **Open Terminal**:
    Open a command prompt or terminal window.
@@ -79,7 +79,7 @@ This guide provides detailed instructions on how to install Git, configure it, a
    - When asked for a password, paste the access token you just generated.
 
 
-### Docker Installation Guide
+#### Docker Installation Guide
 
 This guide provides detailed instructions for installing Docker, enabling you to run containers on your machine. Docker is a powerful platform that allows you to develop, test, and deploy applications seamlessly.
 
@@ -91,35 +91,35 @@ Before installing Docker, ensure your system meets the following requirements:
 
 ##### Windows Installation
 
-###### Step 1: Download Docker Desktop for Windows
+##### Step 1: Download Docker Desktop for Windows
 - Navigate to the Docker Hub website: [Docker Hub](https://hub.docker.com/)
 - Sign in or create an account if you don't have one.
 - Download the installer for Docker Desktop for Windows.
 
-###### Step 2: Install Docker Desktop
+##### Step 2: Install Docker Desktop
 - Run the installer file and follow the on-screen instructions.
 - Ensure the "Enable Hyper-V Windows Features" option is selected to run containers.
 
-###### Step 3: Verify the Installation
+##### Step 3: Verify the Installation
 - Open a command prompt and type `docker --version` to ensure Docker was installed correctly.
 
 #### Mac Installation
 
-###### Step 1: Download Docker Desktop for Mac
+##### Step 1: Download Docker Desktop for Mac
 - Visit the Docker Hub website: [Docker Hub](https://hub.docker.com/)
 - Sign in or create an account.
 - Download the Docker Desktop installer for Mac.
 
-###### Step 2: Install Docker Desktop
+##### Step 2: Install Docker Desktop
 - Open the downloaded `.dmg` file and drag the Docker icon to your Applications folder.
 - Run Docker from your Applications folder.
 
-###### Step 3: Verify the Installation
+##### Step 3: Verify the Installation
 - Open a terminal and type `docker --version` to check that Docker is running.
 
 #### Linux Installation
 
-###### Step 1: Set Up the Docker Repository
+##### Step 1: Set Up the Docker Repository
 - Open a terminal and update your package index:
   ```bash
   sudo apt-get update
@@ -136,7 +136,7 @@ Before installing Docker, ensure your system meets the following requirements:
   ```bash
   sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 
-###### Step 2: Install Docker Engine
+##### Step 2: Install Docker Engine
 - Update the package index:
   ```bash
   sudo apt-get update
@@ -146,7 +146,7 @@ Before installing Docker, ensure your system meets the following requirements:
   sudo apt-get install docker-ce
   ```
 
-###### Step 3: Verify the Installation
+##### Step 3: Verify the Installation
 - Run `docker --version` to ensure Docker is installed correctly.
 
 
@@ -217,7 +217,11 @@ This guide provides detailed instructions for installing pgAdmin, a comprehensiv
 ##### Step 4: Verify the Installation
 - Access pgAdmin through your web browser by navigating to `http://localhost/pgadmin4`.
 
+## Dependencies
 
+- Now you can run:
+   npm install
+- You will then perform an install that gives you the required node modules for this repository
 
 
 
