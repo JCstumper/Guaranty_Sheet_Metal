@@ -7,7 +7,7 @@
 
 /* Table of Contents styles */
 .toc {
-    flex: 0 0 400px; /* Does not grow or shrink, fixed at 250px */
+    flex: 0 0 325px; /* Does not grow or shrink, fixed at 250px */
     width: 250px;
     background-color: #161524; /* Light grey background */
     box-shadow: 2px 0 5px 0 rgba(0,0,0,0.1);
@@ -24,6 +24,8 @@
     margin-top: 0;
     color: #ffffff; /* Dark grey color for headings */
     text-decoration: underline; /* Underline the heading */
+    padding-bottom: 5px; /* Adds space between the text and the underline */
+    text-underline-offset: 3px; /* Adjusts the position of the underline */
 }
 
 .toc h4 {
