@@ -23,7 +23,7 @@ jobs:
 
       - name: Navigate to GuarantyMetalUI
         run: | 
-          cd FrontEnd
+          cd FrontEnd/guarantymetalui
           ls
       
       - name: Run Cypress tests
