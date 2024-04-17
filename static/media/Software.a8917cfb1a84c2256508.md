@@ -7,15 +7,9 @@ This guide will walk you through the process of installing Guaranty Sheet Metal 
 Before beginning the installation, ensure you meet the following requirements:
 
 - Operating System: Windows 8, macOS Catalina, or Ubuntu 20.04.
-- Hardware Requirements: At least 4GB RAM, 20GB free disk space.
+- Hardware Requirements: At least 16GB RAM, 20GB free disk space.
 - Necessary Permissions: Administrator access is required for installation.
 - IDE: Visual Studio Code is required.
-
-### Windows
-
-1. Locate the downloaded `.exe` file and double-click it to start the installation.
-2. Follow the on-screen instructions to complete the installation.
-3. Once installed, launch the software from the Start menu.
 
 ### GitHub
 

@@ -1,9 +1,9 @@
 {
   "files": {
-    "main.css": "/Guaranty_Sheet_Metal/static/css/main.4c273cb0.css",
-    "main.js": "/Guaranty_Sheet_Metal/static/js/main.88a6b5ca.js",
+    "main.css": "/Guaranty_Sheet_Metal/static/css/main.60440209.css",
+    "main.js": "/Guaranty_Sheet_Metal/static/js/main.9be60298.js",
     "static/media/logo.png": "/Guaranty_Sheet_Metal/static/media/logo.a8f6846b04690eefa5ce.png",
-    "static/media/Software.md": "/Guaranty_Sheet_Metal/static/media/Software.9da35307b867e0297eb3.md",
+    "static/media/Software.md": "/Guaranty_Sheet_Metal/static/media/Software.a8917cfb1a84c2256508.md",
     "static/media/CUSTOMERS.md": "/Guaranty_Sheet_Metal/static/media/CUSTOMERS.06e12511023f94fca552.md",
     "static/media/JOBS.md": "/Guaranty_Sheet_Metal/static/media/JOBS.90f5dc24db67281289b5.md",
     "static/media/INVENTORY.md": "/Guaranty_Sheet_Metal/static/media/INVENTORY.628c7cdc37a5479853bf.md",
@@ -38,11 +38,11 @@
     "static/media/DASHBOARD.md": "/Guaranty_Sheet_Metal/static/media/DASHBOARD.39f3fb3daa463b5aa320.md",
     "static/media/BARCARD.md": "/Guaranty_Sheet_Metal/static/media/BARCARD.d44769fd78a32d0fdf68.md",
     "index.html": "/Guaranty_Sheet_Metal/index.html",
-    "main.4c273cb0.css.map": "/Guaranty_Sheet_Metal/static/css/main.4c273cb0.css.map",
-    "main.88a6b5ca.js.map": "/Guaranty_Sheet_Metal/static/js/main.88a6b5ca.js.map"
+    "main.60440209.css.map": "/Guaranty_Sheet_Metal/static/css/main.60440209.css.map",
+    "main.9be60298.js.map": "/Guaranty_Sheet_Metal/static/js/main.9be60298.js.map"
   },
   "entrypoints": [
-    "static/css/main.4c273cb0.css",
-    "static/js/main.88a6b5ca.js"
+    "static/css/main.60440209.css",
+    "static/js/main.9be60298.js"
   ]
 }
