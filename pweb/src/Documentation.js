@@ -118,27 +118,31 @@ function Documentation() {
             [sectionPath]: !prev[sectionPath]
         }));
     };
-    function renderGroup(group, level = 0) {
+    function renderGroup(group, path = [], level = 0) {
         return Object.entries(group).map(([key, value]) => {
-            const isExpanded = expandedSections[key];
-            const style = {
-                marginLeft: `${level * 20}px`, // Increase indentation based on depth level
+            const currentPath = path.concat(key).join('.');
+            const isExpanded = expandedSections[currentPath];
+            const headerStyle = {
+                paddingLeft: `${level * 20}px`, // Increase padding for headers based on depth level
                 cursor: 'pointer'
+            };
+            const itemStyle = {
+                paddingLeft: `${level * 20 + 20}px`, // Items are further indented than headers
             };
     
             if (typeof value === 'object') {
                 return (
                     <div key={key}>
-                        <h4 style={style} onClick={() => toggleSection(key)}>
+                        <h4 style={headerStyle} onClick={() => toggleSection(currentPath)}>
                             {key.toUpperCase()} {isExpanded ? '-' : '+'}
                         </h4>
-                        {isExpanded && <ul>{renderGroup(value, level + 1)}</ul>}
+                        {isExpanded && <ul>{renderGroup(value, path.concat(key), level + 1)}</ul>}
                     </div>
                 );
             } else {
                 // It's a file, render a clickable button
                 return (
-                    <li key={key} style={{ marginLeft: `${(level + 1) * 20}px` }}>
+                    <li key={key} style={itemStyle}>
                         <button
                             onClick={() => handleFileSelect(value)}
                             className={value === selectedFile ? 'active' : ''}
