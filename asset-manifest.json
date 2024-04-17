@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/Guaranty_Sheet_Metal/static/css/main.d135aabd.css",
-    "main.js": "/Guaranty_Sheet_Metal/static/js/main.344f1871.js",
+    "main.js": "/Guaranty_Sheet_Metal/static/js/main.45adfb4a.js",
     "static/media/logo.png": "/Guaranty_Sheet_Metal/static/media/logo.a8f6846b04690eefa5ce.png",
     "static/media/CUSTOMERS.md": "/Guaranty_Sheet_Metal/static/media/CUSTOMERS.06e12511023f94fca552.md",
     "static/media/JOBS.md": "/Guaranty_Sheet_Metal/static/media/JOBS.90f5dc24db67281289b5.md",
@@ -35,10 +35,10 @@
     "static/media/BARCARD.md": "/Guaranty_Sheet_Metal/static/media/BARCARD.d44769fd78a32d0fdf68.md",
     "index.html": "/Guaranty_Sheet_Metal/index.html",
     "main.d135aabd.css.map": "/Guaranty_Sheet_Metal/static/css/main.d135aabd.css.map",
-    "main.344f1871.js.map": "/Guaranty_Sheet_Metal/static/js/main.344f1871.js.map"
+    "main.45adfb4a.js.map": "/Guaranty_Sheet_Metal/static/js/main.45adfb4a.js.map"
   },
   "entrypoints": [
     "static/css/main.d135aabd.css",
-    "static/js/main.344f1871.js"
+    "static/js/main.45adfb4a.js"
   ]
 }
