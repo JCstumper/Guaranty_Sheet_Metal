@@ -6,12 +6,12 @@
 }
 
 /* Table of Contents styles */
-.content {
-    flex-grow: 1; /* Takes up the remaining space */
-    padding: 40px;
-    overflow-y: auto; /* Scrollable content */
-    box-shadow: inset -1px 0 5px 0 rgba(0,0,0,0.1);
-    min-width: 0; /* Fixes flexbox overflow issues in some browsers */
+.toc {
+    width: 250px;
+    background-color: #161524; /* Light grey background */
+    box-shadow: 2px 0 5px 0 rgba(0,0,0,0.1);
+    padding: 20px;
+    overflow-y: auto; /* Scrollable contents */
 }
 
 .toc li button.active {
@@ -63,11 +63,11 @@
 
 /* Content styles */
 .content {
-    flex-grow: 1; /* Takes up the remaining space */
+    flex-grow: 1;
     padding: 40px;
     overflow-y: auto; /* Scrollable content */
     box-shadow: inset -1px 0 5px 0 rgba(0,0,0,0.1);
-    min-width: 0; /* Fixes flexbox overflow issues in some browsers */
+    position: relative; /* Needed for box shadow */
 }
 
 .content h1,
