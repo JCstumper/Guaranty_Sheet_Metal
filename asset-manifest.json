@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "/Guaranty_Sheet_Metal/static/css/main.a7b89b29.css",
+    "main.css": "/Guaranty_Sheet_Metal/static/css/main.4c273cb0.css",
     "main.js": "/Guaranty_Sheet_Metal/static/js/main.ae09677e.js",
     "static/media/logo.png": "/Guaranty_Sheet_Metal/static/media/logo.a8f6846b04690eefa5ce.png",
     "static/media/CUSTOMERS.md": "/Guaranty_Sheet_Metal/static/media/CUSTOMERS.06e12511023f94fca552.md",
@@ -34,11 +34,11 @@
     "static/media/DASHBOARD.md": "/Guaranty_Sheet_Metal/static/media/DASHBOARD.39f3fb3daa463b5aa320.md",
     "static/media/BARCARD.md": "/Guaranty_Sheet_Metal/static/media/BARCARD.d44769fd78a32d0fdf68.md",
     "index.html": "/Guaranty_Sheet_Metal/index.html",
-    "main.a7b89b29.css.map": "/Guaranty_Sheet_Metal/static/css/main.a7b89b29.css.map",
+    "main.4c273cb0.css.map": "/Guaranty_Sheet_Metal/static/css/main.4c273cb0.css.map",
     "main.ae09677e.js.map": "/Guaranty_Sheet_Metal/static/js/main.ae09677e.js.map"
   },
   "entrypoints": [
-    "static/css/main.a7b89b29.css",
+    "static/css/main.4c273cb0.css",
     "static/js/main.ae09677e.js"
   ]
 }
