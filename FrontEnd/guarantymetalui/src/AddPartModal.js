@@ -16,14 +16,20 @@ const AddPartModal = ({ isOpen, onClose, onAddPart, API_BASE_URL,selectedJobId,p
     const [searchResults, setSearchResults] = useState([]);
     const [error, setError] = useState('');
 
-    const handleSearch = debounce(async () => {
+    const handleSearch = async () => {
         setError('');
         if (!searchTerm.trim()) {
             setSearchResults([]);
             return;
         }
+        const token = localStorage.getItem('token'); // Retrieve the token from local storage
         try {
-            const response = await fetch(`${API_BASE_URL}/products/search?term=${encodeURIComponent(searchTerm.trim())}`);
+            const response = await fetch(`${API_BASE_URL}/products/search?term=${encodeURIComponent(searchTerm.trim())}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` // Include the token in the request header
+                }
+            });
             if (response.ok) {
                 const data = await response.json();
                 setSearchResults(data); // Assuming the API directly returns the array of parts
@@ -35,8 +41,8 @@ const AddPartModal = ({ isOpen, onClose, onAddPart, API_BASE_URL,selectedJobId,p
             console.error('Error fetching parts:', error);
             setError('Error fetching parts');
         }
-    }, 500);
-
+    };
+    
     useEffect(() => {
         handleSearch();
     }, [searchTerm]); // This effect will call handleSearch which is debounced
@@ -46,17 +52,22 @@ const AddPartModal = ({ isOpen, onClose, onAddPart, API_BASE_URL,selectedJobId,p
         const requestBody = partActionType === 'necessary'
             ? { job_id: selectedJobId, part_number: part.part_number, quantity_required: 1 }
             : { job_id: selectedJobId, part_number: part.part_number, quantity_used: 1 };
+        
+        const token = localStorage.getItem('token'); // Retrieve the token from local storage
     
         try {
             // Determine the appropriate endpoint based on partActionType
             const endpoint = partActionType === 'necessary'
                 ? `${API_BASE_URL}/jobs/necessary-parts`
                 : `${API_BASE_URL}/jobs/used-parts`;
-    
+        
             // Make the API request to add the part
             const response = await fetch(endpoint, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Token': token
+                },
                 body: JSON.stringify(requestBody)
             });
     
@@ -74,8 +85,7 @@ const AddPartModal = ({ isOpen, onClose, onAddPart, API_BASE_URL,selectedJobId,p
             console.error(`Error adding ${partActionType} part:`, error);
             setError(`Failed to add the ${partActionType} part`);
         }
-    };
-    
+    };    
 
     return (
         isOpen && (
