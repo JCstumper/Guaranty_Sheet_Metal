@@ -70,7 +70,7 @@ router.post('/:invoiceId/update-low-inventory', async (req, res) => {
             FROM inventory i
             INNER JOIN products p ON i.part_number = p.part_number
             WHERE i.quantity_in_stock BETWEEN 1 AND 15
-            ON CONFLICT (part_number) DO UPDATE
+            ON CONFLICT (invoice_id, part_number) DO UPDATE
             SET quantity = EXCLUDED.quantity`, [invoiceId]
         );
         res.json({ message: "Low inventory items updated successfully for invoice " + invoiceId });
@@ -90,7 +90,7 @@ router.post('/:invoiceId/update-out-of-stock', async (req, res) => {
             FROM inventory i
             INNER JOIN products p ON i.part_number = p.part_number
             WHERE i.quantity_in_stock = 0
-            ON CONFLICT (part_number) DO UPDATE
+             ON CONFLICT (invoice_id, part_number) DO UPDATE
             SET quantity = EXCLUDED.quantity`, [invoiceId]
         );
         res.json({ message: "Out of stock items updated successfully for invoice " + invoiceId });
@@ -106,10 +106,10 @@ router.get('/:invoiceId/low-inventory', async (req, res) => {
 
     try {
         const lowInventoryItems = await pool.query(`
-            SELECT li.invoice_item_id, li.invoice_id, li.part_number, li.quantity, p.material_type, p.description
+            SELECT li.invoice_id, li.part_number, li.quantity, p.material_type, p.description
             FROM low_inventory li
             JOIN products p ON li.part_number = p.part_number
-            WHERE li.invoice_id = $1
+            WHERE li.invoice_id = $1;
         `, [invoiceId]);
 
         res.json(lowInventoryItems.rows);
@@ -125,7 +125,7 @@ router.get('/:invoiceId/out-of-stock', async (req, res) => {
 
     try {
         const outOfStockItems = await pool.query(`
-            SELECT oos.invoice_item_id, oos.invoice_id, oos.part_number, oos.quantity, p.material_type, p.description
+            SELECT oos.invoice_id, oos.part_number, oos.quantity, p.material_type, p.description
             FROM out_of_stock oos
             JOIN products p ON oos.part_number = p.part_number
             WHERE oos.invoice_id = $1
@@ -264,39 +264,30 @@ router.post('/add-to-new-order/:invoiceId', async (req, res) => {
     }
 });
 
-// Remove an item from the new order
+// Remove an item from the new order and insert it back into either low_inventory or out_of_stock based on quantity
 router.post('/remove-from-new-order/:invoiceId', async (req, res) => {
     const { invoiceId } = req.params;
-    const { partNumber, quantity, source } = req.body;
+    const { partNumber, quantity } = req.body;
 
-    // Begin transaction
+    // Start transaction
     await pool.query('BEGIN');
 
     try {
         // Remove item from new_orders
         await pool.query(
-            `DELETE FROM new_orders WHERE part_number = $1`,
-            [partNumber]
+            `DELETE FROM new_orders WHERE part_number = $1 AND invoice_id = $2`,
+            [partNumber, invoiceId]
         );
 
-        // Insert item back into its original table based on 'source'
-        if (source === 'lowInventory') {
-            await pool.query(
-                `INSERT INTO low_inventory (invoice_id, part_number, quantity)
-                 VALUES ($1, $2, $3)
-                 ON CONFLICT (part_number) DO
-                 UPDATE SET quantity = EXCLUDED.quantity;`,
-                [invoiceId, partNumber, quantity]
-            );
-        } else if (source === 'outOfStock') {
-            await pool.query(
-                `INSERT INTO out_of_stock (invoice_id, part_number, quantity)
-                 VALUES ($1, $2, $3)
-                 ON CONFLICT (part_number) DO
-                 UPDATE SET quantity = EXCLUDED.quantity;`,
-                [invoiceId, partNumber, quantity]
-            );
-        }
+        // Determine the target table based on quantity and perform insert or update operation
+        const targetTable = quantity > 0 ? 'low_inventory' : 'out_of_stock';
+        await pool.query(
+            `INSERT INTO ${targetTable} (invoice_id, part_number, quantity)
+             VALUES ($1, $2, $3)
+             ON CONFLICT (invoice_id, part_number)
+             DO UPDATE SET quantity = EXCLUDED.quantity;`,
+            [invoiceId, partNumber, quantity]
+        );
 
         // Commit the transaction
         await pool.query('COMMIT');
@@ -308,6 +299,8 @@ router.post('/remove-from-new-order/:invoiceId', async (req, res) => {
         res.status(500).json({ message: 'Server error during transaction' });
     }
 });
+
+
 
 
 

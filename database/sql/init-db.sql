@@ -64,29 +64,29 @@ CREATE TABLE IF NOT EXISTS invoices (
 );
 
 CREATE TABLE IF NOT EXISTS new_orders (
-    invoice_item_id SERIAL PRIMARY KEY,
     invoice_id INT,
-    part_number VARCHAR(50) UNIQUE,
+    part_number VARCHAR(50),
     quantity INT,
     amount_to_order INT,
+    PRIMARY KEY (invoice_id, part_number),
     FOREIGN KEY (invoice_id) REFERENCES invoices(invoice_id),
     FOREIGN KEY (part_number) REFERENCES products(part_number)
 );
 
 CREATE TABLE IF NOT EXISTS low_inventory (
-    invoice_item_id SERIAL PRIMARY KEY,
     invoice_id INT,
-    part_number VARCHAR(50) UNIQUE,
+    part_number VARCHAR(50),
     quantity INT,
+    PRIMARY KEY (invoice_id, part_number),
     FOREIGN KEY (invoice_id) REFERENCES invoices(invoice_id),
     FOREIGN KEY (part_number) REFERENCES products(part_number)
 );
 
 CREATE TABLE IF NOT EXISTS out_of_stock (
-    invoice_item_id SERIAL PRIMARY KEY,
     invoice_id INT,
-    part_number VARCHAR(50) UNIQUE,
+    part_number VARCHAR(50),
     quantity INT,
+    PRIMARY KEY (invoice_id, part_number),
     FOREIGN KEY (invoice_id) REFERENCES invoices(invoice_id),
     FOREIGN KEY (part_number) REFERENCES products(part_number)
 );

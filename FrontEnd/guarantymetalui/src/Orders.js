@@ -222,15 +222,40 @@ const Orders = ({ setAuth }) => {
 
 
 
+    const handleAddAllToNewOrder = async (items, source) => {
+        // Assuming 'selectedOrderId' is the current invoice ID you're working with
+        const addItemsPromises = items.map(item => {
+            return fetch(`${API_BASE_URL}/purchases/add-to-new-order/${selectedOrderId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    partNumber: item.part_number,
+                    quantity: item.quantity,
+                    source: source,
+                }),
+            });
+        });
 
-    const handleAddAllToNewOrder = (items, source) => {
-        setNewOrderItems(prevItems => [...prevItems, ...items]);
-        if (source === 'lowInventory') {
-            setLowInventoryItems([]);
-        } else if (source === 'outOfStock') {
-            setOutOfStockItems([]);
+        try {
+            await Promise.all(addItemsPromises);
+
+            // Update UI accordingly
+            setNewOrderItems(prevItems => [...prevItems, ...items]);
+            if (source === 'lowInventory') {
+                setLowInventoryItems([]);
+            } else if (source === 'outOfStock') {
+                setOutOfStockItems([]);
+            }
+
+            // Optionally, re-fetch low inventory and out-of-stock items to update the state
+            await fetchInventoryAndOutOfStockItems(selectedOrderId);
+        } catch (error) {
+            console.error('Error adding all items to new order:', error);
         }
     };
+
 
     const updateOrderStatus = async (orderId, newStatus) => {
         try {
