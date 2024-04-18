@@ -1,0 +1,56 @@
+name: Test and Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Create .env file
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > .env
+
+      - name: Setting Permissions
+        run: chmod +x ./nginx/startup.sh && chmod +x ./nginx/generate-certs.sh 
+
+      - name: Starting Docker Compose
+        run: docker-compose up --build -d
+
+      - name: Display Nginx logs
+        run: docker logs Nginx
+
+      - name: Wait for services to be ready
+        run: |
+          until curl --output /dev/null --silent --head --fail --insecure https://localhost; do
+            printf '.'
+            sleep 5
+          done
+
+      - name: Running Cypress Command
+        run: |
+          cd FrontEnd/guarantymetalui
+          npx cypress run --spec "./cypress/e2e/*.cy.js"
+
+  deploy:
+    needs: test
+    runs-on: self-hosted
+    if: success() # This ensures that deployment only happens if the test job succeeds
+    steps:
+      - name: Deploy to Server
+        run: |
+          echo 'Connection Successful'
+          cd "C:\\Users\\Brandon Bejarano\\Documents\\GitHub\\Guaranty_Sheet_Metal"
+          docker ps
+          docker-compose down
+          echo 'Containers Shutdown Successfully'
+          git pull
+          echo 'Updated Main Successfully'
+          docker-compose -f docker-compose.production.yml up --build -d
+          echo 'Updated Containers Successfully'
