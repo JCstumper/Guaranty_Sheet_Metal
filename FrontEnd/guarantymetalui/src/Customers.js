@@ -140,14 +140,43 @@ const Customers = ({ setAuth }) => {
         }
     };
     
-    const handleSelectJob = (jobId) => {
-        if (selectedJobId === jobId) {
-            setExpandJobDetails(!expandJobDetails); // Toggle visibility if the same job is clicked
+    const handleSelectJob = async (jobId) => {
+        const isSameJob = selectedJobId === jobId;
+    
+        // Toggle visibility or set a new job
+        if (isSameJob) {
+            setExpandJobDetails(!expandJobDetails);
         } else {
             setSelectedJobId(jobId);
-            setExpandJobDetails(true); // Expand details for a new job
+            setExpandJobDetails(true);
+            fetchNecessaryParts(jobId);
+            fetchUsedParts(jobId);
+    
+            // Fetch estimate information for the selected job
+            const token = localStorage.getItem('token');
+            try {
+                const response = await fetch(`${API_BASE_URL}/jobs/check-estimate/${jobId}`, {
+                    headers: {
+                        'token': token
+                    }
+                });
+                if (response.ok) {
+                    const { hasEstimate } = await response.json();
+                    const updatedJobs = jobs.map(job => {
+                        if (job.job_id === jobId) {
+                            return { ...job, hasEstimate };
+                        }
+                        return job;
+                    });
+                    setJobs(updatedJobs);
+                } else {
+                    console.error(`Failed to check estimate for job ID: ${jobId}`);
+                }
+            } catch (error) {
+                console.error(`Error checking estimate for job ID: ${jobId}`, error);
+            }
         }
-    };       
+    };
 
     const handleToggleModal = () => {
         setShowModal(!showModal);
@@ -351,11 +380,15 @@ const Customers = ({ setAuth }) => {
     
                 // Update the job list to reflect the new estimate and store the file name
                 const updatedJobs = jobs.map(job => {
+                    console.log("job id is this:", job.job_id);
+                    console.log("selected job id is this:", selectedJobId);
                     if (job.job_id === selectedJobId) {
+                        console.log("hit that");
                         return { ...job, hasEstimate: true, estimateFileName: selectedFileName };
                     }
                     return job;
                 });
+                console.log("setting updated job");
                 setJobs(updatedJobs);
             } else {
                 const errorData = await response.json();
@@ -754,13 +787,13 @@ const Customers = ({ setAuth }) => {
                                                         <div className="job-details-section">
                                                             <h4>Job Estimate</h4>
                                                             {job.hasEstimate ? (
-                                                                <>
+                                                                <div>
                                                                     <p>Estimate File: {job.estimatefilename || "No file uploaded yet"}</p>
                                                                     <div className="details-button-container">
                                                                         <button onClick={() => handleViewEstimate(job.job_id)} className="details-btn">View Estimate</button>
                                                                         <button onClick={() => handleRemoveEstimate(job.job_id)} className="details-btn">Remove Estimate</button>
                                                                     </div>
-                                                                </>
+                                                                </div>
                                                             ) : (
                                                                 <button onClick={() => handleAddEstimate(job.job_id)} className="details-btn">Add Estimate</button>
                                                             )}
