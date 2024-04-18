@@ -138,6 +138,29 @@ router.get('/:invoiceId/out-of-stock', async (req, res) => {
     }
 });
 
+// Fetch new order items for a specific invoice
+router.get('/:invoiceId/new-order-items', async (req, res) => {
+    const { invoiceId } = req.params;
+
+    try {
+        // Query to select items from the new_orders table that match the invoiceId
+        const newOrderItems = await pool.query(`
+            SELECT no.invoice_id, no.part_number, no.quantity, p.material_type, p.description
+            FROM new_orders no
+            JOIN products p ON no.part_number = p.part_number
+            WHERE no.invoice_id = $1;
+        `, [invoiceId]);
+
+        // Return the rows of items in the response
+        res.json(newOrderItems.rows);
+    } catch (err) {
+        // Log the error to the console for debugging
+        console.error('Error fetching new order items:', err.message);
+        // Respond with a 500 server error status code and message
+        res.status(500).json('Server error');
+    }
+});
+
 
 // API endpoint to get the details of a specific order
 router.get('/:invoiceId', async (req, res) => {
@@ -232,6 +255,12 @@ router.post('/add-to-new-order/:invoiceId', async (req, res) => {
     const { invoiceId } = req.params;
     const { partNumber, quantity, source } = req.body; // source is 'lowInventory' or 'outOfStock'
 
+    // First, check the status of the order
+    const order = await pool.query('SELECT status FROM invoices WHERE invoice_id = $1', [invoiceId]);
+    if (order.rows[0].status === "Generated" || order.rows[0].status === "Received") {
+        return res.status(403).json({ message: "Modifications are not allowed for generated or received orders." });
+    }
+
     try {
         // Start transaction
         await pool.query('BEGIN');
@@ -268,6 +297,12 @@ router.post('/add-to-new-order/:invoiceId', async (req, res) => {
 router.post('/remove-from-new-order/:invoiceId', async (req, res) => {
     const { invoiceId } = req.params;
     const { partNumber, quantity } = req.body;
+
+    // First, check the status of the order
+    const order = await pool.query('SELECT status FROM invoices WHERE invoice_id = $1', [invoiceId]);
+    if (order.rows[0].status === "Generated" || order.rows[0].status === "Received") {
+        return res.status(403).json({ message: "Modifications are not allowed for generated or received orders." });
+    }
 
     // Start transaction
     await pool.query('BEGIN');

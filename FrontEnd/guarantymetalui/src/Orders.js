@@ -15,6 +15,8 @@ const Orders = ({ setAuth }) => {
 
     // State to track the selected order ID for expansion
     const [selectedOrderId, setSelectedOrderId] = useState(null);
+    const selectedOrder = orders.find(order => order.invoice_id === selectedOrderId);
+
 
     // Changed state to match updated field names
     const [newOrder, setNewOrder] = useState({
@@ -39,19 +41,60 @@ const Orders = ({ setAuth }) => {
         setFilteredOrders(filtered);
     }, [filter, orders]);
 
+
     const handleSelectOrder = async (invoiceId) => {
-        try {
-            const status = await updateInventoryItems(invoiceId);
-            if (status) {
-                await fetchInventoryAndOutOfStockItems(invoiceId);
-                setSelectedOrderId(selectedOrderId !== invoiceId ? invoiceId : null);
-            } else {
-                console.error('Order details not found or missing status.');
+        // Toggle selection logic should always be allowed
+        setSelectedOrderId(prev => prev !== invoiceId ? invoiceId : null);
+
+        // Fetch and update items only if selecting a new order
+        if (selectedOrderId !== invoiceId) {
+            try {
+                const status = await updateInventoryItems(invoiceId);
+                if (status) {
+                    await fetchCurrentItems(invoiceId);
+                } else {
+                    console.error('Order details not found or missing status.');
+                }
+            } catch (error) {
+                console.error('Error handling order selection:', error);
             }
-        } catch (error) {
-            console.error('Error handling order selection:', error);
         }
     };
+
+
+    const fetchCurrentItems = async (invoiceId) => {
+        try {
+            // Fetch all items related to the specific invoice/order
+            const [newOrderResponse, lowInventoryResponse, outOfStockResponse] = await Promise.all([
+                fetch(`${API_BASE_URL}/purchases/${invoiceId}/new-order-items`),
+                fetch(`${API_BASE_URL}/purchases/${invoiceId}/low-inventory`),
+                fetch(`${API_BASE_URL}/purchases/${invoiceId}/out-of-stock`)
+            ]);
+
+            if (!newOrderResponse.ok || !lowInventoryResponse.ok || !outOfStockResponse.ok) {
+                throw new Error('Failed to fetch order items');
+            }
+
+            const newOrderData = await newOrderResponse.json();
+            let lowInventoryData = await lowInventoryResponse.json();
+            let outOfStockData = await outOfStockResponse.json();
+
+            // Create a set of part numbers that are in the new order
+            const newOrderPartNumbers = new Set(newOrderData.map(item => item.part_number));
+
+            // Filter low inventory and out of stock items to exclude those already in the new order
+            lowInventoryData = lowInventoryData.filter(item => !newOrderPartNumbers.has(item.part_number));
+            outOfStockData = outOfStockData.filter(item => !newOrderPartNumbers.has(item.part_number));
+
+            // Update state with fetched and filtered data
+            setNewOrderItems(newOrderData);
+            setLowInventoryItems(lowInventoryData);
+            setOutOfStockItems(outOfStockData);
+        } catch (error) {
+            console.error('Error fetching current items for the order:', error);
+        }
+    };
+
 
 
     const updateInventoryItems = async (invoiceId) => {
@@ -340,7 +383,11 @@ const Orders = ({ setAuth }) => {
                                                             {/* Low Inventory Section */}
                                                             <div className="parts-subsection low-stock">
                                                                 <h5>Low Inventory</h5>
-                                                                <button onClick={() => handleAddAllToNewOrder(lowInventoryItems, 'lowInventory')}>Add All to Order</button>
+                                                                <button onClick={() => handleAddAllToNewOrder(lowInventoryItems, 'lowInventory')}
+                                                                    disabled={!selectedOrder || selectedOrder.status !== "Building"}>
+                                                                    Add All to Order
+                                                                </button>
+
                                                                 <table>
                                                                     <thead>
                                                                         <tr>
@@ -359,7 +406,9 @@ const Orders = ({ setAuth }) => {
                                                                                 <td>{item.description}</td>
                                                                                 <td>{item.quantity}</td>
                                                                                 <td>
-                                                                                    <button onClick={() => handleAddToNewOrder(item, 'lowInventory')}>Add to Order</button>
+                                                                                    <button onClick={() => handleAddToNewOrder(item, 'lowInventory')}
+                                                                                        disabled={order.status === "Generated" || order.status === "Received"}>Add to Order
+                                                                                    </button>
                                                                                 </td>
                                                                             </tr>
                                                                         ))}
@@ -370,7 +419,10 @@ const Orders = ({ setAuth }) => {
                                                             {/* Out of Stock Section */}
                                                             <div className="parts-subsection out-of-stock">
                                                                 <h5>Out of Stock</h5>
-                                                                <button onClick={() => handleAddAllToNewOrder(outOfStockItems, 'outOfStock')}>Add All to Order</button>
+                                                                <button onClick={() => handleAddAllToNewOrder(outOfStockItems, 'outOfStock')}
+                                                                    disabled={!selectedOrder || selectedOrder.status !== "Building"}
+                                                                    >Add All to Order
+                                                                </button>
                                                                 <table>
                                                                     <thead>
                                                                         <tr>
@@ -389,7 +441,10 @@ const Orders = ({ setAuth }) => {
                                                                                 <td>{item.description}</td>
                                                                                 <td>{item.quantity}</td>
                                                                                 <td>
-                                                                                    <button onClick={() => handleAddToNewOrder(item, 'outOfStock')}>Add to Order</button>
+                                                                                    <button onClick={() => handleAddToNewOrder(item, 'outOfStock')}
+                                                                                        disabled={!selectedOrder || selectedOrder.status !== "Building"}>
+                                                                                        Add to Order
+                                                                                    </button>
 
                                                                                 </td>
                                                                             </tr>
@@ -419,7 +474,11 @@ const Orders = ({ setAuth }) => {
                                                                                 <td>{item.description}</td>
                                                                                 <td>{item.quantity}</td>
                                                                                 <td>
-                                                                                    <button onClick={() => handleRemoveFromNewOrder(index)}>Remove</button>
+                                                                                    <button 
+                                                                                        onClick={() => handleRemoveFromNewOrder(index)}
+                                                                                        disabled={!selectedOrder || selectedOrder.status !== "Building"}>
+                                                                                        Remove
+                                                                                    </button>
                                                                                 </td>
                                                                             </tr>
                                                                         ))}
