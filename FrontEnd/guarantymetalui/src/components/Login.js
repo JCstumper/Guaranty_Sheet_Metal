@@ -4,13 +4,13 @@ import { Bounce, toast } from 'react-toastify';
 import './Login.css';
 import logo from '../pictures/logo.png';
 import Loading from './Loading';
-import autoRegister from './autoRegister'; // Adjust the path as necessary
 import { AppContext } from '../App';
+import InitialSetupModal from './InitialSetupModal'; // Import InitialSetupModal here
 
 const Login = ({ setAuth, setIsLoading }) => {
     const [inputs, setInputs] = useState({ username: "", password: "" });
-    const autoRegistered = useRef(false);
-    const {API_BASE_URL} = useContext(AppContext);
+    const [showInitialSetup, setShowInitialSetup] = useState(false); // State for initial setup modal
+    const { API_BASE_URL } = useContext(AppContext);
     const { username, password } = inputs;
 
     const onChange = (e) => {
@@ -52,6 +52,7 @@ const Login = ({ setAuth, setIsLoading }) => {
                 }, 2000);
                 setTimeout(() => {
                     toast.success("Login Successful!", options);
+                    checkInitialSetup(); // Check initial setup completion after successful login
                 }, 1000);
             } else {
                 setTimeout(() => {
@@ -67,12 +68,22 @@ const Login = ({ setAuth, setIsLoading }) => {
         }
     }
 
-    useEffect(() => {
-        if (!autoRegistered.current) {
-            autoRegister(setIsLoading, setAuth, toast, options);
-            autoRegistered.current = true; // Mark as registered
+    const checkInitialSetup = async () => {
+        try {
+            const setupResponse = await fetch(`${API_BASE_URL}/auth/check-initial-setup`);
+            const setupData = await setupResponse.json();
+            if (!setupData.initialSetupComplete) {
+                setShowInitialSetup(true);
+            }
+        } catch (error) {
+            console.error('Failed to check initial setup:', error);
         }
-    }, [setIsLoading, setAuth, toast, options]); // Now effectively empty because functions don't change
+    };
+
+    useEffect(() => {
+        checkInitialSetup(); // Check right after component mounts
+    }, []);
+    
 
     return (
         <Fragment>
@@ -101,6 +112,11 @@ const Login = ({ setAuth, setIsLoading }) => {
                     <button type="submit" className="login-button">Login</button>
                 </form>
             </div>
+            <InitialSetupModal // Render InitialSetupModal conditionally
+                showInitialSetup={showInitialSetup}
+                setShowInitialSetup={setShowInitialSetup}
+                API_BASE_URL={API_BASE_URL}
+            />
         </Fragment>
     );
 };

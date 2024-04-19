@@ -30,7 +30,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 120px; /* Height of the fade effect */
+  height: 20px; /* Height of the fade effect */
   background: linear-gradient(to bottom, #364b7200 0%, #05132c 100%);
   z-index: 10;
   pointer-events: none; /* Ensures clicks pass through */
