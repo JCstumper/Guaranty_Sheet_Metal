@@ -2,6 +2,17 @@ describe('Do the initial setup of a user', () => {
     beforeEach(() => {
         cy.viewport(1280, 720);
 
+        cy.intercept('GET', '/api/auth/verify', {
+            statusCode: 401,
+            body: {
+                authenticated: false,
+            },
+        }).as('verifyAuth');
+
+        cy.visit('https://localhost');
+
+        cy.wait('@verifyAuth');
+
         cy.wait(1000);
     });
 
@@ -20,6 +31,8 @@ describe('Do the initial setup of a user', () => {
 
         // Submit the form
         cy.get('.btn-primary').click();
+
+        cy.get('.login-button').should('be.visible');
         
     });
 });
