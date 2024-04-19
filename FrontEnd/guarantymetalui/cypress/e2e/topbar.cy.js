@@ -45,7 +45,7 @@ describe('Test navigation', () => {
 
     it('Navigate to dashboard', () => { 
         cy.get('.list-button').contains('DASHBOARD').click();
-        cy.contains('Inventory Details').should('be.visible');
+        cy.contains('Stock Level Dashboard').should('be.visible');
     });
 
     it('Navigate to different pages', () => { 
@@ -63,6 +63,6 @@ describe('Test navigation', () => {
         cy.get('.table-title').contains('INVENTORY LOGS').should('be.visible');
 
         cy.get('.list-button').contains('DASHBOARD').click();
-        cy.contains('Inventory Details').should('be.visible');
+        cy.contains('Stock Level Dashboard').should('be.visible');
     });
 });  
