@@ -71,7 +71,6 @@ CREATE TABLE IF NOT EXISTS invoice_items (
     FOREIGN KEY (invoice_id) REFERENCES invoices(invoice_id)
 );
 
-
 CREATE TABLE IF NOT EXISTS inventory (
     part_number VARCHAR(50) NOT NULL UNIQUE,
     quantity_in_stock INTEGER NOT NULL,
@@ -81,6 +80,7 @@ CREATE TABLE IF NOT EXISTS inventory (
 CREATE TABLE IF NOT EXISTS estimates (
     estimate_id SERIAL PRIMARY KEY,
     job_id INTEGER NOT NULL,
+    file_name VARCHAR,
     pdf_data BYTEA,  -- To store the PDF file; consider storing the file in the filesystem or cloud storage for better performance
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (job_id) REFERENCES jobs(job_id) ON DELETE CASCADE

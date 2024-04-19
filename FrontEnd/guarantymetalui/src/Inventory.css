@@ -451,16 +451,18 @@ text-decoration: none;
     }
 
     .inventory-main {
-        flex-direction: column;
+        display: flex;
+        flex-direction: column-reverse; /* Reverse the order of children, so the filter box comes first */
         padding-right: 0;
         margin-top: 10px;
         margin-left: 0px;
         margin-bottom: 90px;
     }
 
+
     .product-table,
     .filtering-box {
-        margin: 0; 
+        margin: 0;
         width: 100%;
         box-sizing: border-box;
     }
@@ -477,15 +479,12 @@ text-decoration: none;
         position: static;
         height: auto;
         padding: 20px;
-        overflow-y: auto;
-        margin-top: 10px;
+        overflow-y: visible; /* Remove scroll since we'll only show the search bar */
+        margin-bottom: 20px; /* Provide spacing between the filtering box and the table */
     }
 
-    .filtering-box .search-input,
-    .filtering-box .action-button,
-    .filtering-box select {
-        width: calc(100% - 40px);
-        margin-bottom: 20px;
+    .filter-category, .filtering-box .action-button {
+        display: none;
     }
 
     .product-action-buttons,
