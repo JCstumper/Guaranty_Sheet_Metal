@@ -64,7 +64,7 @@ const Customers = ({ setAuth }) => {
             job.address.toLowerCase().includes(filter.toLowerCase()) ||
             job.phone.includes(filter) ||
             job.email.toLowerCase().includes(filter.toLowerCase()) ||
-            (job.estimateFileName && job.estimateFileName.toLowerCase().includes(filter.toLowerCase()))
+            job.estimateFileName
         ));
     }, [filter, jobs]);
     
@@ -97,12 +97,22 @@ const Customers = ({ setAuth }) => {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
             const data = await response.json();
-            setJobs(data);
-            setFilteredJobs(data);
+    
+            const updatedJobs = data.map(job => {
+                return {
+                    ...job,
+                    hasEstimate: job.estimatefilename !== null,
+                };
+            });
+    
+            setJobs(updatedJobs);
+            setFilteredJobs(updatedJobs);
         } catch (error) {
             console.error('Error fetching jobs:', error);
         }
     };
+    
+    
     
     const fetchNecessaryParts = async (jobId) => {
         const token = localStorage.getItem('token');
@@ -164,7 +174,7 @@ const Customers = ({ setAuth }) => {
                     const { hasEstimate } = await response.json();
                     const updatedJobs = jobs.map(job => {
                         if (job.job_id === jobId) {
-                            return { ...job, hasEstimate };
+                            return { ...job, hasEstimate};
                         }
                         return job;
                     });
@@ -204,7 +214,6 @@ const Customers = ({ setAuth }) => {
     
             if (response.ok) {
                 const responseData = await response.json();
-                console.log('Job added:', responseData);
                 setJobs([responseData.job, ...jobs]); // Prepend the new job to the list
                 fetchJobs(); // Re-fetch jobs to update the list
                 handleToggleModal(); // Close the modal
@@ -217,11 +226,16 @@ const Customers = ({ setAuth }) => {
     };
     
     const handleEditJob = (event, jobId) => {
-        event.stopPropagation();
-        setSelectedJobId(jobId);
-        setExpandJobDetails(false);  // Optionally close or keep open based on your UX preference
-        setShowEditModal(true);
+        event.stopPropagation(); // Stop the row click event from firing
+        const jobToEdit = jobs.find(job => job.job_id === jobId); // Find the job with the same ID
+        if (jobToEdit) {
+            setEditingJob(jobToEdit); // Set the job data to the editingJob state
+            setShowEditModal(true); // Open the modal
+        } else {
+            console.error('Job not found');
+        }
     };
+    
     
     const handleRemoveJob = (event, jobId) => {
         event.stopPropagation();
@@ -258,7 +272,6 @@ const Customers = ({ setAuth }) => {
     }; 
 
     const handleViewEstimate = async (jobId) => {
-        console.log('Viewing Estimate for job ID:', jobId);
         const token = localStorage.getItem('token'); // Retrieve the token from local storage
     
         try {
@@ -286,9 +299,6 @@ const Customers = ({ setAuth }) => {
                 
                 // Open the PDF in a new browser tab
                 window.open(pdfUrl, '_blank', 'noopener,noreferrer');
-        
-                // If you want to display the PDF in an iframe within the current page, you could set the src of the iframe to pdfUrl
-                // document.getElementById('your-iframe-id').src = pdfUrl;
             } else {
                 console.error('Failed to fetch estimate');
                 toast.error('Failed to fetch estimate');
@@ -315,7 +325,6 @@ const Customers = ({ setAuth }) => {
             if (hasEstimate) {
                 toast.info("An estimate already exists for this job.");
             } else {
-                console.log('Adding Estimate for job ID:', jobId);
                 setShowEstimateModal(true);
             }
         } catch (error) {
@@ -350,17 +359,12 @@ const Customers = ({ setAuth }) => {
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
-        if (file) {
-            setSelectedFile(file);
-            setSelectedFileName(file.name);  // Save the file name
-        } else {
-            setSelectedFile(null);  // Ensure to clear file state if no file is selected
-            setSelectedFileName("");
-        }
+        setSelectedFile(file);
+        setSelectedFileName(file.name);  // Immediately update the file name in the stat
     };
+    
 
-    const handleUploadEstimate = async (event) => {
-        event.preventDefault();
+    const handleUploadEstimate = async () => {
         const formData = new FormData();
         formData.append('estimatePdf', selectedFile);
         formData.append('job_id', selectedJobId);
@@ -376,20 +380,10 @@ const Customers = ({ setAuth }) => {
             });
             if (response.ok) {
                 toast.success('Estimate uploaded successfully');
+                setSelectedFile(null);
+                setSelectedFileName("");
+                fetchJobs();
                 setShowEstimateModal(false);
-    
-                // Update the job list to reflect the new estimate and store the file name
-                const updatedJobs = jobs.map(job => {
-                    console.log("job id is this:", job.job_id);
-                    console.log("selected job id is this:", selectedJobId);
-                    if (job.job_id === selectedJobId) {
-                        console.log("hit that");
-                        return { ...job, hasEstimate: true, estimateFileName: selectedFileName };
-                    }
-                    return job;
-                });
-                console.log("setting updated job");
-                setJobs(updatedJobs);
             } else {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Failed to upload estimate');
@@ -736,31 +730,34 @@ const Customers = ({ setAuth }) => {
         <div className="customers">
             <Topbar setAuth={setAuth} />
             <div className="customers-main">
-            <div className="filtering-box-jobs">
-                    <input
-                        type="text"
-                        className="search-input-jobs"
-                        placeholder="Search jobs..."
-                        value={filter}
-                        onChange={handleFilterChange}
-                    />
-                </div>
                 <div className="customer-table">
                     <div className="table-header">
-                        <span className="table-title"><strong>JOBS</strong></span>
-                        <button onClick={handleToggleModal} className="add-button">+</button>
+                    <span className="table-title"><strong>JOBS</strong></span>
+                        <div className="header-controls">
+                            <input
+                                type="text"
+                                className="search-input-jobs"
+                                placeholder="Search jobs..."
+                                value={filter}
+                                onChange={handleFilterChange}
+                                style={{ marginRight: '10px' }} // Adds spacing between the search input and the add button
+                            />
+                            <button onClick={handleToggleModal} className="add-button">
+                                +
+                            </button>
+                        </div>
                     </div>
                     <div className="table-content">
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Job ID</th>
-                                    <th>Customer Name</th>
-                                    <th>Address</th>
-                                    <th>Phone</th>
-                                    <th>E-mail</th>
-                                    <th>Date Created</th>
-                                    <th>Action</th>
+                                    <th className="ignore-column">Job ID</th>
+                                    <th className="ignore-column">Customer Name</th>
+                                    <th className="address-column">Address</th>
+                                    <th className="ignore-column">Phone</th>
+                                    <th className="ignore-column">E-mail</th>
+                                    <th className="ignore-column">Date Created</th>
+                                    <th className="actions-column">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -768,13 +765,13 @@ const Customers = ({ setAuth }) => {
                                 filteredJobs.map((job, index) => (
                                     <React.Fragment key={job.id || index}>
                                         <tr onClick={() => handleSelectJob(job.job_id)}>
-                                            <td>{job.job_id}</td>
-                                            <td>{job.customer_name}</td>
-                                            <td>{job.address}</td>
-                                            <td>{job.phone}</td>
-                                            <td>{job.email}</td>
-                                            <td>{new Date(job.date_created).toLocaleDateString()}</td>
-                                            <td>
+                                            <td className="ignore-column">{job.job_id}</td>
+                                            <td className="ignore-column">{job.customer_name}</td>
+                                            <td className="address-column">{job.address}</td>
+                                            <td className="ignore-column">{job.phone}</td>
+                                            <td className="ignore-column">{job.email}</td>
+                                            <td className="ignore-column">{new Date(job.date_created).toLocaleDateString()}</td>
+                                            <td className="actions-column">
                                                 <button onClick={(e) => handleEditJob(e, job.job_id)} className="edit-btn">Edit</button>
                                                 <button onClick={(e) => handleRemoveJob(e, job.job_id)} className="remove-btn">Remove</button>
                                             </td>
@@ -788,14 +785,17 @@ const Customers = ({ setAuth }) => {
                                                             <h4>Job Estimate</h4>
                                                             {job.hasEstimate ? (
                                                                 <div>
-                                                                    <p>Estimate File: {job.estimatefilename || "No file uploaded yet"}</p>
-                                                                    <div className="details-button-container">
+                                                                    <strong><p>{job.estimatefilename}</p></strong>
+                                                                    <div>
                                                                         <button onClick={() => handleViewEstimate(job.job_id)} className="details-btn">View Estimate</button>
                                                                         <button onClick={() => handleRemoveEstimate(job.job_id)} className="details-btn">Remove Estimate</button>
                                                                     </div>
                                                                 </div>
                                                             ) : (
-                                                                <button onClick={() => handleAddEstimate(job.job_id)} className="details-btn">Add Estimate</button>
+                                                                <div>
+                                                                    <strong><p>No file uploaded yet</p></strong>
+                                                                    <button onClick={() => handleAddEstimate(job.job_id)} className="details-btn">Add Estimate</button>
+                                                                </div>
                                                             )}
                                                         </div>
                                                         {/* Necessary Parts Section */}
@@ -806,9 +806,9 @@ const Customers = ({ setAuth }) => {
                                                                 <thead>
                                                                     <tr>
                                                                         <th>Part Number</th>
-                                                                        <th>Description</th>
+                                                                        <th className="ignore-column">Description</th>
                                                                         <th>Quantity Required</th>
-                                                                        <th>Price</th>
+                                                                        <th className="ignore-column">Price</th>
                                                                         <th>Actions</th>
                                                                     </tr>
                                                                 </thead>
@@ -816,7 +816,7 @@ const Customers = ({ setAuth }) => {
                                                                 {necessaryParts.map(part => (
                                                                     <tr key={part.id}>
                                                                         <td>{part.part_number}</td>
-                                                                        <td>{part.description}</td>
+                                                                        <td className="ignore-column">{part.description}</td>
                                                                         <td>
                                                                             {editingPart && editingPart.id === part.id ? (
                                                                                 <input
@@ -829,8 +829,8 @@ const Customers = ({ setAuth }) => {
                                                                                 part.quantity_required
                                                                             )}
                                                                         </td>
-                                                                        <td>${part.price?.toFixed(2) ?? 'N/A'}</td>
-                                                                        <td>
+                                                                        <td className="ignore-column">${part.price?.toFixed(2) ?? 'N/A'}</td>
+                                                                        <td className="details-button-container">
                                                                             <button onClick={() => handleMoveToUsed(part.id)} className="details-btn">Move to Used</button>
                                                                             {editingPart && editingPart.id === part.id ? (
                                                                                 <button onClick={() => saveEditedPart(editingPart)} className="details-btn">Save</button>
@@ -853,9 +853,9 @@ const Customers = ({ setAuth }) => {
                                                                 <thead>
                                                                     <tr>
                                                                         <th>Part Number</th>
-                                                                        <th>Description</th>
+                                                                        <th className="ignore-column">Description</th>
                                                                         <th>Quantity Used</th>
-                                                                        <th>Price</th>
+                                                                        <th className="ignore-column">Price</th>
                                                                         <th>Actions</th>
                                                                     </tr>
                                                                 </thead>
@@ -863,7 +863,7 @@ const Customers = ({ setAuth }) => {
                                                                 {usedParts.map(part => (
                                                                     <tr key={part.id}>
                                                                         <td>{part.part_number}</td>
-                                                                        <td>{part.description}</td>
+                                                                        <td className="ignore-column">{part.description}</td>
                                                                         <td>
                                                                             {editingUsedPart && editingUsedPart.id === part.id ? (
                                                                                 <input
@@ -876,8 +876,8 @@ const Customers = ({ setAuth }) => {
                                                                                 part.quantity_used
                                                                             )}
                                                                         </td>
-                                                                        <td>${part.price?.toFixed(2) ?? 'N/A'}</td>
-                                                                        <td>
+                                                                        <td className="ignore-column">${part.price?.toFixed(2) ?? 'N/A'}</td>
+                                                                        <td className="details-button-container">
                                                                             <button onClick={() => handleOpenReturnModal(part)} className="details-btn">Return to Necessary</button>
                                                                             {editingUsedPart && editingUsedPart.id === part.id ? (
                                                                                 <button onClick={() => saveEditedUsedPart(editingUsedPart)} className="details-btn">Save</button>
@@ -1023,22 +1023,25 @@ const Customers = ({ setAuth }) => {
             {showEstimateModal && (
                 <div className="modal-backdrop">
                     <div className="modal-content">
-                        <form onSubmit={handleUploadEstimate}>
-                            <div className="modal-header">
-                                <h2>Add Estimate</h2>
-                                <button onClick={() => setShowEstimateModal(false)} className="modal-close-button">×</button>
+                        <div className="modal-header">
+                            <h2>Add Estimate</h2>
+                            <button onClick={() => setShowEstimateModal(false)} className="modal-close-button">×</button>
+                        </div>
+                        <div className="modal-body">
+                            <div className="form-group">
+                                {selectedFileName ? (
+                                    <div style={{ textAlign: 'center', fontWeight: 'bold' }}>{selectedFileName}</div>
+                                ) : (
+                                    <div style={{ textAlign: 'center', fontWeight: 'bold' }}>No file selected</div>
+                                )}
+                                <label htmlFor="estimatePdf" className="custom-file-upload">Upload PDF</label>
+                                <input type="file" id="estimatePdf" name="estimatePdf" onChange={handleFileChange} required accept="application/pdf" style={{ display: 'none' }} />
                             </div>
-                            <div className="modal-body">
-                                <div className="form-group">
-                                    <label htmlFor="estimatePdf" className="custom-file-upload">Upload PDF</label>
-                                    <input type="file" id="estimatePdf" name="estimatePdf" onChange={handleFileChange} required accept="application/pdf" style={{ display: 'none' }} />
-                                </div>
-                            </div>
-                            <div className="modal-actions">
-                                <button type="submit" className="btn-primary">Upload Estimate</button>
-                                <button type="button" onClick={() => setShowEstimateModal(false)} className="btn-secondary">Cancel</button>
-                            </div>
-                        </form>
+                        </div>
+                        <div className="modal-actions">
+                            <button type="submit" onClick={() => handleUploadEstimate()}className="btn-primary">Upload Estimate</button>
+                            <button type="button" onClick={() => setShowEstimateModal(false)} className="btn-secondary">Cancel</button>
+                        </div>
                     </div>
                 </div>
             )}

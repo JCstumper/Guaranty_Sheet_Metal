@@ -2,16 +2,40 @@
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    padding-top: 90px; /* This offsets the content from the top bar. */
+    padding-top: 80px; /* This offsets the content from the top bar. */
 }
 
 .logs-main {
     display: flex;
-    margin-top: 100px;
+    margin-top: 90px;
     margin-left: 10px;
     padding-right: 10px; /* Adjust as needed if you have a sidebar or other content on the right */
     flex-direction: column;
     overflow: hidden;
+}
+
+.logs-main::before {
+    content: "";
+    position: fixed; /* Fixed to the viewport */
+    top: 0px; /* Anchored at the bottom of the viewport */
+    left: 0;
+    right: 0;
+    height: 120px; /* Height of the fade effect */
+    background: linear-gradient(to top, #364b7200 0%, #05132c 100%); /* Gradient starts transparent and becomes solid at the bottom */
+    z-index: 10;
+    pointer-events: none; /* Ensures clicks pass through */
+}
+
+.logs-main::after {
+    content: "";
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 120px; /* Height of the fade effect */
+    background: linear-gradient(to bottom, #364b7200 0%, #05132c 100%);
+    z-index: 10;
+    pointer-events: none; /* Ensures clicks pass through */
 }
 
 .logs-table {
