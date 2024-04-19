@@ -38,8 +38,7 @@ const DeleteJobModal = ({ showModal, setShowModal, jobId, fetchJobs, API_BASE_UR
                     <button onClick={() => setShowModal(false)} className="modal-close-button">X</button>
                 </div>
                 <div className="modal-body">
-                    Are you sure you want to delete this job with ID:
-                    <strong> {jobId}?</strong>
+                    Are you sure you want to delete?
                 </div>
                 <div className="modal-actions">
                     <button onClick={handleDeleteJob} className="btn-primary">Delete</button>

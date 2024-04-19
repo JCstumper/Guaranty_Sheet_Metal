@@ -702,14 +702,16 @@ router.delete('/:job_id', authorization, async (req, res) => {
             return res.status(404).json({ error: `Job ${job_id} not found` });
         }
 
+        const jobDetails = fetchJob.rows[0];
+
         // Perform the deletion
         const deleteQuery = 'DELETE FROM jobs WHERE job_id = $1';
         const result = await pool.query(deleteQuery, [job_id]);
 
         // Log the deletion
         await logJobsAction("Delete Job", req.username, "job-management", {
-            message: `Job ${job_id} removed successfully`,
-            details: result.rows[0]
+            message: `Job at address ${jobDetails.address} removed successfully`,
+            details: jobDetails // Includes the entire job record, change if you need specific fields
         });
 
         // Commit the transaction

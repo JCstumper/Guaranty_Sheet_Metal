@@ -39,7 +39,7 @@ const RemoveEstimateModal = ({ showModal, setShowModal, jobId, fetchJobs, API_BA
                     <button onClick={() => setShowModal(false)} className="modal-close-button">×</button>
                 </div>
                 <div className="modal-body">
-                    Are you sure you want to remove the estimate for job ID: <strong>{jobId}</strong>?
+                    Are you sure you want to remove the estimate?
                 </div>
                 <div className="modal-actions">
                     <button onClick={handleRemoveEstimate} className="btn-primary">Remove Estimate</button>

@@ -21,7 +21,7 @@ const ReturnPartModal = ({ showModal, setShowModal, part, returnPartToNecessary 
                     <button onClick={handleCancel} className="modal-close-button">×</button>
                 </div>
                 <div className="modal-body">
-                    Are you sure you want to return part {part.part_number} to necessary inventory?
+                    Are you sure you want to return this part to necessary inventory?
                 </div>
                 <div className="modal-actions">
                     <button onClick={handleReturn} className="btn-primary">Return to Necessary</button>
