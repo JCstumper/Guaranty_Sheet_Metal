@@ -39,7 +39,7 @@ const InitialSetupModal = ({ showInitialSetup, setShowInitialSetup, API_BASE_URL
         if (!validateFields()) return;
 
         try {
-            const response = await fetch(`${API_BASE_URL}/auth/update-initial-setup`, {
+            const response = await fetch(`${API_BASE_URL}/auth/firstregister`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

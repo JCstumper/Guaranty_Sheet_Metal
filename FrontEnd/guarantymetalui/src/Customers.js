@@ -747,7 +747,7 @@ const Customers = ({ setAuth }) => {
                             </button>
                         </div>
                     </div>
-                    <div className="table-content">
+                    <div className="table-content-jobs">
                         <table>
                             <thead>
                                 <tr>

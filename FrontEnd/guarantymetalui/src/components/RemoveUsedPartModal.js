@@ -22,7 +22,7 @@ const RemoveUsedPartModal = ({ showModal, setShowModal, part, onConfirm }) => {
                     <button onClick={handleCancel} className="modal-close-button">×</button>
                 </div>
                 <div className="modal-body">
-                    Are you sure you want to remove part {part.part_number} from used inventory?
+                    Are you sure you want to remove this part from used inventory?
                 </div>
                 <div className="modal-actions">
                     <button onClick={handleConfirm} className="btn-primary">Remove Part</button>

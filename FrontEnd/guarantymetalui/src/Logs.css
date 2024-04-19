@@ -32,7 +32,7 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 120px; /* Height of the fade effect */
+    height: 20px; /* Height of the fade effect */
     background: linear-gradient(to bottom, #364b7200 0%, #05132c 100%);
     z-index: 10;
     pointer-events: none; /* Ensures clicks pass through */
@@ -41,7 +41,7 @@
 .logs-table {
     flex-grow: 1;
     background-color: #fff;
-    border: 4px solid #b3b3b3;
+    border: 3px solid #b3b3b3;
     border-radius: 15px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     overflow: hidden;
@@ -61,70 +61,80 @@
     border-radius: 11px 11px 0 0;
 }
 
-.table-content {
+.table-content-logs {
+    table-layout: fixed;
     width: 100%;
-    overflow-x: auto;
 }
 
-.table-content table {
+.table-content-logs table {
     border-collapse: collapse;
     width: 100%;
-    table-layout: auto; /* Changed from fixed to auto */
 }
 
-.table-content th,
-.table-content td {
+.table-content-logs thead,
+.table-content-logs th {
+    position: sticky;
+    top: 0;
+    background-color: #ebebeb;
+    z-index: 10; /* ensures the header stays on top */
+}
+
+.table-content-logs tbody {
+    display: block;
+    overflow-y: auto;
+    max-height: calc(100vh - 225px); /* Adjust this value based on your layout */
+    width: 100%;
+}
+
+.table-content-logs th, 
+.table-content-logs td {
     text-align: left;
     padding: 12px;
     border-bottom: 1px solid #ddd;
-    white-space: nowrap; /* Prevents text from wrapping */
-    overflow: hidden; /* Hide text that can't fit */
-    text-overflow: ellipsis; /* Show ellipsis for overflowed text */
-    min-width: 120px; /* Adjust this value as needed */
+    box-sizing: border-box;
 }
 
-/* Add specific min-widths for larger headers */
-.table-content th.action-type-header {
-    min-width: 150px;
+.table-content-logs tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed; /* Make sure that the table content does not stretch beyond the container */
 }
 
-.table-content th.user-id-header {
-    min-width: 150px;
+
+.table-content-logs th {
+    background-color: #ebebeb;
+    color: rgb(0, 0, 0);
+    padding: 12px;
+    text-align: left;
+    white-space: nowrap; /* Prevents the text from wrapping onto multiple lines */
+    overflow: hidden; /* Keeps the text inside the element's bounds */
+    text-overflow: ellipsis; /* Adds ellipsis when text is clipped */
+    position: sticky; /* Make sure headers stay at the top when scrolling */
+    top: 0;
+    z-index: 10; /* Ensures the header stays on top */
 }
 
-.table-content th.part-number-header {
-    min-width: 150px;
-}
-
-.table-content th.change-details-header {
-    min-width: 200px; /* Change details often need more space */
-}
-
-.table-content th.timestamp-header {
-    min-width: 150px;
-}
-
-.table-content tr:nth-child(even) {
+.table-content-logs tr:nth-child(even) {
     background-color: #f2f2f2;
 }
 
-.table-content tr:hover {
+.table-content-logs tr:hover {
     background-color: #ddd;
 }
 
-.table-content::-webkit-scrollbar {
+.table-content-logs::-webkit-scrollbar {
     height: 8px;
 }
 
-.table-content::-webkit-scrollbar-track {
+.table-content-logs::-webkit-scrollbar-track {
     background: #f1f1f1;
 }
 
-.table-content::-webkit-scrollbar-thumb {
+.table-content-logs::-webkit-scrollbar-thumb {
     background: #888;
 }
 
-.table-content::-webkit-scrollbar-thumb:hover {
+.table-content-logs::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
 
@@ -159,13 +169,61 @@
 }
 
 /* Responsive adjustments for smaller screens */
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1023px) {
     .logs-main {
-        flex-direction: column;
+        display: flex;
+        flex-direction: column; /* Reverse the order of children, so the filter box comes first */
         padding-right: 0;
+        margin-top: 10px;
+        margin-left: 0px;
+        margin-bottom: 90px;
+    }
+
+    .logs-main::before,
+    .logs-main::after {
+        display: none;
     }
 
     .logs-table {
         margin: 0;
+    }
+
+    .table-content-logs {
+        table-layout: fixed;
+        width: 100%;
+    }
+    
+    .table-content-logs table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    
+    .table-content-logs thead,
+    .table-content-logs th {
+        position: sticky;
+        top: 0;
+        background-color: #ebebeb;
+        z-index: 10; /* ensures the header stays on top */
+    }
+    
+    .table-content-logs tbody {
+        display: block;
+        overflow-y: auto;
+        max-height: calc(100vh - 210px);
+        width: 100%;
+    }
+    
+    .table-content-logs th, 
+    .table-content-logs td {
+        text-align: left;
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+        box-sizing: border-box;
+    }
+    
+    .table-content-logs tr {
+        display: table;
+        width: 100%;
+        table-layout: fixed; /* Make sure that the table content does not stretch beyond the container */
     }
 }

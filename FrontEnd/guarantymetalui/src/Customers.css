@@ -30,7 +30,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 120px; /* Height of the fade effect */
+  height: 20px; /* Height of the fade effect */
   background: linear-gradient(to bottom, #364b7200 0%, #05132c 100%);
   z-index: 10;
   pointer-events: none; /* Ensures clicks pass through */
@@ -39,7 +39,7 @@
 .customer-table {
   flex-grow: 1;
   background-color: #fff;
-  border: 4px solid #b3b3b3;
+  border: 3px solid #b3b3b3;
   border-radius: 15px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   overflow: hidden;
@@ -49,36 +49,105 @@
   width: calc(100%); /* Adjust width to account for margins */
 }
 
-
 .table-header {
-    background-color: #0b2b61;
-    color: #ffffff;
-    padding: 15px;
-    font-size: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.table-content {
-    width: 100%;
-    overflow-x: auto;
+  background-color: #0b2b61;
+  color: #ffffff;
+  padding: 15px;
+  font-size: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.table-content th,
-.table-content td {
-    text-align: left;
-    padding: 12px;
-    border-bottom: 1px solid #ddd;
+.table-content-jobs {
+  table-layout: fixed;
+  width: 100%;
 }
 
-.table-content tr:nth-child(even) {
-    background-color: #f2f2f2;
+.table-content-jobs table {
+  border-collapse: collapse;
+  width: 100%;
 }
 
-.table-content tr:hover {
-    background-color: #ddd;
+.table-content-jobs thead,
+.table-content-jobs th {
+  position: sticky;
+  top: 0;
+  background-color: #ebebeb;
+  z-index: 10; /* ensures the header stays on top */
 }
-/* Add to Customers.css */
+
+.table-content-jobs tbody {
+  display: block;
+  overflow-y: auto;
+  max-height: calc(100vh - 225px); /* Adjust this value based on your layout */
+  width: 100%;
+}
+
+.table-content-jobs th, 
+.table-content-jobs td {
+  padding: 12px;
+  text-align: left;
+  white-space: nowrap; /* Prevents the text from wrapping onto multiple lines */
+  overflow: hidden; /* Keeps the text inside the element's bounds */
+  text-overflow: ellipsis; /* Adds ellipsis when text is clipped */
+  position: sticky; /* Make sure headers stay at the top when scrolling */
+  top: 0;
+  z-index: 10; /* Ensures the header stays on top */
+  border-bottom: 1px solid #ddd;
+  box-sizing: border-box;
+}
+
+.table-content-jobs tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed; /* Make sure that the table content does not stretch beyond the container */
+}
+
+
+.table-content-jobs th {
+  background-color: #ebebeb;
+  color: rgb(0, 0, 0);
+  padding: 12px;
+  text-align: left;
+  white-space: nowrap; /* Prevents the text from wrapping onto multiple lines */
+  overflow: hidden; /* Keeps the text inside the element's bounds */
+  text-overflow: ellipsis; /* Adds ellipsis when text is clipped */
+  position: sticky; /* Make sure headers stay at the top when scrolling */
+  top: 0;
+  z-index: 10; /* Ensures the header stays on top */
+}
+
+.table-content-jobs tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.table-content-jobs tr:hover {
+  background-color: #ddd;
+}
+
+.table-content-jobs::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-content-jobs::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.table-content-jobs::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+.table-content-jobs::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+.table-content-jobs tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.table-content-jobs tr:hover {
+  background-color: #ddd;
+}
 
 .header-controls {
   display: flex;
@@ -498,31 +567,38 @@
     padding: 10px; /* Reduced padding */
   }
 
-  .table-content {
+  .table-content-jobs {
     font-size: 14px; /* Smaller font size for table content */
   }
 
-  .table-content th, .table-content td {
+  .table-content-jobs th, .table-content-jobs td {
     padding: 8px; /* Reduced padding */
   }
 
-  .table-content tr:hover {
+  .table-content-jobs tbody {
+    display: block;
+    overflow-y: auto;
+    max-height: calc(100vh - 210px);
+    width: 100%;
+}
+
+  .table-content-jobs tr:hover {
     background-color: #eee; /* Lighter hover background */
   }
 
-  .table-content th.ignore-column, .table-content td.ignore-column {
+  .table-content-jobs th.ignore-column, .table-content-jobs td.ignore-column {
     display: none; /* Initially hide all table headers and cells */
   }
 
-  .table-content th.address-column,
-  .table-content td.address-column,
-  .table-content th.actions-column,
-  .table-content td.actions-column {
+  .table-content-jobs th.address-column,
+  .table-content-jobs td.address-column,
+  .table-content-jobs th.actions-column,
+  .table-content-jobs td.actions-column {
     display: table-cell; /* Only show address and actions columns */
     padding: 8px; /* Adjust padding */
   }
 
-  .table-content td.actions-column button {
+  .table-content-jobs td.actions-column button {
     padding: 10px 15px; /* Increase button padding */
     font-size: 14px; /* Increase font size for better legibility */
   }

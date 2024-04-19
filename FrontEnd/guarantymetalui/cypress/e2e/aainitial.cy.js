@@ -13,12 +13,6 @@ describe('Do the initial setup of a user', () => {
 
         cy.wait('@verifyAuth');
 
-        cy.get('input[name="username"]').type('admin');
-        cy.get('input[name="password"]').type('Admin123!');
-        cy.get('.login-button').click();
-
-        cy.contains('Login Successful!').should('be.visible');
-
         cy.wait(1000);
     });
 
@@ -37,6 +31,8 @@ describe('Do the initial setup of a user', () => {
 
         // Submit the form
         cy.get('.btn-primary').click();
+
+        cy.get('.login-button').should('be.visible');
         
     });
 });

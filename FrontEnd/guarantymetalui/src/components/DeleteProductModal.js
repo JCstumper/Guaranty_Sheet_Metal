@@ -53,8 +53,8 @@ const DeleteProductModal = ({ showModal, setShowModal, deletePartNumber, fetchPr
     
 
     return (
-        <div className="modal-backdrop">
-            <div className="modal-content" onClick={e => e.stopPropagation()}>
+        <div className="modal-backdrop" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
                     <h2>Confirm Deletion</h2>
                     <button onClick={() => setShowModal(false)} className="modal-close-button">X</button>

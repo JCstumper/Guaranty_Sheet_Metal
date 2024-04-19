@@ -129,7 +129,6 @@ return (
               {/* Route definitions, redirecting or granting access based on the authentication state */}
               <Route path="/" element={<Navigate replace to="/login" />} />
               <Route path="/login" element={!isAuthenticated ? (<Login setAuth={setAuth} setIsLoading={setIsLoading}/>) : (<Navigate to="/dashboard" />)} />
-              <Route path="/register" element={!isAuthenticated ? (<Register setAuth={setAuth}/>) : (<Navigate to="/login" />)} />
               <Route path="/dashboard" element={isAuthenticated ? (<Dashboard setAuth={setAuth}/> ) : (<Navigate to="/login" />)} />
               <Route path="/purchases" element={isAuthenticated ? (<Orders setAuth={setAuth}/>  ) : (<Navigate to="/login" />)}  />
               <Route path="/jobs" element={isAuthenticated ? (<Customers setAuth={setAuth}/>  ) : (<Navigate to="/login" />)} />
