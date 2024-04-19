@@ -1,10 +1,10 @@
 {
   "files": {
     "main.css": "/Guaranty_Sheet_Metal/static/css/main.60440209.css",
-    "main.js": "/Guaranty_Sheet_Metal/static/js/main.3e7300c8.js",
+    "main.js": "/Guaranty_Sheet_Metal/static/js/main.0ba822d5.js",
     "static/media/logo.png": "/Guaranty_Sheet_Metal/static/media/logo.a8f6846b04690eefa5ce.png",
+    "static/media/Software.md": "/Guaranty_Sheet_Metal/static/media/Software.6d402f5c2a2f4ff48d20.md",
     "static/media/Features.md": "/Guaranty_Sheet_Metal/static/media/Features.6d7afddcc644b47697b8.md",
-    "static/media/Software.md": "/Guaranty_Sheet_Metal/static/media/Software.37ed17bad9bc7f912610.md",
     "static/media/CUSTOMERS.md": "/Guaranty_Sheet_Metal/static/media/CUSTOMERS.06e12511023f94fca552.md",
     "static/media/JOBS.md": "/Guaranty_Sheet_Metal/static/media/JOBS.90f5dc24db67281289b5.md",
     "static/media/INVENTORY.md": "/Guaranty_Sheet_Metal/static/media/INVENTORY.628c7cdc37a5479853bf.md",
@@ -39,10 +39,10 @@
     "static/media/FAQS.md": "/Guaranty_Sheet_Metal/static/media/FAQS.6aced1f1b1ae504ef3dd.md",
     "index.html": "/Guaranty_Sheet_Metal/index.html",
     "main.60440209.css.map": "/Guaranty_Sheet_Metal/static/css/main.60440209.css.map",
-    "main.3e7300c8.js.map": "/Guaranty_Sheet_Metal/static/js/main.3e7300c8.js.map"
+    "main.0ba822d5.js.map": "/Guaranty_Sheet_Metal/static/js/main.0ba822d5.js.map"
   },
   "entrypoints": [
     "static/css/main.60440209.css",
-    "static/js/main.3e7300c8.js"
+    "static/js/main.0ba822d5.js"
   ]
 }

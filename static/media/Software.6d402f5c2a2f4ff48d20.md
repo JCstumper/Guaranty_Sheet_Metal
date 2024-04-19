@@ -220,12 +220,74 @@ This guide provides detailed instructions for installing pgAdmin, a comprehensiv
 ## Dependencies
 
 - Now you can run:
-   ````bash
+   ```bash
    npm install
    ```
 - You will then perform an install that gives you the required node modules for this repository
 
+## Server Setup
 
+### Prerequisites
 
+- Must have full control of your router if you plan on hosting this yourself.
 
+### Steps for Configuring Port Forwarding
 
+##### Step 1: Access Your Router’s Configuration Page
+- Open a web browser and enter the IP address of your router in the address bar. 
+- Common addresses include `192.168.1.1` or `192.168.0.1`. 
+- Refer to your router's manual for the exact address.
+
+##### Step 2: Log in to Your Router
+- Enter the administrator credentials to access the settings of the router.
+- Check your router’s manual for specific login details.
+
+##### Step 3: Navigate to the Port Forwarding Section
+- Look for a tab or section labeled ‘Port Forwarding’, ‘Apps and Gaming’, ‘Advanced’, or ‘NAT’.
+- This might be found under a broader category like "Network settings".
+
+##### Step 4: Create a New Port Forwarding Entry
+- Click on "Add Service", "Add Rule", or "Create". Fill in the necessary details:
+  - **Service Name**: Provide a name for the service (e.g., "Web Server").
+  - **Port Range**: Input the port number or a range (e.g., `80` or `1000-2000`).
+  - **Local IP**: Specify the IP address of the device within your network that the ports should be forwarded to.
+  - **Protocol**: Select TCP, UDP, or Both, depending on the application requirements.
+  - **External IP**: This is optional. Leave it blank or set to any if not required.
+
+##### Step 5: Save and Apply the Changes
+- Make sure to save or apply your settings.
+- The router may restart to implement the changes.
+
+##### Step 6: Test the Port Forwarding Setup
+- Use an online port checking tool to confirm the port is open, or try connecting to your service from an external network to ensure the setup works.
+- Connect to your service by entering public IP address. 
+
+### Testing and Troubleshooting
+- If the port does not appear to be open or the service is not accessible, revisit the settings to verify all information was entered correctly and saved. Consult your router’s support if persistent issues occur.
+
+## DNS Configuration Guide
+
+### Prerequisites
+
+- You must own or have registered a domain name through a domain registrar.
+
+### Steps for Configuring DNS to Point to Your IP Address
+
+##### Step 1: Register a Domain Name
+- **Choose a Domain Registrar**: Select a reputable domain registrar (e.g., GoDaddy, Namecheap, Google Domains) to purchase your domain.
+- **Select a Domain Name**: Pick a domain that represents your server or business well and check its availability. Once confirmed, proceed with the registration.
+
+##### Step 2: Configure DNS Records
+- **Access the DNS Management Panel**: Log into the domain registrar’s dashboard to access DNS settings.
+- **Edit DNS Records**: Modify or add the necessary DNS records:
+  - **A Record**: This should point your domain (e.g., `example.com`) to your server's public IP address (e.g., `123.123.123.123`).
+  - **CNAME Record**: Typically used to alias `www.example.com` to `example.com`. This is optional but commonly implemented.
+
+##### Step 3: Propagate DNS Changes
+- **Wait for DNS Propagation**: DNS changes can take anywhere from a few minutes up to 48 hours to fully propagate across the internet.
+
+##### Step 4: Verify DNS Configuration
+- **Test the DNS Setup**: Use command-line tools like `ping` or `nslookup` to confirm that your domain points to the correct IP address:
+  ```bash
+  ping example.com
+  ```
