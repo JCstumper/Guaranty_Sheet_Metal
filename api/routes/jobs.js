@@ -26,10 +26,10 @@ const storage = multer.diskStorage({
       cb(null, 'uploads/'); // Ensure this uploads directory exists
     },
     filename: (req, file, cb) => {
-      cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
     }
-  });
-  
+});
+
 // Multer upload setup
 const upload = multer({ storage: storage });
 
@@ -124,13 +124,7 @@ router.post('/', authorization, async (req, res) => {
         // Log the job creation action
         await logJobsAction("Add Job", req.username, "job", {
             message: "Added",
-            details: {
-                customer_name,
-                address,
-                phone,
-                email,
-                date_created: newJob.rows[0].date_created
-            }
+            details: newJob.rows[0],
         });
 
         // Respond with the newly added job and a success message
@@ -169,10 +163,7 @@ router.post('/upload-estimate', authorization, upload.single('estimatePdf'), asy
         // Log the estimate upload action
         await logJobsAction("Add Estimate", req.username, "estimate", {
             message: "Uploaded",
-            // details: { 
-            //     job_id: job_id,
-            //     file_name: file.originalname
-            // }
+            details: result.rows[0],
         });
 
         fs.unlinkSync(file.path); // Remove the file after saving to the database
@@ -198,10 +189,7 @@ router.delete('/remove-estimate/:jobId', authorization, async (req, res) => {
             // Log the estimate removal action
             await logJobsAction("Delete Estimate", req.username, "estimate", {
                 message: "Removed",
-                details: { 
-                    job_id: jobId,
-                    estimate_details: result.rows[0]
-                }
+                details: result.rows[0],
             });
 
             res.json({ message: 'Estimate removed successfully', deletedEstimate: result.rows[0] });
@@ -230,30 +218,29 @@ router.post('/necessary-parts', authorization, async (req, res) => {
         if (existingPart.rows.length > 0) {
             // Part exists, update the quantity
             const newQuantity = existingPart.rows[0].quantity_required + integerQuantityRequired;
-            await pool.query(
+            const result = await pool.query(
                 'UPDATE necessary_parts SET quantity_required = $1 WHERE job_id = $2 AND part_number = $3',
                 [newQuantity, job_id, part_number]
             );
             actionType = "Update Necessary Part"; // Specify action type for logging
+
+            await logJobsAction(actionType, req.username, "necessary-parts", {
+                message: "Add necessary part",
+                details: result.rows[0],
+            });
         } else {
             // Part does not exist, insert a new record
-            await pool.query(
+            const result = await pool.query(
                 'INSERT INTO necessary_parts (job_id, part_number, quantity_required) VALUES ($1, $2, $3)',
                 [job_id, part_number, integerQuantityRequired]
             );
             actionType = "Add Necessary Part"; // Specify action type for logging
-        }
 
-        // Log the action with specifics of the operation
-        await logJobsAction(actionType, req.username, "necessary-parts", {
-            message: "Add necessary part",
-            details: { 
-                job_id,
-                part_number,
-                quantity_required: integerQuantityRequired,
-                operation: existingPart.rows.length > 0 ? 'Updated' : 'Added'
-            }
-        });
+            await logJobsAction(actionType, req.username, "necessary-parts", {
+                message: "Add necessary part",
+                details: result.rows[0],
+            });
+        }
 
         // Fetch and return the updated part data including the price
         const updatedPartData = await pool.query(`
@@ -282,8 +269,7 @@ router.get('/:job_id/necessary-parts', authorization, async (req, res) => {
 
     try {
         const necessaryPartsQuery = await pool.query(`
-            SELECT np.id, np.job_id, np.part_number, np.quantity_required, 
-                   CAST(p.price AS NUMERIC) AS price, p.description
+            SELECT np.id, np.job_id, np.part_number, np.quantity_required, CAST(p.price AS NUMERIC) AS price, p.description
             FROM necessary_parts np
             JOIN products p ON np.part_number = p.part_number
             WHERE np.job_id = $1;
@@ -324,10 +310,7 @@ router.put('/necessary-parts/:id', authorization, async (req, res) => {
             // Log the update action
             await logJobsAction("Update Necessary Part", req.username, "necessary-parts", {
                 message: "Update",
-                details: {
-                    part_id: id,
-                    new_quantity: quantity_required
-                }
+                details: updatedPart.rows[0]
             });
 
             res.json(updatedPart.rows[0]);
@@ -433,12 +416,8 @@ router.post('/:job_id/move-to-used', authorization, async (req, res) => {
 
         // Log the part move action
         await logJobsAction("Move to Used", req.username, "part-movement", {
-            message: "Move",
-            details: {
-                job_id: job_id,
-                part_number: part_number,
-                moved_quantity: actualQuantityToMove
-            }
+            message: `Part moved to used successfully. ${actualQuantityToMove} of ${part_number} moved.`,
+            details: actualQuantityToMove
         });
 
         res.json({
@@ -513,12 +492,7 @@ router.post('/used-parts', authorization, async (req, res) => {
         // Log the update action
         await logJobsAction("Update Used", req.username, "part-management", {
             message: "Update",
-            details: {
-                job_id: job_id,
-                part_number: part_number,
-                quantity_used: integerQuantityUsed,
-                action: existingUsedPart.rows.length > 0 ? "updated" : "inserted"
-            }
+            details: updatedUsedPartData.rows[0]
         });
 
         if (updatedUsedPartData.rows.length > 0) {
@@ -540,8 +514,7 @@ router.get('/:job_id/used-parts', authorization, async (req, res) => {
 
     try {
         const usedPartsQuery = await pool.query(`
-            SELECT up.id, up.job_id, up.part_number, up.quantity_used,
-                   CAST(p.price AS NUMERIC) AS price, p.description
+            SELECT up.id, up.job_id, up.part_number, up.quantity_used, CAST(p.price AS NUMERIC) AS price, p.description
             FROM used_parts up
             JOIN products p ON up.part_number = p.part_number
             WHERE up.job_id = $1;
@@ -610,7 +583,7 @@ router.post('/:job_id/return-to-necessary', authorization, async (req, res) => {
 
         // Log the return action
         await logJobsAction("Return to Necessary", req.username, "part-management", {
-            message: "Move",
+            message: "Part returned to necessary successfully",
             details: {
                 job_id: job_id,
                 part_number: part_number,
@@ -659,7 +632,7 @@ router.post('/:job_id/update-used-part', authorization, async (req, res) => {
 
         // Log the update action
         await logJobsAction("Update Used Part", req.username, "part-management", {
-            message: "Update",
+            message: "Used part updated successfully",
             details: {
                 job_id: job_id,
                 part_id: part_id,
@@ -700,14 +673,8 @@ router.post('/:job_id/remove-from-used', authorization, async (req, res) => {
 
         // Log the removal action
         await logJobsAction("Delete From Used", req.username, "part-management", {
-            message: "Delete",
-            details: {
-                job_id: job_id,
-                part_number: part_number,
-                quantity_returned: quantity_used,
-                inventory_update: updateInventory.rows,
-                deleted_part_details: deletePart.rows
-            }
+            message: `Part ${part_number} removed from used and quantity added back to inventory.`,
+            details: updateInventory.rows[0]
         });
 
         await pool.query('COMMIT');
@@ -741,11 +708,8 @@ router.delete('/:job_id', authorization, async (req, res) => {
 
         // Log the deletion
         await logJobsAction("Delete Job", req.username, "job-management", {
-            message: "Delete",
-            details: {
-                job_id: job_id,
-                job_details: fetchJob.rows[0]
-            }
+            message: `Job ${job_id} removed successfully`,
+            details: result.rows[0]
         });
 
         // Commit the transaction
@@ -786,10 +750,7 @@ router.put('/:job_id', authorization, async (req, res) => {
         // Log the update
         await logJobsAction("Update Job", req.username, "job-management", {
             message: "Update",
-            details: {
-                before: fetchCurrentJob.rows[0],
-                after: result.rows[0]
-            }
+            details: result.rows[0]
         });
 
         // Commit the transaction
