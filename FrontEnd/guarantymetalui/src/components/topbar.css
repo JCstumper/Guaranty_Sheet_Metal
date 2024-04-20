@@ -140,6 +140,7 @@
     background-color: #f7f6f6;
     color: black;
     border: none;
+    cursor: pointer;
     max-width: 120px; /* Fixed width for the username container */
     white-space: nowrap;
     overflow: hidden;
@@ -348,10 +349,13 @@
 
 .user-dropdown button:hover {
     background-color: #ddd; /* Light gray background on hover */
+    border-radius: 8px;
 }
 
 .username:hover {
     background-color: #ddd; /* Light gray background on hover */
+    border-radius: 8px;
+    padding: 5px;
 }
 
 .show-dropdown {
