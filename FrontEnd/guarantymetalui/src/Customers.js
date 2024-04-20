@@ -365,6 +365,11 @@ const Customers = ({ setAuth }) => {
     
 
     const handleUploadEstimate = async () => {
+        if (selectedFile.size > 5242880) { // 5 MB = 5 * 1024 * 1024 bytes
+            toast.error('File size should not exceed 5 MB.');
+            return;
+        }
+    
         const formData = new FormData();
         formData.append('estimatePdf', selectedFile);
         formData.append('job_id', selectedJobId);
@@ -393,6 +398,7 @@ const Customers = ({ setAuth }) => {
             toast.error('Error uploading estimate: ' + error.message);
         }
     };
+    
 
     const handleAddNecessaryPart = () => {
         setPartActionType('necessary');

@@ -31,7 +31,18 @@ const storage = multer.diskStorage({
 });
 
 // Multer upload setup
-const upload = multer({ storage: storage });
+const upload = multer({ 
+    storage: storage,
+    limits: { fileSize: 5242880 }, // 5 MB size limit
+    fileFilter: (req, file, cb) => {
+        // Check if the file is a PDF
+        if (path.extname(file.originalname).toLowerCase() === '.pdf') {
+            cb(null, true);
+        } else {
+            cb(new Error('Only PDF files are allowed'), false);
+        }
+    }
+});
 
 router.get('/', authorization, async (req, res) => {
     try {
@@ -145,19 +156,13 @@ router.post('/upload-estimate', authorization, upload.single('estimatePdf'), asy
         const file = req.file;
 
         if (!file) {
-            return res.status(400).json({ error: 'No file uploaded' });
-        }
-
-        // Optionally, check if the uploaded file is a PDF
-        if (path.extname(file.originalname) !== '.pdf') {
-            fs.unlinkSync(file.path); // Remove the uploaded file
-            return res.status(400).json({ error: 'Only PDF files are allowed' });
+            return res.status(400).json({ error: 'No file uploaded or file is too large' });
         }
 
         const fileData = fs.readFileSync(file.path);
         const result = await pool.query(
             'INSERT INTO estimates (job_id, pdf_data, file_name) VALUES ($1, $2, $3) RETURNING *;',
-            [job_id, fileData, file.originalname] // Save the original file name
+            [job_id, fileData, file.originalname]
         );
 
         // Log the estimate upload action
@@ -174,7 +179,11 @@ router.post('/upload-estimate', authorization, upload.single('estimatePdf'), asy
         });
     } catch (err) {
         console.error(err.message);
-        res.status(500).json({ error: 'Failed to upload estimate' });
+        if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
+            res.status(413).json({ error: 'File too large. Maximum size is 5MB.' });
+        } else {
+            res.status(500).json({ error: 'Failed to upload estimate' });
+        }
     }
 });
 
