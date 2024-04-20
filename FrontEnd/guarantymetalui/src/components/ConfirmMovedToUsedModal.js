@@ -12,7 +12,7 @@ const ConfirmMoveToUsedModal = ({ showModal, setShowModal, movePartToUsed, partD
                     <h2>Confirm Move</h2>
                     <button onClick={() => setShowModal(false)} className="modal-close-button">×</button>
                 </div>
-                <div className="modal-body">
+                <div className="modal-body" style={{ textAlign: 'center' }}>
                     Are you sure you want to move part <strong>{partDetails.part_number}</strong> to used?
                 </div>
                 <div className="modal-actions">

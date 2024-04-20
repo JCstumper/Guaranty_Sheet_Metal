@@ -37,7 +37,7 @@ const DeleteJobModal = ({ showModal, setShowModal, jobId, fetchJobs, API_BASE_UR
                     <h2>Confirm Deletion</h2>
                     <button onClick={() => setShowModal(false)} className="modal-close-button">X</button>
                 </div>
-                <div className="modal-body">
+                <div className="modal-body" style={{ textAlign: 'center' }}>
                     Are you sure you want to delete?
                 </div>
                 <div className="modal-actions">
