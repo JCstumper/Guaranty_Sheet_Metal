@@ -780,12 +780,12 @@ const Customers = ({ setAuth }) => {
                                 filteredJobs.map((job, index) => (
                                     <React.Fragment key={job.id || index}>
                                         <tr onClick={() => handleSelectJob(job.job_id)}>
-                                            <td className="ignore-column">{job.job_id}</td>
-                                            <td className="ignore-column">{job.customer_name}</td>
-                                            <td className="address-column">{job.address}</td>
-                                            <td className="ignore-column">{job.phone}</td>
-                                            <td className="ignore-column">{job.email}</td>
-                                            <td className="ignore-column">{new Date(job.date_created).toLocaleDateString()}</td>
+                                            <td className="ignore-column"><strong>{job.job_id}</strong></td>
+                                            <td className="ignore-column"><strong>{job.customer_name}</strong></td>
+                                            <td className="address-column"><strong>{job.address}</strong></td>
+                                            <td className="ignore-column"><strong>{job.phone}</strong></td>
+                                            <td className="ignore-column"><strong>{job.email}</strong></td>
+                                            <td className="ignore-column"><strong>{new Date(job.date_created).toLocaleDateString()}</strong></td>
                                             <td className="actions-column">
                                                 <button onClick={(e) => handleEditJob(e, job.job_id)} className="edit-btn">Edit</button>
                                                 <button onClick={(e) => handleRemoveJob(e, job.job_id)} className="remove-btn">Remove</button>

@@ -199,7 +199,7 @@ const Topbar = ({ setAuth }) => {
                     })}
                 </div>
                 <div className="user-info" onClick={toggleDropdown} ref={dropdownRef}>
-                    <span className="username"><strong>{userName.toUpperCase()}</strong></span>
+                    <button className="username"><strong>{userName.toUpperCase()}</strong></button>
                     <div className={`user-dropdown ${showDropdown ? 'show-dropdown' : ''}`}>
                     {role === 'admin' && (
                         <button onClick={() => setShowRegisterUser(true)}>Add a User</button>

@@ -68,10 +68,10 @@ const BarCard = () => {
                             <tbody>
                                 {[...lowInventoryItems, ...outOfStockItems].map((item, index) => (
                                     <tr key={index}>
-                                        <td className="part-number-column">{item.part_number}</td>
+                                        <td>{item.part_number}</td>
                                         <td>{item.material_type}</td>
                                         <td>{item.description}</td>
-                                        <td className="status-column">
+                                        <td>
                                             <div className={`status-box-dash ${item.quantity_in_stock === 0 ? 'red' : 'yellow'}`}>
                                                 {item.quantity_in_stock === 0 ? 'Out of Stock' : 'Low Stock'}
                                             </div>
