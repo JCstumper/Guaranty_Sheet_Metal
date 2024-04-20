@@ -229,7 +229,7 @@ This guide provides detailed instructions for installing pgAdmin, a comprehensiv
 
 ### Prerequisites
 
-- Must have full control of your router if you plan on hosting this yourself.
+- Must have full control of your router if you plan on self-hosting.
 
 ### Steps for Configuring Port Forwarding
 
@@ -262,8 +262,29 @@ This guide provides detailed instructions for installing pgAdmin, a comprehensiv
 - Use an online port checking tool to confirm the port is open, or try connecting to your service from an external network to ensure the setup works.
 - Connect to your service by entering public IP address. 
 
-### Testing and Troubleshooting
-- If the port does not appear to be open or the service is not accessible, revisit the settings to verify all information was entered correctly and saved. Consult your router’s support if persistent issues occur.
+### Steps for Configuring Project
+
+##### Step 1: Open Guaranty_Sheet_Metal Directory
+- Navigate to the root directory. 
+
+##### Step 2: Modify docker-compose.production.yml
+- Open docker-compose.production.yml.
+- Modify the following values:
+  - **HOST_NAME**: This environment variable is found under the **nginx** service. This environment variable should be set to your public IP address. It should follow this format, `HOST_NAME=192.168.1.1`. This environment variable is used by nginx to set the name of the server.    
+  - **API_URL**: This environment variable is found undert the **api** service. This environment varaiable should be set to your public IP address. It should follow this format, `API_URL=https://192.168.1.1`. This environment variable is used by the api so that it knows what URL to allow connections to it.
+- Save your changes.
+
+##### Step 4: Launch Docker Desktop
+- Launch Docker Desktop otherwise the application will not be able to run.
+
+##### Step 5: Launch Application with Docker Compose
+- Enter the following command to start the application:
+   ```bash
+   docker-compose -f docker-compose.production.yml up --build
+   ```
+
+##### Step 6: Test Connection to Application
+- Connect to the application by navigating to any browser and entering your public IP address. 
 
 ## DNS Configuration Guide
 
@@ -291,3 +312,27 @@ This guide provides detailed instructions for installing pgAdmin, a comprehensiv
   ```bash
   ping example.com
   ```
+
+### Steps for Configuring Project
+
+##### Step 1: Open Guaranty_Sheet_Metal Directory
+- Navigate to the root directory. 
+
+##### Step 2: Modify docker-compose.production.yml
+- Open docker-compose.production.yml.
+- Modify the following values:
+  - **HOST_NAME**: This environment variable is found under the **nginx** service. This environment variable should be set to your domain name. It should follow this format, `HOST_NAME=example.com`. This environment variable is used by nginx to set the name of the server.    
+  - **API_URL**: This environment variable is found undert the **api** service. This environment varaiable should be set to your domain name. It should follow this format, `API_URL=https://example.com`. This environment variable is used by the api so that it knows what URL to allow connections to it.
+- Save your changes.
+
+##### Step 4: Launch Docker Desktop
+- Launch Docker Desktop otherwise the application will not be able to run.
+
+##### Step 5: Launch Application with Docker Compose
+- Enter the following command to start the application:
+   ```bash
+   docker-compose -f docker-compose.production.yml up --build
+   ```
+
+##### Step 6: Test Connection to Application
+- Connect to the application by navigating to any browser and entering your domain name. 
