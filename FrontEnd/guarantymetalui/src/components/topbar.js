@@ -63,23 +63,21 @@ const Topbar = ({ setAuth }) => {
                 },
                 body: JSON.stringify(body)
             });
-            
-            const responseBody = await response.json();
 
-            if (responseBody.message === "User updated successfully") {
+            if (response.ok) {
                 setIsLoading(true);
                 setShowEditProfile(false);
-                toast.success(responseBody.message, options);
+                toast.success('Profile was updated.');
                 getName();
             }
             else {
-                toast.error(responseBody, options);
-                setShowEditProfile(true);
+                setShowEditProfile(false);
+                toast.error('Profile failed to update. Username, password, or email already exist.');
             }
 
         } catch (err) {
             console.error(err.message);
-            setShowEditProfile(true);
+            setShowEditProfile(false);
         }
     }
 

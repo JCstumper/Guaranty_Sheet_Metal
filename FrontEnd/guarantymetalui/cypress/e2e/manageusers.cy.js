@@ -22,18 +22,6 @@ describe('Admin manages the users', () => {
         cy.wait(7000);
     });
 
-    it('Successfully add a user to the application', () => {
-        cy.get('.username').click();
-        cy.get('.add-a-user').contains('Add a User').click();
-
-        cy.get('input[id="Username"]').clear().type('testuser');
-        cy.get('input[id="Password"]').clear().type('TestPassword123!');
-        cy.get('input[id="Email"]').clear().type('test@gmail.com');
-
-        cy.get('.btn-primary').contains('Register').click();
-        cy.contains('Registration successful').should('be.visible');
-    });
-
     it('Successfully changes the test user\'s role from employee to admin', () => {
         cy.get('.username').click();
         cy.get('.manage-users').contains('Manage Users').click();

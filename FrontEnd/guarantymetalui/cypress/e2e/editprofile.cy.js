@@ -26,7 +26,7 @@ describe('Edit a user profile', () => {
 
         cy.get('input[id="Username"]').clear().type('admin');
         cy.get('input[id="Password"]').clear().type('Admin123!');
-        cy.get('input[id="Email"]').clear().type('test@gmail.com');
+        cy.get('input[id="Email"]').clear().type('admintest@gmail.com');
 
         cy.get('.btn-primary').contains('Save Changes').click();
         cy.wait(7000);
