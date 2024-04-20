@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/Guaranty_Sheet_Metal/static/css/main.60440209.css",
-    "main.js": "/Guaranty_Sheet_Metal/static/js/main.0ba822d5.js",
+    "main.js": "/Guaranty_Sheet_Metal/static/js/main.96369502.js",
     "static/media/logo.png": "/Guaranty_Sheet_Metal/static/media/logo.a8f6846b04690eefa5ce.png",
-    "static/media/Software.md": "/Guaranty_Sheet_Metal/static/media/Software.6d402f5c2a2f4ff48d20.md",
+    "static/media/Software.md": "/Guaranty_Sheet_Metal/static/media/Software.eebf3e6375fe0d095aaf.md",
     "static/media/Features.md": "/Guaranty_Sheet_Metal/static/media/Features.6d7afddcc644b47697b8.md",
+    "static/media/Modify.md": "/Guaranty_Sheet_Metal/static/media/Modify.16f6f9422b4bc5720aaa.md",
     "static/media/CUSTOMERS.md": "/Guaranty_Sheet_Metal/static/media/CUSTOMERS.06e12511023f94fca552.md",
     "static/media/JOBS.md": "/Guaranty_Sheet_Metal/static/media/JOBS.90f5dc24db67281289b5.md",
     "static/media/INVENTORY.md": "/Guaranty_Sheet_Metal/static/media/INVENTORY.628c7cdc37a5479853bf.md",
     "static/media/ADDPARTMODAL.md": "/Guaranty_Sheet_Metal/static/media/ADDPARTMODAL.8af9331f3bf1e9fe275a.md",
-    "static/media/Modify.md": "/Guaranty_Sheet_Metal/static/media/Modify.08d9bb709a408c9051df.md",
     "static/media/EDITPRODUCTMODAL.md": "/Guaranty_Sheet_Metal/static/media/EDITPRODUCTMODAL.aebf17b3f91f5a30afb8.md",
     "static/media/ADDPRODUCT.md": "/Guaranty_Sheet_Metal/static/media/ADDPRODUCT.dbe6cbda9f6987756f17.md",
     "static/media/APP.md": "/Guaranty_Sheet_Metal/static/media/APP.e057b917750d8dbc5cde.md",
@@ -39,10 +39,10 @@
     "static/media/FAQS.md": "/Guaranty_Sheet_Metal/static/media/FAQS.6aced1f1b1ae504ef3dd.md",
     "index.html": "/Guaranty_Sheet_Metal/index.html",
     "main.60440209.css.map": "/Guaranty_Sheet_Metal/static/css/main.60440209.css.map",
-    "main.0ba822d5.js.map": "/Guaranty_Sheet_Metal/static/js/main.0ba822d5.js.map"
+    "main.96369502.js.map": "/Guaranty_Sheet_Metal/static/js/main.96369502.js.map"
   },
   "entrypoints": [
     "static/css/main.60440209.css",
-    "static/js/main.0ba822d5.js"
+    "static/js/main.96369502.js"
   ]
 }
