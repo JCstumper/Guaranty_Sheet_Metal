@@ -359,9 +359,18 @@ const Customers = ({ setAuth }) => {
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
-        setSelectedFile(file);
-        setSelectedFileName(file.name);  // Immediately update the file name in the stat
+        if (file) {
+            // Convert bytes to megabytes
+            const fileSizeMB = file.size / 1024 / 1024;
+            if (fileSizeMB > 5) {
+                toast.error('File size exceeds 5 MB. Please choose a smaller file.');
+                return; // Exit the function to prevent state update
+            }
+            setSelectedFile(file);
+            setSelectedFileName(file.name);
+        }
     };
+    
     
 
     const handleUploadEstimate = async () => {
