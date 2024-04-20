@@ -116,7 +116,11 @@ router.post("/register", validInfo, authorization, async(req, res) => {
 
         await logAddUserAction('Added User', req.username, 'Add User', { 
             message: 'Added User to Application Whitelist', 
-            details: { ...req.body } 
+            details: { 
+                username: username,
+                email: email,
+                role: role
+            } 
         });
 
         res.json("User was successfully registered!");

@@ -89,10 +89,10 @@ const Logs = ({ setAuth }) => {
                         <tbody>
                             {logs.map((log, index) => (
                                 <tr key={index}>
-                                <td>{log.action_type}</td>
-                                <td>{log.user_id}</td>
-                                <td>{log.log_type}</td>
-                                <td>
+                                <td><strong>{log.action_type}</strong></td>
+                                <td><strong>{log.user_id}</strong></td>
+                                <td><strong>{log.log_type}</strong></td>
+                                <td><strong>
                                     {(() => {
                                     // Parse the details JSON string
                                     const details = JSON.parse(log.change_details);
@@ -108,9 +108,9 @@ const Logs = ({ setAuth }) => {
                                         {formattedDetails}
                                         </pre>
                                     );
-                                    })()}
+                                    })()}</strong>
                                 </td>
-                                <td>{new Date(log.action_timestamp).toLocaleString()}</td>
+                                <td><strong>{new Date(log.action_timestamp).toLocaleString()}</strong></td>
                                 </tr>
                             ))}
                         </tbody>
