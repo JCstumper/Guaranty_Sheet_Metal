@@ -7,6 +7,7 @@
 
 /* Table of Contents styles */
 .toc {
+    flex: 0 0 325px; /* Does not grow or shrink, fixed at 250px */
     width: 250px;
     background-color: #161524; /* Light grey background */
     box-shadow: 2px 0 5px 0 rgba(0,0,0,0.1);
@@ -22,17 +23,25 @@
 .toc h3 {
     margin-top: 0;
     color: #ffffff; /* Dark grey color for headings */
+    text-decoration: underline; /* Underline the heading */
+    padding-bottom: 8px; /* Adds space between the text and the underline */
+    text-underline-offset: 3px; /* Adjusts the position of the underline */
+}
+
+.toc h4 {
+    cursor: pointer;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
 .toc ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
+    padding-left: 20px; /* Indent subcategories */
+    list-style-type: none; /* Removes bullet points for cleaner look */
 }
 
-/* .toc li {
-    margin-bottom: 5px;
-} */
+.toc li {
+    margin-left: 20px; /* Further indent files */
+}
+
 
 .toc li button {
     background: none;

@@ -286,7 +286,7 @@ const EditProductModal = ({ showModal, setShowModal, editProductItem, setEditPro
     // You can keep the existing form and input handlers intact
 
     return (
-        <div className="modal-backdrop" onClick={() => setShowModal(false)}>
+        <div className="modal-backdrop" onClick={(e) => e.stopPropagation()}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
                     <h2>Edit Product</h2>

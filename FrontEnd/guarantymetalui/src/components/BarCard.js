@@ -54,25 +54,25 @@ const BarCard = () => {
         <div className="bar-card-container">
             {loading ? <p>Loading inventory...</p> : (
                 <div className="bar-card">
-                    <h2>Inventory Details</h2>
+                    <h2>Stock Level Dashboard</h2>
                     <div className="bar-content">
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Part Number</th>
+                                <th className="part-number-column-header">Part Number</th>
                                     <th>Material/Type</th>
                                     <th>Description</th>
-                                    <th>Status</th>
+                                    <th className="status-column-header">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {[...lowInventoryItems, ...outOfStockItems].map((item, index) => (
                                     <tr key={index}>
-                                        <td>{item.part_number}</td>
+                                        <td className="part-number-column">{item.part_number}</td>
                                         <td>{item.material_type}</td>
                                         <td>{item.description}</td>
-                                        <td>
-                                            <div className={`status-box ${item.quantity_in_stock === 0 ? 'red' : 'yellow'}`}>
+                                        <td className="status-column">
+                                            <div className={`status-box-dash ${item.quantity_in_stock === 0 ? 'red' : 'yellow'}`}>
                                                 {item.quantity_in_stock === 0 ? 'Out of Stock' : 'Low Stock'}
                                             </div>
                                         </td>

@@ -39,8 +39,8 @@ function Team() {
             </div>
 
             <div className="member">
-                <h3>Waleed Kambal</h3>
                 <img src={`${process.env.PUBLIC_URL}/wkpfp.jpg`} alt="Waleed Kambal Profile Picture" className="profile-pic"/>
+                <h3>Waleed Kambal</h3>
                 <p><strong>Hometown:</strong> Madison, AL</p>
                 <p><strong>Contact:</strong> <a href="mailto:wmkambal@crimson.ua.edu">wmkambal@crimson.ua.edu</a>, <a href="tel:+12564687782">256 468 7782</a></p>
                 <p> My name is Waleed Kambal, known as Wally, and I like to explore new places and try new foods whenever I can.</p>

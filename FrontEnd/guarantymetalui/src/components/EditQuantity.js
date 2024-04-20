@@ -6,7 +6,7 @@ const EditQuantity = ({ showModal, setShowModal, editItem, setEditItem, handleUp
     if (!showModal) return null;
 
     return (
-        <div className="modal-backdrop" onClick={() => setShowModal(false)}>
+        <div className="modal-backdrop" onClick={(e) => e.stopPropagation()}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
                     <h2>Edit Quantity</h2>

@@ -2,8 +2,8 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE IF NOT EXISTS users(
     user_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-    username VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL
 );
 
@@ -91,7 +91,6 @@ CREATE TABLE IF NOT EXISTS out_of_stock (
     FOREIGN KEY (part_number) REFERENCES products(part_number)
 );
 
-
 CREATE TABLE IF NOT EXISTS inventory (
     part_number VARCHAR(50) NOT NULL UNIQUE,
     quantity_in_stock INTEGER NOT NULL,
@@ -101,6 +100,7 @@ CREATE TABLE IF NOT EXISTS inventory (
 CREATE TABLE IF NOT EXISTS estimates (
     estimate_id SERIAL PRIMARY KEY,
     job_id INTEGER NOT NULL,
+    file_name VARCHAR,
     pdf_data BYTEA,  -- To store the PDF file; consider storing the file in the filesystem or cloud storage for better performance
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (job_id) REFERENCES jobs(job_id) ON DELETE CASCADE

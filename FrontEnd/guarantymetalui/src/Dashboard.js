@@ -2,12 +2,10 @@ import React, { useState, useContext, useEffect } from 'react';
 import { AppContext } from './App';
 import Topbar from './components/topbar';
 import BarCard from './components/BarCard';
-import InitialSetupModal from './components/InitialSetupModal';
 import './Dashboard.css';
 
 const Dashboard = ({ setAuth }) => {
     const { API_BASE_URL } = useContext(AppContext);
-    const [showInitialSetup, setShowInitialSetup] = useState(false);
     const [dashboardData, setDashboardData] = useState({
         customers: 0,
         purchases: 0,
@@ -27,12 +25,6 @@ const Dashboard = ({ setAuth }) => {
                     products: data.products,
                     purchases: data.purchases
                 });
-
-                const setupResponse = await fetch(`${API_BASE_URL}/auth/check-initial-setup`);
-                const setupData = await setupResponse.json();
-                if (!setupData.initialSetupComplete) {
-                    setShowInitialSetup(true);
-                }
             } catch (error) {
                 console.error('Failed to fetch dashboard data:', error);
             }
@@ -44,11 +36,6 @@ const Dashboard = ({ setAuth }) => {
     return (
         <div className="dashboard">
             <Topbar setAuth={setAuth}/>
-            <InitialSetupModal
-                showInitialSetup={showInitialSetup}
-                setShowInitialSetup={setShowInitialSetup}
-                API_BASE_URL={API_BASE_URL}
-            />
             <div className="card-container">
                 <div className="cxcard">
                     <div className="card-content">

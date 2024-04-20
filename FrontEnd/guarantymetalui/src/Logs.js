@@ -75,7 +75,7 @@ const Logs = ({ setAuth }) => {
                     <span className="table-title"><strong>INVENTORY LOGS</strong></span>
                     <button className="filter-button" onClick={openFilterModal}><FaFilter /></button>
                 </div>
-                <div className="table-content">
+                <div className="table-content-logs">
                     <table>
                         <thead>
                             <tr>

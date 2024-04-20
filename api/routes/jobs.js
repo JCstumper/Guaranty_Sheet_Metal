@@ -5,7 +5,20 @@ const fs = require('fs');
 const path = require('path'); // Import path module
 const router = express.Router();
 const pool = require('../db'); // make sure the path to db.js is correct
+const authorization = require("../middleware/authorization");
 //const { logInventoryAction } = require('./products'); // Adjust the path to where your products.js file is located
+
+async function logJobsAction(actionType, userId, logType, changeDetails) {
+    const logQuery = `
+        INSERT INTO log (action_type, user_id, log_type, change_details) 
+        VALUES ($1, $2, $3, $4);
+    `;
+    try {
+        await pool.query(logQuery, [actionType, userId, logType, JSON.stringify(changeDetails)]);
+    } catch (err) {
+        console.error('Failed to log inventory action:', err.message);
+    }
+}
 
 // Configure storage for multer
 const storage = multer.diskStorage({
@@ -13,16 +26,21 @@ const storage = multer.diskStorage({
       cb(null, 'uploads/'); // Ensure this uploads directory exists
     },
     filename: (req, file, cb) => {
-      cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
     }
-  });
-  
+});
+
 // Multer upload setup
 const upload = multer({ storage: storage });
 
-router.get('/', async (req, res) => {
+router.get('/', authorization, async (req, res) => {
     try {
-        const allJobsQuery = 'SELECT *, to_char(date_created, \'YYYY-MM-DD HH24:MI:SS\') AS formatted_date FROM jobs ORDER BY job_id DESC';
+        const allJobsQuery = `
+            SELECT jobs.*, estimates.estimate_id, estimates.file_name AS estimateFileName, to_char(jobs.date_created, 'YYYY-MM-DD HH24:MI:SS') AS formatted_date 
+            FROM jobs 
+            LEFT JOIN estimates ON jobs.job_id = estimates.job_id
+            ORDER BY jobs.job_id DESC
+        `;
         const allJobs = await pool.query(allJobsQuery);
         res.json(allJobs.rows);
     } catch (err) {
@@ -30,9 +48,8 @@ router.get('/', async (req, res) => {
         res.status(500).json('Server error');
     }
 });
-// In your jobs router (e.g., jobs.js)
 
-router.get('/search', async (req, res) => {
+router.get('/search', authorization, async (req, res) => {
     const { query } = req.query;  // Assuming you pass the search term as a query parameter
     try {
         const searchQuery = `
@@ -53,8 +70,7 @@ router.get('/search', async (req, res) => {
     }
 });
 
-
-router.get('/estimate/:job_id', async (req, res) => {
+router.get('/estimate/:job_id', authorization, async (req, res) => {
     try {
         const { job_id } = req.params;
         const estimateQuery = await pool.query(
@@ -76,7 +92,7 @@ router.get('/estimate/:job_id', async (req, res) => {
 });
 
 // Route to check if an estimate exists for a job
-router.get('/check-estimate/:jobId', async (req, res) => {
+router.get('/check-estimate/:jobId', authorization, async (req, res) => {
     const jobId = parseInt(req.params.jobId);
     if (isNaN(jobId)) {
         return res.status(400).json({ error: "Invalid job ID provided" });
@@ -92,7 +108,7 @@ router.get('/check-estimate/:jobId', async (req, res) => {
     }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', authorization, async (req, res) => {
     try {
         // Extract the relevant fields from the request body
         const { customer_name, address, phone, email } = req.body;
@@ -105,6 +121,12 @@ router.post('/', async (req, res) => {
         `;
         const newJob = await pool.query(newJobQuery, [customer_name, address, phone, email]);
 
+        // Log the job creation action
+        await logJobsAction("Add Job", req.username, "job", {
+            message: "Added",
+            details: newJob.rows[0],
+        });
+
         // Respond with the newly added job and a success message
         res.status(201).json({
             message: 'Job added successfully',
@@ -115,8 +137,9 @@ router.post('/', async (req, res) => {
         res.status(500).json({ error: 'Failed to add job' });
     }
 });
-// POST route to upload an estimate file
-router.post('/upload-estimate', upload.single('estimatePdf'), async (req, res) => {
+
+
+router.post('/upload-estimate', authorization, upload.single('estimatePdf'), async (req, res) => {
     try {
         const { job_id } = req.body;
         const file = req.file;
@@ -133,9 +156,15 @@ router.post('/upload-estimate', upload.single('estimatePdf'), async (req, res) =
 
         const fileData = fs.readFileSync(file.path);
         const result = await pool.query(
-            'INSERT INTO estimates (job_id, pdf_data) VALUES ($1, $2) RETURNING *;',
-            [job_id, fileData]
+            'INSERT INTO estimates (job_id, pdf_data, file_name) VALUES ($1, $2, $3) RETURNING *;',
+            [job_id, fileData, file.originalname] // Save the original file name
         );
+
+        // Log the estimate upload action
+        await logJobsAction("Add Estimate", req.username, "estimate", {
+            message: "Uploaded",
+            details: result.rows[0],
+        });
 
         fs.unlinkSync(file.path); // Remove the file after saving to the database
 
@@ -148,14 +177,21 @@ router.post('/upload-estimate', upload.single('estimatePdf'), async (req, res) =
         res.status(500).json({ error: 'Failed to upload estimate' });
     }
 });
-router.delete('/remove-estimate/:jobId', async (req, res) => {
+
+router.delete('/remove-estimate/:jobId', authorization, async (req, res) => {
     try {
         const { jobId } = req.params;
         const deleteEstimateQuery = 'DELETE FROM estimates WHERE job_id = $1 RETURNING *;';
-        
+
         const result = await pool.query(deleteEstimateQuery, [jobId]);
-        
+
         if (result.rows.length > 0) {
+            // Log the estimate removal action
+            await logJobsAction("Delete Estimate", req.username, "estimate", {
+                message: "Removed",
+                details: result.rows[0],
+            });
+
             res.json({ message: 'Estimate removed successfully', deletedEstimate: result.rows[0] });
         } else {
             res.status(404).json({ error: 'Estimate not found' });
@@ -166,11 +202,13 @@ router.delete('/remove-estimate/:jobId', async (req, res) => {
     }
 });
 
-router.post('/necessary-parts', async (req, res) => {
+router.post('/necessary-parts', authorization, async (req, res) => {
     const { job_id, part_number, quantity_required } = req.body;
     const integerQuantityRequired = parseInt(quantity_required, 10); // Ensure integer conversion
 
     try {
+        let actionType; // To determine if the operation was an insert or update
+
         // Check if the part already exists for the job
         const existingPart = await pool.query(
             'SELECT * FROM necessary_parts WHERE job_id = $1 AND part_number = $2',
@@ -180,16 +218,28 @@ router.post('/necessary-parts', async (req, res) => {
         if (existingPart.rows.length > 0) {
             // Part exists, update the quantity
             const newQuantity = existingPart.rows[0].quantity_required + integerQuantityRequired;
-            await pool.query(
+            const result = await pool.query(
                 'UPDATE necessary_parts SET quantity_required = $1 WHERE job_id = $2 AND part_number = $3',
                 [newQuantity, job_id, part_number]
             );
+            actionType = "Update Necessary Part"; // Specify action type for logging
+
+            await logJobsAction(actionType, req.username, "necessary-parts", {
+                message: "Add necessary part",
+                details: result.rows[0],
+            });
         } else {
             // Part does not exist, insert a new record
-            await pool.query(
+            const result = await pool.query(
                 'INSERT INTO necessary_parts (job_id, part_number, quantity_required) VALUES ($1, $2, $3)',
                 [job_id, part_number, integerQuantityRequired]
             );
+            actionType = "Add Necessary Part"; // Specify action type for logging
+
+            await logJobsAction(actionType, req.username, "necessary-parts", {
+                message: "Add necessary part",
+                details: result.rows[0],
+            });
         }
 
         // Fetch and return the updated part data including the price
@@ -213,16 +263,13 @@ router.post('/necessary-parts', async (req, res) => {
     }
 });
 
-
-
 // Make sure this matches the base URL and route structure you have defined
-router.get('/:job_id/necessary-parts', async (req, res) => {
+router.get('/:job_id/necessary-parts', authorization, async (req, res) => {
     const { job_id } = req.params;
 
     try {
         const necessaryPartsQuery = await pool.query(`
-            SELECT np.id, np.job_id, np.part_number, np.quantity_required, 
-                   CAST(p.price AS NUMERIC) AS price, p.description
+            SELECT np.id, np.job_id, np.part_number, np.quantity_required, CAST(p.price AS NUMERIC) AS price, p.description
             FROM necessary_parts np
             JOIN products p ON np.part_number = p.part_number
             WHERE np.job_id = $1;
@@ -245,7 +292,7 @@ router.get('/:job_id/necessary-parts', async (req, res) => {
     }
 });
 
-router.put('/necessary-parts/:id', async (req, res) => {
+router.put('/necessary-parts/:id', authorization, async (req, res) => {
     const { id } = req.params;
     const { quantity_required } = req.body;
 
@@ -260,6 +307,12 @@ router.put('/necessary-parts/:id', async (req, res) => {
         );
 
         if (updatedPart.rows.length > 0) {
+            // Log the update action
+            await logJobsAction("Update Necessary Part", req.username, "necessary-parts", {
+                message: "Update",
+                details: updatedPart.rows[0]
+            });
+
             res.json(updatedPart.rows[0]);
         } else {
             res.status(404).json({ message: 'Necessary part not found.' });
@@ -270,7 +323,7 @@ router.put('/necessary-parts/:id', async (req, res) => {
     }
 });
 
-router.delete('/necessary-parts/:id', async (req, res) => {
+router.delete('/necessary-parts/:id', authorization, async (req, res) => {
     const { id } = req.params;
 
     try {
@@ -280,7 +333,16 @@ router.delete('/necessary-parts/:id', async (req, res) => {
         );
 
         if (deleteResult.rows.length > 0) {
-            res.json({ message: 'Necessary part removed successfully' });
+            // Log the deletion action
+            await logJobsAction("Delete Necessary Part", req.username, "necessary-parts", {
+                message: "Delete",
+                details: {
+                    part_id: id,
+                    details: deleteResult.rows[0]
+                }
+            });
+
+            res.json({ message: 'Necessary part removed successfully', deletedPart: deleteResult.rows[0] });
         } else {
             res.status(404).json({ message: 'Necessary part not found' });
         }
@@ -289,7 +351,9 @@ router.delete('/necessary-parts/:id', async (req, res) => {
         res.status(500).json({ error: 'Failed to remove necessary part' });
     }
 });
-router.post('/:job_id/move-to-used', async (req, res) => {
+
+
+router.post('/:job_id/move-to-used', authorization, async (req, res) => {
     const { job_id } = req.params;
     const { part_number, quantity_to_move } = req.body;
 
@@ -350,6 +414,12 @@ router.post('/:job_id/move-to-used', async (req, res) => {
 
         await pool.query('COMMIT');
 
+        // Log the part move action
+        await logJobsAction("Move to Used", req.username, "part-movement", {
+            message: `Part moved to used successfully. ${actualQuantityToMove} of ${part_number} moved.`,
+            details: actualQuantityToMove
+        });
+
         res.json({
             message: `Part moved to used successfully. ${actualQuantityToMove} of ${part_number} moved.`,
             actualQuantityMoved: actualQuantityToMove
@@ -361,7 +431,7 @@ router.post('/:job_id/move-to-used', async (req, res) => {
     }
 });
 
-router.post('/used-parts', async (req, res) => {
+router.post('/used-parts', authorization, async (req, res) => {
     const { job_id, part_number, quantity_used } = req.body;
     const integerQuantityUsed = parseInt(quantity_used, 10); // Ensure integer conversion
 
@@ -419,6 +489,12 @@ router.post('/used-parts', async (req, res) => {
 
         await pool.query('COMMIT');
 
+        // Log the update action
+        await logJobsAction("Update Used", req.username, "part-management", {
+            message: "Update",
+            details: updatedUsedPartData.rows[0]
+        });
+
         if (updatedUsedPartData.rows.length > 0) {
             const partData = updatedUsedPartData.rows[0];
             partData.price = parseFloat(partData.price); // Ensure price is a floating-point number
@@ -433,14 +509,12 @@ router.post('/used-parts', async (req, res) => {
     }
 });
 
-
-router.get('/:job_id/used-parts', async (req, res) => {
+router.get('/:job_id/used-parts', authorization, async (req, res) => {
     const { job_id } = req.params;
 
     try {
         const usedPartsQuery = await pool.query(`
-            SELECT up.id, up.job_id, up.part_number, up.quantity_used,
-                   CAST(p.price AS NUMERIC) AS price, p.description
+            SELECT up.id, up.job_id, up.part_number, up.quantity_used, CAST(p.price AS NUMERIC) AS price, p.description
             FROM used_parts up
             JOIN products p ON up.part_number = p.part_number
             WHERE up.job_id = $1;
@@ -461,8 +535,7 @@ router.get('/:job_id/used-parts', async (req, res) => {
     }
 });
 
-
-router.post('/:job_id/return-to-necessary', async (req, res) => {
+router.post('/:job_id/return-to-necessary', authorization, async (req, res) => {
     const { job_id } = req.params;
     const { part_id, quantity_used } = req.body;
 
@@ -507,6 +580,17 @@ router.post('/:job_id/return-to-necessary', async (req, res) => {
         await pool.query('DELETE FROM used_parts WHERE id = $1', [part_id]);
 
         await pool.query('COMMIT');
+
+        // Log the return action
+        await logJobsAction("Return to Necessary", req.username, "part-management", {
+            message: "Part returned to necessary successfully",
+            details: {
+                job_id: job_id,
+                part_number: part_number,
+                quantity_returned: quantity_used
+            }
+        });
+
         res.json({ message: 'Part returned to necessary successfully' });
     } catch (err) {
         await pool.query('ROLLBACK');
@@ -515,9 +599,10 @@ router.post('/:job_id/return-to-necessary', async (req, res) => {
     }
 });
 
+
 // Assuming you're adding this inside routes/jobs.js or a similar file
 
-router.post('/:job_id/update-used-part', async (req, res) => {
+router.post('/:job_id/update-used-part', authorization, async (req, res) => {
     const { job_id } = req.params;
     const { part_id, new_quantity, quantity_diff } = req.body;
 
@@ -545,9 +630,17 @@ router.post('/:job_id/update-used-part', async (req, res) => {
             await pool.query('UPDATE inventory SET quantity_in_stock = quantity_in_stock + $1 WHERE part_number = $2', [Math.abs(quantity_diff), part_number]);
         }
 
-
-        // If necessary, update necessary parts (this part may depend on your business logic)
-        // For example, if decreasing used parts, you might want to increase necessary parts
+        // Log the update action
+        await logJobsAction("Update Used Part", req.username, "part-management", {
+            message: "Used part updated successfully",
+            details: {
+                job_id: job_id,
+                part_id: part_id,
+                part_number: part_number,
+                new_quantity: new_quantity,
+                quantity_diff: quantity_diff
+            }
+        });
 
         await pool.query('COMMIT');
         res.json({ message: 'Used part updated successfully' });
@@ -559,7 +652,7 @@ router.post('/:job_id/update-used-part', async (req, res) => {
 });
 
 
-router.post('/:job_id/remove-from-used', async (req, res) => {
+router.post('/:job_id/remove-from-used', authorization, async (req, res) => {
     const { job_id } = req.params;
     const { part_number, quantity_used } = req.body;
 
@@ -567,16 +660,22 @@ router.post('/:job_id/remove-from-used', async (req, res) => {
         await pool.query('BEGIN');
 
         // Add the quantity back to the inventory
-        await pool.query(
-            'UPDATE inventory SET quantity_in_stock = quantity_in_stock + $1 WHERE part_number = $2',
+        const updateInventory = await pool.query(
+            'UPDATE inventory SET quantity_in_stock = quantity_in_stock + $1 WHERE part_number = $2 RETURNING *',
             [quantity_used, part_number]
         );
 
         // Remove the part from the used parts
-        await pool.query(
-            'DELETE FROM used_parts WHERE job_id = $1 AND part_number = $2',
+        const deletePart = await pool.query(
+            'DELETE FROM used_parts WHERE job_id = $1 AND part_number = $2 RETURNING *',
             [job_id, part_number]
         );
+
+        // Log the removal action
+        await logJobsAction("Delete From Used", req.username, "part-management", {
+            message: `Part ${part_number} removed from used and quantity added back to inventory.`,
+            details: updateInventory.rows[0]
+        });
 
         await pool.query('COMMIT');
 
@@ -589,43 +688,80 @@ router.post('/:job_id/remove-from-used', async (req, res) => {
 });
 
 // DELETE endpoint to remove a job
-router.delete('/:job_id', async (req, res) => {
+router.delete('/:job_id', authorization, async (req, res) => {
     const { job_id } = req.params;
 
     try {
-        const deleteQuery = 'DELETE FROM jobs WHERE job_id = $1';
-        const result = await pool.query(deleteQuery, [job_id]);
+        // Start a transaction
+        await pool.query('BEGIN');
 
-        if (result.rowCount === 0) {
+        // First, fetch the job details for logging before deletion
+        const fetchJob = await pool.query('SELECT * FROM jobs WHERE job_id = $1', [job_id]);
+        if (fetchJob.rowCount === 0) {
+            await pool.query('ROLLBACK'); // Rollback in case there is no such job
             return res.status(404).json({ error: `Job ${job_id} not found` });
         }
 
+        const jobDetails = fetchJob.rows[0];
+
+        // Perform the deletion
+        const deleteQuery = 'DELETE FROM jobs WHERE job_id = $1';
+        const result = await pool.query(deleteQuery, [job_id]);
+
+        // Log the deletion
+        await logJobsAction("Delete Job", req.username, "job-management", {
+            message: `Job at address ${jobDetails.address} removed successfully`,
+            details: jobDetails // Includes the entire job record, change if you need specific fields
+        });
+
+        // Commit the transaction
+        await pool.query('COMMIT');
+
         res.status(200).json({ message: `Job ${job_id} removed successfully` });
     } catch (err) {
+        // Rollback in case of error
+        await pool.query('ROLLBACK');
         console.error('Error removing job:', err);
         res.status(500).json({ error: 'Failed to remove job', detail: err.message });
     }
 });
-//to update a job
-router.put('/:job_id', async (req, res) => {
+
+router.put('/:job_id', authorization, async (req, res) => {
     const { job_id } = req.params;
     const { customer_name, address, phone, email } = req.body; // include other fields as necessary
 
     try {
+        // Start a transaction for safety
+        await pool.query('BEGIN');
+
+        // Fetch current job details for logging purposes
+        const fetchCurrentJob = await pool.query('SELECT * FROM jobs WHERE job_id = $1', [job_id]);
+        if (fetchCurrentJob.rowCount === 0) {
+            await pool.query('ROLLBACK'); // Rollback if no job found
+            return res.status(404).json({ error: `Job ${job_id} not found` });
+        }
+
+        // Perform the update
         const updateQuery = `
             UPDATE jobs
             SET customer_name = $1, address = $2, phone = $3, email = $4
             WHERE job_id = $5
             RETURNING *;`;
-
         const result = await pool.query(updateQuery, [customer_name, address, phone, email, job_id]);
 
-        if (result.rows.length === 0) {
-            return res.status(404).json({ error: `Job ${job_id} not found` });
-        }
+        // Log the update
+        await logJobsAction("Update Job", req.username, "job-management", {
+            message: "Update",
+            details: result.rows[0]
+        });
+
+        // Commit the transaction
+        await pool.query('COMMIT');
 
         res.json(result.rows[0]);
     } catch (err) {
+        // Ensure rollback on error
+        await pool.query('ROLLBACK');
         console.error('Error updating job:', err);
         res.status(500).json({ error: 'Failed to update job', detail: err.message });
     }

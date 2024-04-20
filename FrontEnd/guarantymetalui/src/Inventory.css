@@ -12,7 +12,7 @@ body {
     display: flex;
     margin-top: 90px;
     margin-left: 0px;
-    padding-right: 250px;
+    padding-right: 240px;
     flex-direction: column;
     position: relative;
     overflow: hidden;
@@ -36,7 +36,7 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    height: 120px; /* Height of the fade effect */
+    height: 20px; /* Height of the fade effect */
     background: linear-gradient(to bottom, #364b7200 0%, #05132c 100%);
     z-index: 10;
     pointer-events: none; /* Ensures clicks pass through */
@@ -45,7 +45,7 @@ body {
 .product-table {
     flex-grow: 1;
     background-color: #fff;
-    border: 4px solid #b3b3b3;
+    border: 3px solid #b3b3b3;
     border-radius: 15px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     overflow: hidden;
@@ -144,7 +144,6 @@ text-decoration: none;
 .table-content {
     table-layout: fixed;
     width: 100%;
-    overflow-x: auto;
 }
 
 .table-content table {
@@ -152,16 +151,47 @@ text-decoration: none;
     width: 100%;
 }
 
-.table-content th,
+.table-content thead,
+.table-content th {
+    position: sticky;
+    top: 0;
+    background-color: #ebebeb;
+    z-index: 10; /* ensures the header stays on top */
+}
+
+.table-content tbody {
+    display: block;
+    overflow-y: auto;
+    max-height: calc(100vh - 225px); /* Adjust this value based on your layout */
+    width: 100%;
+}
+
+.table-content th, 
 .table-content td {
     text-align: left;
     padding: 12px;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 3px solid #ddd;
+    box-sizing: border-box;
 }
+
+.table-content tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed; /* Make sure that the table content does not stretch beyond the container */
+}
+
 
 .table-content th {
     background-color: #ebebeb;
     color: rgb(0, 0, 0);
+    padding: 12px;
+    text-align: left;
+    white-space: nowrap; /* Prevents the text from wrapping onto multiple lines */
+    overflow: hidden; /* Keeps the text inside the element's bounds */
+    text-overflow: ellipsis; /* Adds ellipsis when text is clipped */
+    position: sticky; /* Make sure headers stay at the top when scrolling */
+    top: 0;
+    z-index: 10; /* Ensures the header stays on top */
 }
 
 .table-content tr:nth-child(even) {
@@ -311,9 +341,9 @@ text-decoration: none;
     right: 10px;
     width: 250px;
     height: calc(100vh - 105px);
-    padding: 20px;
+    padding: 10px;
     background-color: #fff;
-    border: 4px solid #b3b3b3;
+    border: 3px solid #b3b3b3;
     border-radius: 15px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     overflow-y: auto;
@@ -369,17 +399,6 @@ text-decoration: none;
 
 .category-checkbox input[type="checkbox"] {
     accent-color: #0b2b61; /* Use the main color theme for the checkbox */
-}
-
-/* Responsive adjustments for smaller screens */
-@media (max-width: 576px) {
-    .input-group {
-        flex-direction: column;
-    }
-
-    .input-group > div {
-        flex-basis: 100%;
-    }
 }
 
 .product-details-content {
@@ -451,41 +470,73 @@ text-decoration: none;
     }
 
     .inventory-main {
-        flex-direction: column;
+        display: flex;
+        flex-direction: column-reverse; /* Reverse the order of children, so the filter box comes first */
         padding-right: 0;
         margin-top: 10px;
         margin-left: 0px;
         margin-bottom: 90px;
     }
 
+
     .product-table,
     .filtering-box {
-        margin: 0; 
+        margin: 0;
         width: 100%;
         box-sizing: border-box;
     }
 
     .table-content {
+        table-layout: fixed;
         width: 100%;
     }
-
+    
     .table-content table {
+        border-collapse: collapse;
         width: 100%;
+    }
+    
+    .table-content thead,
+    .table-content th {
+        position: sticky;
+        top: 0;
+        background-color: #ebebeb;
+        overflow: hidden; /* Keeps the text inside the element's bounds */
+        z-index: 10; /* ensures the header stays on top */
+    }
+    
+    .table-content tbody {
+        display: block;
+        overflow-y: auto;
+        max-height: calc(100vh - 330px);
+        width: 100%;
+    }
+    
+    .table-content th, 
+    .table-content td {
+        text-align: left;
+        padding: 12px;
+        overflow: hidden; /* Keeps the text inside the element's bounds */
+        border-bottom: 1px solid #ddd;
+        box-sizing: border-box;
+    }
+    
+    .table-content tr {
+        display: table;
+        width: 100%;
+        table-layout: fixed; /* Make sure that the table content does not stretch beyond the container */
     }
 
     .filtering-box {
         position: static;
         height: auto;
         padding: 20px;
-        overflow-y: auto;
-        margin-top: 10px;
+        overflow-y: visible; /* Remove scroll since we'll only show the search bar */
+        margin-bottom: 20px; /* Provide spacing between the filtering box and the table */
     }
 
-    .filtering-box .search-input,
-    .filtering-box .action-button,
-    .filtering-box select {
-        width: calc(100% - 40px);
-        margin-bottom: 20px;
+    .filter-category, .filtering-box .action-button {
+        display: none;
     }
 
     .product-action-buttons,
@@ -515,7 +566,6 @@ text-decoration: none;
         min-width: 75px;
     }
 }
-
 
 /* Improve the look of the dropdown elements for a cleaner appearance */
 .custom-dropdown::after{

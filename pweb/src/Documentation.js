@@ -41,6 +41,15 @@ import INVENTORY from './Documentation/pages/INVENTORY.md';
 import LOGS from './Documentation/pages/LOGS.md';
 import ORDERS from './Documentation/pages/ORDERS.md';
 
+//Required files for our PWEB
+
+import Software from './Documentation/Software.md';
+import Features from './Documentation/Features.md';
+import Modify from './Documentation/Modify.md';
+import FAQS from './Documentation/FAQS.md';
+
+
+
 import './Documentation.css'
 
 
@@ -66,7 +75,7 @@ const markdownFiles = {
         },
     },
 
-    components:{
+    components: {
         // components
         'ADDPARTMODAL': ADDPARTMODAL,
         'ADDPRODUCT': ADDPRODUCT,
@@ -97,6 +106,13 @@ const markdownFiles = {
     'LOGS_PAGE': LOGS, // Renamed to avoid conflict with 'LOGS' from routes
     'ORDERS': ORDERS,
     },
+
+    required:{
+    'SOFTWARE': Software,
+    'FEATURES': Features,
+    'MODIFY': Modify,
+    'FAQS': FAQS,
+    },
 };
 
 function Documentation() {
@@ -118,40 +134,44 @@ function Documentation() {
             [sectionPath]: !prev[sectionPath]
         }));
     };
-
-    function renderGroup(group, path = []) {
-    return Object.entries(group).map(([key, value]) => {
-        const currentPath = path.concat(key).join('.');
-        if (typeof value === 'object') {
-            // Check if the current section is expanded
+    function renderGroup(group, path = [], level = 0) {
+        return Object.entries(group).map(([key, value]) => {
+            const currentPath = path.concat(key).join('.');
             const isExpanded = expandedSections[currentPath];
-            return (
-                <div key={key}>
-                    <h4 onClick={() => toggleSection(currentPath)} style={{cursor: 'pointer'}}>
-                        {key.toUpperCase()} {isExpanded ? '-' : '+'}
-                    </h4>
-                    {isExpanded && <ul>{renderGroup(value, path.concat(key))}</ul>}
-                </div>
-            );
-        } else {
-            // It's a file, render a clickable button
-            return (
-                <li key={key}>
-                    <button
-                        onClick={() => handleFileSelect(value)}
-                        className={value === selectedFile ? 'active' : ''}
-                    >
-                        {key.replace('.md', '')}
-                    </button>
-                </li>
-            );
-        }
-    });
-}
-
+            const headerStyle = {
+                paddingLeft: `${level * 5}px`, // Increase padding for headers based on depth level
+                cursor: 'pointer'
+            };
+            const itemStyle = {
+                paddingLeft: `${level * 1 + 5}px`, // Items are further indented than headers
+            };
+    
+            if (typeof value === 'object') {
+                return (
+                    <div key={key}>
+                        <h4 style={headerStyle} onClick={() => toggleSection(currentPath)}>
+                            {key.toUpperCase()} {isExpanded ? '-' : '+'}
+                        </h4>
+                        {isExpanded && <ul>{renderGroup(value, path.concat(key), level + 1)}</ul>}
+                    </div>
+                );
+            } else {
+                // It's a file, render a clickable button
+                return (
+                    <li key={key} style={itemStyle}>
+                        <button
+                            onClick={() => handleFileSelect(value)}
+                            className={value === selectedFile ? 'active' : ''}
+                        >
+                            {key.replace('.md', '')}
+                        </button>
+                    </li>
+                );
+            }
+        });
+    }
     
     
-
     return (
         <div className="documentation-container">
             <div className="toc">

@@ -3,8 +3,15 @@ import Topbar from './components/topbar';
 import './Customers.css';
 import './components/AddProduct.css';
 import AddPartModal from './AddPartModal'; 
-
+import { toast } from 'react-toastify';
 import { AppContext } from './App';
+import DeleteJobModal from './components/DeleteJobModal';
+import RemoveEstimateModal from './components/RemoveEstimateModal';
+import ConfirmMoveToUsedModal from './components/ConfirmMovedToUsedModal';
+import UpdatePartModal from './components/UpdatePartModal';
+import RemovePartModal from './components/RemovePartModal';
+import ReturnPartModal from './components/ReturnPartModal';
+import RemoveUsedPartModal from './components/RemoveUsedPartModal';
 
 const Customers = ({ setAuth }) => {
     const [jobs, setJobs] = useState([]);
@@ -15,6 +22,7 @@ const Customers = ({ setAuth }) => {
     const [showModal, setShowModal] = useState(false);
     const [showEstimateModal, setShowEstimateModal] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
+    const [selectedFileName, setSelectedFileName] = useState("");
     const [filter, setFilter] = useState("");
     const {API_BASE_URL} = useContext(AppContext);
     const [showAddPartModal, setShowAddPartModal] = useState(false);
@@ -25,6 +33,20 @@ const Customers = ({ setAuth }) => {
     const [totalNecessaryCost, setTotalNecessaryCost] = useState(0);
     const [totalUsedCost, setTotalUsedCost] = useState(0);
     const [partActionType, setPartActionType] = useState('necessary'); // 'necessary' or 'used'
+    const [expandJobDetails, setExpandJobDetails] = useState(false);
+
+    const [showDeleteJobModal, setShowDeleteJobModal] = useState(false);
+    const [showRemoveEstimateModal, setShowRemoveEstimateModal] = useState(false);
+    const [showMoveToUsedModal, setShowMoveToUsedModal] = useState(false);
+    const [selectedPart, setSelectedPart] = useState(null);
+    const [showUpdatePartModal, setShowUpdatePartModal] = useState(false);
+    const [editablePart, setEditablePart] = useState(null);
+    const [showRemovePartModal, setShowRemovePartModal] = useState(false);
+    const [selectedPartId, setSelectedPartId] = useState(null);
+    const [showReturnModal, setShowReturnModal] = useState(false);
+    const [returnPart, setReturnPart] = useState(null);
+    const [showRemoveUsedModal, setShowRemoveUsedModal] = useState(false);
+    const [selectedUsedPart, setSelectedUsedPart] = useState(null);
 
     useEffect(() => {
         fetchJobs();
@@ -41,9 +63,12 @@ const Customers = ({ setAuth }) => {
             job.customer_name.toLowerCase().includes(filter.toLowerCase()) ||
             job.address.toLowerCase().includes(filter.toLowerCase()) ||
             job.phone.includes(filter) ||
-            job.email.toLowerCase().includes(filter.toLowerCase())
+            job.email.toLowerCase().includes(filter.toLowerCase()) ||
+            job.estimateFileName
         ));
     }, [filter, jobs]);
+    
+
     useEffect(() => {
         const calculateTotal = (parts) => parts.reduce((acc, part) => {
             // Ensure price is a float
@@ -59,68 +84,97 @@ const Customers = ({ setAuth }) => {
         setTotalUsedCost(newTotalUsedCost);
     }, [necessaryParts, usedParts]);
     
-    
-    
-    
     const fetchJobs = async () => {
+        const token = localStorage.getItem('token');
         const endpoint = filter.trim() ? `${API_BASE_URL}/jobs/search?query=${encodeURIComponent(filter.trim())}` : `${API_BASE_URL}/jobs`;
         try {
-            const response = await fetch(endpoint);
+            const response = await fetch(endpoint, {
+                headers: {
+                    'token': token
+                }
+            });
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
             const data = await response.json();
-            setJobs(data); // Make sure to update jobs state as well
-            setFilteredJobs(data);
+    
+            const updatedJobs = data.map(job => {
+                return {
+                    ...job,
+                    hasEstimate: job.estimatefilename !== null,
+                };
+            });
+    
+            setJobs(updatedJobs);
+            setFilteredJobs(updatedJobs);
         } catch (error) {
             console.error('Error fetching jobs:', error);
         }
-    };    
+    };
+    
+    
     
     const fetchNecessaryParts = async (jobId) => {
+        const token = localStorage.getItem('token');
         try {
-            const response = await fetch(`${API_BASE_URL}/jobs/${jobId}/necessary-parts`);
-            if (response.ok) {
-                const partsData = await response.json();
-                setNecessaryParts(partsData);
-            } else if (response.status === 404) {
-                console.log(`No necessary parts found for job ${jobId}`);
-                setNecessaryParts([]); // Clear the necessary parts as none are found for this job
-            } else {
+            const response = await fetch(`${API_BASE_URL}/jobs/${jobId}/necessary-parts`, {
+                headers: {
+                    'token': token
+                }
+            });
+            if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
+            const partsData = await response.json();
+            setNecessaryParts(partsData);
         } catch (error) {
-            console.error('Error fetching necessary parts:', error);
-            setNecessaryParts([]); // Clear the necessary parts to handle any error
+            setNecessaryParts([]);
         }
     };
     
     const fetchUsedParts = async (jobId) => {
+        const token = localStorage.getItem('token');
         try {
-            const response = await fetch(`${API_BASE_URL}/jobs/${jobId}/used-parts`);
+            const response = await fetch(`${API_BASE_URL}/jobs/${jobId}/used-parts`, {
+                headers: {
+                    'token': token
+                }
+            });
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
             const partsData = await response.json();
             setUsedParts(partsData);
         } catch (error) {
-            console.error('Error fetching used parts:', error);
+
         }
-    };    
+    };
+    
     const handleSelectJob = async (jobId) => {
         const isSameJob = selectedJobId === jobId;
-        setSelectedJobId(isSameJob ? null : jobId);
     
-        if (!isSameJob) {
-            fetchNecessaryParts(jobId); // Fetch necessary parts for the selected job
-            fetchUsedParts(jobId); // Fetch used parts for the selected job
+        // Toggle visibility or set a new job
+        if (isSameJob) {
+            setExpandJobDetails(!expandJobDetails);
+        } else {
+            setSelectedJobId(jobId);
+            setExpandJobDetails(true);
+            fetchNecessaryParts(jobId);
+            fetchUsedParts(jobId);
+    
+            // Fetch estimate information for the selected job
+            const token = localStorage.getItem('token');
             try {
-                const response = await fetch(`${API_BASE_URL}/jobs/check-estimate/${jobId}`);
+                const response = await fetch(`${API_BASE_URL}/jobs/check-estimate/${jobId}`, {
+                    headers: {
+                        'token': token
+                    }
+                });
                 if (response.ok) {
                     const { hasEstimate } = await response.json();
                     const updatedJobs = jobs.map(job => {
                         if (job.job_id === jobId) {
-                            return { ...job, hasEstimate };
+                            return { ...job, hasEstimate};
                         }
                         return job;
                     });
@@ -133,7 +187,6 @@ const Customers = ({ setAuth }) => {
             }
         }
     };
-    
 
     const handleToggleModal = () => {
         setShowModal(!showModal);
@@ -147,19 +200,20 @@ const Customers = ({ setAuth }) => {
         event.preventDefault();
         const formData = new FormData(event.target);
         const jobData = Object.fromEntries(formData.entries());
-
+        const token = localStorage.getItem('token');
+    
         try {
             const response = await fetch(`${API_BASE_URL}/jobs`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'token': token
                 },
                 body: JSON.stringify(jobData),
             });
-
+    
             if (response.ok) {
                 const responseData = await response.json();
-                console.log('Job added:', responseData);
                 setJobs([responseData.job, ...jobs]); // Prepend the new job to the list
                 fetchJobs(); // Re-fetch jobs to update the list
                 handleToggleModal(); // Close the modal
@@ -170,24 +224,42 @@ const Customers = ({ setAuth }) => {
             console.error('Failed to add job:', err);
         }
     };
-    const handleEditJob = (jobId) => {
-        const jobToEdit = jobs.find(job => job.job_id === jobId);
-        setEditingJob(jobToEdit); // Set the job to be edited
-        setShowEditModal(true); // Show the edit modal
+    
+    const handleEditJob = (event, jobId) => {
+        event.stopPropagation(); // Stop the row click event from firing
+        const jobToEdit = jobs.find(job => job.job_id === jobId); // Find the job with the same ID
+        if (jobToEdit) {
+            setEditingJob(jobToEdit); // Set the job data to the editingJob state
+            setShowEditModal(true); // Open the modal
+        } else {
+            console.error('Job not found');
+        }
+    };
+    
+    
+    const handleRemoveJob = (event, jobId) => {
+        event.stopPropagation();
+        setSelectedJobId(jobId);
+        setExpandJobDetails(false);  // Ensure details are not expanded when opening the remove confirmation
+        setShowDeleteJobModal(true);
     };
     
     const handleSaveJob = async () => {
         const { job_id, ...updatedFields } = editingJob;
+        const token = localStorage.getItem('token'); // Retrieve the token from local storage
     
         try {
             const response = await fetch(`${API_BASE_URL}/jobs/${job_id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token // Include the token in the request header
+                },
                 body: JSON.stringify(updatedFields)
             });
     
             if (response.ok) {
-                alert('Job updated successfully.');
+                toast.success('Job updated successfully.'); // Using toast for success message
                 fetchJobs(); // Refresh the jobs list
                 setShowEditModal(false); // Close the edit modal
             } else {
@@ -195,40 +267,31 @@ const Customers = ({ setAuth }) => {
             }
         } catch (error) {
             console.error('Error updating job:', error);
-            alert('Failed to update job. ' + error.message);
+            toast.error('Failed to update job. ' + error.message); // Using toast for error message
         }
-    };
-    
-    const handleRemoveJob = async (jobId) => {
-        if (window.confirm(`Are you sure you want to remove job ${jobId}?`)) {
-            try {
-                const response = await fetch(`${API_BASE_URL}/jobs/${jobId}`, {
-                    method: 'DELETE',
-                });
-    
-                if (response.ok) {
-                    alert(`Job ${jobId} removed successfully.`);
-                    fetchJobs(); // Re-fetch the jobs list to update the UI
-                } else {
-                    throw new Error(`Failed to remove job ${jobId}`);
-                }
-            } catch (error) {
-                console.error('Error removing job:', error);
-                alert('Failed to remove job. ' + error.message);
-            }
-        }
-    };
-    
+    }; 
+
     const handleViewEstimate = async (jobId) => {
-        console.log('Viewing Estimate for job ID:', jobId);
+        const token = localStorage.getItem('token'); // Retrieve the token from local storage
+    
         try {
-            const checkResponse = await fetch(`https://localhost/api/jobs/check-estimate/${jobId}`);
+            const checkResponse = await fetch(`${API_BASE_URL}/jobs/check-estimate/${jobId}`, {
+                headers: {
+                    'token': token // Include the token in the request header
+                }
+            });
             const checkData = await checkResponse.json();
             if (!checkData.hasEstimate) {
-                alert("No estimate exists for this job.");
+                toast.info("No estimate exists for this job.");
                 return;
             }
-            const response = await fetch(`https://localhost/api/jobs/estimate/${jobId}`);
+    
+            const response = await fetch(`${API_BASE_URL}/jobs/estimate/${jobId}`, {
+                headers: {
+                    'token': token // Include the token in the request header for fetching the estimate
+                }
+            });
+    
             if (response.ok) {
                 const estimateData = await response.json();
                 const pdfBlob = new Blob([new Uint8Array(estimateData.pdf_data.data)], { type: 'application/pdf' });
@@ -236,326 +299,322 @@ const Customers = ({ setAuth }) => {
                 
                 // Open the PDF in a new browser tab
                 window.open(pdfUrl, '_blank', 'noopener,noreferrer');
-    
-                // If you want to display the PDF in an iframe within the current page, you could set the src of the iframe to pdfUrl
-                // document.getElementById('your-iframe-id').src = pdfUrl;
             } else {
                 console.error('Failed to fetch estimate');
+                toast.error('Failed to fetch estimate');
             }
         } catch (error) {
             console.error('Error fetching estimate:', error);
+            toast.error('Error fetching estimate: ' + error.message);
         }
-    };
+    };    
+
     const handleAddEstimate = async (jobId) => {
+        const token = localStorage.getItem('token'); // Retrieve the token from local storage
+    
         try {
-            const response = await fetch(`https://localhost/api/jobs/check-estimate/${jobId}`);
+            const response = await fetch(`${API_BASE_URL}/jobs/check-estimate/${jobId}`, {
+                headers: {
+                    'token': token // Include the token in the request header
+                }
+            });
             if (!response.ok) {
                 throw new Error('Failed to check estimate existence');
             }
             const { hasEstimate } = await response.json();
             if (hasEstimate) {
-                alert("An estimate already exists for this job.");
+                toast.info("An estimate already exists for this job.");
             } else {
-                console.log('Adding Estimate for job ID:', jobId);
                 setShowEstimateModal(true);
             }
         } catch (error) {
             console.error('Error checking estimate:', error);
-            alert('Error checking for existing estimate');
+            toast.error('Error checking for existing estimate: ' + error.message);
         }
     };
     
+
     const handleRemoveEstimate = async (jobId) => {
+        const token = localStorage.getItem('token');
         try {
-            const response = await fetch(`https://localhost/api/jobs/check-estimate/${jobId}`);
-            if (!response.ok) {
-                throw new Error('Failed to check estimate existence');
-            }
-            const { hasEstimate } = await response.json();
-            if (!hasEstimate) {
-                alert("No estimate exists for this job to remove.");
+            const checkResponse = await fetch(`${API_BASE_URL}/jobs/check-estimate/${jobId}`, {
+                headers: {
+                    'token': token
+                }
+            });
+
+            const checkData = await checkResponse.json();
+            if (!checkResponse.ok || !checkData.hasEstimate) {
+                toast.info("No estimate exists for this job to remove.");
                 return;
             }
-    
-            if (window.confirm('Are you sure you want to remove this estimate?')) {
-                console.log('Removing Estimate for job ID:', jobId);
-                const removeResponse = await fetch(`https://localhost/api/jobs/remove-estimate/${jobId}`, {
-                    method: 'DELETE'
-                });
-                if (removeResponse.ok) {
-                    alert('Estimate removed successfully');
-                    fetchJobs(); // Re-fetch jobs to update the list and reflect the removal of the estimate
-                } else {
-                    const errorData = await removeResponse.json();
-                    console.error('Failed to remove estimate:', errorData.message);
-                    alert(`Failed to remove estimate: ${errorData.message}`);
-                }
-            }
+            
+            setSelectedJobId(jobId); // Set job ID to state
+            setShowRemoveEstimateModal(true); // Show the modal for confirmation
         } catch (error) {
             console.error('Error in removing estimate:', error);
-            alert('Error checking for existing estimate or removing it. Please try again.');
+            toast.error('Error checking for existing estimate or removing it. Please try again.');
         }
     };
-    
-      
-    const handleFileChange = (event) => {
-        setSelectedFile(event.target.files[0]);
-    };
 
-    const handleUploadEstimate = async (event) => {
-        event.preventDefault();
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        setSelectedFile(file);
+        setSelectedFileName(file.name);  // Immediately update the file name in the stat
+    };
+    
+
+    const handleUploadEstimate = async () => {
         const formData = new FormData();
         formData.append('estimatePdf', selectedFile);
         formData.append('job_id', selectedJobId);
+        const token = localStorage.getItem('token');
     
         try {
-            const response = await fetch('https://localhost/api/jobs/upload-estimate', {
+            const response = await fetch(`${API_BASE_URL}/jobs/upload-estimate`, {
                 method: 'POST',
+                headers: {
+                    'token': token
+                },
                 body: formData,
             });
             if (response.ok) {
-                console.log('Estimate uploaded successfully');
+                toast.success('Estimate uploaded successfully');
+                setSelectedFile(null);
+                setSelectedFileName("");
+                fetchJobs();
                 setShowEstimateModal(false);
-    
-                // Update the job list to reflect the new estimate
-                const updatedJobs = jobs.map(job => {
-                    if (job.job_id === selectedJobId) {
-                        return { ...job, hasEstimate: true };
-                    }
-                    return job;
-                });
-                setJobs(updatedJobs);
-                // No need to call fetchJobs here as we already updated the state
-    
             } else {
-                throw new Error('Failed to upload estimate');
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to upload estimate');
             }
         } catch (error) {
             console.error('Error uploading estimate:', error);
+            toast.error('Error uploading estimate: ' + error.message);
         }
     };
+
     const handleAddNecessaryPart = () => {
         setPartActionType('necessary');
         setShowAddPartModal(true);
     };
+
     const handleAddPartToNecessary = async (addedPart) => {
-        // Assuming addedPart is the part returned from the server with the necessary details
         setNecessaryParts(prevParts => [...prevParts, addedPart]);
-        // Optionally refresh from server if needed
         await fetchNecessaryParts(selectedJobId);
     };
     const handleAddPartToUsed = async (addedPart) => {
-        // Add the part to the used parts state
         setUsedParts(prevParts => [...prevParts, addedPart]);
-        // Decrement the inventory (considering the added part's quantity)
-        // Here, you should also make an API call to update the inventory in the backend
-        // await updateInventory(addedPart.part_number, -addedPart.quantity_used);
-        await fetchUsedParts(selectedJobId); // To refresh the used parts from the server
+        await fetchUsedParts(selectedJobId);
     };
-         
+
     const handleCloseAddPartModal = () => {
         setShowAddPartModal(false);
-    };
-    // This function will be passed to the AddPartModal and called when a part is selected
-    const handleAddPart = (part) => {
-    const updatedNecessaryParts = [...necessaryParts, part];
-    setNecessaryParts(updatedNecessaryParts);
-    handleCloseAddPartModal();  // Close the modal after adding the part
-    };    
-    const handleMoveToUsed = async (partId) => {
-        const part = necessaryParts.find(p => p.id === partId);
-        if (!part) {
-            alert('Part not found');
-            return;
-        }
-        if (parseInt(part.quantity_required, 10) <= 0) {
-            alert('Cannot move to used as the quantity is 0');
-            return;
-        }
-    
-        const confirmMove = window.confirm(`Are you sure you want to move part ${part.part_number} to used?`);
-        if (!confirmMove) return;
-    
+    };  
+
+    const movePartToUsed = async () => {
         const requestBody = {
-            part_number: part.part_number,
-            quantity_to_move: parseInt(part.quantity_required, 10) // Ensuring the quantity is an integer
+            part_number: selectedPart.part_number,
+            quantity_to_move: parseInt(selectedPart.quantity_required, 10)
         };
-    
+        const token = localStorage.getItem('token');
+
         try {
             const response = await fetch(`${API_BASE_URL}/jobs/${selectedJobId}/move-to-used`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token
+                },
                 body: JSON.stringify(requestBody)
             });
-    
+
             if (response.ok) {
                 const { actualQuantityMoved, message } = await response.json();
-                alert(message); // Show the message from the backend
-    
-                // Update necessary parts in UI based on the actual quantity moved
-                const remainingQuantity = parseInt(part.quantity_required, 10) - actualQuantityMoved;
-                setNecessaryParts(necessaryParts.map(p => 
-                    p.id === partId ? { ...p, quantity_required: remainingQuantity } : p
+                toast.success(message);
+
+                const remainingQuantity = parseInt(selectedPart.quantity_required, 10) - actualQuantityMoved;
+                setNecessaryParts(necessaryParts.map(p =>
+                    p.id === selectedPart.id ? { ...p, quantity_required: remainingQuantity } : p
                 ));
-    
-                // Update used parts in UI
-                const existingUsedPart = usedParts.find(p => p.part_number === part.part_number);
+
+                const existingUsedPart = usedParts.find(p => p.part_number === selectedPart.part_number);
                 if (existingUsedPart) {
-                    setUsedParts(usedParts.map(p => 
-                        p.part_number === part.part_number
+                    setUsedParts(usedParts.map(p =>
+                        p.part_number === selectedPart.part_number
                             ? { ...p, quantity_used: p.quantity_used + actualQuantityMoved }
                             : p
                     ));
                 } else {
-                    setUsedParts([...usedParts, { ...part, quantity_used: actualQuantityMoved }]);
+                    setUsedParts([...usedParts, { ...selectedPart, quantity_used: actualQuantityMoved }]);
                 }
-    
-                // Optionally, refresh the state from the server to ensure it is in sync
+
                 fetchNecessaryParts(selectedJobId);
                 fetchUsedParts(selectedJobId);
-            } else if (response.status === 400) {
-                const errorResponse = await response.json();
-                alert(errorResponse.error); // Show a user-friendly error message
             } else {
-                throw new Error(`Unhandled response status: ${response.status}`);
+                const errorResponse = await response.json();
+                toast.error(errorResponse.error);
             }
         } catch (error) {
-            alert('Failed to move part to used. Please try again.');
+            toast.error('Failed to move part to used. Please try again. ' + error.message);
             console.error('Error moving part to used:', error);
         }
     };
-    
-    
-    
-    
-    
+
+    const handleMoveToUsed = (partId) => {
+        const part = necessaryParts.find(p => p.id === partId);
+        if (!part) {
+            toast.error('Part not found');
+            return;
+        }
+        if (parseInt(part.quantity_required, 10) <= 0) {
+            toast.error('Cannot move to used as the quantity is 0');
+            return;
+        }
+
+        setSelectedPart(part);
+        setShowMoveToUsedModal(true);
+    };
+
     const handleEditNecessaryPart = (part) => {
         setEditingPart({...part, newQuantity: part.quantity_required});
     };    
+
     const saveEditedPart = async (part) => {
         const newQuantity = parseInt(part.newQuantity, 10);
-    
+
         if (newQuantity < 0) {
-            alert('Quantity cannot be negative.');
+            toast.error('Quantity cannot be negative.');
             return;
         }
-    
-        if (newQuantity === 0) {
-            // If the quantity is 0, remove the part
-            if (window.confirm("Quantity is 0. This will remove the part. Continue?")) {
-                try {
-                    const response = await fetch(`${API_BASE_URL}/jobs/necessary-parts/${part.id}`, {
-                        method: 'DELETE'
-                    });
-    
-                    if (response.ok) {
-                        setNecessaryParts(necessaryParts.filter(p => p.id !== part.id));
-                    } else {
-                        throw new Error('Failed to remove necessary part');
-                    }
-                } catch (error) {
-                    console.error('Error removing necessary part:', error);
-                    alert('Failed to remove necessary part. ' + error.message);
-                }
+
+        setEditablePart(part); // Set the part for potential editing or removal
+        setShowUpdatePartModal(true); // Open the modal for confirmation
+    };
+
+    const updatePart = async (part) => {
+        const token = localStorage.getItem('token');
+        const newQuantity = parseInt(part.newQuantity, 10);
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/jobs/necessary-parts/${part.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token
+                },
+                body: JSON.stringify({ ...part, quantity_required: newQuantity })
+            });
+
+            if (response.ok) {
+                const updatedParts = necessaryParts.map(p =>
+                    p.id === part.id ? { ...p, quantity_required: newQuantity } : p
+                );
+                setNecessaryParts(updatedParts);
+                setEditingPart(null);
+                toast.success('Part updated successfully.');
+                setShowUpdatePartModal(false);
+            } else {
+                throw new Error('Failed to update necessary part');
             }
-        } else {
-            // If the quantity is greater than 0, update the part
-            try {
-                const response = await fetch(`${API_BASE_URL}/jobs/necessary-parts/${part.id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ ...part, quantity_required: newQuantity })
-                });
-    
-                if (response.ok) {
-                    const updatedParts = necessaryParts.map(p => 
-                        p.id === part.id ? { ...p, quantity_required: newQuantity } : p
-                    );
-                    setNecessaryParts(updatedParts);
-                    setEditingPart(null); // Reset editing part state
-                } else {
-                    throw new Error('Failed to update necessary part');
-                }
-            } catch (error) {
-                console.error('Error updating necessary part:', error);
-                alert('Failed to update necessary part. ' + error.message);
-            }
+        } catch (error) {
+            console.error('Error updating necessary part:', error);
+            toast.error('Failed to update necessary part. ' + error.message);
         }
     };
-    
-    
-      
+
+    const handleRemoveNecessaryPartClick = (partId) => {
+        setSelectedPartId(partId);
+        setShowRemovePartModal(true);
+    };
+
     const handleRemoveNecessaryPart = async (partId) => {
-        if (window.confirm("Are you sure you want to remove this part?")) {
-            try {
-                const response = await fetch(`${API_BASE_URL}/jobs/necessary-parts/${partId}`, {
-                    method: 'DELETE'
-                });
-                
-                if (response.ok) {
-                    setNecessaryParts(necessaryParts.filter(part => part.id !== partId));
-                } else {
-                    throw new Error('Failed to remove necessary part');
+        const token = localStorage.getItem('token'); // Retrieve the token from local storage
+        try {
+            const response = await fetch(`${API_BASE_URL}/jobs/necessary-parts/${partId}`, {
+                method: 'DELETE',
+                headers: {
+                    'token': token // Include the token in the request header
                 }
-            } catch (error) {
-                console.error('Error removing necessary part:', error);
+            });
+
+            if (response.ok) {
+                setNecessaryParts(necessaryParts.filter(part => part.id !== partId));
+                toast.success('Necessary part removed successfully.');
+            } else {
+                throw new Error('Failed to remove necessary part');
             }
+        } catch (error) {
+            console.error('Error removing necessary part:', error);
+            toast.error('Failed to remove necessary part. ' + error.message);
         }
     };
-    
+
     const handleAddUsedPart = () => {
         setPartActionType('used');
         setShowAddPartModal(true);
+    };
+
+    const handleOpenReturnModal = (part) => {
+        setReturnPart(part);
+        setShowReturnModal(true);
     };    
-    
-    const handleReturnToNecessary = async (partId) => {
-        const part = usedParts.find(p => p.id === partId);
-        if (!part) {
-            alert('Part not found');
+
+    const handleReturnToNecessary = async () => {
+        if (!returnPart) {
+            toast.error("No part selected for return.");
             return;
         }
     
-        if (window.confirm(`Are you sure you want to return part ${part.part_number} to necessary?`)) {
-            try {
-                const response = await fetch(`${API_BASE_URL}/jobs/${selectedJobId}/return-to-necessary`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ part_id: partId, quantity_used: part.quantity_used })
-                });
+        const token = localStorage.getItem('token');
     
-                if (!response.ok) {
-                    const errorResponse = await response.json();
-                    alert(errorResponse.error);
-                    return;
-                }
+        try {
+            const response = await fetch(`${API_BASE_URL}/jobs/${selectedJobId}/return-to-necessary`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token
+                },
+                body: JSON.stringify({ part_id: returnPart.id, quantity_used: returnPart.quantity_used })
+            });
     
-                const data = await response.json();
-                alert(data.message);
-    
-                // Update local state for UI
-                const updatedUsedParts = usedParts.filter(p => p.id !== partId);
-                setUsedParts(updatedUsedParts);
-                
-                // Optionally, refresh necessary parts from the server to get updated data
-                fetchNecessaryParts(selectedJobId);
-            } catch (error) {
-                console.error('Error returning part to necessary:', error);
-                alert('Failed to return part to necessary. ' + error.message);
+            if (!response.ok) {
+                const errorResponse = await response.json();
+                toast.error(errorResponse.error);
+                return;
             }
-        }
-    };
     
+            const data = await response.json();
+            toast.success(data.message);
+    
+            // Update local state for UI
+            const updatedUsedParts = usedParts.filter(p => p.id !== returnPart.id);
+            setUsedParts(updatedUsedParts);
+            
+            // Optionally, refresh necessary parts from the server to get updated data
+            fetchNecessaryParts(selectedJobId);
+        } catch (error) {
+            console.error('Error returning part to necessary:', error);
+            toast.error('Failed to return part to necessary. ' + error.message);
+        }
+    
+        // Close the modal
+        setShowReturnModal(false);
+        setReturnPart(null);
+    };    
+
     const handleEditUsedPart = (partId) => {
         const part = usedParts.find(p => p.id === partId);
         setEditingUsedPart(part ? { ...part, newQuantity: part.quantity_used } : null);
     };
+
     const saveEditedUsedPart = async (part) => {
         const originalQuantity = part.quantity_used;
         const newQuantity = parseInt(part.newQuantity, 10);
     
         // Check for negative values
         if (newQuantity < 0) {
-            alert('Quantity cannot be negative.');
+            toast.error('Quantity cannot be negative.');
             return;
         }
     
@@ -566,17 +625,20 @@ const Customers = ({ setAuth }) => {
         }
     
         const quantityDiff = newQuantity - originalQuantity;
+        const token = localStorage.getItem('token'); // Retrieve the token from local storage
     
         // If increasing the quantity, check if enough inventory exists
         if (quantityDiff > 0) {
-            const inventoryRes = await fetch(`${API_BASE_URL}/inventory/${part.part_number}`);
+            const inventoryRes = await fetch(`${API_BASE_URL}/inventory/${part.part_number}`, {
+                headers: { 'token': token }  // Include the token in the request header
+            });
             if (!inventoryRes.ok) {
-                alert('Error fetching inventory data.');
+                toast.error('Error fetching inventory data.');
                 return;
             }
             const inventoryData = await inventoryRes.json();
             if (inventoryData.quantity_in_stock < quantityDiff) {
-                alert('Not enough inventory to increase used quantity.');
+                toast.error('Not enough inventory to increase used quantity.');
                 return;
             }
         }
@@ -585,7 +647,10 @@ const Customers = ({ setAuth }) => {
         try {
             const response = await fetch(`${API_BASE_URL}/jobs/${selectedJobId}/update-used-part`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token  // Include the token in the request header
+                },
                 body: JSON.stringify({
                     part_id: part.id,
                     new_quantity: newQuantity,
@@ -595,7 +660,7 @@ const Customers = ({ setAuth }) => {
     
             if (response.ok) {
                 const data = await response.json();
-                alert(data.message);
+                toast.success(data.message);
     
                 // Update the local state to reflect the new quantity in the used parts list
                 setUsedParts(usedParts.map(p =>
@@ -610,25 +675,37 @@ const Customers = ({ setAuth }) => {
                 // Assuming you have a function to fetch inventory
             } else {
                 const errorResponse = await response.json();
-                alert(errorResponse.error);
+                toast.error(errorResponse.error);
             }
         } catch (error) {
             console.error('Error updating used part:', error);
-            alert('Failed to update used part. ' + error.message);
+            toast.error('Failed to update used part. ' + error.message);
         }
     };
-    
+
     const handleRemoveUsedPart = async (partId) => {
         const part = usedParts.find(p => p.id === partId);
-        if (!part) return;
+        if (!part) {
+            toast.error('Part not found');
+            return;
+        }
     
-        const confirmRemove = window.confirm(`Are you sure you want to remove part ${part.part_number} from used?`);
-        if (!confirmRemove) return;
+        setSelectedUsedPart(part);
+        setShowRemoveUsedModal(true);
+    };
+    
+    // This function will be triggered upon modal confirmation
+    const confirmRemoveUsedPart = async (partId) => {
+        const part = usedParts.find(p => p.id === partId);
+        const token = localStorage.getItem('token');
     
         try {
             const response = await fetch(`${API_BASE_URL}/jobs/${selectedJobId}/remove-from-used`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token
+                },
                 body: JSON.stringify({
                     part_number: part.part_number,
                     quantity_used: part.quantity_used
@@ -640,47 +717,47 @@ const Customers = ({ setAuth }) => {
                 throw new Error('Network response was not ok: ' + errorText);
             }
     
-            await response.json(); // Assuming the backend sends some confirmation message
-            alert(`Part ${part.part_number} removed from used.`);
-    
-            // Update the UI by removing the part from the used parts list
+            await response.json();
+            toast.success(`Part ${part.part_number} removed from used.`);
             setUsedParts(usedParts.filter(p => p.id !== partId));
-            
         } catch (error) {
             console.error('Error removing part from used:', error);
-            alert('Failed to remove part from used. ' + error.message);
+            toast.error('Failed to remove part from used. ' + error.message);
         }
     };
-    
+
     return (
         <div className="customers">
             <Topbar setAuth={setAuth} />
             <div className="customers-main">
-            <div className="filtering-box-jobs">
-                    <input
-                        type="text"
-                        className="search-input-jobs"
-                        placeholder="Search jobs..."
-                        value={filter}
-                        onChange={handleFilterChange}
-                    />
-                </div>
                 <div className="customer-table">
                     <div className="table-header">
-                        <span className="table-title"><strong>JOBS</strong></span>
-                        <button onClick={handleToggleModal} className="add-button">+</button>
+                    <span className="table-title"><strong>JOBS</strong></span>
+                        <div className="header-controls">
+                            <input
+                                type="text"
+                                className="search-input-jobs"
+                                placeholder="Search jobs..."
+                                value={filter}
+                                onChange={handleFilterChange}
+                                style={{ marginRight: '10px' }} // Adds spacing between the search input and the add button
+                            />
+                            <button onClick={handleToggleModal} className="add-button">
+                                +
+                            </button>
+                        </div>
                     </div>
-                    <div className="table-content">
+                    <div className="table-content-jobs">
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Job ID</th>
-                                    <th>Customer Name</th>
-                                    <th>Address</th>
-                                    <th>Phone</th>
-                                    <th>E-mail</th>
-                                    <th>Date Created</th>
-                                    <th>Action</th>
+                                    <th className="ignore-column">Job ID</th>
+                                    <th className="ignore-column">Customer Name</th>
+                                    <th className="address-column">Address</th>
+                                    <th className="ignore-column">Phone</th>
+                                    <th className="ignore-column">E-mail</th>
+                                    <th className="ignore-column">Date Created</th>
+                                    <th className="actions-column">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -688,35 +765,38 @@ const Customers = ({ setAuth }) => {
                                 filteredJobs.map((job, index) => (
                                     <React.Fragment key={job.id || index}>
                                         <tr onClick={() => handleSelectJob(job.job_id)}>
-                                            <td>{job.job_id}</td>
-                                            <td>{job.customer_name}</td>
-                                            <td>{job.address}</td>
-                                            <td>{job.phone}</td>
-                                            <td>{job.email}</td>
-                                            <td>{new Date(job.date_created).toLocaleDateString()}</td>
-                                            <td>
-                                            <button onClick={() => handleEditJob(job.job_id)} className="edit-btn">Edit</button>
-                                            <button onClick={() => handleRemoveJob(job.job_id)} className="remove-btn">Remove</button>
+                                            <td className="ignore-column">{job.job_id}</td>
+                                            <td className="ignore-column">{job.customer_name}</td>
+                                            <td className="address-column">{job.address}</td>
+                                            <td className="ignore-column">{job.phone}</td>
+                                            <td className="ignore-column">{job.email}</td>
+                                            <td className="ignore-column">{new Date(job.date_created).toLocaleDateString()}</td>
+                                            <td className="actions-column">
+                                                <button onClick={(e) => handleEditJob(e, job.job_id)} className="edit-btn">Edit</button>
+                                                <button onClick={(e) => handleRemoveJob(e, job.job_id)} className="remove-btn">Remove</button>
                                             </td>
                                         </tr>
-                                        {selectedJobId === job.job_id && (
+                                        {expandJobDetails && selectedJobId === job.job_id && (
                                             <tr>
                                                 <td colSpan="7">
                                                     <div className="job-details-expanded">
                                                         {/* Estimates Section */}
                                                         <div className="job-details-section">
                                                             <h4>Job Estimate</h4>
-                                                            <div className="details-button-container">
-                                                                {job.hasEstimate && (
-                                                                    <>
+                                                            {job.hasEstimate ? (
+                                                                <div>
+                                                                    <strong><p>{job.estimatefilename}</p></strong>
+                                                                    <div>
                                                                         <button onClick={() => handleViewEstimate(job.job_id)} className="details-btn">View Estimate</button>
                                                                         <button onClick={() => handleRemoveEstimate(job.job_id)} className="details-btn">Remove Estimate</button>
-                                                                    </>
-                                                                )}
-                                                                {!job.hasEstimate && (
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <div>
+                                                                    <strong><p>No file uploaded yet</p></strong>
                                                                     <button onClick={() => handleAddEstimate(job.job_id)} className="details-btn">Add Estimate</button>
-                                                                )}
-                                                            </div>
+                                                                </div>
+                                                            )}
                                                         </div>
                                                         {/* Necessary Parts Section */}
                                                         <div className="job-details-section">
@@ -726,9 +806,9 @@ const Customers = ({ setAuth }) => {
                                                                 <thead>
                                                                     <tr>
                                                                         <th>Part Number</th>
-                                                                        <th>Description</th>
+                                                                        <th className="ignore-column">Description</th>
                                                                         <th>Quantity Required</th>
-                                                                        <th>Price</th>
+                                                                        <th className="ignore-column">Price</th>
                                                                         <th>Actions</th>
                                                                     </tr>
                                                                 </thead>
@@ -736,7 +816,7 @@ const Customers = ({ setAuth }) => {
                                                                 {necessaryParts.map(part => (
                                                                     <tr key={part.id}>
                                                                         <td>{part.part_number}</td>
-                                                                        <td>{part.description}</td>
+                                                                        <td className="ignore-column">{part.description}</td>
                                                                         <td>
                                                                             {editingPart && editingPart.id === part.id ? (
                                                                                 <input
@@ -749,15 +829,15 @@ const Customers = ({ setAuth }) => {
                                                                                 part.quantity_required
                                                                             )}
                                                                         </td>
-                                                                        <td>${part.price?.toFixed(2) ?? 'N/A'}</td>
-                                                                        <td>
+                                                                        <td className="ignore-column">${part.price?.toFixed(2) ?? 'N/A'}</td>
+                                                                        <td className="details-button-container">
                                                                             <button onClick={() => handleMoveToUsed(part.id)} className="details-btn">Move to Used</button>
                                                                             {editingPart && editingPart.id === part.id ? (
                                                                                 <button onClick={() => saveEditedPart(editingPart)} className="details-btn">Save</button>
                                                                             ) : (
                                                                                 <button onClick={() => handleEditNecessaryPart(part)} className="details-btn">Edit</button>
                                                                             )}
-                                                                            <button onClick={() => handleRemoveNecessaryPart(part.id)} className="details-btn">Remove</button>
+                                                                            <button onClick={() => handleRemoveNecessaryPartClick(part.id)} className="details-btn">Remove</button>
                                                                         </td>
                                                                     </tr>
                                                                 ))}
@@ -773,9 +853,9 @@ const Customers = ({ setAuth }) => {
                                                                 <thead>
                                                                     <tr>
                                                                         <th>Part Number</th>
-                                                                        <th>Description</th>
+                                                                        <th className="ignore-column">Description</th>
                                                                         <th>Quantity Used</th>
-                                                                        <th>Price</th>
+                                                                        <th className="ignore-column">Price</th>
                                                                         <th>Actions</th>
                                                                     </tr>
                                                                 </thead>
@@ -783,7 +863,7 @@ const Customers = ({ setAuth }) => {
                                                                 {usedParts.map(part => (
                                                                     <tr key={part.id}>
                                                                         <td>{part.part_number}</td>
-                                                                        <td>{part.description}</td>
+                                                                        <td className="ignore-column">{part.description}</td>
                                                                         <td>
                                                                             {editingUsedPart && editingUsedPart.id === part.id ? (
                                                                                 <input
@@ -796,9 +876,9 @@ const Customers = ({ setAuth }) => {
                                                                                 part.quantity_used
                                                                             )}
                                                                         </td>
-                                                                        <td>${part.price?.toFixed(2) ?? 'N/A'}</td>
-                                                                        <td>
-                                                                            <button onClick={() => handleReturnToNecessary(part.id)} className="details-btn">Return to Necessary</button>
+                                                                        <td className="ignore-column">${part.price?.toFixed(2) ?? 'N/A'}</td>
+                                                                        <td className="details-button-container">
+                                                                            <button onClick={() => handleOpenReturnModal(part)} className="details-btn">Return to Necessary</button>
                                                                             {editingUsedPart && editingUsedPart.id === part.id ? (
                                                                                 <button onClick={() => saveEditedUsedPart(editingUsedPart)} className="details-btn">Save</button>
                                                                             ) : (
@@ -943,22 +1023,25 @@ const Customers = ({ setAuth }) => {
             {showEstimateModal && (
                 <div className="modal-backdrop">
                     <div className="modal-content">
-                        <form onSubmit={handleUploadEstimate}>
-                            <div className="modal-header">
-                                <h2>Add Estimate</h2>
-                                <button onClick={() => setShowEstimateModal(false)} className="modal-close-button">×</button>
+                        <div className="modal-header">
+                            <h2>Add Estimate</h2>
+                            <button onClick={() => setShowEstimateModal(false)} className="modal-close-button">×</button>
+                        </div>
+                        <div className="modal-body">
+                            <div className="form-group">
+                                {selectedFileName ? (
+                                    <div style={{ textAlign: 'center', fontWeight: 'bold' }}>{selectedFileName}</div>
+                                ) : (
+                                    <div style={{ textAlign: 'center', fontWeight: 'bold' }}>No file selected</div>
+                                )}
+                                <label htmlFor="estimatePdf" className="custom-file-upload">Upload PDF</label>
+                                <input type="file" id="estimatePdf" name="estimatePdf" onChange={handleFileChange} required accept="application/pdf" style={{ display: 'none' }} />
                             </div>
-                            <div className="modal-body">
-                                <div className="form-group">
-                                    <label htmlFor="estimatePdf" className="custom-file-upload">Upload PDF</label>
-                                    <input type="file" id="estimatePdf" name="estimatePdf" onChange={handleFileChange} required accept="application/pdf" style={{ display: 'none' }} />
-                                </div>
-                            </div>
-                            <div className="modal-actions">
-                                <button type="submit" className="btn-primary">Upload Estimate</button>
-                                <button type="button" onClick={() => setShowEstimateModal(false)} className="btn-secondary">Cancel</button>
-                            </div>
-                        </form>
+                        </div>
+                        <div className="modal-actions">
+                            <button type="submit" onClick={() => handleUploadEstimate()}className="btn-primary">Upload Estimate</button>
+                            <button type="button" onClick={() => setShowEstimateModal(false)} className="btn-secondary">Cancel</button>
+                        </div>
                     </div>
                 </div>
             )}
@@ -970,6 +1053,64 @@ const Customers = ({ setAuth }) => {
                     API_BASE_URL={API_BASE_URL}
                     selectedJobId={selectedJobId}
                     partActionType={partActionType} // Make sure partActionType is defined in your parent component
+                />
+            )}
+            {showDeleteJobModal && (
+                <DeleteJobModal
+                    showModal={showDeleteJobModal}
+                    setShowModal={setShowDeleteJobModal}
+                    jobId={selectedJobId}
+                    fetchJobs={fetchJobs}
+                    API_BASE_URL={API_BASE_URL}
+                />
+            )}
+            {showRemoveEstimateModal && (
+                <RemoveEstimateModal
+                    showModal={showRemoveEstimateModal}
+                    setShowModal={setShowRemoveEstimateModal}
+                    jobId={selectedJobId}
+                    fetchJobs={fetchJobs}
+                    API_BASE_URL={API_BASE_URL}
+                />
+            )}
+            {showMoveToUsedModal && (
+                <ConfirmMoveToUsedModal
+                    showModal={showMoveToUsedModal}
+                    setShowModal={setShowMoveToUsedModal}
+                    movePartToUsed={movePartToUsed}
+                    partDetails={selectedPart}
+                />
+            )}
+            {showUpdatePartModal && (
+                <UpdatePartModal
+                    showModal={showUpdatePartModal}
+                    setShowModal={setShowUpdatePartModal}
+                    part={editablePart}
+                    updatePart={updatePart}
+                />
+            )}
+            {showRemovePartModal && (
+                <RemovePartModal
+                    showModal={showRemovePartModal}
+                    setShowModal={setShowRemovePartModal}
+                    partId={selectedPartId}
+                    removePart={handleRemoveNecessaryPart}
+                />
+            )}
+            {showReturnModal && (
+                <ReturnPartModal
+                    showModal={showReturnModal}
+                    setShowModal={setShowReturnModal}
+                    part={returnPart}
+                    returnPartToNecessary={handleReturnToNecessary}
+                />
+            )}
+            {showRemoveUsedModal && (
+                <RemoveUsedPartModal
+                    showModal={showRemoveUsedModal}
+                    setShowModal={setShowRemoveUsedModal}
+                    part={selectedUsedPart}
+                    onConfirm={confirmRemoveUsedPart}
                 />
             )}
         </div>
