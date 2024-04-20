@@ -20,7 +20,7 @@ const ReturnPartModal = ({ showModal, setShowModal, part, returnPartToNecessary 
                     <h2>Confirm Return</h2>
                     <button onClick={handleCancel} className="modal-close-button">×</button>
                 </div>
-                <div className="modal-body">
+                <div className="modal-body" style={{ textAlign: 'center' }}>
                     Are you sure you want to return this part to necessary inventory?
                 </div>
                 <div className="modal-actions">

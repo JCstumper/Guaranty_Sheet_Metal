@@ -63,6 +63,7 @@
 }
 
 .modal-body {
+    align-items: 'center';
     overflow-y: auto;
     flex-grow: 1;
 }

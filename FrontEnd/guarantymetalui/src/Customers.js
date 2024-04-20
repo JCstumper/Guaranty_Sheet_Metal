@@ -359,12 +359,26 @@ const Customers = ({ setAuth }) => {
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
-        setSelectedFile(file);
-        setSelectedFileName(file.name);  // Immediately update the file name in the stat
+        if (file) {
+            // Convert bytes to megabytes
+            const fileSizeMB = file.size / 1024 / 1024;
+            if (fileSizeMB > 5) {
+                toast.error('File size exceeds 5 MB. Please choose a smaller file.');
+                return; // Exit the function to prevent state update
+            }
+            setSelectedFile(file);
+            setSelectedFileName(file.name);
+        }
     };
+    
     
 
     const handleUploadEstimate = async () => {
+        if (selectedFile.size > 5242880) { // 5 MB = 5 * 1024 * 1024 bytes
+            toast.error('File size should not exceed 5 MB.');
+            return;
+        }
+    
         const formData = new FormData();
         formData.append('estimatePdf', selectedFile);
         formData.append('job_id', selectedJobId);
@@ -393,6 +407,7 @@ const Customers = ({ setAuth }) => {
             toast.error('Error uploading estimate: ' + error.message);
         }
     };
+    
 
     const handleAddNecessaryPart = () => {
         setPartActionType('necessary');

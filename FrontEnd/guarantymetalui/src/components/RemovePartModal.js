@@ -21,7 +21,7 @@ const RemovePartModal = ({ showModal, setShowModal, partId, removePart }) => {
                     <h2>Confirm Removal</h2>
                     <button onClick={handleCancel} className="modal-close-button">×</button>
                 </div>
-                <div className="modal-body">
+                <div className="modal-body" style={{ textAlign: 'center' }}>
                     Are you sure you want to remove this part?
                 </div>
                 <div className="modal-actions">
