@@ -25,6 +25,7 @@ const EditProfilePopup = ({ isOpen, onSave, onClose }) => {
                         {/* Wrap each input with the form-group class */}
                         <div className="form-group">
                             <input
+                                id="Username"
                                 type="text"
                                 placeholder="New username"
                                 value={newUsername}
@@ -33,6 +34,7 @@ const EditProfilePopup = ({ isOpen, onSave, onClose }) => {
                         </div>
                         <div className="form-group">
                             <input
+                                id="Password"
                                 type="password"
                                 placeholder="New password"
                                 value={newPassword}
@@ -41,6 +43,7 @@ const EditProfilePopup = ({ isOpen, onSave, onClose }) => {
                         </div>
                         <div className="form-group">
                             <input
+                                id="Email"
                                 type="email"
                                 placeholder="New email"
                                 value={newEmail}

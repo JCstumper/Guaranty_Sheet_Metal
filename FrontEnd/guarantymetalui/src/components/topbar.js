@@ -202,13 +202,13 @@ const Topbar = ({ setAuth }) => {
                     <button className="username"><strong>{userName.toUpperCase()}</strong></button>
                     <div className={`user-dropdown ${showDropdown ? 'show-dropdown' : ''}`}>
                     {role === 'admin' && (
-                        <button onClick={() => setShowRegisterUser(true)}>Add a User</button>
+                        <button onClick={() => setShowRegisterUser(true)} className="add-a-user">Add a User</button>
                     )}
-                        <button onClick={() => setShowEditProfile(true)}>Edit Profile</button>
+                        <button onClick={() => setShowEditProfile(true)}className="edit-profile">Edit Profile</button>
                         {role === 'admin' && (
-                            <button onClick={() => setShowManageUsers(true)}>Manage Users</button>
+                            <button onClick={() => setShowManageUsers(true)} className="manage-users">Manage Users</button>
                         )}
-                        <button onClick={() => setLogoutConfirmationOpen(true)}>Logout</button>
+                        <button onClick={() => setLogoutConfirmationOpen(true)} className="logout-user">Logout</button>
                     </div>
                 </div>
                 <LogoutConfirmation 
