@@ -58,6 +58,7 @@ const AddUser = ({ isOpen, onClose }) => {
                     <div className="modal-body">
                         <div className="form-group">
                             <input
+                                id="Username"
                                 type="text"
                                 placeholder="Username"
                                 value={username}
@@ -66,6 +67,7 @@ const AddUser = ({ isOpen, onClose }) => {
                         </div>
                         <div className="form-group">
                             <input
+                                id="Password"
                                 type="password"
                                 placeholder="Password"
                                 value={password}
@@ -74,6 +76,7 @@ const AddUser = ({ isOpen, onClose }) => {
                         </div>
                         <div className="form-group">
                             <input
+                                id="Email"
                                 type="email"
                                 placeholder="Email"
                                 value={email}

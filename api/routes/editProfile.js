@@ -17,11 +17,11 @@ router.post("/profile", authorization, validInfo, async(req, res) => {
 
             //2. check if user exist (if user exist throw error)
 
-            const user = await pool.query("SELECT * FROM users WHERE username = $1", [newUsername]);
+            // const user = await pool.query("SELECT * FROM users WHERE username = $1", [newUsername]);
 
-            if (user.rows.length !== 0) {
-                return res.status(401).json("User already exists"); //401 means that the user is Unauthenticated
-            }
+            // if (user.rows.length !== 0) {
+            //     return res.status(401).json("User already exists"); //401 means that the user is Unauthenticated
+            // }
 
             updates.push(`username = $${queryIndex}`);
             values.push(newUsername);
