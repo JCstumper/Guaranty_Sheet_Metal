@@ -13,6 +13,24 @@ Ensure you have the following installed and set up before you start:
 - Development Environment: [See Software page]
 - Source Code: [Instructions on where to access the source code, e.g., GitHub repository]
 
+## Development Tools and Technologies
+
+### Languages and Frameworks
+
+- **Frontend and Backend**: JavaScript is used for both frontend and backend development.
+- **Styling**: CSS is utilized for frontend styling.
+
+### Build Management and Dependencies
+
+- **Dependency Management**: Dependencies are managed through npm.
+- **Automated Builds**: Builds are managed with Docker Compose, which automates the creation of our project environment.
+
+### Automated Testing
+
+- **GitHub Actions**: Automated tests are triggered via GitHub Actions when changes are proposed to the main branch. The file that contains the GitHub Action can be located in `.github/workflows/cypressTests.yml`.
+- **Testing Framework**: Cypress is used for end-to-end testing.
+- **Test Cases Location**: Test cases are located in `FrontEnd/guarantymetalui/cypress/e2e`.
+
 ## Git Workflow Guide
 
 This document explains the basic Git operations including pulling updates from the repository, creating branches, and making pull requests. This workflow is crucial for collaborative software development.
@@ -85,3 +103,17 @@ Following this workflow helps maintain a clean, stable codebase and ensures that
 
 ---
 For further assistance or to learn more about advanced Git features, consult the [official Git documentation](https://git-scm.com/doc).
+
+## Project Management
+
+### Backlog
+
+- **Accessing the Backlog**: The most up-to-date version of the project backlog is available [here](https://jcstumper.github.io/Guaranty_Sheet_Metal/#/Deliverables) under **Sprint 3 Deliverable**.
+
+### Major Issues and Updates
+
+- Currently, there are no major issues such as migrations or major version upgrades that require extensive retrofitting.
+
+## Coding Standards and Style Expectations
+
+- **Style Expectations**: Clarification on style expectations is needed. It is recommended to discuss with project maintainers or refer to existing code for consistency.
