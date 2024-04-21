@@ -19,9 +19,11 @@ const Orders = ({ setAuth }) => {
             amount_to_order: 15 // Default amount to order for a new item
         }
     ]);
-
+    const [showEditTotalCostModal, setShowEditTotalCostModal] = useState(false);
+    const [newTotalCost, setNewTotalCost] = useState('');
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [orderToDelete, setOrderToDelete] = useState(null);
+    const [editingInvoiceId, setEditingInvoiceId] = useState(null);
 
 
     // State to track the selected order ID for expansion
@@ -502,11 +504,17 @@ const Orders = ({ setAuth }) => {
     };
     
 
-    const editTotalCost = async (invoiceId) => {
-        const newTotalCost = prompt("Enter new total cost:");
-        if (newTotalCost) {
+    const editTotalCost = (invoiceId) => {
+        setEditingInvoiceId(invoiceId); // Save the invoiceId being edited
+        setShowEditTotalCostModal(true); // Display the modal
+    };
+
+
+    
+    const submitNewTotalCost = async () => {
+        if (newTotalCost && editingInvoiceId) { // Check if we have a total cost and an invoiceId
             try {
-                const response = await fetch(`${API_BASE_URL}/purchases/${invoiceId}/edit-total-cost`, {
+                const response = await fetch(`${API_BASE_URL}/purchases/${editingInvoiceId}/edit-total-cost`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ total_cost: newTotalCost }),
@@ -519,8 +527,12 @@ const Orders = ({ setAuth }) => {
                 toast.error(`Failed to update total cost: ${error.message}`);
             }
         }
+        // Hide the modal and reset state
+        setShowEditTotalCostModal(false);
+        setNewTotalCost('');
+        setEditingInvoiceId(null); // Reset the editing invoice ID
     };
-    
+
 
     // Call this function when an order is closed or its status is updated
     // For example, you could call `updateAmountsToOrder` before changing the status or before deselecting the order
@@ -798,6 +810,30 @@ const Orders = ({ setAuth }) => {
                         </div>
                     </div>
                 )}
+                {showEditTotalCostModal && (
+                    <div className="modal-backdrop">
+                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                            <div className="modal-header">
+                                <h2>Enter Shipping Cost for Order</h2>
+                                <button onClick={() => setShowEditTotalCostModal(false)} className="modal-close-button">×</button>
+                            </div>
+                            <div className="modal-body">
+                                <input
+                                    type="number"
+                                    className="modal-number-input"
+                                    value={newTotalCost}
+                                    onChange={(e) => setNewTotalCost(e.target.value)}
+                                    placeholder="Enter in format 1234.56"
+                                />
+                            </div>
+                            <div className="modal-actions">
+                                <button onClick={() => submitNewTotalCost()} className="btn-primary">Submit</button>
+                                <button onClick={() => setShowEditTotalCostModal(false)} className="btn-secondary">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
             </div>
         </div>
     );
