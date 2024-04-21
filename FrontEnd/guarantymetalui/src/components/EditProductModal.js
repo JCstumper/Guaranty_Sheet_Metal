@@ -263,16 +263,17 @@ const EditProductModal = ({ showModal, setShowModal, editProductItem, setEditPro
                 body: JSON.stringify(updateData),
             });
 
+            const responseData = await response.json();
             if (!response.ok) {
-                throw new Error('Failed to update the product');
+                toast.error(`Error updating product: ${responseData.message}`);
+                throw new Error(responseData.message);
             }
 
             toast.success('Product updated successfully.');
             setShowModal(false); // Close the modal
             fetchProductsWithInventory(); // Refresh the inventory list
         } catch (error) {
-            toast.error('Error updating product: ' + error.message);
-            console.error('Error updating product:', error);
+        
         }
     };
     
