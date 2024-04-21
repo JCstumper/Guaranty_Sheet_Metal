@@ -267,19 +267,23 @@ describe('Open application and test purchases', () => {
         cy.contains('Acme Supplies').click();
         cy.wait(1000); // Wait for potential page interactions to complete
 
-        // Stub the window prompt that appears when clicking 'Add Shipping Cost'
-        cy.window().then((win) => {
-            cy.stub(win, 'prompt').returns('100');
-            cy.get('.edit-button').click();
+        // Click the 'Add Shipping Cost' button to open the modal
+        cy.contains('tr', 'Acme Supplies').find('.edit-button').click();
+
+        // Wait for the modal to appear and type in the new shipping cost
+        cy.get('.modal-number-input').as('shippingCostInput').should('be.visible').type('100');
+
+        // Click the 'Submit' button on the modal
+        cy.get('button').contains('Submit').click();
+
+        // Verify the update - Adjust according to how your app shows the update 
+        // Example: If the total cost is displayed in a table cell alongside the order:
+        cy.contains('tr', 'Acme Supplies').within(() => {
+            cy.get('td').eq(1).should('contain.text', '100'); // Adjust the eq index based on your table structure
         });
 
-        // Since we're assuming the prompt is for adding a new total cost, and the stub returns '100',
-        // verify that the total cost has been updated accordingly.
-        // This part of the test would depend on how your application reflects this change.
-        // For example, if the total cost is displayed in a table cell alongside the order:
-        cy.contains('Acme Supplies').parent('tr').find('td').eq(1).should('contain.text', '100');
-
-        // You might need to adjust the above command to correctly target where the total cost is displayed
+        // Optionally, wait for a success message or another indication that the operation was successful
+        // cy.contains('Total cost updated successfully.').should('be.visible');
     });
 
     it('Mark order as Received', () => {
