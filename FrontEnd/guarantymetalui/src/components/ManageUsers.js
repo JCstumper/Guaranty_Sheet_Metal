@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import "./ManageUsers.css";
 import  ConfirmUsers from "./ConfirmUsers";
 import { toast } from 'react-toastify';
+import { jwtDecode } from "jwt-decode";
+
 
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
@@ -20,24 +22,24 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
             setLoading(true);
             setError(null);
             try {
-            const response = await fetch(`${API_BASE_URL}/users`, {
-                method: 'GET',
-                headers: { token: localStorage.token }
-            });
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json();
-            setUsers(data);
-            setTempUsers(data.reduce((acc, user) => {
-                acc[user.user_id] = { ...user };
-                return acc;
+                const response = await fetch(`${API_BASE_URL}/users`, {
+                    method: 'GET',
+                    headers: { token: localStorage.token }
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                setUsers(data);
+                setTempUsers(data.reduce((acc, user) => {
+                    acc[user.user_id] = { ...user };
+                    return acc;
             }, {}));
             } catch (e) {
-            console.error('Fetching users failed:', e);
-            setError('Failed to load users');
+                console.error('Fetching users failed:', e);
+                setError('Failed to load users');
             } finally {
-            setLoading(false);
+                setLoading(false);
             }
         };
         fetchUsers();
@@ -105,29 +107,71 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
     const saveChanges = async () => {
         setLoading(true);
         setError(null);
+    
         try {
-            // Filter out users who are no longer present in the main users array before attempting to update roles
+            // Assuming you have a way to get the current user's ID from context, state, or decode from JWT
+            const currentUserId = jwtDecode(localStorage.token).user;  // Decode JWT to find the current user ID
+            console.log(currentUserId);
+    
             const validUpdates = Object.values(tempUsers).filter(tempUser => {
-                const userStillExists = users.some(user => user.user_id === tempUser.user_id);
-                return userStillExists && users.find(user => user.user_id === tempUser.user_id).role_name !== tempUser.role_name;
+                const currentUser = users.find(user => user.user_id === tempUser.user_id);
+                return currentUser && currentUser.role_name !== tempUser.role_name;
             });
-
-            await Promise.all(validUpdates.map(user => {
-                return fetch(`${API_BASE_URL}/users/updateRole`, {
+    
+            if (validUpdates.length === 0) {
+                toast.info('No changes to save');
+                onClose();
+                return;
+            }
+    
+            const adminCount = users.filter(user => user.role_name === 'admin').length;
+            const adminsBeingDemoted = validUpdates.filter(user => user.role_name !== 'admin').length;
+            const newAdminCount = adminCount - adminsBeingDemoted;
+    
+            if (newAdminCount <= 0) {
+                toast.error('At least one admin must remain.');
+                return;
+            }
+    
+            const updatePromises = validUpdates.map(user => (
+                fetch(`${API_BASE_URL}/users/updateRole`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'token': localStorage.token
                     },
                     body: JSON.stringify({ user_id: user.user_id, role: user.role_name })
-                });
+                }).then(async response => {
+                    const data = await response.json();
+                    // Update token only if the current user's role was updated
+                    if (data.token && user.user_id === currentUserId) {
+                        localStorage.removeItem("token");
+                        localStorage.setItem("token", data.token);
+                    }
+                    return {
+                        success: response.ok,
+                        user_id: user.user_id,
+                        role: user.role_name,
+                        message: data.message || ''
+                    };
+                })
+            ));
+    
+            const results = await Promise.all(updatePromises);
+            const failedUpdates = results.filter(result => !result.success);
+            if (failedUpdates.length > 0) {
+                setError('Some updates failed to save');
+                toast.error('Some updates failed: ' + failedUpdates.map(f => f.message).join(', '));
+                throw new Error('Some updates failed');
+            }
+    
+            setUsers(prevUsers => prevUsers.map(user => {
+                const updatedUser = results.find(res => res.user_id === user.user_id);
+                return updatedUser ? { ...user, role_name: updatedUser.role } : user;
             }));
-
-            // Update local state after changes
-            setUsers(Object.values(tempUsers).filter(tempUser => users.some(user => user.user_id === tempUser.user_id)));
-
+    
             toast.success('Changes saved successfully');
-            onClose();  // Close the modal on successful save
+            onClose();
         } catch (e) {
             console.error('Failed to save changes:', e);
             setError('Failed to save changes');
@@ -137,12 +181,9 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
         }
     };
 
-
-
     if (!isOpen) return null;
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
-    
 
     return (
         <div className="manage-users-overlay">
