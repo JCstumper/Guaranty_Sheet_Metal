@@ -170,7 +170,7 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
                 return updatedUser ? { ...user, role_name: updatedUser.role } : user;
             }));
     
-            toast.success('All changes saved successfully');
+            toast.success('Changes saved successfully');
             onClose();
         } catch (e) {
             console.error('Failed to save changes:', e);
