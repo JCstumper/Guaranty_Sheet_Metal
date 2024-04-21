@@ -14,6 +14,7 @@ module.exports = async (req, res, next) => {
 
         req.user = payload.user;
         req.username = payload.username;
+        req.role = payload.role;
         
         next();
 
