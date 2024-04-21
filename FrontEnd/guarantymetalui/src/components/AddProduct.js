@@ -171,7 +171,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
 
     const sendDataToBackend = async (data) => {
         const token = localStorage.getItem('token');
-
+    
         try {
             const response = await fetch(`${API_BASE_URL}/products`, {
                 method: 'POST',
@@ -182,18 +182,21 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
                 body: JSON.stringify(data),
             });
     
+            const responseData = await response.json();  // Get JSON response body
             if (!response.ok) {
-                throw new Error('Failed to send data to the server');
+                toast.error(`Error: ${responseData.error || 'Failed to send data'}`);
+                throw new Error(responseData.message || 'Failed to send data to the server');
             }
     
-            const result = await response.json();
             await fetchProductsWithInventory();
+            toast.success('Item added successfully.');
             return true;
         } catch (error) {
             console.error('Error sending data to server:', error);
             return false;
         }
     };
+    
 
     const fetchCategoryMappings = async () => {
         const url = `${API_BASE_URL}/categories`; // Replace with your actual API URL
@@ -269,8 +272,6 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
                 catCode: '',
             });
 
-            toast.success('Item added successfully.');
-
             // Extract the category and catcode
             const { type, catCode } = newProductItem;
 
@@ -285,8 +286,6 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
                 // Send the new category mapping to the backend
                 await sendCategoryMappingToBackend(type, catCode, keywords);
             }
-        } else {
-            toast.error('Failed to add the item. Please try again.');
         }
     };
 

@@ -3,6 +3,7 @@ import Topbar from './components/topbar';
 import './Orders.css';
 import { AppContext } from './App';
 import { saveAs } from 'file-saver';
+import { toast } from 'react-toastify';
 
 
 const Orders = ({ setAuth }) => {
@@ -19,11 +20,13 @@ const Orders = ({ setAuth }) => {
         }
     ]);
 
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [orderToDelete, setOrderToDelete] = useState(null);
+
 
     // State to track the selected order ID for expansion
     const [selectedOrderId, setSelectedOrderId] = useState(null);
     const selectedOrder = orders.find(order => order.invoice_id === selectedOrderId);
-
 
     // Changed state to match updated field names
     const [newOrder, setNewOrder] = useState({
@@ -48,7 +51,23 @@ const Orders = ({ setAuth }) => {
         setFilteredOrders(filtered);
     }, [filter, orders]);
 
-
+    const openDeleteModal = (orderId) => {
+        setShowDeleteModal(true);
+        setOrderToDelete(orderId);
+    };
+    
+    const closeDeleteModal = () => {
+        setShowDeleteModal(false);
+        setOrderToDelete(null);
+    };
+    
+    const confirmDelete = async () => {
+        if (orderToDelete) {
+            await handleDeleteOrder(orderToDelete);
+            closeDeleteModal();
+        }
+    };
+    
     const handleSelectOrder = async (invoiceId) => {
         // Determine if we're deselecting or switching orders
         const isDeselectingOrSwitching = selectedOrderId && (selectedOrderId !== invoiceId);
@@ -93,8 +112,6 @@ const Orders = ({ setAuth }) => {
         }
     };
 
-
-
     const fetchCurrentItems = async (invoiceId) => {
         try {
             // Fetch low inventory and out of stock items in parallel
@@ -132,9 +149,6 @@ const Orders = ({ setAuth }) => {
             console.error('Error fetching current items for the order:', error);
         }
     };
-
-
-
 
     const updateInventoryItems = async (invoiceId) => {
         try {
@@ -225,50 +239,53 @@ const Orders = ({ setAuth }) => {
                 }),
             });
             if (!response.ok) throw new Error('Failed to add order');
-
+    
             const addedOrder = await response.json();
             setOrders(currentOrders => [...currentOrders, addedOrder]);
             setShowModal(false);
             setNewOrder({ supplier_name: '', total_cost: '', invoice_date: '', status: 'Building' }); // Reset the form
+            toast.success('Order added successfully.');
         } catch (error) {
             console.error('Error adding order:', error);
+            toast.error(`Failed to add order: ${error.message}`);
         }
     };
-
+    
 
     const handleGenerateXLSX = async () => {
         if (!selectedOrderId) {
-            alert('No order selected');
+            toast.error('No order selected');
             return;
         }
-
+    
         // Assuming 'selectedOrder' has the supplier name and invoice date
         const { supplier_name, invoice_date } = selectedOrder || {};
-
+    
         if (!supplier_name || !invoice_date) {
-            alert('Selected order does not have a supplier name or invoice date');
+            toast.error('Selected order does not have a supplier name or invoice date');
             return;
         }
-
+    
         // Format the date to remove any slashes or spaces
         const formattedDate = invoice_date.replace(/[/\s]+/g, '-');
-
+    
         try {
             const response = await fetch(`${API_BASE_URL}/purchases/${selectedOrderId}/generate-xlsx`);
-
+    
             if (response.ok) {
                 const blob = await response.blob();
                 // Use the supplier's name and invoice date in the filename
                 saveAs(blob, `${supplier_name}_New_Order_${formattedDate}.xlsx`);
+                toast.success('XLSX file generated successfully.');
             } else {
                 throw new Error('Failed to generate XLSX file');
             }
         } catch (error) {
             console.error('Error generating XLSX:', error);
-            alert('Failed to generate XLSX file');
+            toast.error('Failed to generate XLSX file');
         }
     };
-
+    
 
 
     const handleAddToNewOrder = async (item, source, amountToOrder = 15) => {
@@ -376,14 +393,14 @@ const Orders = ({ setAuth }) => {
     const updateOrderStatus = async (orderId, newStatus) => {
         // Ensure amounts to order are updated before changing status
         await updateAmountsToOrder();
-
+    
         // Prepare items data for updating inventory
         // Assuming we want to update inventory when status changes to 'Received'
         const itemsData = (newStatus === 'Generated' || newStatus === 'Received') ? newOrderItems.map(item => ({
             partNumber: item.part_number,
             amountToOrder: item.amount_to_order // Correct key assumed
         })) : [];
-
+    
         try {
             const response = await fetch(`${API_BASE_URL}/purchases/${orderId}/status`, {
                 method: 'PATCH',
@@ -395,20 +412,20 @@ const Orders = ({ setAuth }) => {
                     items: itemsData,
                 }),
             });
-
-            if (!response.ok) throw new Error('Failed to update order status');
-
+    
+            if (!response.ok) {
+                throw new Error('Failed to update order status');
+            }
+    
             // Refresh the orders list or perform other actions on success
             fetchOrders();
+            toast.success(`Order status updated to ${newStatus}.`);
         } catch (error) {
             console.error('Error updating order status:', error);
-            alert('Failed to update order status');
+            toast.error(`Failed to update order status: ${error.message}`);
         }
     };
-
-
-
-
+    
     const handleAmountChange = async (event, partNumber) => {
         const newAmount = parseInt(event.target.value, 10);
         if (!newAmount) return; // Guard against invalid inputs
@@ -469,22 +486,21 @@ const Orders = ({ setAuth }) => {
     // Inside the Orders component...
 
     const handleDeleteOrder = async (invoiceId) => {
-        if (window.confirm('Are you sure you want to delete this order? This cannot be undone.')) {
-            try {
-                const response = await fetch(`${API_BASE_URL}/purchases/${invoiceId}`, {
-                    method: 'DELETE',
-                });
-                if (!response.ok) throw new Error('Failed to delete order');
-
-                // Remove the deleted order from the state to update the UI
-                setOrders(currentOrders => currentOrders.filter(order => order.invoice_id !== invoiceId));
-                alert('Order successfully deleted.');
-            } catch (error) {
-                console.error('Error deleting order:', error);
-                alert('Failed to delete order');
-            }
+        try {
+            const response = await fetch(`${API_BASE_URL}/purchases/${invoiceId}`, {
+                method: 'DELETE',
+            });
+            if (!response.ok) throw new Error('Failed to delete order');
+    
+            // Remove the deleted order from the state to update the UI
+            setOrders(currentOrders => currentOrders.filter(order => order.invoice_id !== invoiceId));
+            toast.success('Order successfully deleted.');
+        } catch (error) {
+            console.error('Error deleting order:', error);
+            toast.error(`Failed to delete order: ${error.message}`);
         }
     };
+    
 
     const editTotalCost = async (invoiceId) => {
         const newTotalCost = prompt("Enter new total cost:");
@@ -496,15 +512,15 @@ const Orders = ({ setAuth }) => {
                     body: JSON.stringify({ total_cost: newTotalCost }),
                 });
                 if (!response.ok) throw new Error('Failed to update total cost');
-                alert("Total cost updated successfully.");
+                toast.success("Total cost updated successfully.");
                 fetchOrders(); // Refresh orders to show updated cost
             } catch (error) {
                 console.error('Error updating total cost:', error);
-                alert('Failed to update total cost');
+                toast.error(`Failed to update total cost: ${error.message}`);
             }
         }
     };
-
+    
 
     // Call this function when an order is closed or its status is updated
     // For example, you could call `updateAmountsToOrder` before changing the status or before deselecting the order
@@ -577,9 +593,13 @@ const Orders = ({ setAuth }) => {
                                                     </button>
                                                 )}
 
-                                                <button onClick={() => handleDeleteOrder(order.invoice_id)} className="delete-button">
-                                                    Delete
-                                                </button>
+                                            <button onClick={(e) => {
+                                                e.stopPropagation(); // Prevent triggering handleSelectOrder
+                                                openDeleteModal(order.invoice_id);
+                                            }} className="delete-button">
+                                                Delete
+                                            </button>
+
                                             </td>
                                         </tr>
 
@@ -732,31 +752,48 @@ const Orders = ({ setAuth }) => {
                     </div>
                 </div>
                 {showModal && (
-                    <div className="modalAddOrder">
-                        <div className="modalAddOrder-content">
-                            <div className="modalAddOrder-header">
+                    <div className="modal-backdrop" onClick={e => e.stopPropagation()}>
+                        <div className="modal-content" onClick={e => e.stopPropagation()}>
+                            <div className="modal-header">
                                 <h2>Add New Order</h2>
-                                <button onClick={handleToggleModal} className="close-modalAddOrder">X</button>
+                                <button onClick={handleToggleModal} className="modal-close-button">×</button>
                             </div>
-                            <div className="modalAddOrder-body">
-                                <form onSubmit={handleAddOrder}>
-                                    {/* Updated to supplier_name */}
+                            <div className="modal-body">
+                                <div className="form-group">
                                     <label htmlFor="supplier_name">Supplier Name:</label>
                                     <input type="text" id="supplier_name" name="supplier_name" placeholder="Supplier Name" value={newOrder.supplier_name} onChange={handleInputChange} required />
+                                </div>
 
-                                    {/* Updated to accept only date */}
+                                <div className="form-group">
                                     <label htmlFor="invoice_date">Invoice Date:</label>
                                     <input type="date" id="invoice_date" name="invoice_date" value={newOrder.invoice_date} onChange={handleInputChange} required />
+                                </div>
 
+                                <div className="form-group">
                                     <label htmlFor="status">Status:</label>
-                                    {/* Display the status as a non-editable field */}
                                     <input type="text" id="status" name="status" value={newOrder.status} disabled />
-
-                                    <div className="modalAddOrder-footer">
-                                        <button type="submit" className="btn btn-primary">Add Order</button>
-                                        <button type="button" onClick={handleToggleModal} className="btn btn-secondary">Cancel</button>
-                                    </div>
-                                </form>
+                                </div>
+                            </div>
+                            <div className="modal-actions">
+                                <button type="submit" onClick={handleAddOrder} className="btn-primary">Add Order</button>
+                                <button type="button" onClick={handleToggleModal} className="btn-secondary">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                {showDeleteModal && (
+                    <div className="modal-backdrop" onClick={e => e.stopPropagation()}>
+                        <div className="modal-content" onClick={e => e.stopPropagation()}>
+                            <div className="modal-header">
+                                <h2>Confirm Deletion</h2>
+                                <button onClick={closeDeleteModal} className="modal-close-button">×</button>
+                            </div>
+                            <div className="modal-body">
+                                <p>Are you sure you want to delete this order? This action cannot be undone.</p>
+                            </div>
+                            <div className="modal-actions">
+                                <button onClick={confirmDelete} className="btn-primary">Delete Order</button>
+                                <button onClick={closeDeleteModal} className="btn-secondary">Cancel</button>
                             </div>
                         </div>
                     </div>
