@@ -1,7 +1,6 @@
-// InitialSetupModal.js
 import React, { useState, useContext } from 'react';
 import { toast } from 'react-toastify';
-import './AddProduct.css'; // Reuse the same CSS for consistency
+import './AddProduct.css'; 
 
 const InitialSetupModal = ({ showInitialSetup, setShowInitialSetup, API_BASE_URL }) => {
     const [credentials, setCredentials] = useState({
@@ -9,7 +8,7 @@ const InitialSetupModal = ({ showInitialSetup, setShowInitialSetup, API_BASE_URL
         password: '',
         confirmPassword: '',
         email: '',
-        role: 'admin' // Role is fixed as 'admin'
+        role: 'admin' 
     });
 
     if (!showInitialSetup) return null;

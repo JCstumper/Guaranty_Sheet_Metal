@@ -1,33 +1,29 @@
 import React, { Fragment, useState, useEffect, useContext } from 'react';
-import { useNavigate, Link } from "react-router-dom"; // Importing useNavigate for programmatic navigation and Link for declarative navigation
-import { Bounce, toast } from 'react-toastify'; // Importing toastify for displaying notifications
-import './Register.css'; // Import CSS for styling the register page
-import logo from '../pictures/logo.png'; // Import the logo for the register page
+import { useNavigate, Link } from "react-router-dom"; 
+import { Bounce, toast } from 'react-toastify'; 
+import './Register.css'; 
+import logo from '../pictures/logo.png'; 
 import Loading from './Loading';
 import { AppContext } from '../App';
 
-// Register component with setAuth prop for managing authentication state
+
 const Register = ({ setAuth }) => {
-    const navigate = useNavigate(); // Hook for programmatic navigation
+    const navigate = useNavigate(); 
     const [isLoading, setIsLoading] = useState(false);
     const {API_BASE_URL} = useContext(AppContext);
 
-    // State for managing input fields (username, password, email)
     const [inputs, setInputs] = useState({
         username: "",
         password: "",
         email: ""
     });
 
-    // Destructuring inputs for easy access
     const { username, password, email } = inputs;
 
-    // Function to update state based on input changes
     const onChange = (e) => {
         setInputs({ ...inputs, [e.target.name]: e.target.value });
     };
 
-    // Toastify options for customizing notifications
     const options = {
         position: "top-right",
         autoClose: 5000,
@@ -40,49 +36,45 @@ const Register = ({ setAuth }) => {
         transition: Bounce,
     };
 
-    // Function to handle form submission
+    
     const onSubmitForm = async (e) => {
-        e.preventDefault(); // Prevent default form submission behavior
+        e.preventDefault(); 
 
         try {
-            // Preparing the body for the POST request
             const body = { username, password, email };
             setIsLoading(true);
-            
-            // Making a POST request to the register endpoint
+
             const response = await fetch(`${API_BASE_URL}/auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body)
             });
 
-            // Parsing the JSON response
             const parseRes = await response.json();
 
-            // Checking if registration was successful (based on token presence)
             if (parseRes.token) {
-                setAuth(false); // Setting authentication state to true
+                setAuth(false); 
                 setTimeout(() => {
                     setIsLoading(false); 
                 }, 2000);
                 setTimeout(() => {
-                    toast.success("Registered Successfully!", options); // Displaying success notification
+                    toast.success("Registered Successfully!", options); 
                 }, 1000);
-                navigate('/login'); // Navigating to login page after successful registration
+                navigate('/login'); 
             } else {
                 setTimeout(() => {
                     setIsLoading(false); 
-                }, 2000); // Setting authentication state to false if registration fails
+                }, 2000); 
                 setTimeout(() => {
-                    toast.error(parseRes, options); // Displaying error notification
+                    toast.error(parseRes, options); 
                 }, 1000);
             }
         } catch (err) {
-            console.error(err.message); // Logging any errors to the console
+            console.error(err.message); 
         }
     };
 
-    // Rendering the registration form
+    
     return (
         <Fragment>
             {<Loading />}
@@ -103,4 +95,4 @@ const Register = ({ setAuth }) => {
     );
 };
 
-export default Register; // Exporting the Register component for use elsewhere
+export default Register; 

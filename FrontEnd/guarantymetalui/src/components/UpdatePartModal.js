@@ -1,15 +1,15 @@
 import React from 'react';
-import './AddProduct.css'; // Make sure your path to CSS is correct
+import './AddProduct.css'; 
 
 const UpdatePartModal = ({ showModal, setShowModal, part, updatePart }) => {
     if (!showModal) return null;
 
     const handleCancel = () => {
-        setShowModal(false); // Close modal without updating
+        setShowModal(false); 
     };
 
     const handleSave = async () => {
-        await updatePart(part); // Call the update part function
+        await updatePart(part); 
     };
 
     return (

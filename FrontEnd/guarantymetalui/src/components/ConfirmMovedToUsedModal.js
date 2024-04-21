@@ -1,6 +1,6 @@
 import React from 'react';
 import { toast } from 'react-toastify';
-import './AddProduct.css'; // Ensure correct path
+import './AddProduct.css'; 
 
 const ConfirmMoveToUsedModal = ({ showModal, setShowModal, movePartToUsed, partDetails }) => {
     if (!showModal) return null;

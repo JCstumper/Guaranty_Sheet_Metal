@@ -17,8 +17,8 @@ const Customers = ({ setAuth }) => {
     const [jobs, setJobs] = useState([]);
     const [filteredJobs, setFilteredJobs] = useState([]);
     const [selectedJobId, setSelectedJobId] = useState(null);
-    const [necessaryParts, setNecessaryParts] = useState([]); // State for necessary parts
-    const [usedParts, setUsedParts] = useState([]); // State for used parts
+    const [necessaryParts, setNecessaryParts] = useState([]); 
+    const [usedParts, setUsedParts] = useState([]); 
     const [showModal, setShowModal] = useState(false);
     const [showEstimateModal, setShowEstimateModal] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
@@ -26,13 +26,13 @@ const Customers = ({ setAuth }) => {
     const [filter, setFilter] = useState("");
     const {API_BASE_URL} = useContext(AppContext);
     const [showAddPartModal, setShowAddPartModal] = useState(false);
-    const [editingPart, setEditingPart] = useState(null); //State for tracking editing of Necessary parts
-    const [editingUsedPart, setEditingUsedPart] = useState(null); // State for tracking editing of used parts
+    const [editingPart, setEditingPart] = useState(null); 
+    const [editingUsedPart, setEditingUsedPart] = useState(null); 
     const [editingJob, setEditingJob] = useState(null);
     const [showEditModal, setShowEditModal] = useState(false);
     const [totalNecessaryCost, setTotalNecessaryCost] = useState(0);
     const [totalUsedCost, setTotalUsedCost] = useState(0);
-    const [partActionType, setPartActionType] = useState('necessary'); // 'necessary' or 'used'
+    const [partActionType, setPartActionType] = useState('necessary'); 
     const [expandJobDetails, setExpandJobDetails] = useState(false);
 
     const [showDeleteJobModal, setShowDeleteJobModal] = useState(false);
@@ -56,7 +56,7 @@ const Customers = ({ setAuth }) => {
         if (selectedJobId) {
             fetchNecessaryParts(selectedJobId);
         }
-    }, [selectedJobId]); // This effect runs when selectedJobId changes
+    }, [selectedJobId]); 
 
     useEffect(() => {
         setFilteredJobs(jobs.filter(job =>
@@ -71,7 +71,7 @@ const Customers = ({ setAuth }) => {
 
     useEffect(() => {
         const calculateTotal = (parts) => parts.reduce((acc, part) => {
-            // Ensure price is a float
+            
             const price = parseFloat(part.price);
             const quantity = parseFloat(part.quantity_used || part.quantity_required);
             return acc + (quantity * price);
@@ -153,7 +153,7 @@ const Customers = ({ setAuth }) => {
     const handleSelectJob = async (jobId) => {
         const isSameJob = selectedJobId === jobId;
     
-        // Toggle visibility or set a new job
+        
         if (isSameJob) {
             setExpandJobDetails(!expandJobDetails);
         } else {
@@ -162,7 +162,7 @@ const Customers = ({ setAuth }) => {
             fetchNecessaryParts(jobId);
             fetchUsedParts(jobId);
     
-            // Fetch estimate information for the selected job
+            
             const token = localStorage.getItem('token');
             try {
                 const response = await fetch(`${API_BASE_URL}/jobs/check-estimate/${jobId}`, {
@@ -214,9 +214,9 @@ const Customers = ({ setAuth }) => {
     
             if (response.ok) {
                 const responseData = await response.json();
-                setJobs([responseData.job, ...jobs]); // Prepend the new job to the list
-                fetchJobs(); // Re-fetch jobs to update the list
-                handleToggleModal(); // Close the modal
+                setJobs([responseData.job, ...jobs]); 
+                fetchJobs(); 
+                handleToggleModal(); 
             } else {
                 throw new Error('Failed to add job');
             }
@@ -226,11 +226,11 @@ const Customers = ({ setAuth }) => {
     };
     
     const handleEditJob = (event, jobId) => {
-        event.stopPropagation(); // Stop the row click event from firing
-        const jobToEdit = jobs.find(job => job.job_id === jobId); // Find the job with the same ID
+        event.stopPropagation(); 
+        const jobToEdit = jobs.find(job => job.job_id === jobId); 
         if (jobToEdit) {
-            setEditingJob(jobToEdit); // Set the job data to the editingJob state
-            setShowEditModal(true); // Open the modal
+            setEditingJob(jobToEdit); 
+            setShowEditModal(true); 
         } else {
             console.error('Job not found');
         }
@@ -240,44 +240,44 @@ const Customers = ({ setAuth }) => {
     const handleRemoveJob = (event, jobId) => {
         event.stopPropagation();
         setSelectedJobId(jobId);
-        setExpandJobDetails(false);  // Ensure details are not expanded when opening the remove confirmation
+        setExpandJobDetails(false);  
         setShowDeleteJobModal(true);
     };
     
     const handleSaveJob = async () => {
         const { job_id, ...updatedFields } = editingJob;
-        const token = localStorage.getItem('token'); // Retrieve the token from local storage
+        const token = localStorage.getItem('token'); 
     
         try {
             const response = await fetch(`${API_BASE_URL}/jobs/${job_id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'token': token // Include the token in the request header
+                    'token': token 
                 },
                 body: JSON.stringify(updatedFields)
             });
     
             if (response.ok) {
-                toast.success('Job updated successfully.'); // Using toast for success message
-                fetchJobs(); // Refresh the jobs list
-                setShowEditModal(false); // Close the edit modal
+                toast.success('Job updated successfully.'); 
+                fetchJobs(); 
+                setShowEditModal(false); 
             } else {
                 throw new Error('Failed to update job.');
             }
         } catch (error) {
             console.error('Error updating job:', error);
-            toast.error('Failed to update job. ' + error.message); // Using toast for error message
+            toast.error('Failed to update job. ' + error.message); 
         }
     }; 
 
     const handleViewEstimate = async (jobId) => {
-        const token = localStorage.getItem('token'); // Retrieve the token from local storage
+        const token = localStorage.getItem('token'); 
     
         try {
             const checkResponse = await fetch(`${API_BASE_URL}/jobs/check-estimate/${jobId}`, {
                 headers: {
-                    'token': token // Include the token in the request header
+                    'token': token 
                 }
             });
             const checkData = await checkResponse.json();
@@ -288,7 +288,7 @@ const Customers = ({ setAuth }) => {
     
             const response = await fetch(`${API_BASE_URL}/jobs/estimate/${jobId}`, {
                 headers: {
-                    'token': token // Include the token in the request header for fetching the estimate
+                    'token': token 
                 }
             });
     
@@ -297,7 +297,7 @@ const Customers = ({ setAuth }) => {
                 const pdfBlob = new Blob([new Uint8Array(estimateData.pdf_data.data)], { type: 'application/pdf' });
                 const pdfUrl = window.URL.createObjectURL(pdfBlob);
                 
-                // Open the PDF in a new browser tab
+                
                 window.open(pdfUrl, '_blank', 'noopener,noreferrer');
             } else {
                 console.error('Failed to fetch estimate');
@@ -310,12 +310,12 @@ const Customers = ({ setAuth }) => {
     };    
 
     const handleAddEstimate = async (jobId) => {
-        const token = localStorage.getItem('token'); // Retrieve the token from local storage
+        const token = localStorage.getItem('token'); 
     
         try {
             const response = await fetch(`${API_BASE_URL}/jobs/check-estimate/${jobId}`, {
                 headers: {
-                    'token': token // Include the token in the request header
+                    'token': token 
                 }
             });
             if (!response.ok) {
@@ -349,8 +349,8 @@ const Customers = ({ setAuth }) => {
                 return;
             }
             
-            setSelectedJobId(jobId); // Set job ID to state
-            setShowRemoveEstimateModal(true); // Show the modal for confirmation
+            setSelectedJobId(jobId); 
+            setShowRemoveEstimateModal(true); 
         } catch (error) {
             console.error('Error in removing estimate:', error);
             toast.error('Error checking for existing estimate or removing it. Please try again.');
@@ -360,11 +360,11 @@ const Customers = ({ setAuth }) => {
     const handleFileChange = (event) => {
         const file = event.target.files[0];
         if (file) {
-            // Convert bytes to megabytes
+            
             const fileSizeMB = file.size / 1024 / 1024;
             if (fileSizeMB > 5) {
                 toast.error('File size exceeds 5 MB. Please choose a smaller file.');
-                return; // Exit the function to prevent state update
+                return; 
             }
             setSelectedFile(file);
             setSelectedFileName(file.name);
@@ -378,7 +378,7 @@ const Customers = ({ setAuth }) => {
             toast.error('No file selected. Please select a file to upload.');
             return;
         }
-        if (selectedFile.size > 5242880) { // 5 MB = 5 * 1024 * 1024 bytes
+        if (selectedFile.size > 5242880) { 
             toast.error('File size should not exceed 5 MB.');
             return;
         }
@@ -507,8 +507,8 @@ const Customers = ({ setAuth }) => {
             return;
         }
 
-        setEditablePart(part); // Set the part for potential editing or removal
-        setShowUpdatePartModal(true); // Open the modal for confirmation
+        setEditablePart(part); 
+        setShowUpdatePartModal(true); 
     };
 
     const updatePart = async (part) => {
@@ -548,12 +548,12 @@ const Customers = ({ setAuth }) => {
     };
 
     const handleRemoveNecessaryPart = async (partId) => {
-        const token = localStorage.getItem('token'); // Retrieve the token from local storage
+        const token = localStorage.getItem('token'); 
         try {
             const response = await fetch(`${API_BASE_URL}/jobs/necessary-parts/${partId}`, {
                 method: 'DELETE',
                 headers: {
-                    'token': token // Include the token in the request header
+                    'token': token 
                 }
             });
 
@@ -606,18 +606,18 @@ const Customers = ({ setAuth }) => {
             const data = await response.json();
             toast.success(data.message);
     
-            // Update local state for UI
+            
             const updatedUsedParts = usedParts.filter(p => p.id !== returnPart.id);
             setUsedParts(updatedUsedParts);
             
-            // Optionally, refresh necessary parts from the server to get updated data
+            
             fetchNecessaryParts(selectedJobId);
         } catch (error) {
             console.error('Error returning part to necessary:', error);
             toast.error('Failed to return part to necessary. ' + error.message);
         }
     
-        // Close the modal
+        
         setShowReturnModal(false);
         setReturnPart(null);
     };    
@@ -631,25 +631,25 @@ const Customers = ({ setAuth }) => {
         const originalQuantity = part.quantity_used;
         const newQuantity = parseInt(part.newQuantity, 10);
     
-        // Check for negative values
+        
         if (newQuantity < 0) {
             toast.error('Quantity cannot be negative.');
             return;
         }
     
-        // Handle removing the part if the quantity is set to 0
+        
         if (newQuantity === 0) {
             await handleRemoveUsedPart(part.id);
             return;
         }
     
         const quantityDiff = newQuantity - originalQuantity;
-        const token = localStorage.getItem('token'); // Retrieve the token from local storage
+        const token = localStorage.getItem('token'); 
     
-        // If increasing the quantity, check if enough inventory exists
+        
         if (quantityDiff > 0) {
             const inventoryRes = await fetch(`${API_BASE_URL}/inventory/${part.part_number}`, {
-                headers: { 'token': token }  // Include the token in the request header
+                headers: { 'token': token }  
             });
             if (!inventoryRes.ok) {
                 toast.error('Error fetching inventory data.');
@@ -662,13 +662,13 @@ const Customers = ({ setAuth }) => {
             }
         }
     
-        // Proceed to update the used part
+        
         try {
             const response = await fetch(`${API_BASE_URL}/jobs/${selectedJobId}/update-used-part`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'token': token  // Include the token in the request header
+                    'token': token  
                 },
                 body: JSON.stringify({
                     part_id: part.id,
@@ -681,17 +681,17 @@ const Customers = ({ setAuth }) => {
                 const data = await response.json();
                 toast.success(data.message);
     
-                // Update the local state to reflect the new quantity in the used parts list
+                
                 setUsedParts(usedParts.map(p =>
                     p.id === part.id ? { ...p, quantity_used: newQuantity } : p
                 ));
     
-                // Exit editing mode
+                
                 setEditingUsedPart(null);
     
-                // Optionally, refresh necessary parts and inventory to reflect the changes
+                
                 fetchNecessaryParts(selectedJobId);
-                // Assuming you have a function to fetch inventory
+                
             } else {
                 const errorResponse = await response.json();
                 toast.error(errorResponse.error);
@@ -713,7 +713,7 @@ const Customers = ({ setAuth }) => {
         setShowRemoveUsedModal(true);
     };
     
-    // This function will be triggered upon modal confirmation
+    
     const confirmRemoveUsedPart = async (partId) => {
         const part = usedParts.find(p => p.id === partId);
         const token = localStorage.getItem('token');
@@ -759,7 +759,7 @@ const Customers = ({ setAuth }) => {
                                 placeholder="Search jobs..."
                                 value={filter}
                                 onChange={handleFilterChange}
-                                style={{ marginRight: '10px' }} // Adds spacing between the search input and the add button
+                                style={{ marginRight: '10px' }} 
                             />
                             <button onClick={handleToggleModal} className="add-button">
                                 +
@@ -928,7 +928,7 @@ const Customers = ({ setAuth }) => {
                 </div>
             </div>
             {showModal && (
-                // Assuming the CSS provided is already included in your project
+                
                 <div className="modal-backdrop">
                     <div className="modal-content">
                         <form onSubmit={handleAddJob}>
@@ -1071,7 +1071,7 @@ const Customers = ({ setAuth }) => {
                     onAddPart={partActionType === 'necessary' ? handleAddPartToNecessary : handleAddPartToUsed}
                     API_BASE_URL={API_BASE_URL}
                     selectedJobId={selectedJobId}
-                    partActionType={partActionType} // Make sure partActionType is defined in your parent component
+                    partActionType={partActionType} 
                 />
             )}
             {showDeleteJobModal && (

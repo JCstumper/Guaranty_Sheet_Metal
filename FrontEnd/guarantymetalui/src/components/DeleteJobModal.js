@@ -1,19 +1,19 @@
 import React from 'react';
 import { toast } from 'react-toastify';
-import './AddProduct.css'; // Make sure this path is correct
+import './AddProduct.css'; 
 
 const DeleteJobModal = ({ showModal, setShowModal, jobId, fetchJobs, API_BASE_URL }) => {
     if (!showModal) return null;
 
     const handleDeleteJob = async () => {
-        const token = localStorage.getItem('token'); // Retrieve the token from local storage
+        const token = localStorage.getItem('token'); 
 
         try {
             const response = await fetch(`${API_BASE_URL}/jobs/${jobId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Token': token // Include the token in the request header
+                    'Token': token 
                 }
             });
 
@@ -22,8 +22,8 @@ const DeleteJobModal = ({ showModal, setShowModal, jobId, fetchJobs, API_BASE_UR
             }
 
             toast.success(`Job ${jobId} removed successfully.`);
-            fetchJobs(); // Re-fetch the jobs list to update the UI
-            setShowModal(false); // Close the modal
+            fetchJobs(); 
+            setShowModal(false); 
         } catch (error) {
             console.error('Error removing job:', error);
             toast.error(`Failed to remove job. ${error.message}`);

@@ -1,4 +1,3 @@
-/* Styles for the topbar container */
 .topbar-container {
     position: fixed;
     top: 0;
@@ -16,7 +15,6 @@
     justify-content: space-between;
     align-items: center;
 }
-
 
 .loading-overlay {
     opacity: 1;
@@ -39,7 +37,6 @@
     visibility: hidden;
 }
 
-
 .bottom-bar-logo-container {
     position: absolute;
     left: 15px;
@@ -51,7 +48,7 @@
 
 .bottom-bar-logo {
     width: auto;
-    height: 40px; /* Adjust logo height */
+    height: 40px;
 }
 
 .bottom-bar-logo-container {
@@ -125,7 +122,6 @@
     align-items: center;
 }
 
-/* User information and logout button */
 .user-info {
     position: absolute;
     right: 15px;
@@ -135,21 +131,19 @@
     align-items: center;
 }
 
-/* Username display with fixed width and overflow handling */
 .username {
     background-color: #f7f6f6;
     color: black;
     border: none;
     cursor: pointer;
-    max-width: 120px; /* Fixed width for the username container */
+    max-width: 120px;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis; /* Show ellipsis (...) if the username is too long */
-    padding-right: 10px; /* Space before the logout button */
+    text-overflow: ellipsis;
+    padding-right: 10px;
     font-size: 18px;
 }
 
-/* Styles for the logout button */
 .logout-button {
     background: none;
     border: none;
@@ -160,7 +154,7 @@
 }
 
 .logout-icon {
-    font-size: 24px; /* Logout icon size */
+    font-size: 24px;
 }
 
 .hamburger-menu {
@@ -175,83 +169,72 @@
 }
 
 @media (max-width: 1023px) {
-
     .user-info {
-        position: relative; /* Keep the parent positioned relatively */
+        position: relative;
         right: 0px;
         top: 0;
-        /* Adjust the z-index to ensure the stacking context is correct */
         z-index: 5; 
     }
 
     .user-info .user-dropdown {
         position: absolute;
         right: 0;
-        top: auto; /* Remove top positioning */
-        bottom: 50px; /* Height of the top bar plus any desired offset */
-        width: 160px; /* Match the width to the 'admin' button or set to 'auto' */
+        top: auto;
+        bottom: 50px;
+        width: 160px;
         background-color: #f9f9f9;
         box-shadow: 0 -4px 8px rgba(0,0,0,0.1);
         padding: 12px 16px;
-        z-index: 6; /* Ensure the dropdown is above other elements */
+        z-index: 6;
         border-radius: 4px;
         overflow: hidden;
-        display: none; /* Initially hide the dropdown */
-        /* If you want the dropdown to have the same width as the username button,
-           you could use JavaScript to set the width dynamically or adjust padding here. */
+        display: none;
     }
 
-    /* Toggle the display of the dropdown */
     .user-info .show-dropdown {
         display: block;
     }
 
- /* Hamburger menu dropdown styling to match the user dropdown */
     .nav-dropdown {
-        display: none; /* Hidden by default */
+        display: none;
         position: absolute;
-        bottom: 100%; /* Position above the hamburger menu */
+        bottom: 100%;
         left: 0;
-        right: 0; /* Take full width of the container */
-        background: #ffffff; /* White background as in the user dropdown */
-        box-shadow: 0px -4px 8px rgba(0,0,0,0.1); /* Shadow above the dropdown */
-        border-radius: 4px; /* Match the border radius */
-        z-index: 10; /* Ensure it's above other content */
-        border-top: 1px solid #ddd; /* Light border at the top for definition */
-        margin-bottom: 4px; /* Optional: to provide a little space between the dropdown and the button */
+        right: 0;
+        background: #ffffff;
+        box-shadow: 0px -4px 8px rgba(0,0,0,0.1);
+        border-radius: 4px;
+        z-index: 10;
+        border-top: 1px solid #ddd;
+        margin-bottom: 4px;
     }
 
-    /* Show the dropdown when it's toggled */
     .nav-dropdown.show {
         display: flex;
         flex-direction: column;
-        opacity: 1; /* Adjust as needed for fade-in effect */
-        animation: fadeInDropdown 0.3s forwards; /* Fade-in animation if needed */
+        opacity: 1;
+        animation: fadeInDropdown 0.3s forwards;
     }
 
-    /* Style for individual nav items */
     .nav-dropdown a {
-        padding: 12px 16px; /* Padding to match the user dropdown */
-        font-size: 16px; /* Font size to match the user dropdown */
-        color: #333; /* Text color to match the user dropdown */
+        padding: 12px 16px;
+        font-size: 16px;
+        color: #333;
         display: flex;
         align-items: center;
-        text-align: left; /* Align text to the left */
-        gap: 10px; /* Space between icon and text */
-        border-bottom: 1px solid #ddd; /* Separator between items */
+        text-align: left;
+        gap: 10px;
+        border-bottom: 1px solid #ddd;
     }
 
-    /* Remove the border for the last item */
     .nav-dropdown a:last-child {
         border-bottom: none;
     }
 
-    /* Highlight the active link */
     .nav-dropdown .active {
-        background-color: #f0f0f0; /* Light grey background for the active item */
+        background-color: #f0f0f0;
     }
 
-    /* Fade-in animation */
     @keyframes fadeInDropdown {
         from {
             opacity: 0;
@@ -263,7 +246,6 @@
         }
     }
 
-    /* Ensure the hamburger menu icon is sized and spaced properly */
     .hamburger-menu {
         display: none;
         cursor: pointer;
@@ -274,17 +256,15 @@
         width: 30px;
         height: 30px;
     }
-    /* Show the hamburger menu on mobile */
+
     .hamburger-menu {
         display: block;
     }
 
-    /* Adjustments for mobile */
     .button-list {
-        display: none; /* Hide the default button list */
+        display: none;
     }
 
-    /* Adjust logo and user info alignment for better appearance */
     .bottom-bar-logo-container,
     .user-info {
         position: absolute;
@@ -305,19 +285,18 @@
 
 @media (min-width: 769px) {
     .topbar-container {
-        top: 10px; /* Position at the top for desktop */
-        bottom: auto; /* Reset bottom property */
+        top: 10px;
+        bottom: auto;
     }
 }
 
-/* Media query for mobile devices */
+
 @media (max-width: 1023px) {
     .topbar-container {
-        bottom: 10px; /* Position at the bottom for mobile */
-        top: auto; /* Reset top property */
+        bottom: 10px;
+        top: auto;
     }
 
-    /* Hide certain elements on mobile for a cleaner look */
     .bottom-bar-logo-container, .user-name-button {
         display: none;
     }
@@ -327,33 +306,33 @@
     display: none;
     position: absolute;
     right: 0;
-    top: 100%; /* Position it below the username button */
+    top: 100%;
     background-color: #f9f9f9;
     min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     padding: 12px 16px;
     z-index: 10000;
-    border-radius: 4px; /* Rounded corners */
-    overflow: hidden; /* Ensures that child elements do not overflow the rounded corners */
+    border-radius: 4px;
+    overflow: hidden;
 }
 
 .user-dropdown button {
     background-color: #f9f9f9;
     color: black;
     padding: 12px 16px;
-    width: 100%; /* Make button expand to the full width of the dropdown */
-    text-align: center; /* Align text to the left */
+    width: 100%;
+    text-align: center;
     border: none;
     cursor: pointer;
 }
 
 .user-dropdown button:hover {
-    background-color: #ddd; /* Light gray background on hover */
+    background-color: #ddd;
     border-radius: 8px;
 }
 
 .username:hover {
-    background-color: #ddd; /* Light gray background on hover */
+    background-color: #ddd;
     border-radius: 8px;
     padding: 5px;
 }

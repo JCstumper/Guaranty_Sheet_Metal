@@ -1,4 +1,3 @@
-/* General modal styles */
 .modal-backdrop {
     position: fixed;
     top: 0;
@@ -31,10 +30,9 @@
 }
 
 .plus-icon::after {
-    content: "+"; /* Creates a plus sign */
-    font-size: 16px; /* Adjust size as needed */
+    content: "+";
+    font-size: 16px;
     line-height: 1;
-    /* Additional styling to make the plus sign look like an icon */
 }
 
 .modal-header {
@@ -104,15 +102,14 @@
 }
 
 .category-fields .form-group.category {
-    flex: 0 0 75%; /* grow | shrink | basis */
-    margin-right: 10px; /* Adjust the margin as needed */
+    flex: 0 0 75%;
+    margin-right: 10px;
 }
 
 .category-fields .form-group.catcode {
-    flex: 0 0 20%; /* Adjust the third value if needed to account for margin */
+    flex: 0 0 20%;
 }
 
-/* Form and dropdown styles */
 .form-group {
     margin-bottom: 20px;
 }
@@ -124,12 +121,12 @@
 
 .input-icon-wrapper input {
     flex: 1;
-    padding-right: 30px; /* Make room for the icon inside the input */
+    padding-right: 30px;
 }
 
 .input-icon-wrapper .icon {
     position: absolute;
-    right: 10px; /* Spacing from the right end of the input */
+    right: 10px;
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;
@@ -171,12 +168,12 @@
 
 .custom-select {
     width: 100%;
-    padding: 12px 15px; /* You may need to adjust the padding */
+    padding: 12px 15px;
     font-size: 16px;
-    line-height: 1.25; /* Line height ensures proper space for text */
+    line-height: 1.25;
     border: 1px solid #ccc;
     border-radius: 4px;
-    height: auto; /* Changed from a fixed height to auto */
+    height: auto;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -185,15 +182,15 @@
 .custom-select-wrapper::after {
     content: '▼';
     position: absolute;
-    top: 50%; /* Center vertically */
+    top: 50%;
     right: 10px;
-    transform: translateY(-50%); /* Adjust vertical positioning to truly center */
-    pointer-events: none; /* This ensures clicks are not intercepted by the arrow */
+    transform: translateY(-50%);
+    pointer-events: none;
     z-index: 1;
-    font-size: 8px; /* Adjust the size of the arrow as needed */
+    font-size: 8px;
 }
 
-/* Hide the default file input */
+
 input[type='file'] {
     display: none;
 }
@@ -205,15 +202,15 @@ input[type='file'] {
 .input-wrapper::before {
     content: '$';
     position: absolute;
-    left: 5px; /* Adjust as needed */
+    left: 5px;
     top: 50%;
     transform: translateY(-50%);
     pointer-events: none;
-    margin-right: 5px; /* Add right margin to create space after the $ */
+    margin-right: 5px;
 }
 
 .dollar-input {
-    padding-left: 30px; /* Increase padding to accommodate the $ and the space */
+    padding-left: 30px;
 }
 
 .input-with-unit {
@@ -228,67 +225,60 @@ input[type='file'] {
     border: none;
     padding: 12px 15px;
     font-size: 16px;
-    border-radius: 4px 0 0 4px; /* Rounded corners on the left side only */
-    /* Adjust the right padding to ensure the text doesn't go under the unit label */
-    padding-right: 50px; /* This should be equal or larger than the width of .unit-label */
+    border-radius: 4px 0 0 4px;
+    padding-right: 50px;
 }
 
 .unit-label {
-    background-color: #e9ecef; /* To match the input background or your preference */
-    padding: 12px 15px; /* Match input padding */
-    border-left: 1px solid #ccc; /* To match the input border */
-    border-radius: 0 4px 4px 0; /* Rounded corners on the right side only */
-    pointer-events: none; /* Makes it non-interactive */
-    color: #495057; /* Text color for the unit */
-    white-space: nowrap; /* Prevents the unit from wrapping */
+    background-color: #e9ecef;
+    padding: 12px 15px;
+    border-left: 1px solid #ccc;
+    border-radius: 0 4px 4px 0;
+    pointer-events: none;
+    color: #495057;
+    white-space: nowrap;
 }
 
-/* Ensures that the quantity input does not outline on focus */
 .quantity-input:focus {
     outline: none;
     box-shadow: none;
 }
 
-
-/* Style the label to look like a button */
 .custom-file-upload {
-    display: block; /* Change to block to center the button */
+    display: block;
     padding: 6px 12px;
     cursor: pointer;
-    background-color: #007bff; /* Change to the desired button color */
-    color: white; /* Change text color to white for better contrast */
+    background-color: #007bff;
+    color: white;
     border-radius: 4px;
-    text-align: center; /* Center the text inside the button */
-    margin: 0 auto; /* Center the button */
-    width: fit-content; /* Fit the content of the button */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Optional: Adds a shadow for depth */
-    border: none; /* Optional: Remove border if it's not needed */
-    outline: none; /* Optional: Remove outline to match the styling */
-    transition: background-color 0.3s; /* Smooth transition for hover effect */
+    text-align: center;
+    margin: 0 auto;
+    width: fit-content;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    border: none;
+    outline: none;
+    transition: background-color 0.3s;
 }
 
 .custom-file-upload:hover {
-    background-color: #0056b3; /* Slightly darker blue on hover */
+    background-color: #0056b3;
 }
 
-/* Style for the auto-generate part number container */
 .auto-generate-part {
     display: flex;
     align-items: center;
-    margin-bottom: 10px; /* Adjust the margin as needed */
-    font-size: 0.9rem; /* Adjust the font size as needed */
+    margin-bottom: 10px;
+    font-size: 0.9rem;
 }
 
-/* Style for the checkbox */
 .auto-generate-part input[type='checkbox'] {
-    margin-right: 10px; /* Space between checkbox and label text */
+    margin-right: 10px;
 }
 
-/* Style for the label text to make it look like a question */
 .auto-generate-part label {
     margin: 0;
-    user-select: none; /* Prevent text selection */
-    cursor: pointer; /* Change cursor to pointer to indicate clickable area */
+    user-select: none;
+    cursor: pointer;
 }
 
 

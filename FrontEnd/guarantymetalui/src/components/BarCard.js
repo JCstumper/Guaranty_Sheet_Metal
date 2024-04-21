@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { AppContext } from '../App'; // Adjust the import based on your actual context file path
+import { AppContext } from '../App'; 
 import './BarCard.css';
 
 const BarCard = () => {
-    const { API_BASE_URL } = useContext(AppContext); // Assuming the base URL is provided by the AppContext
+    const { API_BASE_URL } = useContext(AppContext); 
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(false);
     const [lowInventoryItems, setLowInventoryItems] = useState([]);
@@ -13,7 +13,7 @@ const BarCard = () => {
         fetchInventoryItems();
         fetchLowInventoryItems();
         fetchOutOfStockItems();
-    }, []); // Dependency array is empty to ensure this runs only once
+    }, []); 
 
     const fetchInventoryItems = async () => {
         setLoading(true);

@@ -1,17 +1,17 @@
-// RemovePartModal.js
+
 import React from 'react';
-import './AddProduct.css'; // Ensure this path matches your CSS file location
+import './AddProduct.css'; 
 
 const RemovePartModal = ({ showModal, setShowModal, partId, removePart }) => {
     if (!showModal) return null;
 
     const handleRemove = async () => {
         await removePart(partId);
-        setShowModal(false); // Close the modal after action
+        setShowModal(false); 
     };
 
     const handleCancel = () => {
-        setShowModal(false); // Close the modal without action
+        setShowModal(false); 
     };
 
     return (

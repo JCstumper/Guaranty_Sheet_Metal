@@ -54,7 +54,7 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
         const confirmDelete = async () => {
         if (!currentUserToDelete) return;
     
-        // Check if the user being deleted is the last admin
+        
         const adminCount = users.filter(user => user.role_name === 'admin').length;
         const userIsAdmin = users.find(user => user.user_id === currentUserToDelete).role_name === 'admin';
     
@@ -78,7 +78,7 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
     
-            // On successful removal, update the users and tempUsers state
+            
             setUsers(prevUsers => prevUsers.filter(user => user.user_id !== currentUserToDelete));
             setTempUsers(prevTempUsers => {
                 const updatedTempUsers = { ...prevTempUsers };
@@ -88,11 +88,11 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
     
             setShowConfirmUsers(false);
             setCurrentUserToDelete(null);
-            toast.success('User successfully removed');  // Notify the user of successful deletion
+            toast.success('User successfully removed');  
         } catch (e) {
             console.error('Failed to remove user:', e);
             setError('Failed to remove user');
-            toast.error(`Error: ${e.message}`);  // Notify the user of an error
+            toast.error(`Error: ${e.message}`);  
         }
     };
     
@@ -109,8 +109,8 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
         setError(null);
     
         try {
-            // Assuming you have a way to get the current user's ID from context, state, or decode from JWT
-            const currentUserId = jwtDecode(localStorage.token).user;  // Decode JWT to find the current user ID
+            
+            const currentUserId = jwtDecode(localStorage.token).user;  
             console.log(currentUserId);
     
             const validUpdates = Object.values(tempUsers).filter(tempUser => {
@@ -143,7 +143,7 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
                     body: JSON.stringify({ user_id: user.user_id, role: user.role_name })
                 }).then(async response => {
                     const data = await response.json();
-                    // Update token only if the current user's role was updated
+                    
                     if (data.token && user.user_id === currentUserId) {
                         localStorage.removeItem("token");
                         localStorage.setItem("token", data.token);

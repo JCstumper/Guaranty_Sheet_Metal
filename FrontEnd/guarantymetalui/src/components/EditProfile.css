@@ -1,56 +1,56 @@
 .edit-profile-overlay {
-    position: fixed; /* Fix position to cover the entire screen */
+    position: fixed;
     top: 0;
     left: 0;
-    width: 100vw; /* Full viewport width */
-    height: 100vh; /* Full viewport height */
-    display: flex; /* Use flexbox for centering */
-    align-items: center; /* Vertical centering */
-    justify-content: center; /* Horizontal centering */
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background for overlay effect */
-    z-index: 1000; /* Ensure overlay is above everything else */
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
 }
 
 .edit-profile-container {
-    padding: 20px; /* Padding inside the container */
-    background-color: #fff; /* Background color of the modal */
-    border-radius: 5px; /* Rounded corners */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .edit-profile-container form {
     display: flex;
     flex-direction: column;
-    gap: 10px; /* Adjust the gap to your preference */
+    gap: 10px;
 }
 
 .edit-profile-container input,
 .edit-profile-container button {
-    width: 100%; /* Ensure full width */
-    padding: 8px; /* Add some padding for better touch interaction */
-    margin-bottom: 10px; /* Add some space between elements */
-    border: 1px solid #ccc; /* Add a subtle border */
-    border-radius: 4px; /* Slightly round the corners */
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
 .edit-profile-container button {
-    cursor: pointer; /* Change cursor to pointer to indicate clickable */
-    background-color: #007bff; /* Example button color */
-    color: white; /* Text color for contrast */
-    border-color: #007bff; /* Border color to match background */
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
 }
 
 .edit-profile-container button[type="button"] {
-    background-color: #6c757d; /* Different color for the cancel button */
+    background-color: #6c757d;
     border-color: #6c757d;
 }
 
 .edit-profile-container button:hover {
-    opacity: 0.9; /* Slight opacity change on hover */
+    opacity: 0.9;
 }
 
 @media (max-width: 600px) {
     .edit-profile-container {
-        width: 80vw; /* Make the container width responsive */
+        width: 80vw;
     }
 }

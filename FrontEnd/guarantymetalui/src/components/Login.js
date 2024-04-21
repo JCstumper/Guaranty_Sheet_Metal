@@ -5,11 +5,11 @@ import './Login.css';
 import logo from '../pictures/logo.png';
 import Loading from './Loading';
 import { AppContext } from '../App';
-import InitialSetupModal from './InitialSetupModal'; // Import InitialSetupModal here
+import InitialSetupModal from './InitialSetupModal'; 
 
 const Login = ({ setAuth, setIsLoading }) => {
     const [inputs, setInputs] = useState({ username: "", password: "" });
-    const [showInitialSetup, setShowInitialSetup] = useState(false); // State for initial setup modal
+    const [showInitialSetup, setShowInitialSetup] = useState(false); 
     const { API_BASE_URL } = useContext(AppContext);
     const { username, password } = inputs;
 

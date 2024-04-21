@@ -14,14 +14,14 @@
 
 .customers-main::before {
   content: "";
-  position: fixed; /* Fixed to the viewport */
-  top: 0px; /* Anchored at the bottom of the viewport */
+  position: fixed;
+  top: 0px;
   left: 0;
   right: 0;
-  height: 120px; /* Height of the fade effect */
-  background: linear-gradient(to top, #364b7200 0%, #05132c 100%); /* Gradient starts transparent and becomes solid at the bottom */
+  height: 120px;
+  background: linear-gradient(to top, #364b7200 0%, #05132c 100%);
   z-index: 10;
-  pointer-events: none; /* Ensures clicks pass through */
+  pointer-events: none;
 }
 
 .customers-main::after {
@@ -30,10 +30,10 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 20px; /* Height of the fade effect */
+  height: 20px;
   background: linear-gradient(to bottom, #364b7200 0%, #05132c 100%);
   z-index: 10;
-  pointer-events: none; /* Ensures clicks pass through */
+  pointer-events: none;
 }
 
 .customer-table {
@@ -43,10 +43,9 @@
   border-radius: 15px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   overflow: hidden;
-  /* margin: 0 10px 10px 10px; Adjust right margin to match the top bar */
   display: flex;
   flex-direction: column;
-  width: calc(100%); /* Adjust width to account for margins */
+  width: calc(100%);
 }
 
 .table-header {
@@ -74,13 +73,13 @@
   position: sticky;
   top: 0;
   background-color: #ebebeb;
-  z-index: 10; /* ensures the header stays on top */
+  z-index: 10;
 }
 
 .table-content-jobs tbody {
   display: block;
   overflow-y: auto;
-  max-height: calc(100vh - 225px); /* Adjust this value based on your layout */
+  max-height: calc(100vh - 225px);
   width: 100%;
 }
 
@@ -88,12 +87,11 @@
 .table-content-jobs td {
   padding: 12px;
   text-align: left;
-  white-space: nowrap; /* Prevents the text from wrapping onto multiple lines */
-  overflow: hidden; /* Keeps the text inside the element's bounds */
-  /* text-overflow: ellipsis; Adds ellipsis when text is clipped */
-  position: sticky; /* Make sure headers stay at the top when scrolling */
+  white-space: nowrap;
+  overflow: hidden;
+  position: sticky;
   top: 0;
-  z-index: 10; /* Ensures the header stays on top */
+  z-index: 10;
   border-bottom: 1px solid #ddd;
   box-sizing: border-box;
 }
@@ -101,7 +99,7 @@
 .table-content-jobs tr {
   display: table;
   width: 100%;
-  table-layout: fixed; /* Make sure that the table content does not stretch beyond the container */
+  table-layout: fixed;
 }
 
 
@@ -110,12 +108,12 @@
   color: rgb(0, 0, 0);
   padding: 12px;
   text-align: left;
-  white-space: nowrap; /* Prevents the text from wrapping onto multiple lines */
-  overflow: hidden; /* Keeps the text inside the element's bounds */
-  text-overflow: ellipsis; /* Adds ellipsis when text is clipped */
-  position: sticky; /* Make sure headers stay at the top when scrolling */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: sticky;
   top: 0;
-  z-index: 10; /* Ensures the header stays on top */
+  z-index: 10;
 }
 
 .table-content-jobs tr:nth-child(even) {
@@ -151,13 +149,13 @@
 
 .header-controls {
   display: flex;
-  align-items: center; /* Centers the items vertically */
-  justify-content: flex-start; /* Aligns items to the left */
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .search-input-jobs {
-  flex-grow: 1; /* Allows the search input to take available horizontal space */
-  margin-right: 10px; /* Adds spacing between the search input and the add button */
+  flex-grow: 1;
+  margin-right: 10px;
 }
 
 .add-button {
@@ -175,7 +173,7 @@
     background-color: #083d77;
 }
 
-/* Style for add job form if it's a modal or inline form */
+
 .add-job-form {
     padding: 15px;
     margin: 15px 0;
@@ -183,7 +181,7 @@
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Additional form field styling */
+
 .add-job-form input {
     display: block;
     width: calc(100% - 20px);
@@ -199,27 +197,26 @@
 }
 
 .add-job-button:hover {
-    background-color: #083d77; /* A slightly darker blue on hover */
+    background-color: #083d77;
 }
 
 .selected {
-    background-color: #e8f0fe; /* Or any other color you prefer */
+    background-color: #e8f0fe;
   }
   
   .job-details {
-    display: none; /* Initially hide the details */
+    display: none;
   }
   
   .job-details td {
-    background-color: #f7f7f7; /* Slightly different background for contrast */
-    padding: 15px; /* More padding for detail rows */
+    background-color: #f7f7f7;
+    padding: 15px;
   }
   
-  /* Style to show the job details when the job row is clicked */
   .selected + .job-details {
-    display: table-row; /* Show the details */
+    display: table-row;
   }
-/* Modal Styles */
+
 .modalAddJob {
     position: fixed;
     top: 0;
@@ -230,17 +227,17 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1010; /* Make sure it's above other elements */
+    z-index: 1010;
   }
   
   .modalAddJob-content {
     background-color: white;
     border: 4px solid #007bff;
-    padding: 0px; /* Adjust padding as needed */
+    padding: 0px;
     border-radius: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 80%; /* Or your desired width */
-    max-width: 800px; /* Adjust to the desired max-width */
+    width: 80%;
+    max-width: 800px;
     z-index: 1001;
     display: flex;
     flex-direction: column;
@@ -264,13 +261,13 @@
 }
   
 .close-modalAddJob {
-  font-size: 1rem; /* Smaller font size */
-  line-height: 1; /* Adjust line height to remove extra space */
-  color: white; /* White color for the 'X' */
-  padding: 0.5rem; /* Smaller padding */
-  position: absolute; /* Positioning it absolutely */
-  top: 0.5rem; /* Position towards the top */
-  right: 0.5rem; /* Position towards the right */
+  font-size: 1rem;
+  line-height: 1;
+  color: white;
+  padding: 0.5rem;
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
   background: none;
   border: none;
   cursor: pointer;
@@ -331,11 +328,11 @@
 }
 
 .job-details-section {
-  background-color: #f9f9f9; /* Light gray background for each section */
+  background-color: #f9f9f9;
   border-radius: 8px;
   padding: 10px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  margin-bottom: 10px; /* Adds space between sections if needed */
+  margin-bottom: 10px;
 }
 
 .job-details-content {
@@ -357,13 +354,13 @@
 }
 
 .details-button-container {
-  margin-top: 5px; /* Adds space between the buttons */
+  margin-top: 5px;
 }
 
 .details-btn {
   display: inline-block;
   padding: 10px 15px;
-  margin: 5px 10px; /* Add margin for vertical spacing */
+  margin: 5px 10px;
   background-color: #0b2b61;
   color: white;
   border: none;
@@ -376,21 +373,18 @@
   background-color: #083d77;
 }
 
-/* This is a new section for the parts*/
-
-/* Specific styles for the Necessary Parts and Used Parts tables */
 .necessary-parts-table, .used-parts-table {
   margin-top: 10px;
 }
 
-/* Add custom styles for the action buttons in each section if needed */
+
 .add-part-btn {
-  background-color: #28a745; /* A green color for add part button */
+  background-color: #28a745;
   color: white;
 }
 
 .add-part-btn:hover {
-  background-color: #218838; /* Darker green on hover */
+  background-color: #218838;
 }
 .parts-section {
   margin: 10px 0;
@@ -427,7 +421,6 @@
   text-align: right;
 }
 
-/* Add Part Modal Styles */
 .addPartModal {
   position: fixed;
   top: 0;
@@ -438,7 +431,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1050; /* Ensure it's above other modal elements */
+  z-index: 1050;
 }
 
 .addPartModal-content {
@@ -447,11 +440,11 @@
   padding: 15px;
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  width: 60%; /* Adjust based on your preference */
-  max-width: 600px; /* Maximum width */
+  width: 60%;
+  max-width: 600px;
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* Ensures the content does not overflow the modal */
+  overflow: hidden;
 }
 
 .addPartModal-header {
@@ -478,8 +471,8 @@
 
 .addPartModal-body {
   padding: 10px;
-  max-height: 400px; /* Maximum body height */
-  overflow-y: auto; /* Enable scroll if content exceeds maximum height */
+  max-height: 400px;
+  overflow-y: auto;
 }
 
 .addPartModal-footer {
@@ -502,41 +495,41 @@
 }
 
 .edit-btn {
-    background-color: #4CAF50; /* Green background for edit */
+    background-color: #4CAF50;
     color: white;
 }
 
 .edit-btn:hover {
-    background-color: #45a049; /* Darker green on hover */
+    background-color: #45a049;
 }
 
 .remove-btn {
-    background-color: #f44336; /* Red background for remove */
+    background-color: #f44336;
     color: white;
 }
 
 .remove-btn:hover {
-    background-color: #da190b; /* Darker red on hover */
+    background-color: #da190b;
 }
 .filtering-box-jobs {
   margin-bottom: 10px;
-  top: 0; /* Align to the top of its container */
-  left: 0; /* Align to the left of its container */
-  width: 33%; /* Take up 1/3rd of the screen width */
-  padding: 10px; /* Adjust padding to your preference */
-  background-color: #fff; /* Keep the background color */
-  border: 2px solid #b3b3b3; /* Adjust border thickness */
-  border-radius: 10px; /* Adjust border-radius for rounded corners */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+  top: 0;
+  left: 0;
+  width: 33%;
+  padding: 10px;
+  background-color: #fff;
+  border: 2px solid #b3b3b3;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
 }
 
 .search-input-jobs {
-  width: 100%; /* Input field takes full width of its container */
-  padding: 8px; /* Padding inside the input field */
-  margin-top: 5px; /* Margin at the top of the input field */
-  border: 1px solid #ccc; /* Border around the input field */
-  border-radius: 5px; /* Rounded corners for the input field */
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 @media screen and (max-width: 1023px) {
@@ -551,28 +544,27 @@
 
   .customers-main::before,
   .customers-main::after {
-    /* Remove the gradient effects on smaller screens for a cleaner look */
     display: none;
   }
 
   .customer-table {
-    border: 2px solid #b3b3b3; /* Lighter border */
-    border-radius: 10px; /* Consistent border radius */
-    margin: 0; /* Remove margin */
-    width: 100%; /* Full width */
+    border: 2px solid #b3b3b3;
+    border-radius: 10px;
+    margin: 0;
+    width: 100%;
   }
 
   .table-header {
-    font-size: 16px; /* Smaller font size for the header */
-    padding: 10px; /* Reduced padding */
+    font-size: 16px;
+    padding: 10px;
   }
 
   .table-content-jobs {
-    font-size: 14px; /* Smaller font size for table content */
+    font-size: 14px;
   }
 
   .table-content-jobs th, .table-content-jobs td {
-    padding: 8px; /* Reduced padding */
+    padding: 8px;
   }
 
   .table-content-jobs tbody {
@@ -583,55 +575,53 @@
 }
 
   .table-content-jobs tr:hover {
-    background-color: #eee; /* Lighter hover background */
+    background-color: #eee;
   }
 
   .table-content-jobs th.ignore-column, .table-content-jobs td.ignore-column {
-    display: none; /* Initially hide all table headers and cells */
+    display: none;
   }
 
   .table-content-jobs th.address-column,
   .table-content-jobs td.address-column,
   .table-content-jobs th.actions-column,
   .table-content-jobs td.actions-column {
-    display: table-cell; /* Only show address and actions columns */
-    padding: 8px; /* Adjust padding */
+    display: table-cell;
+    padding: 8px;
   }
 
   .table-content-jobs td.actions-column button {
-    padding: 10px 15px; /* Increase button padding */
-    font-size: 14px; /* Increase font size for better legibility */
+    padding: 10px 15px;
+    font-size: 14px;
   }
 
   .actions-column {
-    display: table-cell; /* Ensure the actions column is displayed */
+    display: table-cell;
   }
 
   .edit-btn,
   .remove-btn {
-    padding: 8px 12px; /* Adjust padding for smaller screens */
-    font-size: 12px; /* Adjust font size for smaller screens */
-    margin: 4px; /* Add some margin around buttons */
+    padding: 8px 12px;
+    font-size: 12px;
+    margin: 4px;
   }
 
   .details-button-container button {
-    display: block; /* Stack buttons vertically */
-    width: 100%; /* Full width of the column */
-    margin-bottom: 5px; /* Space between buttons */
+    display: block;
+    width: 100%;
+    margin-bottom: 5px;
   }
 
-  /* Last button shouldn't have a margin at the bottom to align with the design */
   .details-button-container button:last-child {
     margin-bottom: 0;
   }
 
   .actions-column button {
-    display: block; /* Stack buttons vertically */
-    width: 100%; /* Full width of the column */
-    margin-bottom: 5px; /* Space between buttons */
+    display: block;
+    width: 100%;
+    margin-bottom: 5px;
   }
 
-  /* Last button shouldn't have a margin at the bottom to align with the design */
   .actions-column button:last-child {
     margin-bottom: 0;
   }

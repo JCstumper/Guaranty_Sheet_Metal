@@ -1,5 +1,5 @@
 import React from 'react';
-import './AddProduct.css'; // Assuming this file is already included for modal styling
+import './AddProduct.css'; 
 
 const LogoutConfirmation = ({ isOpen, onConfirm, onCancel }) => {
     if (!isOpen) return null;
@@ -8,9 +8,9 @@ const LogoutConfirmation = ({ isOpen, onConfirm, onCancel }) => {
         <div className="modal-backdrop">
             <div className="modal-content">
                 <div className="modal-header">
-                    <h2>Log Out</h2> {/* Adjust or remove if you prefer no header */}
+                    <h2>Log Out</h2>
                 </div>
-                <div className="modal-body" style={{ textAlign: 'center' }}> {/* Inline style for text alignment */}
+                <div className="modal-body" style={{ textAlign: 'center' }}>
                     <p style={{ fontSize: '20px' }}><strong>Are you sure you want to log out?</strong></p>
                 </div>
                 <div className="modal-actions">

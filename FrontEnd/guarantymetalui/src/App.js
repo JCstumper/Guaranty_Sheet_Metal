@@ -1,10 +1,10 @@
-import React, {Fragment, useState, useEffect, createContext} from "react"; // Import React and necessary hooks
-import './App.css'; // Import the main stylesheet for global styles
-// Import React Router components for navigation and routing
+import React, {Fragment, useState, useEffect, createContext} from "react"; 
+import './App.css'; 
+
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode";
 
-// Import all page components used in the app
+
 import Dashboard from './Dashboard';
 import Orders from './Orders';
 import Customers from './Customers';
@@ -19,31 +19,27 @@ import NotFound from './components/NotFound';
 export const AppContext = createContext();
 
 function App() {
-  // State to track if user is authenticated
+  
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // Add isLoading state
+  const [isLoading, setIsLoading] = useState(true); 
   const [isTokenExpired, setIsTokenExpired] = useState(false);
 
   const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost/api';
 
-  // Function to update authentication state
   const setAuth = (boolean) => {
     setIsAuthenticated(boolean);
   };
 
-  // Function to verify if the user is authenticated by checking a token in local storage
   async function isAuth() {
     try {
 
-      // Send a GET request to verify the user's token
       const response = await fetch(`${API_BASE_URL}/auth/verify`, {
         method: "GET",
         headers: {token: localStorage.token}
       });
 
-      const parseRes = await response.json(); // Parse the JSON response from the server
+      const parseRes = await response.json(); 
 
-      // Update the authentication state based on the server's response
       parseRes === true ? setIsAuthenticated(true) : setIsAuthenticated(false);
 
       if (response.status === 401 && parseRes.message === "jwt expired") {
@@ -52,42 +48,40 @@ function App() {
       }
 
     } catch (err) {
-      console.error(err.message); // Log any errors to the console
+      console.error(err.message); 
     }
   }
   const checkTokenExpiration = (token) => {
     try {
       const decodedToken = jwtDecode(token);
-      const currentTime = Date.now() / 1000; // Convert to seconds
+      const currentTime = Date.now() / 1000; 
       if (decodedToken.exp < currentTime) {
         setIsTokenExpired(true);
         localStorage.removeItem("token");
         setAuth(false); 
-        // Optionally, handle token expiration (e.g., redirect to login page)
       } else {
         setIsTokenExpired(false);
         setAuth(true);
       }
     } catch (error) {
       console.error('Error decoding token:', error);
-      // Handle error (e.g., token might be malformed)
+      
     }
   };
 
-  // Update to immediate state update based on localStorage
+  
   useEffect(() => {
     const token = localStorage.getItem('token');
 
     if(token && token !== '') {
       checkTokenExpiration(token);
     }
-
-    isAuth(); // Then verify with the backend for token validity
-    setIsLoading(false); // Update isLoading after 3 seconds
-
+    
+    isAuth(); 
+    setIsLoading(false); 
   }, []);
 
-// ProtectedRoute component
+
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const token = localStorage.getItem('token');
   let userRoles = '';
@@ -145,4 +139,4 @@ return (
 );
 }
 
-export default App; // Export the App component for use in index.js
+export default App; 

@@ -1,6 +1,5 @@
-// ReturnPartModal.js
 import React from 'react';
-import './AddProduct.css'; // Ensure your path to the CSS is correct
+import './AddProduct.css'; 
 
 const ReturnPartModal = ({ showModal, setShowModal, part, returnPartToNecessary }) => {
     if (!showModal) return null;

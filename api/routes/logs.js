@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../db'); // make sure the path to db.js is correct
+const pool = require('../db');
 const authorization = require("../middleware/authorization");
 
 router.get('/', authorization, async (req, res) => {

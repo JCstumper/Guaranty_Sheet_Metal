@@ -3,25 +3,25 @@
   flex-direction: column;
   width: 100%;
   align-items: center;
-  padding-bottom: 20px; /* Space at the bottom */
+  padding-bottom: 20px;
 }
 
 .bar-card {
-  width: calc(100% - 40px); /* Assuming a 20px padding is desired on each side */
+  width: calc(100% - 40px);
   background-color: white;
   border: 1px solid #ccc;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
   border-radius: 10px;
-  padding: 20px; /* Padding inside the card for content */
-  margin-bottom: 20px; /* Space at the bottom inside the card */
+  padding: 20px;
+  margin-bottom: 20px;
   display: flex;
   flex-direction: column;
 }
 
 .bar-content {
   overflow-y: auto;
-  /* Height adjusted to fit within the viewport minus top and bottom padding and header height */
-  height: calc(100vh - 450px); /* Adjust 60px if the header height is different */
+ 
+  height: calc(100vh - 450px);
 }
 
 table {
@@ -33,7 +33,7 @@ thead {
   background-color: #f2f2f2;
   border-bottom: 1px solid #ddd;
   position: sticky;
-  top: 0; /* Keep thead at the top of the scroll */
+  top: 0;
 }
 
 tbody {
@@ -96,31 +96,31 @@ tr {
 
   .bar-card tr {
     display: flex;
-    flex-wrap: nowrap; /* Prevent wrapping to a new line */
+    flex-wrap: nowrap;
   }
 
   .bar-card th,
   .bar-card td {
-    /* Ensure the table headers and cells are displayed */
-    display: none; /* Hide by default */
+   
+    display: none;
   }
 
-  /* Specifically targeting the part number and status columns for mobile */
+ 
   .bar-card .part-number-column,
   .bar-card .status-column {
-    display: flex; /* Display as flex items */
-    flex-basis: 50%; /* Give each column half of the row's width */
-    align-items: center; /* Align items vertically */
-    justify-content: flex-start; /* Align content to the start */
-    padding: 8px; /* Maintain padding */
-    box-sizing: border-box; /* Include padding and border in the element's total width */
+    display: flex;
+    flex-basis: 50%;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 8px;
+    box-sizing: border-box;
   }
 
   .bar-card th.part-number-column,
   .bar-card td.part-number-column,
   .bar-card th.status-column,
   .bar-card td.status-column {
-    display: block; /* Revert to block to respect the flex layout */
+    display: block;
   }
 }
 

@@ -15,8 +15,8 @@ const Inventory = ({ setAuth }) => {
     const [showModal, setShowModal] = useState(false);
     const [showEditQuantityModal, setShowEditQuantityModal] = useState(false);
     const [editItem, setEditItem] = useState({ partNumber: '', quantityInStock: 0 });
-    const [sortColumn, setSortColumn] = useState(null); // e.g., 'part_number', 'quantity_in_stock'
-    const [sortDirection, setSortDirection] = useState('ascending'); // or 'descending'
+    const [sortColumn, setSortColumn] = useState(null); 
+    const [sortDirection, setSortDirection] = useState('ascending'); 
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deletePartNumber, setDeletePartNumber] = useState(null);
     const [showEditProductModal, setShowEditProductModal] = useState(false);
@@ -37,7 +37,6 @@ const Inventory = ({ setAuth }) => {
     });
     
     const fetchProductsWithInventory = async () => {
-        // Retrieve the JWT token from localStorage
         const token = localStorage.getItem('token');
         
         try {
@@ -45,13 +44,13 @@ const Inventory = ({ setAuth }) => {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'token': token, // Include the token in the request headers
+                    'token': token, 
                 },
             });
             const jsonData = await response.json();
             
             if (Array.isArray(jsonData.products)) {
-                // Sort products so that items with stock are at the top
+                
                 const sortedProducts = jsonData.products.sort((a, b) => {
                     return b.quantity_in_stock - a.quantity_in_stock;
                 });
@@ -66,23 +65,22 @@ const Inventory = ({ setAuth }) => {
             setProducts([]);
         }
     };
-    
 
     useEffect(() => {
-        // fetchProducts();
+        
         fetchProductsWithInventory();
     }, []);
 
     useEffect(() => {
-        // Dynamically generate filter options based on products data
+        
         const generateOptions = (items) => {
             let options = [...new Set(items.map(item => item ?? '(blank)').filter((item, index, array) => array.indexOf(item) === index))];
-            // Remove '(blank)' if it exists to sort the rest
+            
             const blankExists = options.includes('(blank)');
             if (blankExists) {
                 options = options.filter(item => item !== '(blank)');
             }
-            // Sort options and append '(blank)' at the end if it was originally there
+            
             options.sort();
             if (blankExists) {
                 options.push('(blank)');
@@ -104,13 +102,11 @@ const Inventory = ({ setAuth }) => {
         setFilter(event.target.value.toLowerCase());
     };    
 
-    // Toggle the expanded state of a product row
+    
     const toggleProductExpansion = (index) => {
         if (expandedRowIndex === index) {
-            // If clicking the already expanded row, collapse it
             setExpandedRowIndex(null);
         } else {
-            // Expand the new row and collapse others
             setExpandedRowIndex(index);
         }
     };
@@ -119,11 +115,10 @@ const Inventory = ({ setAuth }) => {
         const normalizedFilter = filter?.toLowerCase() ?? '';
         return (
             product.part_number?.toLowerCase().includes(normalizedFilter) ||
-            product.supplier_part_number?.toLowerCase().includes(normalizedFilter) || // Include supplier part number in the filter check
+            product.supplier_part_number?.toLowerCase().includes(normalizedFilter) || 
             product.description?.toLowerCase().includes(normalizedFilter)
         ) && Object.keys(activeFilters).every(key => {
-            // Convert both to string if numeric values are involved
-            const productValue = typeof product[key] === 'number' ? product[key].toString() : product[key] ?? ''; // Ensure non-null string
+            const productValue = typeof product[key] === 'number' ? product[key].toString() : product[key] ?? ''; 
             return activeFilters[key].length === 0 || activeFilters[key].includes(productValue);
         });
     };
@@ -131,31 +126,26 @@ const Inventory = ({ setAuth }) => {
 
     const sortProducts = (a, b) => {
         if (sortColumn === null) return 0;
-    
-        // Special handling for "status"
+
         if (sortColumn === 'status') {
-            const statusA = a.quantity_in_stock > 0 ? 1 : 0; // 1 for In Stock, 0 for Out of Stock
+            const statusA = a.quantity_in_stock > 0 ? 1 : 0; 
             const statusB = b.quantity_in_stock > 0 ? 1 : 0;
-    
-            // Ascending: Show "Out of Stock" before "In Stock"
-            // Descending: Show "In Stock" before "Out of Stock"
+
             return sortDirection === 'ascending' ? statusA - statusB : statusB - statusA;
         }
-    
+
         let valueA = a[sortColumn];
         let valueB = b[sortColumn];
-        
-        // Handle numeric sorting
+
         if (typeof valueA === 'number' && typeof valueB === 'number') {
             return sortDirection === 'ascending' ? valueA - valueB : valueB - valueA;
         }
-        
-        // Handle string sorting
+
         valueA = valueA ? valueA.toString().toLowerCase() : '';
         valueB = valueB ? valueB.toString().toLowerCase() : '';
         if (valueA < valueB) return sortDirection === 'ascending' ? -1 : 1;
         if (valueA > valueB) return sortDirection === 'ascending' ? 1 : -1;
-        
+
         return 0;
     };    
 
@@ -218,7 +208,7 @@ const Inventory = ({ setAuth }) => {
         }));
     };
 
-    // Function to render checkboxes for a given category
+    
     const renderCategoryCheckboxes = (category) => {
         return (
             <div className="filter-category">
@@ -267,8 +257,8 @@ const Inventory = ({ setAuth }) => {
             });
             if (response.ok) {
                 toast.success('Quantity updated successfully!');
-                setShowEditQuantityModal(false); // Close the modal on success
-                fetchProductsWithInventory(); // Refresh the inventory list
+                setShowEditQuantityModal(false); 
+                fetchProductsWithInventory(); 
             } else {
                 toast.error('Failed to update quantity. Please try again.');
                 console.error("Failed to update item.");
@@ -284,23 +274,23 @@ const Inventory = ({ setAuth }) => {
         setShowDeleteModal(true);
     };
 
-    // Example function to open the edit modal and set the state with the product's current information
+    
     const openEditProductModal = (product) => {
         setEditProductItem({
-            originalPartNumber: product.part_number, // Retain the original part number for identification
+            originalPartNumber: product.part_number, 
             partNumber: product.part_number,
-            supplierPartNumber: product.supplier_part_number || '', // Include supplier part number
-            radiusSize: product.radius_size || '', // Fallback to empty string if undefined
+            supplierPartNumber: product.supplier_part_number || '', 
+            radiusSize: product.radius_size || '', 
             materialType: product.material_type || '',
             color: product.color || '',
             description: product.description || '',
             type: product.type || '',
-            quantityOfItem: product.quantity_of_item ? product.quantity_of_item.toString() : '', // Convert to string for form input
+            quantityOfItem: product.quantity_of_item ? product.quantity_of_item.toString() : '', 
             unit: product.unit || '',
-            price: product.price ? product.price.toString() : '', // Convert to string for form input
-            markUpPrice: product.mark_up_price ? product.mark_up_price.toString() : '', // Convert to string for form input
+            price: product.price ? product.price.toString() : '', 
+            markUpPrice: product.mark_up_price ? product.mark_up_price.toString() : '', 
         });
-        setShowEditProductModal(true); // Display the modal for editing product details
+        setShowEditProductModal(true); 
     };
     
     return (
