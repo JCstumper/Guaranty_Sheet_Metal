@@ -41,6 +41,13 @@ import INVENTORY from './Documentation/pages/INVENTORY.md';
 import LOGS from './Documentation/pages/LOGS.md';
 import ORDERS from './Documentation/pages/ORDERS.md';
 
+// Imports for nginx
+import PRODUCTIONTEMPLATE from './Documentation/nginx/NGINX.CONF.PRODUCTIONTEMPLATE.md';
+import GENERATECERTS from './Documentation/nginx/GENERATE-CERTS.md';
+import TEMPLATE from './Documentation/nginx/NGINX.CONF.TEMPLATE.md';
+import STARTUP from './Documentation/nginx/STARTUP.md';
+import STARTUPPRODUCTION from './Documentation/nginx/STARTUPPRODUCTION.md';
+
 //Required files for our PWEB
 
 import Software from './Documentation/Software.md';
@@ -99,13 +106,22 @@ const markdownFiles = {
 
     pages:{
     // pages
-    'APP_PAGE': APP, // Renamed to avoid conflict with 'APP' from components
-    'CUSTOMERS': CUSTOMERS,
-    'INDEX': INDEX,
-    'INVENTORY_PAGE': INVENTORY, // Renamed to avoid conflict with 'INVENTORY' from routes
-    'LOGS_PAGE': LOGS, // Renamed to avoid conflict with 'LOGS' from routes
-    'ORDERS': ORDERS,
+        'APP_PAGE': APP, // Renamed to avoid conflict with 'APP' from components
+        'CUSTOMERS': CUSTOMERS,
+        'INDEX': INDEX,
+        'INVENTORY_PAGE': INVENTORY, // Renamed to avoid conflict with 'INVENTORY' from routes
+        'LOGS_PAGE': LOGS, // Renamed to avoid conflict with 'LOGS' from routes
+        'ORDERS': ORDERS,
     },
+
+    nginx:{
+        'PRODUCTION_TEMPLATE': PRODUCTIONTEMPLATE, // Renamed for clarity
+        'GENERATE_CERTS': GENERATECERTS, // Renamed for consistency with naming convention
+        'TEMPLATE_PAGE': TEMPLATE, // Renamed to avoid conflict with 'TEMPLATE' from components
+        'STARTUP_SCRIPT': STARTUP, // Renamed to distinguish type of startup
+        'STARTUP_PRODUCTION_SCRIPT': STARTUPPRODUCTION // Renamed for clarity and distinction
+    },
+    
 
     required:{
     'SOFTWARE': Software,
