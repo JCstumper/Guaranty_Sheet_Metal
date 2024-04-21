@@ -75,6 +75,7 @@ const Topbar = ({ setAuth }) => {
                 toast.success('Profile was updated.');
                 getName();
             }
+            
             else {
                 setShowEditProfile(false);
                 toast.error('Profile failed to update. Username, password, or email already exist.');
