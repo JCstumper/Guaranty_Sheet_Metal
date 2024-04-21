@@ -9,6 +9,7 @@ The `Logs` component is designed to display and manage inventory logs within the
 ### Log Display
 
 - **View Logs**: Displays a list of all logs related to inventory actions, such as additions, deletions, and updates. Each log entry shows details like action type, username, log type, change details, and the timestamp of the action.
+- **Time limit**: Logged data is saved for one month before being erased from the database.
 
 ### Filter Modal
 
