@@ -30,11 +30,9 @@ const corsOptions = {
       callback(new Error('CORS policy violation'));
     }
   },
-  credentials: true // If your frontend needs to send cookies or use credentials
+  credentials: true
 };
 app.use(cors(corsOptions));
-
-// app.use(cors());
 
 app.use("/auth", authRoute);
 app.use("/dashboard", dashRoute);
@@ -45,11 +43,8 @@ app.use("/inventory", inventoryRoute);
 app.use("/purchases", purchasesRoute);
 app.use("/edit", editProfileRoute);
 app.use("/categories", categoriesRoute);
-// Serve static files from the uploads directory
 app.use('/uploads', express.static('uploads'));
 app.use('/users', userRoute);
-
-
 
 // Error handling for if an endpoint is not found
 app.use((req, res, next) => {

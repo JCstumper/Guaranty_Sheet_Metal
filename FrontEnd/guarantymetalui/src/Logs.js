@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { AppContext } from './App'; // Adjust the import path as necessary
+import { AppContext } from './App'; 
 import { toast } from 'react-toastify';
 import { FaFilter } from 'react-icons/fa';
 import Topbar from './components/topbar';
-import './Logs.css'; // Adjust the path as necessary
+import './Logs.css'; 
 import './components/AddProduct.css'
 
 const Logs = ({ setAuth }) => {
-    const [originalLogs, setOriginalLogs] = useState([]); // Store the original dataset
+    const [originalLogs, setOriginalLogs] = useState([]); 
     const [logs, setLogs] = useState([]);
     const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
     const [userFilter, setUserFilter] = useState('');
@@ -17,7 +17,7 @@ const Logs = ({ setAuth }) => {
     const openFilterModal = () => setIsFilterModalVisible(true);
     const closeFilterModal = () => setIsFilterModalVisible(false);
 
-    // Function to fetch inventory logs
+    
     const fetchLogs = async () => {
         const token = localStorage.getItem('token');
         try {
@@ -34,11 +34,11 @@ const Logs = ({ setAuth }) => {
                 const sortedLogs = jsonData.logs.rows.sort((a, b) => 
                     new Date(b.action_timestamp) - new Date(a.action_timestamp)
                 );
-                setOriginalLogs(sortedLogs); // Set original logs with sorted data
-                setLogs(sortedLogs); // Set logs for display
+                setOriginalLogs(sortedLogs); 
+                setLogs(sortedLogs); 
             } else {
                 console.error('Data fetched is not an array:', jsonData);
-                setOriginalLogs([]); // Reset original logs
+                setOriginalLogs([]); 
                 setLogs([]);
                 toast.error('Failed to fetch logs.');
             }
@@ -49,7 +49,7 @@ const Logs = ({ setAuth }) => {
     };
 
     useEffect(() => {
-        fetchLogs(); // Fetch logs when the component mounts
+        fetchLogs(); 
     }, []);
 
     const applyFilters = () => {
@@ -66,7 +66,7 @@ const Logs = ({ setAuth }) => {
     const resetFilters = () => {
         setUserFilter('');
         setActionTypeFilter('');
-        setLogs(originalLogs); // Reset to original logs
+        setLogs(originalLogs); 
         closeFilterModal();
     };
 
@@ -97,9 +97,9 @@ const Logs = ({ setAuth }) => {
                                 <td><strong>{log.log_type}</strong></td>
                                 <td><strong>
                                     {(() => {
-                                    // Parse the details JSON string
+                                    
                                     const details = JSON.parse(log.change_details);
-                                    // Build a formatted string to display
+                                    
                                     let formattedDetails = `${details.message}\n`;
                                     if (details.details) {
                                         for (const [key, value] of Object.entries(details.details)) {

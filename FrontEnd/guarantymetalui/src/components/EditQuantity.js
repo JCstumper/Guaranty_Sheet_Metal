@@ -1,6 +1,5 @@
-// EditQuantity.js
 import React from 'react';
-import './AddProduct.css'; // Adjust the path if necessary
+import './AddProduct.css'; 
 
 const EditQuantity = ({ showModal, setShowModal, editItem, setEditItem, handleUpdateQuantity }) => {
     if (!showModal) return null;

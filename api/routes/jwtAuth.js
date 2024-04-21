@@ -33,10 +33,9 @@ router.get("/check-initial-setup", async (req, res) => {
 router.post("/firstregister", validInfo, async(req, res) => {
     const client = await pool.connect();
     try {
-        // Check if the first registration has already been completed
         const { rows } = await client.query("SELECT setting_value FROM app_settings WHERE setting_key = 'first_registration_completed'");
         if (rows[0].setting_value) {
-            return;  // If the registration has already been completed, exit silently
+            return;
         }
 
         const { username, password, email, role } = req.body;
@@ -84,10 +83,10 @@ router.post("/register", validInfo, authorization, async(req, res) => {
         const user = await pool.query("SELECT * FROM users WHERE username = $1", [username]);
 
         if (user.rows.length !== 0) {
-            return res.status(401).json("User already exists"); //401 means that the user is Unauthenticated
+            return res.status(401).json("User already exists");
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10); // Hash the password with a salt round of 10
+        const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = await pool.query("INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING *", [username, hashedPassword, email]);
 
         await pool.query(
@@ -98,10 +97,9 @@ router.post("/register", validInfo, authorization, async(req, res) => {
         const resultsGetRole = await client.query(getRole, [role]);
         const roleId = resultsGetRole.rows[0].role_id;
         if (resultsGetRole.rows.length > 0) {
-            // Now use this roleId to insert into user_roles
             await pool.query(
                 "INSERT INTO user_roles (user_id, role_id) VALUES ($1, $2) ON CONFLICT (user_id, role_id) DO NOTHING;",
-                [newUser.rows[0].user_id, roleId] // newUser.rows[0].user_id should be the user's ID, roleId is the role_id
+                [newUser.rows[0].user_id, roleId]
             );
         } else {
             console.error("Role not found or failed to insert.");
@@ -111,7 +109,7 @@ router.post("/register", validInfo, authorization, async(req, res) => {
 
         const roleCheck = await pool.query("SELECT role_id FROM roles WHERE role_name = $1", [role]);
         if (roleCheck.rows.length === 0) {
-            return res.status(400).json("Role does not exist"); // Or handle default role assignment
+            return res.status(400).json("Role does not exist");
         }
 
         await logAddUserAction('Added User', req.username, 'Add User', { 
@@ -134,11 +132,7 @@ router.post("/register", validInfo, authorization, async(req, res) => {
 
 router.post("/login", validInfo, async (req, res) => {
     try {
-        //1. destructure the req.body
-
         const {username, password} = req.body;
-
-        //2. check if user doesn't exist (if not then we throw error)
 
         const userQuery = `
             SELECT users.user_id, users.password, roles.role_name
@@ -153,8 +147,6 @@ router.post("/login", validInfo, async (req, res) => {
             return res.status(401).json("Username or Password is incorrect");
         }
 
-        //3. Check the lockout status of the user
-
         const userId = user.rows[0].user_id;
         const lockoutStatus = await getUserLockoutStatus(userId);   
         
@@ -166,17 +158,17 @@ router.post("/login", validInfo, async (req, res) => {
             return res.status(403).json("Account locked. Try again later.");
         }
 
-        if(lockoutStatus.failed_attempts > 4) { //If there have been at 5 attempts but the lockout time has expired then reset the user
+        if(lockoutStatus.failed_attempts > 4) { 
             updateFailedAttempts(userId, true);
         }
 
-        //4. check if incomming password is the same as the database password and update the attempts of invalid password attempts if needed
+        
 
         const validPassword = await bcrypt.compare(password, user.rows[0].password);
 
         if (!validPassword) {
 
-            if(lockoutStatus.failed_attempts === 4) { //There must have been 4 prior attempts to enter the password, so this would be the 5th attempt. Hence, the user's account will be locked out.
+            if(lockoutStatus.failed_attempts === 4) {
                 setLockout(userId);
             }
 
@@ -184,10 +176,9 @@ router.post("/login", validInfo, async (req, res) => {
             return res.status(401).json("Username or Password is incorrect");
         }
 
-        await updateFailedAttempts(userId, true); //Reset the failed attempts since the user entered the correct password
+        await updateFailedAttempts(userId, true);
 
         const role = user.rows[0].role_name;
-        //5. give them the jwt token
         const token = jwtGenerator(user.rows[0].user_id, username, role);
 
 

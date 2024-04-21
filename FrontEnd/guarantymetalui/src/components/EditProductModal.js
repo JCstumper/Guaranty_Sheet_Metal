@@ -1,4 +1,4 @@
-// EditProductModal.js
+
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { toast } from 'react-toastify';
 import './AddProduct.css';
@@ -20,7 +20,7 @@ const EditProductModal = ({ showModal, setShowModal, editProductItem, setEditPro
     }, [showModal, editProductItem.unit]);
 
     useEffect(() => {
-        // Only fetch catCode if it hasn't been manually changed
+        
         if (editProductItem.type && !isCatCodeManuallyChanged && showModal) {
             const fetchCatCode = async () => {
             try {
@@ -30,8 +30,8 @@ const EditProductModal = ({ showModal, setShowModal, editProductItem, setEditPro
                     setEditProductItem(prev => ({ ...prev, catCode: data.catcode }));
                 }
             } catch (error) {
-                // console.error('Error fetching catCode:', error);
-                // toast.error('Error fetching category code: ' + error.message);
+                
+                
             }
             };
 
@@ -157,14 +157,14 @@ const EditProductModal = ({ showModal, setShowModal, editProductItem, setEditPro
     };    
     
     const getColorCode = (colorName) => {
-        // Ensure colorName is a string to avoid errors calling .trim() on undefined
+        
         const cleanedColorName = (colorName || '').trim().toLowerCase();
         return colorCodes[cleanedColorName] || '';
     };    
 
     const generatePartNumber = () => {
         const { materialType, color, radiusSize, catCode, unit, quantityOfItem } = editProductItem;
-        const colorCode = getColorCode(color) || ''; // Use the color code instead of the first letter
+        const colorCode = getColorCode(color) || ''; 
         let partNumber = `${materialType[0] || ''}${colorCode}${radiusSize}${catCode || ''}`;
     
         if (unit === 'ft') {
@@ -178,7 +178,7 @@ const EditProductModal = ({ showModal, setShowModal, editProductItem, setEditPro
     const handleItemTypeChange = (e) => {
         const selectedType = e.target.value;
         setItemType(selectedType);
-        // Set the unit based on the selected item type
+        
         const newUnit = selectedType === 'box' ? 'pcs' : 'ft';
         setEditProductItem(prev => ({ ...prev, unit: newUnit }));
     };
@@ -192,18 +192,18 @@ const EditProductModal = ({ showModal, setShowModal, editProductItem, setEditPro
         const value = e.target.value.replace(/^\$/, '');
         if (validateDollarAmount(value)) {
             setEditProductItem({ ...editProductItem, price: value });
-            // Check if the price is not empty before calculating markup price
+            
             if (value !== '') {
                 if (!markupPriceManuallySet) {
-                    const markUpPrice = (parseFloat(value) * 1.30).toFixed(2); // Add 30% to the price
+                    const markUpPrice = (parseFloat(value) * 1.30).toFixed(2); 
                     setEditProductItem(prev => ({ ...prev, markUpPrice: markUpPrice.toString() }));
                 }
             } else {
-                // If price is empty, set markup price to zero (or keep it empty based on requirement)
+                
                 setEditProductItem(prev => ({ ...prev, markUpPrice: '0' }));
             }
         } else if (value === '') {
-            // Also handle the case where the price field becomes empty, resetting both price and markup price
+            
             setEditProductItem(prev => ({ ...prev, price: '', markUpPrice: '0' }));
         }
     };    
@@ -212,7 +212,7 @@ const EditProductModal = ({ showModal, setShowModal, editProductItem, setEditPro
         const value = e.target.value.replace(/^\$/, '');
         if (validateDollarAmount(value)) {
             setEditProductItem({ ...editProductItem, markUpPrice: value });
-            setMarkupPriceManuallySet(true); // Mark that the markup price was manually set
+            setMarkupPriceManuallySet(true); 
         }
     };
 
@@ -244,7 +244,7 @@ const EditProductModal = ({ showModal, setShowModal, editProductItem, setEditPro
             materialType,
             color,
             description,
-            type, // This is the new type
+            type, 
             oldType: type !== initialTypeRef.current ? initialTypeRef.current : undefined,
             quantityOfItem,
             unit,
@@ -258,7 +258,7 @@ const EditProductModal = ({ showModal, setShowModal, editProductItem, setEditPro
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'token': token, // Include the token in the request headers
+                    'token': token, 
                 },
                 body: JSON.stringify(updateData),
             });
@@ -270,21 +270,18 @@ const EditProductModal = ({ showModal, setShowModal, editProductItem, setEditPro
             }
 
             toast.success('Product updated successfully.');
-            setShowModal(false); // Close the modal
-            fetchProductsWithInventory(); // Refresh the inventory list
+            setShowModal(false); 
+            fetchProductsWithInventory(); 
         } catch (error) {
         
         }
     };
-    
-      // When the catCode changes, set the manual change flag
+
     const handleCatCodeChange = (e) => {
         const newCatCode = e.target.value;
         setEditProductItem({ ...editProductItem, catCode: newCatCode });
         setIsCatCodeManuallyChanged(true);
     };
-
-    // You can keep the existing form and input handlers intact
 
     return (
         <div className="modal-backdrop" onClick={(e) => e.stopPropagation()}>
@@ -371,7 +368,7 @@ const EditProductModal = ({ showModal, setShowModal, editProductItem, setEditPro
                                     id="catcode"
                                     type="text"
                                     placeholder="CatCode"
-                                    value={editProductItem.catCode} // Make sure this state exists
+                                    value={editProductItem.catCode} 
                                     onChange={handleCatCodeChange}
                                 />
                             </div>
@@ -383,7 +380,7 @@ const EditProductModal = ({ showModal, setShowModal, editProductItem, setEditPro
                                 id="item-type"
                                 className="custom-select"
                                 value={itemType}
-                                onChange={handleItemTypeChange} // Use the new handler here
+                                onChange={handleItemTypeChange} 
                             >
                                 <option value="box">Box Item</option>
                                 <option value="length">Length Item</option>
@@ -412,7 +409,7 @@ const EditProductModal = ({ showModal, setShowModal, editProductItem, setEditPro
                                     id="price"
                                     type="text"
                                     placeholder="Price"
-                                    value={editProductItem.price.replace(/^\$/, '')} // Ensure the dollar sign is removed
+                                    value={editProductItem.price.replace(/^\$/, '')} 
                                     onChange={handlePriceChange}
                                     className="dollar-input"
                                 />
@@ -426,7 +423,7 @@ const EditProductModal = ({ showModal, setShowModal, editProductItem, setEditPro
                                     id="mark-up-price"
                                     type="text"
                                     placeholder="Mark Up Price"
-                                    value={editProductItem.markUpPrice.replace(/^\$/, '')} // Ensure the dollar sign is removed
+                                    value={editProductItem.markUpPrice.replace(/^\$/, '')} 
                                     onChange={handleMarkupPriceChange}
                                     className="dollar-input"
                                 />

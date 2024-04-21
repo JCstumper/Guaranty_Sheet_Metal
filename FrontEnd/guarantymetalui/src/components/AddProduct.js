@@ -1,4 +1,4 @@
-// AddProducts.js
+
 import React, { useState, useEffect, useContext } from 'react';
 import { toast } from 'react-toastify';
 import * as XLSX from 'xlsx';
@@ -29,7 +29,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         setUploadedFile(file);
-        // Set the file name, or reset to an empty string if no file is selected
+        
         setFileName(file ? file.name : '');
     };
 
@@ -54,20 +54,18 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
                 acc[header] = index;
                 return acc;
             }, {});
-    
-            // Track failed rows for reporting
+
             let failedRows = [];
-    
+
             for (let rowIndex = 0; rowIndex < jsonData.length; rowIndex++) {
                 const row = jsonData[rowIndex];
-    
-                // Ensure all required columns have data
+
                 const missingData = requiredColumns.some(column => {
                     return !row[columnIndices[column]] || sanitizeInput(row[columnIndices[column]].toString()).trim() === '';
                 });
-    
+
                 if (missingData) {
-                    // If any required data is missing, log the failure and skip this row
+                    
                     failedRows.push(`Row ${rowIndex + 2}: Missing required data.`);
                     continue;
                 }
@@ -87,40 +85,32 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
                     catCode: sanitizeInput(row[columnIndices['catcode']])
                 };
 
-                // Generate part number if not provided
                 if (!itemData.partNumber) {
-                    itemData.partNumber = generatePartNumberBasedOnTemp(itemData); // Ensure this function exists and works as expected
+                    itemData.partNumber = generatePartNumberBasedOnTemp(itemData); 
                 }
 
-                // Extract the category and catcode
                 const { type, catCode } = itemData;
 
-                // Check if the category is new and if it has a catCode
                 const isNewCategory = !categoryMappings.some(cm => cm.category.toLowerCase() === type.toLowerCase());
                 const hasCatCode = !!catCode;
 
                 if (isNewCategory && hasCatCode) {
-                    // Convert the category name into an array of keywords
                     const keywords = type.split(' ').map(word => word.toLowerCase());
-
-                    // Send the new category mapping to the backend
                     await sendCategoryMappingToBackend(type, catCode, keywords);
                 }
                 setShowModal(false);
-                // Attempt to send the item data to the backend
+                
                 try {
                     await sendDataToBackend(itemData);
                 } catch (error) {
-                    // Log the failure if sendDataToBackend throws an error
                     failedRows.push(`Row ${rowIndex + 2}: Failed to upload due to server error.`);
                 }
             }
-    
-            // After processing all rows, report failures
+
             failedRows.forEach(failureMessage => {
                 toast.error(failureMessage);
             });
-    
+
             if (failedRows.length === 0) {
                 toast.success('All items uploaded successfully.');
             } else if (failedRows.length > jsonData.length) {
@@ -130,7 +120,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
         reader.readAsArrayBuffer(uploadedFile);
     };
 
-    // Adjust columnVariations mapping to match the expected schema and include all relevant fields
+    
     const columnVariations = {
         'partnumber': ['Part Number', 'partnumber', 'part #', 'P/N', 'Part No', 'Part Num'],
         'supplierpartnumber': ['Supplier Part Number', 'supplierpartnumber', 'supplier part #', 'Supplier P/N', 'Supp Part No', 'Supp Part Num'],
@@ -144,7 +134,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
         'price': ['Price', 'price', 'Cost', 'cost', 'Unit Price', 'unit price'],
         'markupprice': ['Markup Price', 'markupprice', 'Mark Up', 'Mark-Up', 'mark up', 'Selling Price', 'selling price', 'w_trans', 'W_Trans'],
         'catcode': ['Cat Code', 'cat code','cat_code', 'Category Code', 'category code', 'CatCode', 'Cat', 'cat',],
-        // Add any other column variations you expect here
+        
     };
     
     function normalizeHeaderName(headerName, variationsMap) {
@@ -154,24 +144,21 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
                 return key;
             }
         }
-        return normalized; // Return the normalized name if no variation matches
+        return normalized; 
     }
-    
 
-    // Sanitization function to remove leading/trailing spaces and convert double spaces to single
     const sanitizeInput = (value) => {
-        // Only apply trim and replace operations on strings
+        
         if (typeof value === 'string') {
             return value.trim().replace(/\s\s+/g, ' ');
         } else {
-            // For non-string values, return the value as is
+            
             return value;
         }
     };
 
     const sendDataToBackend = async (data) => {
         const token = localStorage.getItem('token');
-    
         try {
             const response = await fetch(`${API_BASE_URL}/products`, {
                 method: 'POST',
@@ -182,7 +169,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
                 body: JSON.stringify(data),
             });
     
-            const responseData = await response.json();  // Get JSON response body
+            const responseData = await response.json();  
             if (!response.ok) {
                 toast.error(`Error: ${responseData.error || 'Failed to send data'}`);
                 throw new Error(responseData.message || 'Failed to send data to the server');
@@ -196,15 +183,14 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
             return false;
         }
     };
-    
 
     const fetchCategoryMappings = async () => {
-        const url = `${API_BASE_URL}/categories`; // Replace with your actual API URL
+        const url = `${API_BASE_URL}/categories`; 
         try {
             const response = await fetch(url, {
                 headers: {
                     'Content-Type': 'application/json',
-                    'token': localStorage.getItem('token'), // Assuming token is needed and stored in localStorage
+                    'token': localStorage.getItem('token'), 
                 },
             });
 
@@ -213,7 +199,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
             }
 
             const data = await response.json();
-            setCategoryMappings(data); // Assuming the backend sends the data in the correct format
+            setCategoryMappings(data); 
         } catch (error) {
             console.error('Fetching category mappings failed: ', error);
             toast.error('Failed to fetch category mappings');
@@ -221,23 +207,20 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
     };
 
     const sendCategoryMappingToBackend = async (category, catcode, keywords) => {
-        // Construct the URL for the category mappings endpoint
         const url = `${API_BASE_URL}/categories`;
 
         try {
-            // Send a POST request to your backend
+            
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'token': localStorage.getItem('token'), // Assume the token is stored in localStorage
+                    'token': localStorage.getItem('token'), 
                 },
                 body: JSON.stringify({ category, catcode, keywords }),
             });
 
-            // Optionally, fetch the updated list of category mappings
             fetchCategoryMappings();
-
         } catch (error) {
             console.error('Error sending category mapping to server:', error);
         }
@@ -245,7 +228,6 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
 
     const handleAddProducts = async () => {
         const sanitizedNewProductItem = {
-            // Sanitize each field in newProductItem before sending it
             ...Object.keys(newProductItem).reduce((acc, key) => {
                 acc[key] = typeof newProductItem[key] === 'string' ? newProductItem[key].trim().replace(/\s\s+/g, ' ') : newProductItem[key];
                 return acc;
@@ -272,18 +254,12 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
                 catCode: '',
             });
 
-            // Extract the category and catcode
             const { type, catCode } = newProductItem;
-
-            // Check if the category is new and if it has a catCode
             const isNewCategory = !categoryMappings.some(cm => cm.category.toLowerCase() === type.toLowerCase());
             const hasCatCode = !!catCode;
 
             if (isNewCategory && hasCatCode) {
-                // Convert the category name into an array of keywords
                 const keywords = type.split(' ').map(word => word.toLowerCase());
-
-                // Send the new category mapping to the backend
                 await sendCategoryMappingToBackend(type, catCode, keywords);
             }
         }
@@ -396,14 +372,13 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
     };    
     
     const getColorCode = (colorName) => {
-        // Ensure colorName is a string to avoid errors calling .trim() on undefined
         const cleanedColorName = (colorName || '').trim().toLowerCase();
         return colorCodes[cleanedColorName] || '';
     };    
 
     const generatePartNumberBasedOnTemp = (itemData) => {
         const { materialType, color, radiusSize, catCode, unit, quantityOfItem } = itemData;
-        const colorCode = getColorCode(color) || ''; // Use the color code instead of the first letter
+        const colorCode = getColorCode(color) || ''; 
         let partNumber = `${materialType[0] || ''}${colorCode || ''}${radiusSize}${catCode || ''}`;
     
         if (unit === 'ft') {
@@ -415,7 +390,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
     
     const generatePartNumber = () => {
         const { materialType, color, radiusSize, catCode, unit, quantityOfItem } = newProductItem;
-        const colorCode = getColorCode(color) || ''; // Use the color code instead of the first letter
+        const colorCode = getColorCode(color) || ''; 
         let partNumber = `${materialType[0] || ''}${colorCode}${radiusSize}${catCode || ''}`;
     
         if (unit === 'ft') {
@@ -425,7 +400,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
         return partNumber.toUpperCase();
     };
 
-    // useEffect hook for auto-generating part number whenever necessary state changes
+    
     useEffect(() => {
         if (autoGeneratePartNumber) {
             const generatedPartNumber = generatePartNumber();
@@ -434,13 +409,11 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
                 partNumber: generatedPartNumber
             }));
         }
-        // Include itemType and quantityOfItem in the dependency array to re-run the effect when they change
     }, [autoGeneratePartNumber, newProductItem.materialType, newProductItem.color, newProductItem.radiusSize, newProductItem.catCode, newProductItem.unit, newProductItem.quantityOfItem]);
 
-    // ... 
+    
     
     useEffect(() => {
-        // Automatically update the unit based on the selected item type
         setNewProductItem(prevState => ({
             ...prevState,
             unit: itemType === 'box' ? 'pcs' : 'ft',
@@ -467,13 +440,11 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
     };
 
     useEffect(() => {
-        // Function to calculate the markup
         const calculateMarkup = (price) => {
         const markupPercentage = 30;
-        return (parseFloat(price) * (1 + markupPercentage / 100)).toFixed(2); // Ensures the number is treated as a float and fixes to 2 decimal places
+        return (parseFloat(price) * (1 + markupPercentage / 100)).toFixed(2); 
         };
 
-        // Check if price is a number and not empty
         if (newProductItem.price && !isNaN(newProductItem.price)) {
             const markupPrice = calculateMarkup(newProductItem.price);
             setNewProductItem(prevState => ({
@@ -483,11 +454,9 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
         }
     }, [newProductItem.price]);
 
-    // Mapping of keywords to categories
     const [categoryMappings, setCategoryMappings] = useState([]);
 
     useEffect(() => {
-        // Call the fetch function
         fetchCategoryMappings();
     }, []);
 
@@ -534,7 +503,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
         }
     }, [newProductItem.type, categoryMappings]);
 
-    // In your category input onChange handler, set shouldUpdateCategory to false
+    
     const handleCategoryChange = (e) => {
         const value = e.target.value;
         setNewProductItem(prevState => ({
@@ -570,7 +539,6 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
                                 <li>CatCode</li>
                                 <li>Quantity of Item</li>
                                 <li>Unit</li>
-                                {/* List any other required columns here */}
                             </ul>
                             <strong>The column headers must be in row 1!</strong>
                             <label htmlFor="file-upload" className="custom-file-upload">
@@ -673,8 +641,8 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
                                         id="catcode"
                                         type="text"
                                         placeholder="CatCode"
-                                        value={newProductItem.catCode} // Make sure this state exists
-                                        onChange={handleCatCodeChange} // Implement this handler
+                                        value={newProductItem.catCode} 
+                                        onChange={handleCatCodeChange} 
                                     />
                                 </div>
                             </div>

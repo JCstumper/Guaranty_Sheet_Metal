@@ -13,14 +13,6 @@ CREATE TABLE IF NOT EXISTS category_mappings (
     catcode VARCHAR(255) NOT NULL UNIQUE
 );
 
--- CREATE TABLE IF NOT EXISTS materials (
---     type VARCHAR(255) PRIMARY KEY
--- );
-
--- CREATE TABLE IF NOT EXISTS categories (
---     name VARCHAR(255) PRIMARY KEY
--- );
-
 CREATE TABLE IF NOT EXISTS log (
     log_id SERIAL PRIMARY KEY,
     action_type VARCHAR(50) NOT NULL,
@@ -101,7 +93,7 @@ CREATE TABLE IF NOT EXISTS estimates (
     estimate_id SERIAL PRIMARY KEY,
     job_id INTEGER NOT NULL,
     file_name VARCHAR,
-    pdf_data BYTEA,  -- To store the PDF file; consider storing the file in the filesystem or cloud storage for better performance
+    pdf_data BYTEA,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (job_id) REFERENCES jobs(job_id) ON DELETE CASCADE
 );

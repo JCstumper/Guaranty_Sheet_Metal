@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import "./AddProduct.css"; // Assuming this CSS file contains styles for `.form-group`
+import "./AddProduct.css"; 
 
 const EditProfilePopup = ({ isOpen, onSave, onClose }) => {
     const [newUsername, setNewUsername] = useState('');

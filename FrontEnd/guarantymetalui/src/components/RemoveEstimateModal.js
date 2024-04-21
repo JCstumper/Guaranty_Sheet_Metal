@@ -1,6 +1,6 @@
 import React from 'react';
 import { toast } from 'react-toastify';
-import './AddProduct.css'; // Make sure your styles are correctly imported
+import './AddProduct.css'; 
 
 const RemoveEstimateModal = ({ showModal, setShowModal, jobId, fetchJobs, API_BASE_URL }) => {
     if (!showModal) return null;
@@ -19,8 +19,8 @@ const RemoveEstimateModal = ({ showModal, setShowModal, jobId, fetchJobs, API_BA
 
             if (response.ok) {
                 toast.success('Estimate removed successfully');
-                fetchJobs(); // Refresh the job list to reflect changes
-                setShowModal(false); // Close the modal
+                fetchJobs(); 
+                setShowModal(false); 
             } else {
                 const errorData = await response.json();
                 toast.error(`Failed to remove estimate: ${errorData.message}`);

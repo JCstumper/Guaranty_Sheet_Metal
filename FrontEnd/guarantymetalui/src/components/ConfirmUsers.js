@@ -1,13 +1,10 @@
-// ConfirmUsers.js
-import React from 'react';
-import './AddProduct.css'; // CSS file for styling the components
 
+import React from 'react';
+import './AddProduct.css'; 
 
 const ConfirmModal = ({ isOpen, onClose, onConfirm, children }) => {
-    // If the modal is not open, do not render anything
     if (!isOpen) return null;
 
-    // The rendered modal structure
     return (
         <div className="modal-backdrop" onClick={onClose}>
             <div className="modal-content" onClick={e => e.stopPropagation()}>

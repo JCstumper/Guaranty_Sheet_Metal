@@ -1,35 +1,30 @@
-// DeleteProductModal.js
+
 import React from 'react';
 import { toast } from 'react-toastify';
-import './AddProduct.css'; // Adjust the path if necessary
+import './AddProduct.css'; 
 
 const DeleteProductModal = ({ showModal, setShowModal, deletePartNumber, fetchProductsWithInventory, API_BASE_URL }) => {
     if (!showModal) return null;
 
     const performDeleteProduct = async () => {
-        // Retrieve the JWT token from localStorage
         const token = localStorage.getItem('token');
     
         try {
-            // Attempt to delete the product
             let response = await fetch(`${API_BASE_URL}/products/${deletePartNumber}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    'token': token, // Include the token in the request headers
+                    'token': token, 
                 },
             });
-    
+
             if (!response.ok) {
                 throw new Error('Failed to delete the product');
             }
-    
-            // If the product is deleted successfully, check the associated category
-            const productData = await response.json();
-            const category = productData.deletedProduct.type; // Adjust 'type' to your schema
-            
 
-            // Check if any other products have the same category
+            const productData = await response.json();
+            const category = productData.deletedProduct.type; 
+
             response = await fetch(`${API_BASE_URL}/products/category/${category}`, {
                 method: 'GET',
                 headers: {
@@ -37,14 +32,14 @@ const DeleteProductModal = ({ showModal, setShowModal, deletePartNumber, fetchPr
                     'token': token,
                 },
             });
-    
+
             if (!response.ok) {
                 throw new Error(`Failed to check products for category ${category}`);
             }
-    
+
             toast.success('Product deleted successfully.');
-            setShowModal(false); // Close the modal
-            fetchProductsWithInventory(); // Refresh the product list
+            setShowModal(false); 
+            fetchProductsWithInventory(); 
         } catch (error) {
             console.error('Error deleting product or category:', error);
             toast.error(`Error: ${error.message}`);

@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../db'); // Adjust the path to db.js as necessary
+const pool = require('../db'); 
 const ExcelJS = require('exceljs');
 
-// Get all invoices
 router.get('/', async (req, res) => {
     try {
         const allInvoices = await pool.query(
@@ -16,11 +15,10 @@ router.get('/', async (req, res) => {
     }
 });
 
-
 router.post('/', async (req, res) => {
     try {
         let { supplier_name, total_cost, invoice_date, status } = req.body;
-        // Convert empty string to null for total_cost
+        
         total_cost = total_cost === '' ? null : total_cost;
 
         const newInvoice = await pool.query(
@@ -34,9 +32,6 @@ router.post('/', async (req, res) => {
     }
 });
 
-
-
-//Get all low inventory
 router.get('/low-inventory', async (req, res) => {
     try {
         const lowInventoryItems = await pool.query(
@@ -49,8 +44,6 @@ router.get('/low-inventory', async (req, res) => {
     }
 });
 
-
-// Get all Out of stock inventory
 router.get('/out-of-stock', async (req, res) => {
     try {
         const outOfStockItems = await pool.query(
@@ -63,9 +56,8 @@ router.get('/out-of-stock', async (req, res) => {
     }
 });
 
-// API endpoint to update low inventory items for a specific invoice
 router.post('/:invoiceId/update-low-inventory', async (req, res) => {
-    const { invoiceId } = req.params; // Extract invoiceId from request parameters
+    const { invoiceId } = req.params; 
     try {
         await pool.query(
             `INSERT INTO low_inventory (invoice_id, part_number, quantity)
@@ -83,9 +75,8 @@ router.post('/:invoiceId/update-low-inventory', async (req, res) => {
     }
 });
 
-// API endpoint to update out of stock items for a specific invoice
 router.post('/:invoiceId/update-out-of-stock', async (req, res) => {
-    const { invoiceId } = req.params; // Extract invoiceId from request parameters
+    const { invoiceId } = req.params; 
     try {
         await pool.query(
             `INSERT INTO out_of_stock (invoice_id, part_number, quantity)
@@ -93,7 +84,7 @@ router.post('/:invoiceId/update-out-of-stock', async (req, res) => {
             FROM inventory i
             INNER JOIN products p ON i.part_number = p.part_number
             WHERE i.quantity_in_stock = 0
-             ON CONFLICT (invoice_id, part_number) DO UPDATE
+            ON CONFLICT (invoice_id, part_number) DO UPDATE
             SET quantity = EXCLUDED.quantity`, [invoiceId]
         );
         res.json({ message: "Out of stock items updated successfully for invoice " + invoiceId });
@@ -103,7 +94,7 @@ router.post('/:invoiceId/update-out-of-stock', async (req, res) => {
     }
 });
 
-// Fetch low inventory items for a specific invoice
+
 router.get('/:invoiceId/low-inventory', async (req, res) => {
     const { invoiceId } = req.params;
 
@@ -122,7 +113,7 @@ router.get('/:invoiceId/low-inventory', async (req, res) => {
     }
 });
 
-// Fetch out-of-stock items for a specific invoice
+
 router.get('/:invoiceId/out-of-stock', async (req, res) => {
     const { invoiceId } = req.params;
 
@@ -141,12 +132,12 @@ router.get('/:invoiceId/out-of-stock', async (req, res) => {
     }
 });
 
-// Fetch new order items for a specific invoice
+
 router.get('/:invoiceId/new-order-items', async (req, res) => {
     const { invoiceId } = req.params;
 
     try {
-        // Adjust the query to include the amount_to_order column
+        
         const newOrderItems = await pool.query(`
             SELECT no.invoice_id, no.part_number, no.quantity, no.amount_to_order, p.material_type, p.description
             FROM new_orders no
@@ -155,18 +146,18 @@ router.get('/:invoiceId/new-order-items', async (req, res) => {
         `, [invoiceId]);
 
 
-        // Return the rows of items in the response
+        
         res.json(newOrderItems.rows);
     } catch (err) {
-        // Log the error to the console for debugging
+        
         console.error('Error fetching new order items:', err.message);
-        // Respond with a 500 server error status code and message
+        
         res.status(500).json('Server error');
     }
 });
 
 
-// API endpoint to get the details of a specific order
+
 router.get('/:invoiceId', async (req, res) => {
     const { invoiceId } = req.params;
 
@@ -189,33 +180,33 @@ router.get('/:invoiceId', async (req, res) => {
 
 router.patch('/:invoiceId/status', async (req, res) => {
     const { invoiceId } = req.params;
-    const { status, items } = req.body; // Ensure items include partNumber and amountToOrder for newOrder items
+    const { status, items } = req.body; 
 
     try {
-        // Retrieve the current status and total cost of the order to calculate markup
+        
         const orderResult = await pool.query('SELECT status, total_cost FROM invoices WHERE invoice_id = $1', [invoiceId]);
         if (orderResult.rows.length === 0) {
             return res.status(404).json({ message: "Order not found." });
         }
 
         const currentStatus = orderResult.rows[0].status;
-        const totalCost = parseFloat(orderResult.rows[0].total_cost); // Ensure totalCost is a number
+        const totalCost = parseFloat(orderResult.rows[0].total_cost); 
 
         await pool.query('BEGIN');
 
         console.log(`Updating status for invoice ${invoiceId} to ${status}`);
 
-        // Update the order status
+        
         await pool.query('UPDATE invoices SET status = $1 WHERE invoice_id = $2', [status, invoiceId]);
 
         if (status === 'Received' && currentStatus !== 'Received') {
             console.log(`Received items to update inventory: `, items);
-            // Calculate the markup price per item based on the total cost and total number of items
+            
             const totalItems = items.reduce((acc, item) => acc + parseInt(item.amountToOrder, 10), 0);
             const markupPerItem = totalCost / totalItems;
 
             for (const item of items) {
-                // Update inventory for each item
+                
                 console.log(`Updating inventory for part ${item.partNumber} with amount ${item.amountToOrder}`);
                 await pool.query(`
                     UPDATE inventory
@@ -223,13 +214,13 @@ router.patch('/:invoiceId/status', async (req, res) => {
                     WHERE part_number = $2
                 `, [item.amountToOrder, item.partNumber]);
 
-                // Update mark_up_price for each item based on the calculated markupPerItem
+                
                 console.log(`Updating mark_up_price for part ${item.partNumber} with markup ${markupPerItem.toFixed(2)}`);
                 await pool.query(`
                     UPDATE products
                     SET mark_up_price = $1::money
                     WHERE part_number = $2
-                `, [markupPerItem.toFixed(2), item.partNumber]); // Ensure markupPerItem is converted to a string and formatted as needed
+                `, [markupPerItem.toFixed(2), item.partNumber]); 
             }
         }
 
@@ -256,28 +247,28 @@ router.patch('/:invoiceId/status', async (req, res) => {
 
 
 
-// Add an item to the new order
+
 router.post('/add-to-new-order/:invoiceId', async (req, res) => {
     const { invoiceId } = req.params;
-    const { partNumber, quantity, source, amount_to_order } = req.body; // source is 'lowInventory' or 'outOfStock'
+    const { partNumber, quantity, source, amount_to_order } = req.body; 
 
-    // First, check the status of the order
+    
     const order = await pool.query('SELECT status FROM invoices WHERE invoice_id = $1', [invoiceId]);
     if (order.rows[0].status === "Generated" || order.rows[0].status === "Received") {
         return res.status(403).json({ message: "Modifications are not allowed for generated or received orders." });
     }
 
     try {
-        // Start transaction
+        
         await pool.query('BEGIN');
 
-        // Insert item into new_order
+        
         await pool.query(`
             INSERT INTO new_orders (invoice_id, part_number, quantity, amount_to_order)
-             VALUES ($1, $2, $3, $4)
+            VALUES ($1, $2, $3, $4)
         `, [invoiceId, partNumber, quantity, amount_to_order]);
 
-        // Remove item from its original table
+        
         if (source === 'lowInventory') {
             await pool.query(`
                 DELETE FROM low_inventory WHERE part_number = $1
@@ -288,7 +279,7 @@ router.post('/add-to-new-order/:invoiceId', async (req, res) => {
             `, [partNumber]);
         }
 
-        // Commit transaction
+        
         await pool.query('COMMIT');
 
         res.json({ message: "Item added to new order successfully." });
@@ -299,57 +290,57 @@ router.post('/add-to-new-order/:invoiceId', async (req, res) => {
     }
 });
 
-// Remove an item from the new order and insert it back into either low_inventory or out_of_stock based on quantity
+
 router.post('/remove-from-new-order/:invoiceId', async (req, res) => {
     const { invoiceId } = req.params;
     const { partNumber, quantity } = req.body;
 
-    // First, check the status of the order
+    
     const order = await pool.query('SELECT status FROM invoices WHERE invoice_id = $1', [invoiceId]);
     if (order.rows[0].status === "Generated" || order.rows[0].status === "Received") {
         return res.status(403).json({ message: "Modifications are not allowed for generated or received orders." });
     }
 
-    // Start transaction
+    
     await pool.query('BEGIN');
 
     try {
-        // Remove item from new_orders
+        
         await pool.query(
             `DELETE FROM new_orders WHERE part_number = $1 AND invoice_id = $2`,
             [partNumber, invoiceId]
         );
 
-        // Determine the target table based on quantity and perform insert or update operation
+        
         const targetTable = quantity > 0 ? 'low_inventory' : 'out_of_stock';
         await pool.query(
             `INSERT INTO ${targetTable} (invoice_id, part_number, quantity)
-             VALUES ($1, $2, $3)
-             ON CONFLICT (invoice_id, part_number)
-             DO UPDATE SET quantity = EXCLUDED.quantity;`,
+            VALUES ($1, $2, $3)
+            ON CONFLICT (invoice_id, part_number)
+            DO UPDATE SET quantity = EXCLUDED.quantity;`,
             [invoiceId, partNumber, quantity]
         );
 
-        // Commit the transaction
+        
         await pool.query('COMMIT');
         res.json({ message: "Item moved back successfully." });
     } catch (error) {
-        // Roll back the transaction in case of any error
+        
         await pool.query('ROLLBACK');
         console.error('Error during transaction', error);
         res.status(500).json({ message: 'Server error during transaction' });
     }
 });
 
-// Endpoint to update the 'amount to order' for each item in an order
+
 router.post('/:invoiceId/update-amounts', async (req, res) => {
     const { invoiceId } = req.params;
-    const { items } = req.body; // Expecting an array of { partNumber, amountToOrder }
+    const { items } = req.body; 
 
     try {
-        await pool.query('BEGIN'); // Start transaction
+        await pool.query('BEGIN'); 
 
-        // Loop through each item and update its 'amount to order'
+        
         for (const { partNumber, amountToOrder } of items) {
             await pool.query(`
                 UPDATE new_orders
@@ -358,10 +349,10 @@ router.post('/:invoiceId/update-amounts', async (req, res) => {
             `, [amountToOrder, invoiceId, partNumber]);
         }
 
-        await pool.query('COMMIT'); // Commit transaction
+        await pool.query('COMMIT'); 
         res.json({ message: "Amounts to order updated successfully." });
     } catch (error) {
-        await pool.query('ROLLBACK'); // Roll back transaction on error
+        await pool.query('ROLLBACK'); 
         console.error('Failed to update amounts to order:', error);
         res.status(500).json({ message: "Server error" });
     }
@@ -371,32 +362,32 @@ router.get('/:invoiceId/generate-xlsx', async (req, res) => {
     const { invoiceId } = req.params;
 
     try {
-        // Fetch new order items from the database
+        
         const { rows: newOrderItems } = await pool.query(`
-      SELECT p.supplier_part_number, p.description, no.amount_to_order
-      FROM new_orders no
-      JOIN products p ON no.part_number = p.part_number
-      WHERE no.invoice_id = $1;
-    `, [invoiceId]);
+            SELECT p.supplier_part_number, p.description, no.amount_to_order
+            FROM new_orders no
+            JOIN products p ON no.part_number = p.part_number
+            WHERE no.invoice_id = $1;
+        `, [invoiceId]);
 
-        // Create a new workbook and add a worksheet
+        
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet('New Order');
 
-        // Add the headers
+        
         worksheet.columns = [
             { header: 'Item', key: 'supplier_part_number', width: 30 },
             { header: 'Description', key: 'description', width: 50 },
             { header: 'Quantity', key: 'amount_to_order', width: 20 }
         ];
 
-        // Add rows using the data from newOrderItems
+        
         worksheet.addRows(newOrderItems);
 
-        // Write to a buffer
+        
         const buffer = await workbook.xlsx.writeBuffer();
 
-        // Set MIME type to Excel and send the response
+        
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.setHeader('Content-Disposition', 'attachment; filename="New_Order.xlsx"');
         res.send(buffer);
@@ -406,20 +397,20 @@ router.get('/:invoiceId/generate-xlsx', async (req, res) => {
     }
 });
 
-// Inside your Express router...
 
-// DELETE endpoint to delete an order by its invoice_id
+
+
 router.delete('/:invoiceId', async (req, res) => {
     const { invoiceId } = req.params;
     try {
         await pool.query('BEGIN');
 
-        // Delete related items from new_orders, low_inventory, and out_of_stock
+        
         await pool.query('DELETE FROM new_orders WHERE invoice_id = $1', [invoiceId]);
         await pool.query('DELETE FROM low_inventory WHERE invoice_id = $1', [invoiceId]);
         await pool.query('DELETE FROM out_of_stock WHERE invoice_id = $1', [invoiceId]);
 
-        // Finally, delete the order from the invoices table
+        
         await pool.query('DELETE FROM invoices WHERE invoice_id = $1', [invoiceId]);
 
         await pool.query('COMMIT');
@@ -431,7 +422,7 @@ router.delete('/:invoiceId', async (req, res) => {
     }
 });
 
-// Endpoint to update the total cost of an order
+
 router.patch('/:invoiceId/edit-total-cost', async (req, res) => {
     const { invoiceId } = req.params;
     const { total_cost } = req.body;

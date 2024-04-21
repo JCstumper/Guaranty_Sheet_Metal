@@ -20,14 +20,14 @@ body {
 
 .inventory-main::before {
     content: "";
-    position: fixed; /* Fixed to the viewport */
-    top: 0px; /* Anchored at the bottom of the viewport */
+    position: fixed;
+    top: 0px;
     left: 0;
     right: 0;
-    height: 120px; /* Height of the fade effect */
-    background: linear-gradient(to top, #364b7200 0%, #05132c 100%); /* Gradient starts transparent and becomes solid at the bottom */
+    height: 120px;
+    background: linear-gradient(to top, #364b7200 0%, #05132c 100%);
     z-index: 10;
-    pointer-events: none; /* Ensures clicks pass through */
+    pointer-events: none;
 }
 
 .inventory-main::after {
@@ -36,10 +36,10 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    height: 20px; /* Height of the fade effect */
+    height: 20px;
     background: linear-gradient(to bottom, #364b7200 0%, #05132c 100%);
     z-index: 10;
-    pointer-events: none; /* Ensures clicks pass through */
+    pointer-events: none;
 }
 
 .product-table {
@@ -56,10 +56,10 @@ body {
 
 .product-details-content {
     padding: 20px;
-    border: 1px solid #ddd; /* Light grey border */
-    border-radius: 5px; /* Rounded corners */
-    background-color: #f9f9f9; /* Light grey background */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .product-details-content p {
@@ -108,15 +108,15 @@ text-decoration: none;
 }
 
 
-/* Styles for items in stock */
+
 .inv-in-stock {
-    background-color: #28a745; /* Green */
+    background-color: #28a745;
     content: "In Stock";
 }
 
-/* Styles for items out of stock */
+
 .inv-out-of-stock {
-    background-color: #dc3545; /* Red */
+    background-color: #dc3545;
     content: "Out of Stock";
 }
 
@@ -156,13 +156,13 @@ text-decoration: none;
     position: sticky;
     top: 0;
     background-color: #ebebeb;
-    z-index: 10; /* ensures the header stays on top */
+    z-index: 10;
 }
 
 .table-content tbody {
     display: block;
     overflow-y: auto;
-    max-height: calc(100vh - 225px); /* Adjust this value based on your layout */
+    max-height: calc(100vh - 225px);
     width: 100%;
 }
 
@@ -177,7 +177,7 @@ text-decoration: none;
 .table-content tr {
     display: table;
     width: 100%;
-    table-layout: fixed; /* Make sure that the table content does not stretch beyond the container */
+    table-layout: fixed;
 }
 
 
@@ -186,12 +186,12 @@ text-decoration: none;
     color: rgb(0, 0, 0);
     padding: 12px;
     text-align: left;
-    white-space: nowrap; /* Prevents the text from wrapping onto multiple lines */
-    overflow: hidden; /* Keeps the text inside the element's bounds */
-    text-overflow: ellipsis; /* Adds ellipsis when text is clipped */
-    position: sticky; /* Make sure headers stay at the top when scrolling */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: sticky;
     top: 0;
-    z-index: 10; /* Ensures the header stays on top */
+    z-index: 10;
 }
 
 .table-content tr:nth-child(even) {
@@ -219,7 +219,7 @@ text-decoration: none;
 }
 
 .product-details td {
-    background-color: #f9f9f9; /* Lighter background for expanded details */
+    background-color: #f9f9f9;
 }
 
 .product-details-content p {
@@ -232,13 +232,13 @@ text-decoration: none;
 }
 
 .status-column, .status-box-container {
-    width: 150px; /* Adjust based on your needs */
-    text-align: center; /* Center the content */
+    width: 150px;
+    text-align: center;
 }
 
 .quantity-edit-container {
     display: flex;
-    justify-content: space-between; /* Aligns the button to the right */
+    justify-content: space-between;
     align-items: center;
 }
 
@@ -248,14 +248,14 @@ text-decoration: none;
     font-size: 14px;
     border: none;
     border-radius: 4px;
-    background-color: #001f41; /* Bootstrap primary color */
+    background-color: #001f41;
     color: white;
     cursor: pointer;
     transition: background-color 0.2s ease-in-out;
 }
 
 .edit-quantity-btn:hover {
-    background-color: #0056b3; /* A darker shade for hover effect */
+    background-color: #0056b3;
 }
 
 .filter-category {
@@ -267,19 +267,19 @@ text-decoration: none;
     font-size: 18px;
     margin-bottom: 10px;
     color: #0b2b61;
-    position: relative; /* This makes the pseudo-element positioning relative to this header */
+    position: relative;
 }
 
 .filter-category h3::after {
     content: "";
     display: block;
-    width: 100%; /* Adjust this value to change the width of the line */
-    height: 2px; /* Thickness of the line */
-    background: linear-gradient(to right, rgba(11, 43, 97, 0), #0b2b61, rgba(11, 43, 97, 0)); /* Gradient with faded ends */
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(to right, rgba(11, 43, 97, 0), #0b2b61, rgba(11, 43, 97, 0));
     position: absolute;
     left: 50%;
-    transform: translateX(-50%); /* Centers the line */
-    bottom: -5px; /* Adjust this value to move the line up or down */
+    transform: translateX(-50%);
+    bottom: -5px;
 }
 
 
@@ -296,7 +296,7 @@ text-decoration: none;
 
 .category-checkbox label {
     cursor: pointer;
-    user-select: none; /* Prevent text selection */
+    user-select: none;
 }
 
 .custom-dropdown {
@@ -311,7 +311,7 @@ text-decoration: none;
     right: 10px;
     transform: translateY(-50%);
     border: 5px solid transparent;
-    border-top-color: #333; /* Arrow color */
+    border-top-color: #333;
 }
 
 .custom-select {
@@ -352,7 +352,7 @@ text-decoration: none;
 }
 
 .filtering-box:hover {
-    box-shadow: 0 6px 12px rgba(0,0,0,0.2); /* Deeper shadow for elevated effect */
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
 }
 
 .filtering-box .search-input {
@@ -376,29 +376,29 @@ text-decoration: none;
     margin-bottom: 20px;
     cursor: pointer;
     font-size: 16px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow for depth */
-    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover effect */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .filtering-box .action-button:hover {
     background-color: #083d77;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.15); /* Enhanced shadow on hover for a raised effect */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.15);
 }
 
-/* Hide vertical scrollbar for Webkit browsers like Chrome, Safari */
+
 .filtering-box::-webkit-scrollbar {
-    width: 0px; /* For vertical scrollbars */
-    background: transparent; /* Optional: just to make sure it's fully invisible */
+    width: 0px;
+    background: transparent;
 }
 
-/* Hide scrollbar for IE, Edge, and Firefox */
+
 .filtering-box {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none; 
+    scrollbar-width: none; 
 }
 
 .category-checkbox input[type="checkbox"] {
-    accent-color: #0b2b61; /* Use the main color theme for the checkbox */
+    accent-color: #0b2b61;
 }
 
 .product-details-content {
@@ -423,20 +423,20 @@ text-decoration: none;
     border-radius: 4px;
 }
 
-/* Container for Edit and Delete buttons */
+
 .product-action-buttons {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100%; /* Full width to center the buttons */
-    margin-top: 20px; /* Space from the product details */
+    width: 100%;
+    margin-top: 20px;
 }
 
-/* Common styles for Edit and Delete buttons */
+
 .product-action-button {
-    width: 40%; /* 60% of the parent's width */
+    width: 40%;
     padding: 10px;
-    margin-bottom: 10px; /* Space between buttons */
+    margin-bottom: 10px;
     border: none;
     border-radius: 5px;
     color: white;
@@ -445,23 +445,23 @@ text-decoration: none;
     transition: background-color 0.2s;
 }
 
-/* Specific styles for Edit button */
+
 .edit-button {
-    background-color: #001f41; /* Blue */
+    background-color: #001f41;
 }
 
 .edit-button:hover {
-    background-color: #0056b3; /* Darker blue on hover */
+    background-color: #0056b3;
 }
 
-/* Specific styles for Delete button */
+
 .delete-button {
-    background-color: #dc3545; /* Red */
-    margin-bottom: 0; /* No margin at the bottom for the last button */
+    background-color: #dc3545;
+    margin-bottom: 0;
 }
 
 .delete-button:hover {
-    background-color: #c82333; /* Darker red on hover */
+    background-color: #c82333;
 }
 
 @media screen and (max-width: 1023px) {
@@ -471,7 +471,7 @@ text-decoration: none;
 
     .inventory-main {
         display: flex;
-        flex-direction: column-reverse; /* Reverse the order of children, so the filter box comes first */
+        flex-direction: column-reverse;
         padding-right: 0;
         margin-top: 10px;
         margin-left: 0px;
@@ -501,8 +501,8 @@ text-decoration: none;
         position: sticky;
         top: 0;
         background-color: #ebebeb;
-        overflow: hidden; /* Keeps the text inside the element's bounds */
-        z-index: 10; /* ensures the header stays on top */
+        overflow: hidden;
+        z-index: 10;
     }
     
     .table-content tbody {
@@ -516,7 +516,7 @@ text-decoration: none;
     .table-content td {
         text-align: left;
         padding: 12px;
-        overflow: hidden; /* Keeps the text inside the element's bounds */
+        overflow: hidden;
         border-bottom: 1px solid #ddd;
         box-sizing: border-box;
     }
@@ -524,15 +524,15 @@ text-decoration: none;
     .table-content tr {
         display: table;
         width: 100%;
-        table-layout: fixed; /* Make sure that the table content does not stretch beyond the container */
+        table-layout: fixed;
     }
 
     .filtering-box {
         position: static;
         height: auto;
         padding: 20px;
-        overflow-y: visible; /* Remove scroll since we'll only show the search bar */
-        margin-bottom: 20px; /* Provide spacing between the filtering box and the table */
+        overflow-y: visible;
+        margin-bottom: 20px;
     }
 
     .filter-category, .filtering-box .action-button {
@@ -551,15 +551,15 @@ text-decoration: none;
     }
 
     .status-box {
-        padding: 8px 0; /* Increase padding top and bottom to make the bar taller */
-        color: transparent; /* Hide the text on mobile */
-        font-size: 0; /* Collapse the text size */
-        min-width: 10vw; /* Responsive minimum width */
-        max-width: 100%; /* Prevents the bar from overflowing */
-        width: 100%; /* Full width of the container */
+        padding: 8px 0;
+        color: transparent;
+        font-size: 0;
+        min-width: 10vw;
+        max-width: 100%;
+        width: 100%;
     }
 
-    /* Maintain the min-width for better visibility of the status bar on mobile */
+   
     .status-box:after {
         content: '';
         display: inline-block;
@@ -567,13 +567,13 @@ text-decoration: none;
     }
 }
 
-/* Improve the look of the dropdown elements for a cleaner appearance */
+
 .custom-dropdown::after{
-    display: none; /* Simplify design by removing custom dropdown styles */
+    display: none;
 }
 
-/* Make the add button easier to tap */
+
 .add-button {
-    padding: 8px 12px; /* Increase padding for a larger tap area */
-    font-size: 16px; /* Slightly larger font for visibility */
+    padding: 8px 12px;
+    font-size: 16px;
 }

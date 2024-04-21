@@ -19,8 +19,8 @@ const AddPartModal = ({ isOpen, onClose, onAddPart, API_BASE_URL, selectedJobId,
 
             if (response.ok) {
                 const result = await response.json();
-                setAllParts(result.products); // Store all parts
-                setSearchResults(result.products); // Initially display all parts
+                setAllParts(result.products); 
+                setSearchResults(result.products); 
             } else {
                 throw new Error('Failed to fetch parts with inventory');
             }

@@ -1,4 +1,4 @@
-/* General modal styles */
+
 .manage-users-overlay {
     position: fixed;
     top: 0;
@@ -32,7 +32,7 @@
     background-color: #fff;
     border-radius: 5px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 600px; /* Adjust the width as needed */
+    width: 600px;
     max-height: 80vh;
     overflow: auto;
 }
@@ -126,11 +126,11 @@
 }
 .manage-users-container .save-changes-button {
     margin-right: 10px;
-    cursor: pointer; /* Change cursor to pointer to indicate clickable */
-    background-color: #007bff; /* Example button color */
-    color: white; /* Text color for contrast */
-    border-color: #007bff; /* Border color to match background */
-    border-radius: 2px; /* Adjust this value to increase or decrease roundness */
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+    border-radius: 2px;
 }
 
 .manage-users-container .save-changes-button:hover {

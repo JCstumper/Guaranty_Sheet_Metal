@@ -5,7 +5,7 @@ import { NavLink } from 'react-router-dom';
 import { MdDashboard, MdInventory } from 'react-icons/md';
 import { FaHardHat, FaTruck, FaHistory, FaBars } from 'react-icons/fa';
 import LogoutConfirmation from './LogoutConfirmation';
-import LoadingScreen from './Loading'; // Verify this path is correct
+import LoadingScreen from './Loading'; 
 import { jwtDecode } from "jwt-decode";
 import { Bounce, toast } from 'react-toastify';
 import EditProfile from './EditProfile';
@@ -25,8 +25,8 @@ const Topbar = ({ setAuth }) => {
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef(null);
     const {API_BASE_URL} = useContext(AppContext);
-    const [showManageUsers, setShowManageUsers] = useState(false); // State to control the ManageUsers modal
-    const [showRegisterUser, setShowRegisterUser] = useState(false); // State for the RegisterUserPopup
+    const [showManageUsers, setShowManageUsers] = useState(false); 
+    const [showRegisterUser, setShowRegisterUser] = useState(false); 
     const [role, setRole] = useState('');
 
     const toggleDropdown = () => {
@@ -35,7 +35,7 @@ const Topbar = ({ setAuth }) => {
     
 
     const handleProfileUpdate = ({ newUsername, newPassword, newEmail }) => {
-        // Process the form data, e.g., send it to your backend server
+        
         updateProfile(newUsername, newPassword, newEmail);
         setShowEditProfile(false);
     };    
@@ -65,10 +65,10 @@ const Topbar = ({ setAuth }) => {
             });
 
             if (response.ok) {
-                const data = await response.json(); // Parse the JSON response
-                if (data.token) { // Check if a new token is included in the response
-                    localStorage.removeItem("token"); // Remove the old token
-                    localStorage.setItem("token", data.token); // Set the new token
+                const data = await response.json(); 
+                if (data.token) { 
+                    localStorage.removeItem("token"); 
+                    localStorage.setItem("token", data.token); 
                 }
                 setIsLoading(true);
                 setShowEditProfile(false);
@@ -90,7 +90,7 @@ const Topbar = ({ setAuth }) => {
     const checkTokenExpiration = (token) => {
         try {
             const decodedToken = jwtDecode(token);
-            const currentTime = Date.now() / 1000; // Convert to seconds
+            const currentTime = Date.now() / 1000; 
             if (decodedToken.exp < currentTime) {
                 setIsTokenExpired(true);
                 localStorage.removeItem("token");
@@ -111,30 +111,30 @@ const Topbar = ({ setAuth }) => {
                 headers: { token: localStorage.token }
             });
             
-            const responseBody = await response.json(); // Moved here to ensure it always executes
+            const responseBody = await response.json(); 
 
             if (!response.ok && responseBody.error === "jwt expired") {
-                setTimeout(() => setIsLoading(false), 500); // Ensure loading is stopped whether the request is successful or not
+                setTimeout(() => setIsLoading(false), 500); 
                 setAuth(false);
             } else {
-                setTimeout(() => setIsLoading(false), 500); // Ensure loading is stopped whether the request is successful or not
+                setTimeout(() => setIsLoading(false), 500); 
                 setAuth(true);
-                setUserName(responseBody.username); // Adjusted based on the moved line
+                setUserName(responseBody.username); 
             }
         } catch (err) {
             console.error(err.message);
-            setIsLoading(false); // Ensure loading is stopped on error
+            setIsLoading(false); 
         }
     }
 
     useEffect(() => {
-        setIsLoading(true); // Optionally trigger loading immediately, adjust based on actual need
+        setIsLoading(true); 
 
         const token = localStorage.getItem("token");
         if (token) {
             try {
                 const decodedToken = jwtDecode(token);
-                setRole(decodedToken.role); // Update role state
+                setRole(decodedToken.role); 
             } catch (error) {
                 console.error('Error decoding token:', error);
             }
@@ -146,7 +146,7 @@ const Topbar = ({ setAuth }) => {
         if (token) {
             checkTokenExpiration(token);
         }
-        }, 900000); // Will check every 15 minutes
+        }, 900000); 
 
         getName();
 
@@ -156,10 +156,10 @@ const Topbar = ({ setAuth }) => {
             }
         };
     
-        // Attach the listener to the document
+        
         document.addEventListener('mousedown', handleClickOutside);
 
-        // Clear the interval when the component unmounts
+        
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
             clearInterval(interval);
@@ -167,14 +167,14 @@ const Topbar = ({ setAuth }) => {
     }, []);
 
     const onConfirmLogout = () => {
-        setIsLoading(true); // Immediately show the loading screen on logout confirmation
+        setIsLoading(true); 
         setShowDropdown(false);
         setTimeout(() => {
             localStorage.removeItem("token");
             setAuth(false);
             setLogoutConfirmationOpen(false);
-            setIsLoading(false); // Hide the loading screen after 1 second
-        }, 1000); // Delay to keep the loading screen visible for 1 second
+            setIsLoading(false); 
+        }, 1000); 
     };
 
     const filteredButtons = role !== "admin" ? buttons.filter(button => button !== "LOGS") : buttons;
@@ -218,7 +218,7 @@ const Topbar = ({ setAuth }) => {
                 <LogoutConfirmation 
                     isOpen={logoutConfirmationOpen} 
                     onConfirm={() => {
-                        onConfirmLogout(); // Close the dropdown upon logging out
+                        onConfirmLogout(); 
                     }} 
                     onCancel={() => setLogoutConfirmationOpen(false)} 
                 />

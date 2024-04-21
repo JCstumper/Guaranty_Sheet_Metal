@@ -28,22 +28,20 @@ router.get('/', authorization, async (req, res) => {
     }
 });
 
-// Update quantity in stock for a specific inventory item based on part_number
 router.patch('/:part_number/quantity', authorization, async (req, res) => {
-    const { part_number } = req.params; // Get the part_number from URL params
-    const { quantity_in_stock } = req.body; // New quantity from the request body
+    const { part_number } = req.params;
+    const { quantity_in_stock } = req.body;
 
     try {
         const updateQuery = `
             UPDATE inventory
             SET quantity_in_stock = $1
             WHERE part_number = $2
-            RETURNING *;`; // Returns the updated inventory item
+            RETURNING *;`;
 
         const updatedInventory = await pool.query(updateQuery, [quantity_in_stock, part_number]);
 
         if (updatedInventory.rows.length === 0) {
-            // No inventory item was found with the given part_number, or no update was made
             return res.status(404).json({ message: "Inventory item not found for the given part number." });
         }
 
@@ -51,15 +49,13 @@ router.patch('/:part_number/quantity', authorization, async (req, res) => {
             message: 'Product Quantity In Stock Updated', 
             details: { ...req.body } 
         });
-
-        // Respond with the updated inventory item
         res.json(updatedInventory.rows[0]);
     } catch (err) {
         console.error(err.message);
         res.status(500).json({ error: "Internal server error" });
     }
 });
-// Add this route to get the inventory for a specific part number
+
 router.get('/:part_number', authorization, async (req, res) => {
     const { part_number } = req.params;
     try {

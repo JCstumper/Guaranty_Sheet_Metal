@@ -1,13 +1,12 @@
-// RemoveUsedPartModal.js
 import React from 'react';
-import './AddProduct.css'; // Ensure your path to the CSS is correct
+import './AddProduct.css'; 
 
 const RemoveUsedPartModal = ({ showModal, setShowModal, part, onConfirm }) => {
     if (!showModal || !part) return null;
 
     const handleConfirm = () => {
-        onConfirm(part.id); // Call the onConfirm function passed down as a prop
-        setShowModal(false); // Close the modal after confirming
+        onConfirm(part.id); 
+        setShowModal(false); 
     };
 
     const handleCancel = () => {
