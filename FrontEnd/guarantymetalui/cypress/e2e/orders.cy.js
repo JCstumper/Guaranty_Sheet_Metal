@@ -284,22 +284,13 @@ describe('Open application and test purchases', () => {
 
     it('Mark order as Received', () => {
         cy.contains('PURCHASES').click();
-        cy.contains('Acme Supplies').click();
-        cy.wait(1000); // Adjust based on your application's needs
+        cy.contains('Acme Supplies').parent('tr').within(() => {
+            cy.get('.mark-as-received').click();
+        });
+        cy.wait(1000);
 
-        // Assuming the order can be marked as received only when it's in "Generated" state.
-        // Click the "Mark as Received" button for the specific order.
-        // Ensure you correctly target the button based on your application's structure.
-        cy.get('.mark-as-received').click();
-
-        // Wait for the action to complete and assert the status change.
-        // This example assumes the order's status is displayed within a span with a class or id of '.order-status'.
-        // You may need to adjust the selector based on how your application displays this information.
-        cy.wait(1000); // Adjust based on your application's response time
-        cy.get('.order-status').should('contain.text', 'Received');
-
-        // Optionally, if the order's details are expanded, check for any UI changes that occur upon receiving the order.
-        // For example, if additional inventory details are shown, or if the order becomes non-editable.
+        // Assuming the status is in the same row and updates in place
+        cy.contains('Acme Supplies').parent('tr').find('td').eq(3).should('contain.text', 'Received');
     });
 
 });  
