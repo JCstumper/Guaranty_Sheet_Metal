@@ -46,6 +46,10 @@ router.post('/', authorization, async (req, res) => {
             markUpPrice,      // Maps to 'mark_up_price', same note on MONEY type
         } = req.body;
 
+        if (!partNumber || !price || !supplierPartNumber || !materialType || !description || !type || !quantityOfItem) { // Add more required fields as necessary
+            return res.status(400).json({ error: 'Missing required fields' });
+        }
+
         // Ensure the SQL query matches your database schema
         const newProduct = await pool.query(`
         INSERT INTO products (
@@ -82,7 +86,11 @@ router.post('/', authorization, async (req, res) => {
         });
     } catch (err) {
         console.error(err.message);
-        res.status(500).json({ error: 'Failed to add product' });
+        // Handling unique constraint violation
+        if (err.code === '23505') {
+            return res.status(409).json({ error: 'Duplicate entry', details: err.detail });
+        }
+        res.status(500).json({ error: 'Internal server error', message: err.message });
     }
 });
 
@@ -210,7 +218,10 @@ router.put('/:originalPartNumber', authorization, async (req, res) => {
                 `;
                 await client.query(insertIntoMappings, [type, keywords, catCode]);
             }
+        }
 
+        if (!partNumber || !price || !supplierPartNumber || !materialType || !description || !type || !quantityOfItem) {
+            return res.status(400).json({ error: 'Validation error', message: 'Required fields not entered.' });
         }
 
         // After updating the product and before sending the response
@@ -224,9 +235,12 @@ router.put('/:originalPartNumber', authorization, async (req, res) => {
 
         res.json({ message: 'Product and inventory updated successfully.' });
     } catch (err) {
-        await client.query('ROLLBACK');
         console.error(err.message);
-        res.status(500).json({ error: 'Failed to update product and inventory', details: err.message });
+        let userMessage = 'Failed to update product and inventory';
+        if (err.code === '23505') {
+            userMessage = 'Duplicate entry for part number';
+        }
+        res.status(500).json({ error: 'Database error', message: userMessage, details: err.detail });
     } finally {
         client.release();
     }

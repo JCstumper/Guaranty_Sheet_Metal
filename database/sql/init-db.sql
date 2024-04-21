@@ -63,12 +63,32 @@ CREATE TABLE IF NOT EXISTS invoices (
     status VARCHAR(100)
 );
 
-CREATE TABLE IF NOT EXISTS invoice_items (
-    product_id INT,
+CREATE TABLE IF NOT EXISTS new_orders (
     invoice_id INT,
+    part_number VARCHAR(50),
     quantity INT,
-    price_per_unit DECIMAL(10, 2),
-    FOREIGN KEY (invoice_id) REFERENCES invoices(invoice_id)
+    amount_to_order INT,
+    PRIMARY KEY (invoice_id, part_number),
+    FOREIGN KEY (invoice_id) REFERENCES invoices(invoice_id),
+    FOREIGN KEY (part_number) REFERENCES products(part_number)
+);
+
+CREATE TABLE IF NOT EXISTS low_inventory (
+    invoice_id INT,
+    part_number VARCHAR(50),
+    quantity INT,
+    PRIMARY KEY (invoice_id, part_number),
+    FOREIGN KEY (invoice_id) REFERENCES invoices(invoice_id),
+    FOREIGN KEY (part_number) REFERENCES products(part_number)
+);
+
+CREATE TABLE IF NOT EXISTS out_of_stock (
+    invoice_id INT,
+    part_number VARCHAR(50),
+    quantity INT,
+    PRIMARY KEY (invoice_id, part_number),
+    FOREIGN KEY (invoice_id) REFERENCES invoices(invoice_id),
+    FOREIGN KEY (part_number) REFERENCES products(part_number)
 );
 
 CREATE TABLE IF NOT EXISTS inventory (

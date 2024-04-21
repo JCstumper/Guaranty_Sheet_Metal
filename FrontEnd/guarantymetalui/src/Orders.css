@@ -8,18 +8,17 @@
     display: flex;
     margin-top: 90px;
     margin-left: 10px;
-    padding-right: 250px;
+    padding-right: 10px; /* Match the padding of the customers page */
     flex-direction: column;
 }
 
 .order-table {
     flex-grow: 1;
     background-color: #fff;
-    border: 4px solid #b3b3b3;
+    border: 3px solid #b3b3b3; /* Slightly lighter border for consistency */
     border-radius: 15px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     overflow: hidden;
-    margin: 0 20px 20px 0;
     display: flex;
     flex-direction: column;
 }
@@ -34,9 +33,38 @@
     align-items: center;
 }
 
+.actions {
+    display: flex;
+    align-items: center;
+}
+
+.search-input {
+    flex-grow: 1;
+    margin-right: 10px; /* Space between search input and add button */
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.add-button {
+    padding: 10px 15px;
+    background-color: #0b2b61;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+    .add-button:hover {
+        background-color: #083d77;
+    }
+
 .table-content {
+    display: block;
+    overflow-y: auto;
+    max-height: calc(100vh - 225px); /* Adjust to fit within viewport */
     width: 100%;
-    overflow-x: auto;
 }
 
     .table-content th,
@@ -290,13 +318,54 @@
 
 
 
-
-.generate-xlsx-button {
-    /* Your previous button styles here */
-    /* Position the button in the top right corner of the modal */
-    position: absolute;
-    top: 10px;
-    right: 10px;
+/* General button styling */
+.button, .add-button, .delete-button, .edit-button, .generate-xlsx-button, .mark-as-generated, .mark-as-received, .remove-button, .add-order, .add-all {
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin: 2px;
+    text-align: center;
+    display: inline-block;
 }
 
-/* Add any other styles as needed */
+/* Specific styles for action buttons */
+.add-button, .add-order, .add-all {
+    background-color: #4CAF50; /* Green background for add */
+    color: white;
+}
+
+    .add-button:hover .add-order:hover, .add-all:hover {
+        background-color: #45a049; /* Darker green on hover */
+    }
+
+.delete-button, .remove-button {
+    background-color: #f44336; /* Red background for remove and delete */
+    color: white;
+}
+
+    .delete-button:hover, .remove-button:hover {
+        background-color: #da190b; /* Darker red on hover */
+    }
+
+/* Blue version for specific actions */
+.generate-xlsx-button, .mark-as-generated, .mark-as-received {
+    background-color: #007bff; /* Blue background */
+    color: white;
+}
+
+    .generate-xlsx-button:hover, .mark-as-generated:hover, .mark-as-received:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+    }
+
+/* Edit button styles (if needed) */
+.edit-button {
+    background-color: #ffc107; /* Yellow background for edit */
+    color: white;
+}
+
+    .edit-button:hover {
+        background-color: #e0a800; /* Darker yellow on hover */
+    }

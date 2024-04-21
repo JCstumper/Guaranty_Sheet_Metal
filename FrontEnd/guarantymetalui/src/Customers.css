@@ -90,7 +90,7 @@
   text-align: left;
   white-space: nowrap; /* Prevents the text from wrapping onto multiple lines */
   overflow: hidden; /* Keeps the text inside the element's bounds */
-  text-overflow: ellipsis; /* Adds ellipsis when text is clipped */
+  /* text-overflow: ellipsis; Adds ellipsis when text is clipped */
   position: sticky; /* Make sure headers stay at the top when scrolling */
   top: 0;
   z-index: 10; /* Ensures the header stays on top */
