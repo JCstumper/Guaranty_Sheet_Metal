@@ -298,3 +298,4 @@ router.get('/category/:category', authorization, async (req, res) => {
 });
 
 module.exports = router;
+module.exports.logInventoryAction = logInventoryAction; // Export the function

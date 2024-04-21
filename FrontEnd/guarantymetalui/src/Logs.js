@@ -29,10 +29,13 @@ const Logs = ({ setAuth }) => {
                 },
             });
             const jsonData = await response.json();
-
+    
             if (jsonData.logs && Array.isArray(jsonData.logs.rows)) {
-                setOriginalLogs(jsonData.logs.rows); // Set original logs
-                setLogs(jsonData.logs.rows); // Set logs for display
+                const sortedLogs = jsonData.logs.rows.sort((a, b) => 
+                    new Date(b.action_timestamp) - new Date(a.action_timestamp)
+                );
+                setOriginalLogs(sortedLogs); // Set original logs with sorted data
+                setLogs(sortedLogs); // Set logs for display
             } else {
                 console.error('Data fetched is not an array:', jsonData);
                 setOriginalLogs([]); // Reset original logs

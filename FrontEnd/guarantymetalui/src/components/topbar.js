@@ -65,6 +65,11 @@ const Topbar = ({ setAuth }) => {
             });
 
             if (response.ok) {
+                const data = await response.json(); // Parse the JSON response
+                if (data.token) { // Check if a new token is included in the response
+                    localStorage.removeItem("token"); // Remove the old token
+                    localStorage.setItem("token", data.token); // Set the new token
+                }
                 setIsLoading(true);
                 setShowEditProfile(false);
                 toast.success('Profile was updated.');

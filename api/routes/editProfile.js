@@ -3,6 +3,8 @@ const pool = require('../db');
 const bcrypt = require('bcrypt');
 const validInfo = require("../middleware/validInfo");
 const authorization = require("../middleware/authorization");
+const { logInventoryAction } = require("./products");
+const jwtGenerator = require("../utils/jwtGenerator");
 
 router.post("/profile", authorization, validInfo, async(req, res) => {
     try {
@@ -12,6 +14,13 @@ router.post("/profile", authorization, validInfo, async(req, res) => {
         let updates = [];
         let values = [];
         let queryIndex = 1;
+
+        // Building the details object for logging
+        let logDetails = {
+            newUsername: newUsername || "blank",
+            newPassword: newPassword ? "****" : "blank",  // Masked for security
+            newEmail: newEmail || "blank"
+        };
         
         if (newUsername) {
 
@@ -55,7 +64,23 @@ router.post("/profile", authorization, validInfo, async(req, res) => {
 
             // Check if the update was successful
             if (updatedUser.rows.length > 0) {
-                res.json({ message: "User updated successfully", user: updatedUser.rows[0] });
+                
+                // Decide the username for logging
+                const usernameForLogging = newUsername ? newUsername : req.username;
+
+                // Log the update action
+                await logInventoryAction('Update Profile', req.username, 'User Profile', {
+                    message: 'Profile updated successfully',
+                    details: logDetails
+                });
+
+                if(usernameForLogging !== req.username) {
+                    const newToken = jwtGenerator(userId, usernameForLogging, req.role);
+                    res.json({ message: "User updated successfully", user: updatedUser.rows[0], token: newToken });
+                }
+                else {
+                    res.json({ message: "User updated successfully", user: updatedUser.rows[0] });
+                }
             } else {
                 res.status(404).json({ message: "User not found" });
             }
