@@ -517,16 +517,26 @@ const Orders = ({ setAuth }) => {
                 <div className="order-table">
                     <div className="table-header">
                         <span className="table-title"><strong>ORDERS</strong></span>
-                        <button onClick={handleToggleModal} className="add-button">+</button>
+                        <div className="actions">
+                            <input
+                                type="text"
+                                className="search-input"
+                                placeholder="Search orders..."
+                                value={filter}
+                                onChange={handleFilterChange}
+                            />
+                            <button onClick={handleToggleModal} className="add-button">+</button>
+                        </div>
                     </div>
                     <div className="table-content">
                         <table>
                             <thead>
                                 <tr>
                                     <th>Supplier Name</th> {/* No change needed */}
-                                    <th>Total Cost</th>
+                                    <th>Shipping Costs</th>
                                     <th>Invoice Date</th>
                                     <th>Status</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -540,19 +550,21 @@ const Orders = ({ setAuth }) => {
                                                         onClick={(e) => {
                                                             e.stopPropagation(); // Prevent triggering handleSelectOrder
                                                             editTotalCost(order.invoice_id); // Pass the order ID to edit function
-                                                        }}>
-                                                        Edit Cost
+                                                        }} className="edit-button">
+                                                        Add Shipping Cost
                                                     </button>
                                                 )}
                                             </td>
                                             <td>{order.invoice_date}</td>
                                             <td>
                                                 {order.status}
+                                            </td>
+                                            <td>
                                                 {order.status === "Building" && (
                                                     <button onClick={(e) => {
                                                         e.stopPropagation(); // Prevent triggering handleSelectOrder
                                                         updateOrderStatus(order.invoice_id, "Generated");
-                                                    }}>
+                                                    }} className="mark-as-generated">
                                                         Mark as Generated
                                                     </button>
                                                 )}
@@ -560,7 +572,7 @@ const Orders = ({ setAuth }) => {
                                                     <button onClick={(e) => {
                                                         e.stopPropagation(); // Prevent triggering handleSelectOrder
                                                         updateOrderStatus(order.invoice_id, "Received");
-                                                    }}>
+                                                    }} className="mark-as-received">
                                                         Mark as Received
                                                     </button>
                                                 )}
@@ -585,7 +597,7 @@ const Orders = ({ setAuth }) => {
                                                             {selectedOrder && selectedOrder.status === "Building" && (
                                                                 <div className="parts-subsection low-stock">
                                                                     <h5>Low Inventory</h5>
-                                                                    <button onClick={() => handleAddAllToNewOrder(lowInventoryItems, 'lowInventory')}>
+                                                                    <button onClick={() => handleAddAllToNewOrder(lowInventoryItems, 'lowInventory')}className="add-all">
                                                                         Add All to Order
                                                                     </button>
                                                                 <table>
@@ -607,7 +619,7 @@ const Orders = ({ setAuth }) => {
                                                                                 <td>{item.quantity}</td>
                                                                                 <td>
                                                                                     {selectedOrder && selectedOrder.status === "Building" ? (
-                                                                                        <button onClick={() => handleAddToNewOrder(item, 'lowInventory')}>
+                                                                                        <button onClick={() => handleAddToNewOrder(item, 'lowInventory')} className="add-order">
                                                                                             Add to Order
                                                                                         </button>
                                                                                     ) : "N/A"}
@@ -624,7 +636,7 @@ const Orders = ({ setAuth }) => {
                                                             {selectedOrder && selectedOrder.status === "Building" && (
                                                                 <div className="parts-subsection out-of-stock">
                                                                     <h5>Out of Stock</h5>
-                                                                    <button onClick={() => handleAddAllToNewOrder(outOfStockItems, 'outOfStock')}>
+                                                                    <button onClick={() => handleAddAllToNewOrder(outOfStockItems, 'outOfStock')} className="add-all">
                                                                         Add All to Order
                                                                     </button>
                                                                 <table>
@@ -646,7 +658,7 @@ const Orders = ({ setAuth }) => {
                                                                                 <td>{item.quantity}</td>
                                                                                 <td>
                                                                                     {selectedOrder && selectedOrder.status === "Building" ? (
-                                                                                        <button onClick={() => handleAddToNewOrder(item, 'outOfStock')}>
+                                                                                        <button onClick={() => handleAddToNewOrder(item, 'outOfStock')} className="add-order">
                                                                                             Add to Order
                                                                                         </button>
                                                                                     ) : "N/A"}
@@ -693,7 +705,7 @@ const Orders = ({ setAuth }) => {
                                                                                 </td>
                                                                                 <td>
                                                                                     {selectedOrder && selectedOrder.status === "Building" ? (
-                                                                                        <button onClick={() => handleRemoveFromNewOrder(index, item.part_number)}>
+                                                                                        <button onClick={() => handleRemoveFromNewOrder(index, item.part_number)}className="remove-button">
                                                                                             Remove
                                                                                         </button>
                                                                                     ) : "N/A"} {/* Only show 'Remove' button if status is "Building" */}
@@ -718,15 +730,6 @@ const Orders = ({ setAuth }) => {
                             </tbody>
                         </table>
                     </div>
-                </div>
-                <div className="filtering-box">
-                    <input
-                        type="text"
-                        className="search-input"
-                        placeholder="Filter orders..."
-                        value={filter}
-                        onChange={handleFilterChange}
-                    />
                 </div>
                 {showModal && (
                     <div className="modalAddOrder">
