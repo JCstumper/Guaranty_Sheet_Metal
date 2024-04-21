@@ -374,6 +374,10 @@ const Customers = ({ setAuth }) => {
     
 
     const handleUploadEstimate = async () => {
+        if (!selectedFile) {
+            toast.error('No file selected. Please select a file to upload.');
+            return;
+        }
         if (selectedFile.size > 5242880) { // 5 MB = 5 * 1024 * 1024 bytes
             toast.error('File size should not exceed 5 MB.');
             return;
@@ -1054,7 +1058,7 @@ const Customers = ({ setAuth }) => {
                             </div>
                         </div>
                         <div className="modal-actions">
-                            <button type="submit" onClick={() => handleUploadEstimate()}className="btn-primary">Upload Estimate</button>
+                            <button type="submit" onClick={() => handleUploadEstimate()}className="btn-primary" disabled={!selectedFile}>Upload Estimate</button>
                             <button type="button" onClick={() => setShowEstimateModal(false)} className="btn-secondary">Cancel</button>
                         </div>
                     </div>
