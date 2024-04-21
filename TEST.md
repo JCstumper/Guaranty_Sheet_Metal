@@ -44,17 +44,17 @@ User Acceptance Testing is the final stage before deployment where real-world sc
 #### 1. Initial User Setup
 - **Goal**: Ensure the first-time setup is handled correctly.
 - **Steps**:
-  - Navigate to the homepage.
-  - Click the "Initial Setup" button.
-  - Fill in the registration form:
-    - Username: `admin`
-    - Password: `Admin123!`
-    - Confirm Password: `Admin123!`
-    - Email: `admin@gmail.com`
-  - Click the submit button.
+    - Navigate to the homepage.
+    - Click the "Initial Setup" button.
+    - Fill in the registration form:
+        - Username: `admin`
+        - Password: `Admin123!`
+        - Confirm Password: `Admin123!`
+        - Email: `admin@gmail.com`
+    - Click the submit button.
 - **Verify**:
-  - Confirm that after submission, a success message appears and the user is redirected to the login screen.
-  - Check that the "Login" button is now visible, indicating the setup was successful.
+    - Confirm that after submission, a success message appears and the user is redirected to the login screen.
+    - Check that the "Login" button is now visible, indicating the setup was successful.
 
 #### 2. Login Functionality
 - **Goal**: Test the login system's response to correct and incorrect credentials.
@@ -90,12 +90,12 @@ User Acceptance Testing is the final stage before deployment where real-world sc
 #### 3. Logout Functionality
 - **Goal**: Verify that the logout function terminates user sessions effectively.
 - **Steps**:
-  - Log in as described above.
-  - Navigate to the username or account icon and click it.
-  - Select "Logout" and confirm the logout on the popup dialog by clicking the "Log Out" button.
+    - Log in as described above.
+    - Navigate to the username or account icon and click it.
+    - Select "Logout" and confirm the logout on the popup dialog by clicking the "Log Out" button.
 - **Verify**:
-  - Ensure that you are redirected to the login page.
-  - Optionally, attempt to navigate back to see if the session has truly ended, which should not be possible.
+    - Ensure that you are redirected to the login page.
+    - Optionally, attempt to navigate back to see if the session has truly ended, which should not be possible.
 
 #### 4. User Management
 - **Goal**: Test the admin's capability to manage user accounts, including adding, editing, and deleting users.
@@ -193,23 +193,56 @@ User Acceptance Testing is the final stage before deployment where real-world sc
 #### 7. Order Processing
 - **Goal**: Test the order processing system for accuracy and efficiency.
 - **Steps**:
-  - Navigate to the orders section and click "Create Order."
-  - Add items to the order, specify quantities, and submit the order.
+    - Navigate to the orders section and click "Create Order."
+    - Add items to the order, specify quantities, and submit the order.
 - **Verify**:
-  - Confirm that the order appears in the order management system with correct details.
-  - Modify the order by changing quantities or adding/removing items, then update the order.
+    - Confirm that the order appears in the order management system with correct details.
+    - Modify the order by changing quantities or adding/removing items, then update the order.
 - **Verify**:
-  - Check that the modifications are accurately reflected in the system.
-  - Finalize the order and mark it as "Shipped."
+    - Check that the modifications are accurately reflected in the system.
+    - Finalize the order and mark it as "Shipped."
 - **Verify**:
-  - Ensure the status update is displayed and accurate according to the changes made.
+    - Ensure the status update is displayed and accurate according to the changes made.
+
+#### 8. Logging Activities
+- **Goal**: Verify that all user-related actions are correctly logged in the system.
+
+    #### 8.1 Logging New User Addition
+    - **Steps**:
+        - Log in as an admin.
+        - Navigate to the user management section.
+        - Click "Add a User" and enter the following details in the form:
+            - Username: `newUser123`
+            - Password: `newPassword123!`
+            - Email: `newUser123@gmail.com`
+        - Click "Register" to submit the form.
+        - Navigate to the "Logs" section of the application.
+    - **Verify**:
+        - Confirm that a log entry is visible for the addition of the new user.
+        - The log should detail the username, email, and assigned role, displaying a message such as "Added User to Application Whitelist username: newUser123 email: newUser123@gmail.com role: employee."
+        - Ensure that the log entry specifies the action was successful with visible identifiers like "Add User" and "Added User."
+
+    #### 8.2 Logging User Profile Updates
+    - **Steps**:
+        - Stay logged in as an admin or log in if not already.
+        - Navigate to the profile editing section by selecting a user profile.
+        - Update the user profile with new details:
+            - Username: `brandNewUser`
+            - Password: `brandNewUser123!`
+            - Email: `brandNewUser123@gmail.com`
+        - Click "Save Changes" to update the profile.
+        - Navigate to the "Logs" section to check for the update record.
+    - **Verify**:
+        - Look for a log entry indicating the profile update.
+        - Verify the log shows a detailed message like "Profile updated successfully" and includes details such as "Update Profile."
+        - Ensure the log records are comprehensive and indicate the specific fields that were changed.
 
 ### UAT Execution
 - **Participants**: Include real users, business stakeholders, and IT support staff.
 - **Feedback Collection**: Use surveys, interviews, and observation to gather comprehensive feedback.
 - **Documentation**: Record all test results and feedback for review and action.
 
-### Conclusion
+
 The results from UAT will guide the final adjustments before deployment, ensuring the application meets all user requirements and performs optimally in real-world scenarios. This comprehensive approach ensures a robust and user-friendly product.
 
 
