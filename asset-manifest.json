@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/Guaranty_Sheet_Metal/static/css/main.60440209.css",
-    "main.js": "/Guaranty_Sheet_Metal/static/js/main.64aff76b.js",
+    "main.js": "/Guaranty_Sheet_Metal/static/js/main.98c13ff9.js",
     "static/media/logo.png": "/Guaranty_Sheet_Metal/static/media/logo.a8f6846b04690eefa5ce.png",
     "static/media/Software.md": "/Guaranty_Sheet_Metal/static/media/Software.eebf3e6375fe0d095aaf.md",
     "static/media/Features.md": "/Guaranty_Sheet_Metal/static/media/Features.41008572a48fcd2676dc.md",
@@ -29,20 +29,25 @@
     "static/media/CONFIRMUSERS.md": "/Guaranty_Sheet_Metal/static/media/CONFIRMUSERS.d518dd272d5d8f46cf26.md",
     "static/media/VALIDINFO.md": "/Guaranty_Sheet_Metal/static/media/VALIDINFO.34bf39337888a3698dbf.md",
     "static/media/NOTFOUND.md": "/Guaranty_Sheet_Metal/static/media/NOTFOUND.485ebb088139561901b5.md",
+    "static/media/NGINX.CONF.PRODUCTIONTEMPLATE.md": "/Guaranty_Sheet_Metal/static/media/NGINX.CONF.PRODUCTIONTEMPLATE.ded4999fef381ca43bee.md",
     "static/media/LOGIN.md": "/Guaranty_Sheet_Metal/static/media/LOGIN.ba97afbc5a41f93fcdb2.md",
     "static/media/AUTHORIZATION.md": "/Guaranty_Sheet_Metal/static/media/AUTHORIZATION.bfeea678ff4f3068a609.md",
     "static/media/CATEGORIES.md": "/Guaranty_Sheet_Metal/static/media/CATEGORIES.43443b8174e464ead28c.md",
     "static/media/LOADING.md": "/Guaranty_Sheet_Metal/static/media/LOADING.2eeac0ec5824b017e83f.md",
     "static/media/LOGOUTCONFIRMATION.md": "/Guaranty_Sheet_Metal/static/media/LOGOUTCONFIRMATION.01c1bd04ce8bb251668d.md",
     "static/media/DASHBOARD.md": "/Guaranty_Sheet_Metal/static/media/DASHBOARD.39f3fb3daa463b5aa320.md",
+    "static/media/NGINX.CONF.TEMPLATE.md": "/Guaranty_Sheet_Metal/static/media/NGINX.CONF.TEMPLATE.658a9af17a161f72fef5.md",
     "static/media/BARCARD.md": "/Guaranty_Sheet_Metal/static/media/BARCARD.d44769fd78a32d0fdf68.md",
     "static/media/FAQS.md": "/Guaranty_Sheet_Metal/static/media/FAQS.6aced1f1b1ae504ef3dd.md",
+    "static/media/STARTUPPRODUCTION.md": "/Guaranty_Sheet_Metal/static/media/STARTUPPRODUCTION.3e79068cbb3445320b2d.md",
+    "static/media/STARTUP.md": "/Guaranty_Sheet_Metal/static/media/STARTUP.84f8cdb1c17fdbc4f331.md",
+    "static/media/GENERATE-CERTS.md": "/Guaranty_Sheet_Metal/static/media/GENERATE-CERTS.8ea90494efe13e5274b7.md",
     "index.html": "/Guaranty_Sheet_Metal/index.html",
     "main.60440209.css.map": "/Guaranty_Sheet_Metal/static/css/main.60440209.css.map",
-    "main.64aff76b.js.map": "/Guaranty_Sheet_Metal/static/js/main.64aff76b.js.map"
+    "main.98c13ff9.js.map": "/Guaranty_Sheet_Metal/static/js/main.98c13ff9.js.map"
   },
   "entrypoints": [
     "static/css/main.60440209.css",
-    "static/js/main.64aff76b.js"
+    "static/js/main.98c13ff9.js"
   ]
 }
