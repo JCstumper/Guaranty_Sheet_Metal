@@ -679,7 +679,7 @@ const AddProduct = ({ setShowModal, fetchProductsWithInventory }) => {
 
                             
                             <div className="form-group">
-                                <label htmlFor="price">Price:</label>
+                                <label htmlFor="price">Price Per Unit:</label>
                                 <div className="input-wrapper">
                                     <input
                                         id="price"
