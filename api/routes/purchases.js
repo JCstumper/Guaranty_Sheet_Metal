@@ -55,7 +55,14 @@ router.post('/', authorization, async (req, res) => {
 router.get('/low-inventory', authorization, async (req, res) => {
     try {
         const lowInventoryItems = await pool.query(
-            'SELECT p.part_number, p.material_type, p.description, i.quantity_in_stock FROM products p JOIN inventory i ON p.part_number = i.part_number WHERE i.quantity_in_stock BETWEEN 1 AND 30 ORDER BY i.quantity_in_stock ASC'
+            `SELECT p.part_number, p.material_type, p.description, i.quantity_in_stock
+             FROM products p
+             JOIN inventory i ON p.part_number = i.part_number
+             WHERE i.quantity_in_stock BETWEEN 1 AND 30
+             AND NOT EXISTS (
+                 SELECT 1 FROM inventory WHERE quantity_in_stock = 0 AND part_number = i.part_number
+             )
+             ORDER BY i.quantity_in_stock ASC`
         );
         res.json(lowInventoryItems.rows);
     } catch (err) {
@@ -67,7 +74,14 @@ router.get('/low-inventory', authorization, async (req, res) => {
 router.get('/out-of-stock', authorization, async (req, res) => {
     try {
         const outOfStockItems = await pool.query(
-            'SELECT p.part_number, p.material_type, p.description, i.quantity_in_stock FROM products p JOIN inventory i ON p.part_number = i.part_number WHERE i.quantity_in_stock = 0 ORDER BY p.part_number ASC'
+            `SELECT p.part_number, p.material_type, p.description, i.quantity_in_stock
+             FROM products p
+             JOIN inventory i ON p.part_number = i.part_number
+             WHERE i.quantity_in_stock = 0
+             AND NOT EXISTS (
+                 SELECT 1 FROM inventory WHERE quantity_in_stock BETWEEN 1 AND 30 AND part_number = i.part_number
+             )
+             ORDER BY p.part_number ASC`
         );
         res.json(outOfStockItems.rows);
     } catch (err) {
@@ -75,6 +89,7 @@ router.get('/out-of-stock', authorization, async (req, res) => {
         res.status(500).json('Server error');
     }
 });
+
 
 router.post('/:invoiceId/update-low-inventory', authorization, async (req, res) => {
     const { invoiceId } = req.params; 
@@ -170,24 +185,20 @@ router.get('/:invoiceId/new-order-items', authorization, async (req, res) => {
     const { invoiceId } = req.params;
 
     try {
-        
         const newOrderItems = await pool.query(`
             SELECT no.invoice_id, no.part_number, no.quantity, no.amount_to_order, p.material_type, p.description
             FROM new_orders no
             JOIN products p ON no.part_number = p.part_number
-            WHERE no.invoice_id = $1;
+            WHERE no.invoice_id = $1 AND no.part_number IS NOT NULL AND no.amount_to_order > 0;
         `, [invoiceId]);
 
-
-        
-        res.json(newOrderItems.rows);
+        res.json(newOrderItems.rows.filter(item => item.part_number && item.amount_to_order > 0));
     } catch (err) {
-        
         console.error('Error fetching new order items:', err.message);
-        
         res.status(500).json('Server error');
     }
 });
+
 
 
 
@@ -213,33 +224,30 @@ router.get('/:invoiceId', authorization, async (req, res) => {
 
 router.patch('/:invoiceId/status', authorization, async (req, res) => {
     const { invoiceId } = req.params;
-    const { status, items } = req.body; 
-
+    const { status, items, total_cost } = req.body; // Ensure total_cost is passed in the request
+    console.log(total_cost);
+    console.log('Received items:', items);  // Log to debug
     try {
-        
         const orderResult = await pool.query('SELECT status, total_cost FROM invoices WHERE invoice_id = $1', [invoiceId]);
         if (orderResult.rows.length === 0) {
             return res.status(404).json({ message: "Order not found." });
         }
 
         const currentStatus = orderResult.rows[0].status;
-        const totalCost = parseFloat(orderResult.rows[0].total_cost); 
 
         await pool.query('BEGIN');
 
         console.log(`Updating status for invoice ${invoiceId} to ${status}`);
-
-        
-        await pool.query('UPDATE invoices SET status = $1 WHERE invoice_id = $2', [status, invoiceId]);
+        await pool.query('UPDATE invoices SET status = $1, total_cost = $2 WHERE invoice_id = $3', [status, total_cost, invoiceId]);
 
         if (status === 'Received' && currentStatus !== 'Received') {
-            console.log(`Received items to update inventory: `, items);
-            
-            const totalItems = items.reduce((acc, item) => acc + parseInt(item.amountToOrder, 10), 0);
-            const markupPerItem = totalCost / totalItems;
+            console.log(`Received items to update inventory and markup prices: `, items);
 
+            let totalOrderedItems = items.reduce((sum, item) => sum + parseInt(item.amountToOrder, 10), 0);
+            console.log(totalOrderedItems);
+            let costPerItem = parseFloat(total_cost) / totalOrderedItems; // Calculate the shipping cost per item
+            console.log(costPerItem);
             for (const item of items) {
-                
                 console.log(`Updating inventory for part ${item.partNumber} with amount ${item.amountToOrder}`);
                 await pool.query(`
                     UPDATE inventory
@@ -247,43 +255,31 @@ router.patch('/:invoiceId/status', authorization, async (req, res) => {
                     WHERE part_number = $2
                 `, [item.amountToOrder, item.partNumber]);
 
-                
-                console.log(`Updating mark_up_price for part ${item.partNumber} with markup ${markupPerItem.toFixed(2)}`);
+                // Update the markup price for each product
+                console.log(`Updating markup price for part ${item.partNumber}`);
                 await pool.query(`
                     UPDATE products
-                    SET mark_up_price = $1::money
+                    SET price = ($1)::money,
+                        mark_up_price = ($1 * quantity_of_item)::money
                     WHERE part_number = $2
-                `, [markupPerItem.toFixed(2), item.partNumber]); 
-            }
-        }
-
-        if (status === 'Generated' && Array.isArray(items)) {
-            for (const item of items) {
-                await pool.query(`
-                    UPDATE new_orders 
-                    SET amount_to_order = $1 
-                    WHERE invoice_id = $2 AND part_number = $3
-                `, [item.amountToOrder, invoiceId, item.partNumber]);
+                `, [costPerItem, item.partNumber]);
             }
         }
 
         await pool.query('COMMIT');
-
-        await logJobsAction('Update Order Details', req.username, 'Generated Orders', {
+        await logJobsAction('Update Order Details', req.username, 'Order Status Update', {
             invoiceId,
+            newStatus: status,
             detailsUpdated: items
         });
 
-        res.json({ message: "Order status, inventory, and product mark-up prices updated successfully." });
+        res.json({ message: "Order status, inventory, and markup prices updated successfully." });
     } catch (err) {
         await pool.query('ROLLBACK');
-        console.error(err.message);
+        console.error('Error during transaction:', err.message);
         res.status(500).json('Server error');
     }
 });
-
-
-
 
 
 router.post('/add-to-new-order/:invoiceId', authorization, async (req, res) => {

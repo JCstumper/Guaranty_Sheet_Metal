@@ -403,7 +403,7 @@ const EditProductModal = ({ showModal, setShowModal, editProductItem, setEditPro
                             </div>
                         </div>
                         <div className="form-group">
-                            <label htmlFor="price">Price:</label>
+                            <label htmlFor="price">Price Per Unit:</label>
                             <div className="input-wrapper">
                                 <input
                                     id="price"
