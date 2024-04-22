@@ -61,8 +61,8 @@ CREATE TABLE IF NOT EXISTS new_orders (
     quantity INT,
     amount_to_order INT,
     PRIMARY KEY (invoice_id, part_number),
-    FOREIGN KEY (invoice_id) REFERENCES invoices(invoice_id),
-    FOREIGN KEY (part_number) REFERENCES products(part_number)
+    FOREIGN KEY (invoice_id) REFERENCES invoices(invoice_id) ON DELETE CASCADE,
+    FOREIGN KEY (part_number) REFERENCES products(part_number) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS low_inventory (
@@ -70,8 +70,8 @@ CREATE TABLE IF NOT EXISTS low_inventory (
     part_number VARCHAR(50),
     quantity INT,
     PRIMARY KEY (invoice_id, part_number),
-    FOREIGN KEY (invoice_id) REFERENCES invoices(invoice_id),
-    FOREIGN KEY (part_number) REFERENCES products(part_number)
+    FOREIGN KEY (invoice_id) REFERENCES invoices(invoice_id) ON DELETE CASCADE,
+    FOREIGN KEY (part_number) REFERENCES products(part_number) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS out_of_stock (
@@ -79,14 +79,14 @@ CREATE TABLE IF NOT EXISTS out_of_stock (
     part_number VARCHAR(50),
     quantity INT,
     PRIMARY KEY (invoice_id, part_number),
-    FOREIGN KEY (invoice_id) REFERENCES invoices(invoice_id),
-    FOREIGN KEY (part_number) REFERENCES products(part_number)
+    FOREIGN KEY (invoice_id) REFERENCES invoices(invoice_id) ON DELETE CASCADE,
+    FOREIGN KEY (part_number) REFERENCES products(part_number) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS inventory (
     part_number VARCHAR(50) NOT NULL UNIQUE,
     quantity_in_stock INTEGER NOT NULL,
-    FOREIGN KEY (part_number) REFERENCES products(part_number)
+    FOREIGN KEY (part_number) REFERENCES products(part_number) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS estimates (
@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS necessary_parts (
     part_number VARCHAR(50) NOT NULL,
     quantity_required INTEGER NOT NULL,
     FOREIGN KEY (job_id) REFERENCES jobs(job_id) ON DELETE CASCADE,
-    FOREIGN KEY (part_number) REFERENCES products(part_number)
+    FOREIGN KEY (part_number) REFERENCES products(part_number) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS used_parts (
@@ -113,7 +113,7 @@ CREATE TABLE IF NOT EXISTS used_parts (
     part_number VARCHAR(50) NOT NULL,
     quantity_used INTEGER NOT NULL,
     FOREIGN KEY (job_id) REFERENCES jobs(job_id) ON DELETE CASCADE,
-    FOREIGN KEY (part_number) REFERENCES products(part_number)
+    FOREIGN KEY (part_number) REFERENCES products(part_number) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS login_attempts (
