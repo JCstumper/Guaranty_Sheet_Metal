@@ -93,7 +93,11 @@ const Orders = ({ setAuth }) => {
 
     const fetchNewOrderItems = async (invoiceId) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/purchases/${invoiceId}/new-order-items`);
+            const response = await fetch(`${API_BASE_URL}/purchases/${invoiceId}/new-order-items`, {
+                method: "GET",
+                headers: {token: localStorage.token}
+            });
+
             if (!response.ok) throw new Error('Failed to fetch new order items');
             const data = await response.json();
             const itemsWithAmount = data.map(item => ({
@@ -110,8 +114,14 @@ const Orders = ({ setAuth }) => {
     const fetchCurrentItems = async (invoiceId) => {
         try {
             const [lowInventoryResponse, outOfStockResponse] = await Promise.all([
-                fetch(`${API_BASE_URL}/purchases/${invoiceId}/low-inventory`),
-                fetch(`${API_BASE_URL}/purchases/${invoiceId}/out-of-stock`)
+                fetch(`${API_BASE_URL}/purchases/${invoiceId}/low-inventory`, {
+                    method: "GET",
+                    headers: {token: localStorage.token}
+                }),
+                fetch(`${API_BASE_URL}/purchases/${invoiceId}/out-of-stock`, {
+                    method: "GET",
+                    headers: {token: localStorage.token}
+                })
             ]);
 
             if (!lowInventoryResponse.ok || !outOfStockResponse.ok) {
@@ -137,7 +147,10 @@ const Orders = ({ setAuth }) => {
 
     const updateInventoryItems = async (invoiceId) => {
         try {
-            const orderDetailsResponse = await fetch(`${API_BASE_URL}/purchases/${invoiceId}`);
+            const orderDetailsResponse = await fetch(`${API_BASE_URL}/purchases/${invoiceId}`, {
+                method: "GET",
+                headers: {token: localStorage.token}
+            });
             if (!orderDetailsResponse.ok) {
                 throw new Error(`HTTP error! status: ${orderDetailsResponse.status}`);
             }
@@ -146,8 +159,20 @@ const Orders = ({ setAuth }) => {
             if (orderDetails && orderDetails.status === 'Building') {
                 
                 await Promise.all([
-                    fetch(`${API_BASE_URL}/purchases/${invoiceId}/update-low-inventory`, { method: 'POST' }),
-                    fetch(`${API_BASE_URL}/purchases/${invoiceId}/update-out-of-stock`, { method: 'POST' })
+                    fetch(`${API_BASE_URL}/purchases/${invoiceId}/update-low-inventory`, { 
+                        method: "POST",
+                        headers: {
+                            'Content-Type': 'application/json',
+                            token: localStorage.token
+                        }
+                     }),
+                    fetch(`${API_BASE_URL}/purchases/${invoiceId}/update-out-of-stock`, { 
+                        method: "POST",
+                        headers: {
+                            'Content-Type': 'application/json',
+                            token: localStorage.token
+                        }
+                     })
                 ]);
             }
 
@@ -160,8 +185,14 @@ const Orders = ({ setAuth }) => {
     const fetchInventoryAndOutOfStockItems = async (invoiceId) => {
         try {
             const [lowInventoryResponse, outOfStockResponse] = await Promise.all([
-                fetch(`${API_BASE_URL}/purchases/${invoiceId}/low-inventory`),
-                fetch(`${API_BASE_URL}/purchases/${invoiceId}/out-of-stock`)
+                fetch(`${API_BASE_URL}/purchases/${invoiceId}/low-inventory`, {
+                    method: "GET",
+                    headers: {token: localStorage.token}
+                }),
+                fetch(`${API_BASE_URL}/purchases/${invoiceId}/out-of-stock`, {
+                    method: "GET",
+                    headers: {token: localStorage.token}
+                })
             ]);
 
             if (!lowInventoryResponse.ok || !outOfStockResponse.ok) {
@@ -180,7 +211,10 @@ const Orders = ({ setAuth }) => {
 
     const fetchOrders = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/purchases`);
+            const response = await fetch(`${API_BASE_URL}/purchases`, {
+                method: "GET",
+                headers: {token: localStorage.token}
+            });
             const data = await response.json();
             if (response.ok) {
                 setOrders(data);
@@ -215,6 +249,7 @@ const Orders = ({ setAuth }) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    token: localStorage.token
                 },
                 body: JSON.stringify({
                     ...newOrder,
@@ -251,7 +286,10 @@ const Orders = ({ setAuth }) => {
         const formattedDate = invoice_date.replace(/[/\s]+/g, '-');
     
         try {
-            const response = await fetch(`${API_BASE_URL}/purchases/${selectedOrderId}/generate-xlsx`);
+            const response = await fetch(`${API_BASE_URL}/purchases/${selectedOrderId}/generate-xlsx`, {
+                method: "GET",
+                headers: {token: localStorage.token}
+            });
     
             if (response.ok) {
                 const blob = await response.blob();
@@ -275,6 +313,7 @@ const Orders = ({ setAuth }) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    token: localStorage.token
                 },
                 body: JSON.stringify({
                     partNumber: item.part_number,
@@ -304,6 +343,7 @@ const Orders = ({ setAuth }) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    token: localStorage.token
                 },
                 body: JSON.stringify({
                     partNumber: item.part_number,
@@ -330,6 +370,7 @@ const Orders = ({ setAuth }) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    token: localStorage.token
                 },
                 body: JSON.stringify({
                     partNumber: item.part_number,
@@ -370,6 +411,7 @@ const Orders = ({ setAuth }) => {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
+                    token: localStorage.token
                 },
                 body: JSON.stringify({
                     status: newStatus,
@@ -404,6 +446,7 @@ const Orders = ({ setAuth }) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    token: localStorage.token
                 },
                 body: JSON.stringify({
                     items: newOrderItems.map(({ part_number, amount_to_order }) => ({
@@ -427,6 +470,7 @@ const Orders = ({ setAuth }) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    token: localStorage.token
                 },
                 body: JSON.stringify({
                     items: newOrderItems.map(({ part_number, amount_to_order }) => ({
@@ -450,6 +494,10 @@ const Orders = ({ setAuth }) => {
         try {
             const response = await fetch(`${API_BASE_URL}/purchases/${invoiceId}`, {
                 method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    token: localStorage.token
+                },
             });
             if (!response.ok) throw new Error('Failed to delete order');
     
@@ -471,7 +519,10 @@ const Orders = ({ setAuth }) => {
             try {
                 const response = await fetch(`${API_BASE_URL}/purchases/${editingInvoiceId}/edit-total-cost`, {
                     method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        token: localStorage.token
+                    },
                     body: JSON.stringify({ total_cost: newTotalCost }),
                 });
                 if (!response.ok) throw new Error('Failed to update total cost');
