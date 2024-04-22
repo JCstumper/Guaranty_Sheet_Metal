@@ -35,6 +35,7 @@ The tests are constructed to simulate user interactions with the application, fr
 ### Inventory Management
 - **Add/Edit/Delete Inventory Items**: Tests the core functionalities of inventory management, which is a critical component of the application, especially for businesses relying on precise stock tracking.
 
+**PLEASE REFER TO 
 ## User Acceptance Testing (UAT)
 
 User Acceptance Testing is the final stage before deployment where real-world scenarios are used to ensure the application meets business needs and user expectations.
