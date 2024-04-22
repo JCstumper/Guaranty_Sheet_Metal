@@ -152,7 +152,7 @@ describe('Logging the action of adding a new user to the database', () => {
 
         cy.contains('Update Product').scrollIntoView().should('be.visible');
         cy.contains('Inventory').should('be.visible');
-        cy.contains('Product Information Updated partNumber: A25NEW889 supplierPartNumber: BrandNewPart123 radiusSize: 25 materialType: Aluminum color: Gray description: Updated item type: NewCategory oldType: Widget quantityOfItem: 80 unit: pcs price: 60 markUpPrice: 300 catCode: NEW889 ').scrollIntoView().should('be.visible');
+        cy.contains('Product Information Updated partNumber: A25NEW889 supplierPartNumber: BrandNewPart123 radiusSize: 25 materialType: Aluminum color: Gray description: Updated item type: NewCategory oldType: Widget quantityOfItem: 80 unit: pcs price: 60 markUpPrice: 300 catCode: NEW889').scrollIntoView().should('be.visible');
     });
 
     it('Successfully update product and verify in the logs page', () => {
