@@ -19,7 +19,10 @@ describe('Logout of the application', () => {
 
         cy.contains('Login Successful!').should('be.visible');
 
-        cy.wait(7000);
+        cy.get('.Toastify__toast-container').within(() => {
+            cy.get('.Toastify__close-button').click();
+        });
+
     });
 
     it('Successfully log out of the application', () => {

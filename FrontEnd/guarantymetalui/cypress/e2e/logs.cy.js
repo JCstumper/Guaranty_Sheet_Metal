@@ -19,7 +19,9 @@ describe('Logging the action of adding a new user to the database', () => {
 
         cy.contains('Login Successful!').should('be.visible');
 
-        cy.wait(7000);
+        cy.get('.Toastify__toast-container').within(() => {
+            cy.get('.Toastify__close-button').click();
+        });
     });
 
     it('Successfully add a new user and verified in logs page', () => {
@@ -33,13 +35,34 @@ describe('Logging the action of adding a new user to the database', () => {
         cy.get('.btn-primary').contains('Register').click();
         cy.contains('Registration successful').should('be.visible');
 
-        cy.wait(7000);
+        // Wait for the toast to appear and click the close button
+        cy.get('.Toastify__toast-container').within(() => {
+            cy.get('.Toastify__close-button').click();
+        });
 
         cy.contains('LOGS').click();
 
         cy.contains('Added User').scrollIntoView().should('be.visible');
         cy.contains('Add User').should('be.visible');
         cy.contains('Added User to Application Whitelist username: newUser123 email: newUser123@gmail.com role: employee').should('be.visible');
+
+        cy.get('.username').click();
+        cy.get('.manage-users').contains('Manage Users').click();
+
+        cy.contains('.user-item', 'newUser123') // This targets a div with class 'user-item' containing text 'testUser'
+          .within(() => {
+            cy.get('button').contains('Remove').click(); // Clicks the Remove button
+          });
+
+        // Check modal actions
+        cy.get('.modal-backdrop').should('be.visible');
+        cy.get('.modal-content').eq(0).within(() => {
+            cy.get('button.btn-primary').contains('Confirm').click({force: true});
+        });
+
+
+        // Check if the deletion was successful
+        cy.contains('User successfully removed').should('be.visible');
     });
 
     it('Successfully updated user informationa and verified in logs page', () => {
@@ -51,7 +74,10 @@ describe('Logging the action of adding a new user to the database', () => {
         cy.get('input[id="Email"]').clear().type('brandNewUser123@gmail.com');
 
         cy.get('.btn-primary').contains('Save Changes').click();
-        cy.wait(7000);
+
+        cy.get('.Toastify__toast-container').within(() => {
+            cy.get('.Toastify__close-button').click();
+        });
 
         cy.contains('LOGS').click();
 
@@ -67,6 +93,5 @@ describe('Logging the action of adding a new user to the database', () => {
         cy.get('input[id="Email"]').clear().type('admin@gmail.com');
 
         cy.get('.btn-primary').contains('Save Changes').click();
-        cy.wait(7000);
     });
 });

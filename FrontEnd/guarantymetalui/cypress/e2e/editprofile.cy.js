@@ -19,7 +19,10 @@ describe('Edit a user profile', () => {
 
         cy.contains('Login Successful!').should('be.visible');
 
-        cy.wait(7000);
+        cy.get('.Toastify__toast-container').within(() => {
+            cy.get('.Toastify__close-button').click();
+        });
+
 
         cy.get('.username').click();
         cy.get('.edit-profile').contains('Edit Profile').click();
@@ -29,7 +32,10 @@ describe('Edit a user profile', () => {
         cy.get('input[id="Email"]').clear().type('admintest@gmail.com');
 
         cy.get('.btn-primary').contains('Save Changes').click();
-        cy.wait(7000);
+        cy.get('.Toastify__toast-container').within(() => {
+            cy.get('.Toastify__close-button').click();
+        });
+
         cy.contains('ADMIN').should('be.visible');
     });
 
@@ -53,7 +59,10 @@ describe('Edit a user profile', () => {
 
         cy.contains('Login Successful!').should('be.visible');
 
-        cy.wait(7000);
+        cy.get('.Toastify__toast-container').within(() => {
+            cy.get('.Toastify__close-button').click();
+        });
+
 
         cy.get('.username').click();
         cy.get('.edit-profile').contains('Edit Profile').click();
