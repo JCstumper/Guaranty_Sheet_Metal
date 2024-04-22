@@ -35,7 +35,12 @@ The tests are constructed to simulate user interactions with the application, fr
 ### Inventory Management
 - **Add/Edit/Delete Inventory Items**: Tests the core functionalities of inventory management, which is a critical component of the application, especially for businesses relying on precise stock tracking.
 
-**PLEASE REFER TO 
+### Purchases Management
+- **Add/Delete Purchase**: Tests the ability to add and delete purchases, ensuring that the inventory is updated correctly and that the purchase history is maintained accurately. Additionally aloows addiition of purchase date and quantity, to update the relevent low and out of stock inventory items.
+
+### Job Management
+- **Manage Jobs and Job-related Details**: Tests the functionalities involved in managing jobs within the application. This includes adding new jobs, editing existing jobs, deleting jobs, managing necessary and used parts associated with jobs, and handling job estimates. 
+
 ## User Acceptance Testing (UAT)
 
 User Acceptance Testing is the final stage before deployment where real-world scenarios are used to ensure the application meets business needs and user expectations.
@@ -204,11 +209,61 @@ User Acceptance Testing is the final stage before deployment where real-world sc
     - Finalize the order and mark it as "Shipped."
 - **Verify**:
     - Ensure the status update is displayed and accurate according to the changes made.
+#### 8. Job Management
+- **Goal**: To ensure the Job Management system effectively handles all functionalities related to job records, including adding, editing, removing jobs, managing job estimates, and managing parts associated with jobs.
 
-#### 8. Logging Activities
+	#### 8.1 Add Job
+	- **Steps**:
+		- Navigate to the "Jobs" section.
+		- Click the "+ Add Job" button.
+		- Enter valid job details such as customer name, address, phone, and email.
+		- Submit the job addition form.
+	- **Verify**:
+		- Ensure a success message appears indicating the job was added.
+		- Confirm the job is listed in the job management system.
+
+	#### 8.2 Edit Job
+	- **Steps**:
+		- Locate an existing job in the "Jobs" section.
+		- Click the "Edit" button for the selected job.
+		- Change various details like the customer name and address.
+		- Submit the updated job form.
+	- **Verify**:
+		- Check for a success message indicating the job details were updated.
+		- Ensure the updated details are accurately reflected in the job list.
+
+	#### 8.3 Delete Job
+	- **Steps**:
+		- Navigate to the "Jobs" section.
+		- Select a job and click the "remove" button.
+		- Confirm the deletion in the confirmation modal.
+	- **Verify**:
+		- Ensure a success message states the job was removed.
+		- Confirm the job no longer appears in the job list.
+
+	#### 8.4 Manage Job Parts
+	- **Steps**:
+		- For adding: Navigate to a job, click "Add Part", enter part details, and confirm.
+		- For moving to used: Select "Move to Used" on a necessary part, confirm the move.
+		- For returning to necessary: Select "Return to Necessary" on a used part, confirm the return.
+		- For removing: Select "Remove" on any part, and confirm removal.
+	- **Verify**:
+		- Ensure each action is confirmed with a success message.
+		- Verify the part lists update accordingly.
+
+	#### 8.5 Manage Job Estimates
+	- **Steps**:
+		- For uploading: Navigate to a job, initiate estimate upload, select a PDF file, and confirm upload.
+		- For viewing: Select an existing estimate and open it.
+		- For removing: Choose to remove an existing estimate and confirm the action.
+	- **Verify**:
+		- Ensure successful upload with a confirmation message.
+		- Verify estimate visibility for viewing.
+		- Confirm removal success and ensure the estimate is no longer listed.
+#### 9. Logging Activities
 - **Goal**: Verify that all user-related actions are correctly logged in the system.
 
-    #### 8.1 Logging New User Addition
+    #### 9.1 Logging New User Addition
     - **Steps**:
         - Log in as an admin.
         - Navigate to the user management section.
@@ -223,7 +278,7 @@ User Acceptance Testing is the final stage before deployment where real-world sc
         - The log should detail the username, email, and assigned role, displaying a message such as "Added User to Application Whitelist username: newUser123 email: newUser123@gmail.com role: employee."
         - Ensure that the log entry specifies the action was successful with visible identifiers like "Add User" and "Added User."
 
-    #### 8.2 Logging User Profile Updates
+    #### 9.2 Logging User Profile Updates
     - **Steps**:
         - Stay logged in as an admin or log in if not already.
         - Navigate to the profile editing section by selecting a user profile.
