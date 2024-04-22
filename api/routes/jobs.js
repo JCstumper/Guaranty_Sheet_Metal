@@ -124,7 +124,7 @@ router.post('/', authorization, async (req, res) => {
         `;
         const newJob = await pool.query(newJobQuery, [customer_name, address, phone, email]);
 
-        await logJobsAction("Add Job", req.username, "job", {
+        await logJobsAction("Add Job", req.username, "Job Management", {
             message: "Added",
             details: newJob.rows[0],
         });
@@ -219,7 +219,7 @@ router.post('/necessary-parts', authorization, async (req, res) => {
             );
             actionType = "Update Necessary Part";
 
-            await logJobsAction(actionType, req.username, "necessary-parts", {
+            await logJobsAction(actionType, req.username, "Necessary Parts", {
                 message: "Add necessary part",
                 details: result.rows[0],
             });
@@ -230,7 +230,7 @@ router.post('/necessary-parts', authorization, async (req, res) => {
             );
             actionType = "Add Necessary Part";
 
-            await logJobsAction(actionType, req.username, "necessary-parts", {
+            await logJobsAction(actionType, req.username, "Necessary Parts", {
                 message: "Add necessary part",
                 details: result.rows[0],
             });
@@ -298,7 +298,7 @@ router.put('/necessary-parts/:id', authorization, async (req, res) => {
         );
 
         if (updatedPart.rows.length > 0) {
-            await logJobsAction("Update Necessary Part", req.username, "necessary-parts", {
+            await logJobsAction("Update Necessary Part", req.username, "Necessary Parts", {
                 message: "Update",
                 details: updatedPart.rows[0]
             });
@@ -323,7 +323,7 @@ router.delete('/necessary-parts/:id', authorization, async (req, res) => {
         );
 
         if (deleteResult.rows.length > 0) {
-            await logJobsAction("Delete Necessary Part", req.username, "necessary-parts", {
+            await logJobsAction("Delete Necessary Part", req.username, "Necessary Parts", {
                 message: "Delete",
                 details: {
                     part_id: id,
@@ -403,7 +403,7 @@ router.post('/:job_id/move-to-used', authorization, async (req, res) => {
 
         await pool.query('COMMIT');
 
-        await logJobsAction("Move to Used", req.username, "part-movement", {
+        await logJobsAction("Move to Used", req.username, "Part Movement", {
             message: `Part moved to used successfully. ${actualQuantityToMove} of ${part_number} moved.`,
             details: actualQuantityToMove
         });
@@ -470,7 +470,7 @@ router.post('/used-parts', authorization, async (req, res) => {
 
         await pool.query('COMMIT');
 
-        await logJobsAction("Update Used", req.username, "part-management", {
+        await logJobsAction("Update Used", req.username, "Part Management", {
             message: "Update",
             details: updatedUsedPartData.rows[0]
         });
@@ -555,7 +555,7 @@ router.post('/:job_id/return-to-necessary', authorization, async (req, res) => {
 
         await pool.query('COMMIT');
 
-        await logJobsAction("Return to Necessary", req.username, "part-management", {
+        await logJobsAction("Return to Necessary", req.username, "Part Management", {
             message: "Part returned to necessary successfully",
             details: {
                 job_id: job_id,
@@ -595,7 +595,7 @@ router.post('/:job_id/update-used-part', authorization, async (req, res) => {
             await pool.query('UPDATE inventory SET quantity_in_stock = quantity_in_stock + $1 WHERE part_number = $2', [Math.abs(quantity_diff), part_number]);
         }
 
-        await logJobsAction("Update Used Part", req.username, "part-management", {
+        await logJobsAction("Update Used Part", req.username, "Part Management", {
             message: "Used part updated successfully",
             details: {
                 job_id: job_id,
@@ -633,7 +633,7 @@ router.post('/:job_id/remove-from-used', authorization, async (req, res) => {
             [job_id, part_number]
         );
 
-        await logJobsAction("Delete From Used", req.username, "part-management", {
+        await logJobsAction("Delete From Used", req.username, "Part Management", {
             message: `Part ${part_number} removed from used and quantity added back to inventory.`,
             details: updateInventory.rows[0]
         });
@@ -665,7 +665,7 @@ router.delete('/:job_id', authorization, async (req, res) => {
         const deleteQuery = 'DELETE FROM jobs WHERE job_id = $1';
         const result = await pool.query(deleteQuery, [job_id]);
 
-        await logJobsAction("Delete Job", req.username, "job-management", {
+        await logJobsAction("Delete Job", req.username, "Job Management", {
             message: `Job at address ${jobDetails.address} removed successfully`,
             details: jobDetails
         });
@@ -700,7 +700,7 @@ router.put('/:job_id', authorization, async (req, res) => {
             RETURNING *;`;
         const result = await pool.query(updateQuery, [customer_name, address, phone, email, job_id]);
 
-        await logJobsAction("Update Job", req.username, "job-management", {
+        await logJobsAction("Update Job", req.username, "Job Management", {
             message: "Update",
             details: result.rows[0]
         });

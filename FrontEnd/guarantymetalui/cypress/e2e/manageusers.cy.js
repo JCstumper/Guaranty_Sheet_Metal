@@ -19,7 +19,10 @@ describe('Admin manages the users', () => {
 
         cy.contains('Login Successful!').should('be.visible');
 
-        cy.wait(7000);
+        cy.get('.Toastify__toast-container').within(() => {
+            cy.get('.Toastify__close-button').click();
+        });
+
     });
 
     it('Successfully changes the test user\'s role from employee to admin', () => {
@@ -37,7 +40,10 @@ describe('Admin manages the users', () => {
 
         // Verify success notification
         cy.contains('Changes saved successfully').should('be.visible');
-        cy.wait(7000);
+        cy.get('.Toastify__toast-container').within(() => {
+            cy.get('.Toastify__close-button').click();
+        });
+
         cy.get('.username').click();
         cy.get('.manage-users').contains('Manage Users').click();
         cy.contains('div', 'testuser').as('testUserItem');
