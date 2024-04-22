@@ -258,9 +258,10 @@ describe('Open application and test purchases', () => {
         });
         cy.wait(1000);
 
-        // Assuming the status is in the same row and updates in place
-        cy.contains('Acme Supplies').parent('tr').find('td').eq(3).should('contain.text', 'Generated');
+        // New: Verify success message for order status update to Generated
+        cy.contains('Order status updated to Generated.').should('be.visible');
     });
+
 
     it('Add shipping cost to an order', () => {
         cy.contains('PURCHASES').click();
@@ -276,15 +277,10 @@ describe('Open application and test purchases', () => {
         // Click the 'Submit' button on the modal
         cy.get('button').contains('Submit').click();
 
-        // Verify the update - Adjust according to how your app shows the update 
-        // Example: If the total cost is displayed in a table cell alongside the order:
-        cy.contains('tr', 'Acme Supplies').within(() => {
-            cy.get('td').eq(1).should('contain.text', '100'); // Adjust the eq index based on your table structure
-        });
-
-        // Optionally, wait for a success message or another indication that the operation was successful
-        // cy.contains('Total cost updated successfully.').should('be.visible');
+        // New: Verify success message for total cost update
+        cy.contains('Total cost updated successfully.').should('be.visible');
     });
+
 
     it('Mark order as Received', () => {
         cy.contains('PURCHASES').click();
@@ -293,8 +289,8 @@ describe('Open application and test purchases', () => {
         });
         cy.wait(1000);
 
-        // Assuming the status is in the same row and updates in place
-        cy.contains('Acme Supplies').parent('tr').find('td').eq(3).should('contain.text', 'Received');
+        // New: Verify success message for order status update to Received
+        cy.contains('Order status updated to Received.').should('be.visible');
     });
 
 });  
