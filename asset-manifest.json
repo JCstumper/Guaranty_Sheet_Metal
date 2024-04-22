@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/Guaranty_Sheet_Metal/static/css/main.60440209.css",
-    "main.js": "/Guaranty_Sheet_Metal/static/js/main.98c13ff9.js",
+    "main.js": "/Guaranty_Sheet_Metal/static/js/main.b1026ad6.js",
     "static/media/logo.png": "/Guaranty_Sheet_Metal/static/media/logo.a8f6846b04690eefa5ce.png",
     "static/media/Software.md": "/Guaranty_Sheet_Metal/static/media/Software.eebf3e6375fe0d095aaf.md",
     "static/media/Features.md": "/Guaranty_Sheet_Metal/static/media/Features.41008572a48fcd2676dc.md",
     "static/media/Modify.md": "/Guaranty_Sheet_Metal/static/media/Modify.16f6f9422b4bc5720aaa.md",
+    "static/media/CUSTOMERS.md": "/Guaranty_Sheet_Metal/static/media/CUSTOMERS.b4a4eda0b5301338d6ca.md",
     "static/media/INVENTORY.md": "/Guaranty_Sheet_Metal/static/media/INVENTORY.628c7cdc37a5479853bf.md",
     "static/media/JOBS.md": "/Guaranty_Sheet_Metal/static/media/JOBS.90f5dc24db67281289b5.md",
-    "static/media/CUSTOMERS.md": "/Guaranty_Sheet_Metal/static/media/CUSTOMERS.b530c4205b50a7c0b880.md",
     "static/media/ADDPARTMODAL.md": "/Guaranty_Sheet_Metal/static/media/ADDPARTMODAL.8af9331f3bf1e9fe275a.md",
     "static/media/EDITPRODUCTMODAL.md": "/Guaranty_Sheet_Metal/static/media/EDITPRODUCTMODAL.aebf17b3f91f5a30afb8.md",
     "static/media/ADDPRODUCT.md": "/Guaranty_Sheet_Metal/static/media/ADDPRODUCT.dbe6cbda9f6987756f17.md",
@@ -44,10 +44,10 @@
     "static/media/GENERATE-CERTS.md": "/Guaranty_Sheet_Metal/static/media/GENERATE-CERTS.8ea90494efe13e5274b7.md",
     "index.html": "/Guaranty_Sheet_Metal/index.html",
     "main.60440209.css.map": "/Guaranty_Sheet_Metal/static/css/main.60440209.css.map",
-    "main.98c13ff9.js.map": "/Guaranty_Sheet_Metal/static/js/main.98c13ff9.js.map"
+    "main.b1026ad6.js.map": "/Guaranty_Sheet_Metal/static/js/main.b1026ad6.js.map"
   },
   "entrypoints": [
     "static/css/main.60440209.css",
-    "static/js/main.98c13ff9.js"
+    "static/js/main.b1026ad6.js"
   ]
 }
