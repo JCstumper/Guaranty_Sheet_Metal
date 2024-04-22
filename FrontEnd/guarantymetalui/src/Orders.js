@@ -592,6 +592,7 @@ const Orders = ({ setAuth }) => {
                         <table>
                             <thead>
                                 <tr>
+                                    <th>Invoice ID</th> {/* No change needed */}  
                                     <th>Supplier Name</th> {/* No change needed */}
                                     <th>Shipping Costs</th>
                                     <th>Invoice Date</th>
@@ -603,6 +604,7 @@ const Orders = ({ setAuth }) => {
                                 {filteredOrders.map((order, index) => (
                                     <React.Fragment key={order.invoice_id}>
                                         <tr key={order.invoice_id} onClick={() => handleSelectOrder(order.invoice_id)}>
+                                            <td>{order.invoice_id}</td>
                                             <td>{order.supplier_name}</td>
                                             <td>{order.total_cost}
                                                 {order.status === "Generated" && (

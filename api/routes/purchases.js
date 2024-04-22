@@ -93,7 +93,7 @@ router.get('/out-of-stock', authorization, async (req, res) => {
 
 
 router.post('/:invoiceId/update-low-inventory', authorization, async (req, res) => {
-    const { invoiceId } = req.params; 
+    const { invoiceId } = req.params;
     try {
         const result = await pool.query(
             `INSERT INTO low_inventory (invoice_id, part_number, quantity)
@@ -105,19 +105,23 @@ router.post('/:invoiceId/update-low-inventory', authorization, async (req, res) 
             SET quantity = EXCLUDED.quantity`, [invoiceId]
         );
 
+        // Assuming result contains the number of rows affected
+        const updatedRows = result.rowCount;
+
         await logJobsAction('Update', req.username, 'Low Inventory', {
-            message: "Low inventory items updated based on invoice",
-            details: { ...req.invoiceId, result } 
+            message: `Updated ${updatedRows} low inventory items for invoice ${invoiceId}`,
+            // Only log meaningful details or aggregate information
         });
-        res.json({ message: "Low inventory items updated successfully for invoice " + invoiceId });
+        res.json({ message: `Low inventory items updated successfully for invoice ${invoiceId}` });
     } catch (err) {
         console.error('Error executing query:', err.stack);
         return res.status(500).json('Server error');
     }
 });
 
+
 router.post('/:invoiceId/update-out-of-stock', authorization, async (req, res) => {
-    const { invoiceId } = req.params; 
+    const { invoiceId } = req.params;
     try {
         const result = await pool.query(
             `INSERT INTO out_of_stock (invoice_id, part_number, quantity)
@@ -129,17 +133,21 @@ router.post('/:invoiceId/update-out-of-stock', authorization, async (req, res) =
             SET quantity = EXCLUDED.quantity`, [invoiceId]
         );
 
+        // Assuming result contains the number of rows affected
+        const updatedRows = result.rowCount;
+
         await logJobsAction('Update', req.username, 'Out-of-Stock Inventory', {
-            message: "Out-of-stock items updated based on invoice",
-            details: { ...req.invoiceId, result } 
+            message: `Updated ${updatedRows} out-of-stock items for invoice ${invoiceId}`,
+            // Only log meaningful details or aggregate information
         });
 
-        res.json({ message: "Out of stock items updated successfully for invoice " + invoiceId });
+        res.json({ message: `Out of stock items updated successfully for invoice ${invoiceId}` });
     } catch (err) {
         console.error('Error executing query:', err.stack);
         return res.status(500).json('Server error');
     }
 });
+
 
 
 router.get('/:invoiceId/low-inventory', authorization, async (req, res) => {
@@ -260,7 +268,7 @@ router.patch('/:invoiceId/status', authorization, async (req, res) => {
         await pool.query('COMMIT');
         await logJobsAction('Update Order Details', req.username, 'Order Status Update', {
             message: 'Updated the order details',
-            details: { ...req.invoiceId, status: status, total_cost: total_cost, partNumber: items.partNumber, amountToOrder: items.amountToOrder  } 
+            details: { ...req.invoiceId, invoiceId, status: status, total_cost: total_cost } 
         });
 
         res.json({ message: "Order status, inventory, and markup prices updated successfully." });
@@ -303,7 +311,7 @@ router.post('/add-to-new-order/:invoiceId', authorization, async (req, res) => {
 
         await logJobsAction('Add', req.username, 'New Order', {
             message: 'Added item to new order',
-            details: { ...req.invoiceId, ...req.body } 
+            details: { ...req.invoiceId,invoiceId,  ...req.body } 
         });
         
         await pool.query('COMMIT');
@@ -349,7 +357,7 @@ router.post('/remove-from-new-order/:invoiceId', authorization, async (req, res)
 
         await logJobsAction('Update', req.username, targetTable, {
             message: `Item returned to ${targetTable}`,
-            details: { ...req.invoiceId, ...req.body } 
+            details: { ...req.invoiceId,invoiceId, ...req.body } 
         });
 
         await pool.query('COMMIT');
@@ -364,33 +372,48 @@ router.post('/remove-from-new-order/:invoiceId', authorization, async (req, res)
 
 router.post('/:invoiceId/update-amounts', authorization, async (req, res) => {
     const { invoiceId } = req.params;
-    const { items } = req.body; 
+    const { items } = req.body;
 
     try {
-        await pool.query('BEGIN'); 
+        await pool.query('BEGIN');
 
-        
         for (const { partNumber, amountToOrder } of items) {
-            await pool.query(`
-                UPDATE new_orders
-                SET amount_to_order = $1
-                WHERE invoice_id = $2 AND part_number = $3
-            `, [amountToOrder, invoiceId, partNumber]);
+            // Fetch the current amount to order for comparison
+            const currentAmountRes = await pool.query(
+                `SELECT amount_to_order FROM new_orders WHERE invoice_id = $1 AND part_number = $2`,
+                [invoiceId, partNumber]
+            );
+
+            // If there's a record and the amount has changed, update and log
+            if (currentAmountRes.rows.length > 0) {
+                const currentAmount = currentAmountRes.rows[0].amount_to_order;
+
+                if (currentAmount !== amountToOrder) {
+                    await pool.query(`
+                        UPDATE new_orders
+                        SET amount_to_order = $1
+                        WHERE invoice_id = $2 AND part_number = $3
+                    `, [amountToOrder, invoiceId, partNumber]);
+
+                    // Log the change for this item
+                    await logJobsAction('After Update', req.username, 'Order Amounts', {
+                        message: 'Order amount updated successfully',
+                        details: { invoiceId, partNumber, oldAmount: currentAmount, newAmount: amountToOrder }
+                    });
+                }
+            }
         }
 
-        await logJobsAction('After Update', req.username, 'Order Amounts', {
-            message: 'Order amounts updated successfully',
-            details: { ...req.invoiceId, partNumber: items.partNumber, amountToOrder: items.amountToOrder  } 
-        });
-
-        await pool.query('COMMIT'); 
+        await pool.query('COMMIT');
         res.json({ message: "Amounts to order updated successfully." });
     } catch (error) {
-        await pool.query('ROLLBACK'); 
+        await pool.query('ROLLBACK');
         console.error('Failed to update amounts to order:', error);
         res.status(500).json({ message: "Server error" });
     }
 });
+
+
 
 router.get('/:invoiceId/generate-xlsx', authorization, async (req, res) => {
     const { invoiceId } = req.params;
@@ -447,7 +470,7 @@ router.delete('/:invoiceId', authorization, async (req, res) => {
         // Log the delete action
         await logJobsAction('Delete', req.username, 'Invoice Deletion', {
             message: 'Invoice and all related records deleted',
-            details: { ...req.invoiceId, ...req.body } 
+            details: { ...req.invoiceId, invoiceId, ...req.body } 
         });
 
         res.json({ message: 'Order successfully deleted.' });
@@ -469,7 +492,7 @@ router.patch('/:invoiceId/edit-total-cost', authorization, async (req, res) => {
 
         await logJobsAction('Update', req.username, 'Invoice Total Cost', {
             message: 'Total cost updated',
-            details: { ...req.invoiceId, ...req.body } 
+            details: { ...req.invoiceId, invoiceId, ...req.body } 
         });
         res.json({ message: "Total cost updated successfully." });
     } catch (err) {
