@@ -429,7 +429,6 @@ const Orders = ({ setAuth }) => {
             amountToOrder: item.amount_to_order
         })) : [];
     
-        console.log("items:", itemsData);
         // Ensure totalCost is a number and handle null/undefined gracefully
         const totalCost = parseFloat(
             orderToUpdate?.total_cost?.replace(/[,$]/g, '') ?? newTotalCost.replace(/[,$]/g, '') ?? "0"
