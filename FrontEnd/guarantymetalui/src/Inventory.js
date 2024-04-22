@@ -67,7 +67,6 @@ const Inventory = ({ setAuth }) => {
     };
 
     useEffect(() => {
-        
         fetchProductsWithInventory();
     }, []);
 
