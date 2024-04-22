@@ -181,7 +181,7 @@ const Inventory = ({ setAuth }) => {
                                     <p><strong>Radius Size:</strong> {product.radius_size}"</p>
                                     <p><strong>Product Type:</strong> {product.type}</p>
                                     <p><strong>Quantity of Item:</strong> {product.quantity_of_item} {product.unit}</p>
-                                    <p><strong>Base Price:</strong> {product.price}</p>
+                                    <p><strong>Price Per Unit:</strong> {product.price}</p>
                                     <p><strong>Mark Up Price:</strong> {product.mark_up_price}</p>
                                 </div>
                             </div>
