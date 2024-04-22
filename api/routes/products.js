@@ -95,27 +95,6 @@ router.post('/', authorization, async (req, res) => {
 router.delete('/:partNumber', authorization, async (req, res) => {
     try {
         const { partNumber } = req.params;
-
-        // await pool.query(`
-        //     DELETE FROM new_orders
-        //     WHERE part_number = $1;
-        // `, [partNumber]);
-
-        // await pool.query(`
-        //     DELETE FROM low_inventory
-        //     WHERE part_number = $1;
-        // `, [partNumber]);
-
-        // await pool.query(`
-        //     DELETE FROM out_of_stock
-        //     WHERE part_number = $1;
-        // `, [partNumber]);
-        
-        // const inventoryDeletionResponse = await pool.query(`
-        //     DELETE FROM inventory
-        //     WHERE part_number = $1;
-        // `, [partNumber]);
-
         
         const productDeletionResponse = await pool.query(`
             DELETE FROM products
