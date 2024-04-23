@@ -1,8 +1,6 @@
 {
   "dependencies": {
-    "recharts": "^2.12.3"
-  },
-  "devDependencies": {
-    "jest": "^29.7.0"
+    "react-markdown": "^9.0.1",
+    "webpack": "^5.91.0"
   }
 }

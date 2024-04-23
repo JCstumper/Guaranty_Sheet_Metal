@@ -1,0 +1,63 @@
+version: '3.1'
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: Nginx
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx/nginx.conf.productionTemplate:/etc/nginx/nginx.conf.productionTemplate:ro
+      - ./nginx/ssl:/etc/nginx/ssl
+      - ./nginx/generate-certs.sh:/etc/nginx/generate-certs.sh
+      - ./nginx/startupProduction.sh:/etc/nginx/startupProduction.sh
+    environment:
+      - HOST_NAME=gsminventory.com
+    entrypoint: /bin/bash -c "chmod +x /etc/nginx/startupProduction.sh && chmod +x /etc/nginx/generate-certs.sh && /etc/nginx/startupProduction.sh"
+    depends_on:
+      - frontend
+      - api
+
+  postgres:
+    image: postgres:latest
+    container_name: Postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    volumes:
+      - mydbdata:/var/lib/postgresql/data
+      - ./database/sql:/docker-entrypoint-initdb.d
+      - ./.env:/.env
+    environment:
+    - POSTGRES_USER=${POSTGRES_USER}
+    - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    - POSTGRES_DB=${POSTGRES_DB}
+
+  api:
+    container_name: API
+    restart: unless-stopped
+    build: 
+      context: ./api
+      target: production
+    environment:
+      - API_URL=https://gsminventory.com
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - ./nginx/ssl:/usr/src/app/ssl
+      - uploads:/usr/src/app/uploads
+      - ./.env:/usr/src/app/.env
+    depends_on:
+      - postgres
+
+  frontend:
+    container_name: React
+    restart: unless-stopped
+    build:
+      context: ./FrontEnd/guarantymetalui
+      target: production
+
+volumes:
+  mydbdata:
+  uploads: # Define the uploads volume here

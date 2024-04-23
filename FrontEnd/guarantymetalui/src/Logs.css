@@ -1,0 +1,229 @@
+.logs-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding-top: 80px;
+}
+
+.logs-main {
+    display: flex;
+    margin-top: 90px;
+    margin-left: 10px;
+    padding-right: 10px;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.logs-main::before {
+    content: "";
+    position: fixed;
+    top: 0px;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: linear-gradient(to top, #364b7200 0%, #05132c 100%);
+    z-index: 10;
+    pointer-events: none;
+}
+
+.logs-main::after {
+    content: "";
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: linear-gradient(to bottom, #364b7200 0%, #05132c 100%);
+    z-index: 10;
+    pointer-events: none;
+}
+
+.logs-table {
+    flex-grow: 1;
+    background-color: #fff;
+    border: 3px solid #b3b3b3;
+    border-radius: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: hidden;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.logs-table-header {
+    background-color: #0b2b61;
+    color: #ffffff;
+    padding: 15px;
+    font-size: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 11px 11px 0 0;
+}
+
+.table-content-logs {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.table-content-logs table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.table-content-logs thead,
+.table-content-logs th {
+    position: sticky;
+    top: 0;
+    background-color: #ebebeb;
+    z-index: 10;
+}
+
+.table-content-logs tbody {
+    display: block;
+    overflow-y: auto;
+    max-height: calc(100vh - 225px);
+    width: 100%;
+}
+
+.table-content-logs th, 
+.table-content-logs td {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    box-sizing: border-box;
+}
+
+.table-content-logs tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+
+.table-content-logs th {
+    background-color: #ebebeb;
+    color: rgb(0, 0, 0);
+    padding: 12px;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.table-content-logs tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.table-content-logs tr:hover {
+    background-color: #ddd;
+}
+
+.table-content-logs::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-content-logs::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.table-content-logs::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+.table-content-logs::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.filter-button {
+    background-color: #e7e7e7;
+    color: #000000;
+    padding: 10px 15px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    outline: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.filter-button:hover, .filter-button:focus {
+    background-color: #e6e6e6;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.filter-button:active {
+    background-color: #e7e7e7;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filter-button .icon {
+    margin-right: 5px;
+}
+
+
+@media screen and (max-width: 1023px) {
+    .logs-main {
+        display: flex;
+        flex-direction: column;
+        padding-right: 0;
+        margin-top: 10px;
+        margin-left: 0px;
+        margin-bottom: 90px;
+    }
+
+    .logs-main::before,
+    .logs-main::after {
+        display: none;
+    }
+
+    .logs-table {
+        margin: 0;
+    }
+
+    .table-content-logs {
+        table-layout: fixed;
+        width: 100%;
+    }
+    
+    .table-content-logs table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    
+    .table-content-logs thead,
+    .table-content-logs th {
+        position: sticky;
+        top: 0;
+        background-color: #ebebeb;
+        z-index: 10;
+    }
+    
+    .table-content-logs tbody {
+        display: block;
+        overflow-y: auto;
+        max-height: calc(100vh - 210px);
+        width: 100%;
+    }
+    
+    .table-content-logs th, 
+    .table-content-logs td {
+        text-align: left;
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+        box-sizing: border-box;
+    }
+    
+    .table-content-logs tr {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+    }
+}

@@ -11,8 +11,8 @@ body {
 .inventory-main {
     display: flex;
     margin-top: 90px;
-    margin-left: 10px;
-    padding-right: 250px;
+    margin-left: 0px;
+    padding-right: 240px;
     flex-direction: column;
     position: relative;
     overflow: hidden;
@@ -20,14 +20,14 @@ body {
 
 .inventory-main::before {
     content: "";
-    position: fixed; /* Fixed to the viewport */
-    top: 0px; /* Anchored at the bottom of the viewport */
+    position: fixed;
+    top: 0px;
     left: 0;
     right: 0;
-    height: 120px; /* Height of the fade effect */
-    background: linear-gradient(to top, #364b7200 0%, #364b72 100%); /* Gradient starts transparent and becomes solid at the bottom */
+    height: 120px;
+    background: linear-gradient(to top, #364b7200 0%, #05132c 100%);
     z-index: 10;
-    pointer-events: none; /* Ensures clicks pass through */
+    pointer-events: none;
 }
 
 .inventory-main::after {
@@ -36,17 +36,16 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    height: 120px; /* Height of the fade effect */
-    background: linear-gradient(to bottom, #364b7200 0%, #364b72 100%);
+    height: 20px;
+    background: linear-gradient(to bottom, #364b7200 0%, #05132c 100%);
     z-index: 10;
-    pointer-events: none; /* Ensures clicks pass through */
+    pointer-events: none;
 }
-
 
 .product-table {
     flex-grow: 1;
     background-color: #fff;
-    border: 4px solid #b3b3b3;
+    border: 3px solid #b3b3b3;
     border-radius: 15px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     overflow: hidden;
@@ -57,10 +56,10 @@ body {
 
 .product-details-content {
     padding: 20px;
-    border: 1px solid #ddd; /* Light grey border */
-    border-radius: 5px; /* Rounded corners */
-    background-color: #f9f9f9; /* Light grey background */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .product-details-content p {
@@ -94,6 +93,7 @@ body {
     border: none;
     padding: 0;
     font: inherit;
+    font-size: 19px;
     text-align: left;
     width: 100%;
     display: block;
@@ -108,21 +108,21 @@ text-decoration: none;
 }
 
 
-/* Styles for items in stock */
-.in-stock {
-    background-color: #28a745; /* Green */
+
+.inv-in-stock {
+    background-color: #28a745;
     content: "In Stock";
 }
 
-/* Styles for items out of stock */
-.out-of-stock {
-    background-color: #dc3545; /* Red */
+
+.inv-out-of-stock {
+    background-color: #dc3545;
     content: "Out of Stock";
 }
 
 
 .table-header {
-    background-color: #0b2b61;
+    background-color: #081e44;
     color: #ffffff;
     padding: 15px;
     font-size: 20px;
@@ -144,7 +144,6 @@ text-decoration: none;
 .table-content {
     table-layout: fixed;
     width: 100%;
-    overflow-x: auto;
 }
 
 .table-content table {
@@ -152,16 +151,47 @@ text-decoration: none;
     width: 100%;
 }
 
-.table-content th,
+.table-content thead,
+.table-content th {
+    position: sticky;
+    top: 0;
+    background-color: #ebebeb;
+    z-index: 10;
+}
+
+.table-content tbody {
+    display: block;
+    overflow-y: auto;
+    max-height: calc(100vh - 225px);
+    width: 100%;
+}
+
+.table-content th, 
 .table-content td {
     text-align: left;
     padding: 12px;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 3px solid #ddd;
+    box-sizing: border-box;
 }
+
+.table-content tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
 
 .table-content th {
     background-color: #ebebeb;
     color: rgb(0, 0, 0);
+    padding: 12px;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 .table-content tr:nth-child(even) {
@@ -189,7 +219,7 @@ text-decoration: none;
 }
 
 .product-details td {
-    background-color: #f9f9f9; /* Lighter background for expanded details */
+    background-color: #f9f9f9;
 }
 
 .product-details-content p {
@@ -202,13 +232,13 @@ text-decoration: none;
 }
 
 .status-column, .status-box-container {
-    width: 150px; /* Adjust based on your needs */
-    text-align: center; /* Center the content */
+    width: 150px;
+    text-align: center;
 }
 
 .quantity-edit-container {
     display: flex;
-    justify-content: space-between; /* Aligns the button to the right */
+    justify-content: space-between;
     align-items: center;
 }
 
@@ -218,14 +248,14 @@ text-decoration: none;
     font-size: 14px;
     border: none;
     border-radius: 4px;
-    background-color: #001f41; /* Bootstrap primary color */
+    background-color: #001f41;
     color: white;
     cursor: pointer;
     transition: background-color 0.2s ease-in-out;
 }
 
 .edit-quantity-btn:hover {
-    background-color: #0056b3; /* A darker shade for hover effect */
+    background-color: #0056b3;
 }
 
 .filter-category {
@@ -237,19 +267,19 @@ text-decoration: none;
     font-size: 18px;
     margin-bottom: 10px;
     color: #0b2b61;
-    position: relative; /* This makes the pseudo-element positioning relative to this header */
+    position: relative;
 }
 
 .filter-category h3::after {
     content: "";
     display: block;
-    width: 100%; /* Adjust this value to change the width of the line */
-    height: 2px; /* Thickness of the line */
-    background: linear-gradient(to right, rgba(11, 43, 97, 0), #0b2b61, rgba(11, 43, 97, 0)); /* Gradient with faded ends */
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(to right, rgba(11, 43, 97, 0), #0b2b61, rgba(11, 43, 97, 0));
     position: absolute;
     left: 50%;
-    transform: translateX(-50%); /* Centers the line */
-    bottom: -5px; /* Adjust this value to move the line up or down */
+    transform: translateX(-50%);
+    bottom: -5px;
 }
 
 
@@ -266,9 +296,44 @@ text-decoration: none;
 
 .category-checkbox label {
     cursor: pointer;
-    user-select: none; /* Prevent text selection */
+    user-select: none;
 }
 
+.custom-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.custom-dropdown::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    border: 5px solid transparent;
+    border-top-color: #333;
+}
+
+.custom-select {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    display: block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+.custom-select:focus {
+    border-color: #45aaf2;
+    outline: none;
+    box-shadow: 0 0 5px rgba(69, 170, 242, 0.5);
+}
 
 .filtering-box {
     position: fixed;
@@ -276,18 +341,18 @@ text-decoration: none;
     right: 10px;
     width: 250px;
     height: calc(100vh - 105px);
-    padding: 20px;
+    padding: 10px;
     background-color: #fff;
-    border: 4px solid #b3b3b3;
+    border: 3px solid #b3b3b3;
     border-radius: 15px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     overflow-y: auto;
     box-sizing: border-box;
-    z-index: 1000;
+    z-index: 900;
 }
 
 .filtering-box:hover {
-    box-shadow: 0 6px 12px rgba(0,0,0,0.2); /* Deeper shadow for elevated effect */
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
 }
 
 .filtering-box .search-input {
@@ -311,159 +376,67 @@ text-decoration: none;
     margin-bottom: 20px;
     cursor: pointer;
     font-size: 16px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow for depth */
-    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover effect */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .filtering-box .action-button:hover {
     background-color: #083d77;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.15); /* Enhanced shadow on hover for a raised effect */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.15);
 }
 
-/* Hide vertical scrollbar for Webkit browsers like Chrome, Safari */
+
 .filtering-box::-webkit-scrollbar {
-    width: 0px; /* For vertical scrollbars */
-    background: transparent; /* Optional: just to make sure it's fully invisible */
+    width: 0px;
+    background: transparent;
 }
 
-/* Hide scrollbar for IE, Edge, and Firefox */
+
 .filtering-box {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none; 
+    scrollbar-width: none; 
 }
 
 .category-checkbox input[type="checkbox"] {
-    accent-color: #0b2b61; /* Use the main color theme for the checkbox */
+    accent-color: #0b2b61;
 }
 
-.modal-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.modal-content {
-    position: relative;
-    background-color: white;
-    border: 2px solid #007bff; /* Added border with the specified blue color */
-    padding: 0;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: auto;
-    max-width: 600px;
-    z-index: 1001;
+.product-details-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 6px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
+    gap: 20px;
 }
 
-.modal-header {
-    background-color: #0b2b61;
-    color: white;
-    border-top-right-radius: 8px;
-    border-top-left-radius: 8px;
-    padding: 10px 20px 10px 30px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.product-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
 }
 
-.modal-header h2 {
-    margin: 0;
-    font-weight: normal;
-    font-size: 20px;
-}
-
-.modal-header .modal-close-button:hover {
-    color: #aad1e6;
-}
-
-.modal-body {
-    padding: 30px;
-    gap: 15px;
-}
-
-.modal-content input, .modal-content textarea {
-    width: 100%;
+.product-details-block {
+    background-color: #f7f7f7;
     padding: 15px;
-    margin: 5px 0;
-    border-radius: 15px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
+    border-radius: 4px;
 }
 
-.modal-content textarea {
-    resize: vertical;
-    min-height: 100px;
-}
 
-.modal-actions {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.modal-actions button {
-    cursor: pointer;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 15px;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-}
-
-.modal-actions button:first-child {
-    background-color: #007bff;
-    color: white;
-}
-
-.modal-actions button:last-child {
-    background-color: #ccc;
-    color: #333;
-}
-
-.modal-actions button:hover {
-    opacity: 0.8;
-}
-
-.modal-close-button {
-    cursor: pointer;
-    background: none;
-    border: none;
-    color: white;
-    font-size: 15px; /* Adjust size as needed */
-    position: absolute;
-    top: 10px; /* Distance from the top of the modal */
-    right: 10px; /* Distance from the right side of the modal */
-    z-index: 2; /* Ensures it's above other content */
-}
-
-.modal-close-button:hover {
-    color: #aad1e6; /* Lighter shade for hover effect */
-}
-
-/* Container for Edit and Delete buttons */
 .product-action-buttons {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100%; /* Full width to center the buttons */
-    margin-top: 20px; /* Space from the product details */
+    width: 100%;
+    margin-top: 20px;
 }
 
-/* Common styles for Edit and Delete buttons */
+
 .product-action-button {
-    width: 40%; /* 60% of the parent's width */
+    width: 40%;
     padding: 10px;
-    margin-bottom: 10px; /* Space between buttons */
+    margin-bottom: 10px;
     border: none;
     border-radius: 5px;
     color: white;
@@ -472,40 +445,135 @@ text-decoration: none;
     transition: background-color 0.2s;
 }
 
-/* Specific styles for Edit button */
+
 .edit-button {
-    background-color: #001f41; /* Blue */
+    background-color: #001f41;
 }
 
 .edit-button:hover {
-    background-color: #0056b3; /* Darker blue on hover */
+    background-color: #0056b3;
 }
 
-/* Specific styles for Delete button */
+
 .delete-button {
-    background-color: #dc3545; /* Red */
-    margin-bottom: 0; /* No margin at the bottom for the last button */
+    background-color: #dc3545;
+    margin-bottom: 0;
 }
 
 .delete-button:hover {
-    background-color: #c82333; /* Darker red on hover */
+    background-color: #c82333;
 }
 
-
-@media screen and (max-width: 768px) {
-    .inventory-main {
-        flex-direction: column;
-        padding-right: 0;
+@media screen and (max-width: 1023px) {
+    .product-details-grid {
+        grid-template-columns: 1fr;
     }
 
-    .product-table {
-        margin: 0 0 20px 0;
+    .inventory-main {
+        display: flex;
+        flex-direction: column-reverse;
+        padding-right: 0;
+        margin-top: 10px;
+        margin-left: 0px;
+        margin-bottom: 90px;
+    }
+
+
+    .product-table,
+    .filtering-box {
+        margin: 0;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .table-content {
+        table-layout: fixed;
+        width: 100%;
+    }
+    
+    .table-content table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    
+    .table-content thead,
+    .table-content th {
+        position: sticky;
+        top: 0;
+        background-color: #ebebeb;
+        overflow: hidden;
+        z-index: 10;
+    }
+    
+    .table-content tbody {
+        display: block;
+        overflow-y: auto;
+        max-height: calc(100vh - 330px);
+        width: 100%;
+    }
+    
+    .table-content th, 
+    .table-content td {
+        text-align: left;
+        padding: 12px;
+        overflow: hidden;
+        border-bottom: 1px solid #ddd;
+        box-sizing: border-box;
+    }
+    
+    .table-content tr {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
     }
 
     .filtering-box {
         position: static;
-        width: 100%;
         height: auto;
-        margin-top: 20px;
+        padding: 20px;
+        overflow-y: visible;
+        margin-bottom: 20px;
     }
+
+    .filter-category, .filtering-box .action-button {
+        display: none;
+    }
+
+    .product-action-buttons,
+    .product-action-button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    .inventory-main::before,
+    .inventory-main::after {
+        display: none;
+    }
+
+    .status-box {
+        padding: 8px 0;
+        color: transparent;
+        font-size: 0;
+        min-width: 10vw;
+        max-width: 100%;
+        width: 100%;
+    }
+
+   
+    .status-box:after {
+        content: '';
+        display: inline-block;
+        min-width: 75px;
+    }
+}
+
+
+.custom-dropdown::after{
+    display: none;
+}
+
+
+.add-button {
+    padding: 8px 12px;
+    font-size: 16px;
 }

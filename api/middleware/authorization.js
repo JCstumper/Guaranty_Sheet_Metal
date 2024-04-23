@@ -13,6 +13,8 @@ module.exports = async (req, res, next) => {
         const payload = jwt.verify(jwtToken, process.env.jwtSecret);
 
         req.user = payload.user;
+        req.username = payload.username;
+        req.role = payload.role;
         
         next();
 

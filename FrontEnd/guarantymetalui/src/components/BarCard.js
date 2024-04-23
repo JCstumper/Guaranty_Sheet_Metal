@@ -1,33 +1,101 @@
-import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import React, { useState, useEffect, useContext } from 'react';
+import { AppContext } from '../App'; 
 import './BarCard.css';
 
-// Sample data
-const data = [
-  { name: 'Round End Cap', inStock: 4000, outOfStock: 2400 },
-  { name: 'Round Hanger', inStock: 3000, outOfStock: 1398 },
-  { name: 'Downspout', inStock: 2000, outOfStock: 9800 },
-  { name: 'Elbow 40 Degree', inStock: 2780, outOfStock: 3908 },
-  { name: 'Drop Outlet', inStock: 1890, outOfStock: 4800 },
-  { name: 'Inline Cleanout', inStock: 2390, outOfStock: 3800 },
-  { name: 'Wire Strainer', inStock: 3490, outOfStock: 4300 },
-  { name: 'Y Connector', inStock: 2000, outOfStock: 3000 },
-];
+const BarCard = () => {
+    const { API_BASE_URL } = useContext(AppContext); 
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [lowInventoryItems, setLowInventoryItems] = useState([]);
+    const [outOfStockItems, setOutOfStockItems] = useState([]);
 
-const GraphCard = () => (
-  <div className="graph">
-    <h2>Inventory Status</h2>
-    <BarChart width={600} height={300} data={data}
-              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-      <CartesianGrid strokeDasharray="3 3" />
-      <XAxis dataKey="name" />
-      <YAxis />
-      <Tooltip />
-      <Legend />
-      <Bar dataKey="inStock" fill="green" />
-      <Bar dataKey="outOfStock" fill="red" />
-    </BarChart>
-  </div>
-);
+    useEffect(() => {
+        fetchInventoryItems();
+        fetchLowInventoryItems();
+        fetchOutOfStockItems();
+    }, []); 
 
-export default GraphCard;
+    const fetchInventoryItems = async () => {
+        setLoading(true);
+        await fetchLowInventoryItems();
+        await fetchOutOfStockItems();
+        setLoading(false);
+    };
+
+    const fetchLowInventoryItems = async () => {
+        try {
+            const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+            const response = await fetch(`${API_BASE_URL}/purchases/low-inventory`, {
+                headers: {
+                    'Token': token // Set the Authorization header with the token
+                }
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setLowInventoryItems(data);
+            } else {
+                throw new Error('Failed to fetch low inventory items');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+    
+    const fetchOutOfStockItems = async () => {
+        try {
+            const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+            const response = await fetch(`${API_BASE_URL}/purchases/out-of-stock`, {
+                headers: {
+                    'Token': token // Set the Authorization header with the token
+                }
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setOutOfStockItems(data);
+            } else {
+                throw new Error('Failed to fetch out of stock items');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+    
+
+    return (
+        <div className="bar-card-container">
+            {loading ? <p>Loading inventory...</p> : (
+                <div className="bar-card">
+                    <h2>Stock Level Dashboard</h2>
+                    <div className="bar-content">
+                        <table>
+                            <thead>
+                                <tr>
+                                <th className="part-number-column-header">Part Number</th>
+                                    <th>Material/Type</th>
+                                    <th>Description</th>
+                                    <th className="status-column-header">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {[...lowInventoryItems, ...outOfStockItems].map((item, index) => (
+                                    <tr key={index}>
+                                        <td>{item.part_number}</td>
+                                        <td>{item.material_type}</td>
+                                        <td>{item.description}</td>
+                                        <td>
+                                            <div className={`status-box-dash ${item.quantity_in_stock === 0 ? 'red' : 'yellow'}`}>
+                                                {item.quantity_in_stock === 0 ? 'Out of Stock' : 'Low Stock'}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default BarCard;

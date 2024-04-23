@@ -1,0 +1,379 @@
+.orders {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.orders-main {
+    display: flex;
+    margin-top: 90px;
+    margin-left: 10px;
+    padding-right: 10px;
+    flex-direction: column;
+}
+
+.order-table {
+    flex-grow: 1;
+    background-color: #fff;
+    border: 3px solid #b3b3b3;
+    border-radius: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.table-header {
+    background-color: #0b2b61;
+    color: #ffffff;
+    padding: 15px;
+    font-size: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+}
+
+.search-input {
+    flex-grow: 1;
+    margin-right: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.add-button {
+    padding: 10px 15px;
+    background-color: #0b2b61;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+    .add-button:hover {
+        background-color: #083d77;
+    }
+
+.table-content {
+    display: block;
+    overflow-y: auto;
+    max-height: calc(100vh - 225px);
+    width: 100%;
+}
+
+    .table-content th,
+    .table-content td {
+        text-align: left;
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .table-content tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    .table-content tr:hover {
+        background-color: #ddd;
+    }
+
+.add-button {
+    margin-left: auto;
+    padding: 10px 15px;
+    background-color: #0b2b61;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+    .add-button:hover {
+        background-color: #083d77;
+    }
+
+    .order-table table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .order-table th, .order-table td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+.add-order-form {
+    padding: 15px;
+    margin: 15px 0;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+
+.add-order-form input {
+    display: block;
+    width: calc(100% - 20px);
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.add-order-form button {
+    padding: 10px 15px;
+    margin-right: 10px;
+}
+
+.add-order-button:hover {
+    background-color: #083d77;
+}
+
+.selected {
+    background-color: #e8f0fe;
+}
+
+.order-details {
+    display: none;
+}
+
+    .order-details td {
+        background-color: #f7f7f7;
+        padding: 15px;
+    }
+
+
+.selected + .order-details {
+    display: table-row;
+}
+
+.modalAddOrder {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1010;
+}
+
+.modalAddOrder-content {
+    background-color: white;
+    border: 4px solid #007bff;
+    padding: 0px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 800px;
+    z-index: 1001;
+    display: flex;
+    flex-direction: column;
+}
+
+.modalAddOrder-header {
+    background-color: #0b2b61;
+    color: white;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+    padding: 10px 20px 10px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.modalAddOrder-header h2 {
+    margin: 0;
+    font-weight: normal;
+    font-size: 20px;
+}
+
+.close-modalAddOrder {
+    font-size: 1rem;
+    line-height: 1;
+    color: white;
+    padding: 0.5rem;
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.modalAddOrder-body {
+    padding: 1rem;
+}
+
+    .modalAddOrder-body label {
+        display: block;
+        margin: 0.5rem 0;
+    }
+
+    .modalAddOrder-body input[type="number"],
+    .modalAddOrder-body input[type="text"],
+    .modalAddOrder-body input[type="date"],
+    .modalAddOrder-body input[type="email"] {
+        width: 100%;
+        padding: 0.5rem;
+        margin-bottom: 1rem;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+    }
+
+.modalAddOrder-footer {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.modalAddOrder-footer .btn {
+    padding: 0.5rem 1rem;
+    margin-left: 0.5rem;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: #0b2b61;
+    color: white;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+    .btn-primary:hover,
+    .btn-secondary:hover {
+        opacity: 0.9;
+    }
+
+.order-details-expanded {
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.parts-section-container {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 20px;
+    margin-top: 10px;
+}
+
+.parts-subsection {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+}
+
+    .parts-subsection h5 {
+        margin-top: 0;
+        padding: 5px 10px;
+        display: inline-block;
+    }
+
+   
+    .parts-subsection table {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .parts-subsection button {
+       
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        margin-right: 5px;
+        cursor: pointer;
+    }
+
+    .low-stock,
+    .out-of-stock,
+    .new-order {
+        background-color: #fff !important;
+    }
+
+.status {
+    padding: 5px 10px;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 5px;
+    display: inline-block;
+    width: 100px;
+}
+
+
+
+
+.button, .add-button, .delete-button, .edit-button, .generate-xlsx-button, .mark-as-generated, .mark-as-received, .remove-button, .add-order, .add-all {
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin: 2px;
+    text-align: center;
+    display: inline-block;
+}
+
+
+.add-button, .add-order, .add-all {
+    background-color: #4CAF50;
+    color: white;
+}
+
+    .add-button:hover .add-order:hover, .add-all:hover {
+        background-color: #45a049;
+    }
+
+.delete-button, .remove-button {
+    background-color: #f44336;
+    color: white;
+}
+
+    .delete-button:hover, .remove-button:hover {
+        background-color: #da190b;
+    }
+
+
+.generate-xlsx-button, .mark-as-generated, .mark-as-received {
+    background-color: #007bff;
+    color: white;
+}
+
+    .generate-xlsx-button:hover, .mark-as-generated:hover, .mark-as-received:hover {
+        background-color: #0056b3;
+    }
+
+
+.edit-button {
+    background-color: #ffc107;
+    color: white;
+}
+
+    .edit-button:hover {
+        background-color: #e0a800;
+    }
+
+.modal-number-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+}

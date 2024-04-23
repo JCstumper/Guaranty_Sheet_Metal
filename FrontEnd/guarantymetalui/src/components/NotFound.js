@@ -1,16 +1,14 @@
-// NotFound.js
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import './NotFound.css'; // Ensure this matches your file structure
+import './NotFound.css'; 
 
 const NotFound = ({ setAuth }) => {
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    // Optional: Set authentication to false immediately
     setAuth(false);
-
-    const timer = setTimeout(() => navigate("/login"), 5000); // 5 seconds delay
+    const timer = setTimeout(() => navigate("/login"), 5000); 
     return () => clearTimeout(timer);
   }, [navigate, setAuth]);
 

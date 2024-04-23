@@ -3,6 +3,9 @@
 # Define the directory to store SSL certificates within the nginx folder
 NGINX_CERT_DIR="/etc/nginx/ssl"
 
+# Set HOST_NAME to localhost if not already set
+HOST_NAME="${HOST_NAME:-localhost}"
+
 # Create SSL directory within nginx folder if not exists
 mkdir -p "$NGINX_CERT_DIR"
 
@@ -13,7 +16,7 @@ fi
 
 # Generate Certificate Signing Request (CSR) if not exists
 if [ ! -f "$NGINX_CERT_DIR/csr.pem" ]; then
-    openssl req -new -key "$NGINX_CERT_DIR/privkey.pem" -out "$NGINX_CERT_DIR/csr.pem" -subj "/CN=localhost"
+    openssl req -new -key "$NGINX_CERT_DIR/privkey.pem" -out "$NGINX_CERT_DIR/csr.pem" -subj "/CN=$HOST_NAME"
 fi
 
 # Generate self-signed certificate if not exists

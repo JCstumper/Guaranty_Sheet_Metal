@@ -1,20 +1,20 @@
-/* Loading.css */
+
 .loading-screen {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #364b72; /* Semi-transparent black background */
+    background-color: #05132c;
     display: flex;
     justify-content: center;
     align-items: center;
-    opacity: 0; /* Start with 0 opacity */
-    transition: opacity 0.5s ease; /* Add transition for opacity */
+    opacity: 0;
+    transition: opacity 0.5s ease;
 }
 
 .loading-screen.active {
-    opacity: 1; /* When active, set opacity to 1 */
+    opacity: 1;
 }
 
 .box {

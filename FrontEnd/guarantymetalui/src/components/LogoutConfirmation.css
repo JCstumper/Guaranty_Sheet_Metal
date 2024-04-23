@@ -1,59 +1,59 @@
 .logout-confirmation-overlay {
-    position: fixed; /* Fix position to cover the entire screen */
+    position: fixed;
     top: 0;
     left: 0;
-    width: 100vw; /* Full viewport width */
-    height: 100vh; /* Full viewport height */
-    display: flex; /* Use flexbox for centering */
-    align-items: center; /* Vertical centering */
-    justify-content: center; /* Horizontal centering */
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background for overlay effect */
-    z-index: 1000; /* Ensure overlay is above everything else */
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
 }
 
 .logout-confirmation-container {
-    padding: 20px; /* Padding inside the container */
-    background-color: #fff; /* Background color of the modal */
-    border-radius: 5px; /* Rounded corners */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    display: flex; /* Use flexbox for layout */
-    flex-direction: column; /* Stack children vertically */
-    gap: 20px; /* Space between elements */
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .logout-message-container p {
-    font-size: 16px; /* Text size */
-    text-align: center; /* Center text */
+    font-size: 16px;
+    text-align: center;
 }
 
 .logout-action-buttons {
-    display: flex; /* Use flexbox for layout */
-    gap: 10px; /* Space between buttons */
-    justify-content: center; /* Center buttons */
+    display: flex;
+    gap: 10px;
+    justify-content: center;
 }
 
 .confirm-logout-button, .cancel-logout-button {
-    padding: 10px 20px; /* Padding inside buttons */
-    border-radius: 5px; /* Rounded corners for buttons */
-    border: none; /* Remove default border */
-    cursor: pointer; /* Pointer cursor on hover */
-    font-weight: bold; /* Bold text */
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
 }
 
 .confirm-logout-button {
-    background-color: #007bff; /* Primary button color */
-    color: white; /* Text color */
+    background-color: #007bff;
+    color: white;
 }
 
 .confirm-logout-button:hover {
-    background-color: #0056b3; /* Darker on hover for visual feedback */
+    background-color: #0056b3;
 }
 
 .cancel-logout-button {
-    background-color: #6c757d; /* Secondary button color */
-    color: white; /* Text color */
+    background-color: #6c757d;
+    color: white;
 }
 
 .cancel-logout-button:hover {
-    background-color: #5a6268; /* Darker on hover for visual feedback */
+    background-color: #5a6268;
 }

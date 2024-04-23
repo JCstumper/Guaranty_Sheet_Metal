@@ -8,51 +8,155 @@
     display: flex;
     margin-top: 90px;
     margin-left: 10px;
-    padding-right: 250px;
+    padding-right: 10px;
     flex-direction: column;
+}
+
+.customers-main::before {
+  content: "";
+  position: fixed;
+  top: 0px;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(to top, #364b7200 0%, #05132c 100%);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.customers-main::after {
+  content: "";
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  background: linear-gradient(to bottom, #364b7200 0%, #05132c 100%);
+  z-index: 10;
+  pointer-events: none;
 }
 
 .customer-table {
-    flex-grow: 1;
-    background-color: #fff;
-    border: 4px solid #b3b3b3;
-    border-radius: 15px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    overflow: hidden;
-    margin: 0 20px 20px 0;
-    display: flex;
-    flex-direction: column;
+  flex-grow: 1;
+  background-color: #fff;
+  border: 3px solid #b3b3b3;
+  border-radius: 15px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  width: calc(100%);
 }
 
 .table-header {
-    background-color: #0b2b61;
-    color: #ffffff;
-    padding: 15px;
-    font-size: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.table-content {
-    width: 100%;
-    overflow-x: auto;
+  background-color: #0b2b61;
+  color: #ffffff;
+  padding: 15px;
+  font-size: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.table-content th,
-.table-content td {
-    text-align: left;
-    padding: 12px;
-    border-bottom: 1px solid #ddd;
+.table-content-jobs {
+  table-layout: fixed;
+  width: 100%;
 }
 
-.table-content tr:nth-child(even) {
-    background-color: #f2f2f2;
+.table-content-jobs table {
+  border-collapse: collapse;
+  width: 100%;
 }
 
-.table-content tr:hover {
-    background-color: #ddd;
+.table-content-jobs thead,
+.table-content-jobs th {
+  position: sticky;
+  top: 0;
+  background-color: #ebebeb;
+  z-index: 10;
 }
-/* Add to Customers.css */
+
+.table-content-jobs tbody {
+  display: block;
+  overflow-y: auto;
+  max-height: calc(100vh - 225px);
+  width: 100%;
+}
+
+.table-content-jobs th, 
+.table-content-jobs td {
+  padding: 12px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid #ddd;
+  box-sizing: border-box;
+}
+
+.table-content-jobs tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+
+.table-content-jobs th {
+  background-color: #ebebeb;
+  color: rgb(0, 0, 0);
+  padding: 12px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.table-content-jobs tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.table-content-jobs tr:hover {
+  background-color: #ddd;
+}
+
+.table-content-jobs::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-content-jobs::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.table-content-jobs::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+.table-content-jobs::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+.table-content-jobs tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.table-content-jobs tr:hover {
+  background-color: #ddd;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.search-input-jobs {
+  flex-grow: 1;
+  margin-right: 10px;
+}
 
 .add-button {
     margin-left: auto;
@@ -69,7 +173,7 @@
     background-color: #083d77;
 }
 
-/* Style for add job form if it's a modal or inline form */
+
 .add-job-form {
     padding: 15px;
     margin: 15px 0;
@@ -77,7 +181,7 @@
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Additional form field styling */
+
 .add-job-form input {
     display: block;
     width: calc(100% - 20px);
@@ -93,27 +197,26 @@
 }
 
 .add-job-button:hover {
-    background-color: #083d77; /* A slightly darker blue on hover */
+    background-color: #083d77;
 }
 
 .selected {
-    background-color: #e8f0fe; /* Or any other color you prefer */
+    background-color: #e8f0fe;
   }
   
   .job-details {
-    display: none; /* Initially hide the details */
+    display: none;
   }
   
   .job-details td {
-    background-color: #f7f7f7; /* Slightly different background for contrast */
-    padding: 15px; /* More padding for detail rows */
+    background-color: #f7f7f7;
+    padding: 15px;
   }
   
-  /* Style to show the job details when the job row is clicked */
   .selected + .job-details {
-    display: table-row; /* Show the details */
+    display: table-row;
   }
-/* Modal Styles */
+
 .modalAddJob {
     position: fixed;
     top: 0;
@@ -124,17 +227,17 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1010; /* Make sure it's above other elements */
+    z-index: 1010;
   }
   
   .modalAddJob-content {
     background-color: white;
     border: 4px solid #007bff;
-    padding: 0px; /* Adjust padding as needed */
+    padding: 0px;
     border-radius: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 80%; /* Or your desired width */
-    max-width: 800px; /* Adjust to the desired max-width */
+    width: 80%;
+    max-width: 800px;
     z-index: 1001;
     display: flex;
     flex-direction: column;
@@ -157,79 +260,81 @@
     font-size: 20px;
 }
   
-  .close-modalAddJob {
-    font-size: 1rem; /* Smaller font size */
-    line-height: 1; /* Adjust line height to remove extra space */
-    color: white; /* White color for the 'X' */
-    padding: 0.5rem; /* Smaller padding */
-    position: absolute; /* Positioning it absolutely */
-    top: 0.5rem; /* Position towards the top */
-    right: 0.5rem; /* Position towards the right */
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
-  
-  
-  .modalAddJob-body {
-    padding: 1rem;
-  }
-  
-  .modalAddJob-body label {
-    display: block;
-    margin: 0.5rem 0;
-  }
-  
-  .modalAddJob-body input[type="text"],
-  .modalAddJob-body input[type="tel"],
-  .modalAddJob-body input[type="email"] {
-    width: 100%;
-    padding: 0.5rem;
-    margin-bottom: 1rem;
-    border-radius: 4px;
-    border: 1px solid #ddd;
-  }
-  
-  .modalAddJob-footer {
-    margin-top: 1rem;
-    display: flex;
-    justify-content: flex-end;
-  }
-  
-  .modalAddJob-footer .btn {
-    padding: 0.5rem 1rem;
-    margin-left: 0.5rem;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .btn-primary {
-    background-color: #0b2b61;
-    color: white;
-  }
-  
-  .btn-secondary {
-    background-color: #6c757d;
-    color: white;
-  }
-  
-  .btn-primary:hover,
-  .btn-secondary:hover {
-    opacity: 0.9;
-  }
-  .job-details-expanded {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    padding: 15px;
+.close-modalAddJob {
+  font-size: 1rem;
+  line-height: 1;
+  color: white;
+  padding: 0.5rem;
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+
+.modalAddJob-body {
+  padding: 1rem;
+}
+
+.modalAddJob-body label {
+  display: block;
+  margin: 0.5rem 0;
+}
+
+.modalAddJob-body input[type="text"],
+.modalAddJob-body input[type="tel"],
+.modalAddJob-body input[type="email"] {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.modalAddJob-footer {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modalAddJob-footer .btn {
+  padding: 0.5rem 1rem;
+  margin-left: 0.5rem;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background-color: #0b2b61;
+  color: white;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-primary:hover,
+.btn-secondary:hover {
+  opacity: 0.9;
+}
+
+.job-details-expanded {
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
 }
 
 .job-details-section {
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    padding: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 10px;
 }
+
 .job-details-content {
   display: flex;
   justify-content: space-around;
@@ -249,13 +354,13 @@
 }
 
 .details-button-container {
-  margin-top: 5px; /* Adds space between the buttons */
+  margin-top: 5px;
 }
 
 .details-btn {
   display: inline-block;
   padding: 10px 15px;
-  margin: 5px 0; /* Add margin for vertical spacing */
+  margin: 5px 10px;
   background-color: #0b2b61;
   color: white;
   border: none;
@@ -266,4 +371,258 @@
 
 .details-btn:hover {
   background-color: #083d77;
+}
+
+.necessary-parts-table, .used-parts-table {
+  margin-top: 10px;
+}
+
+
+.add-part-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.add-part-btn:hover {
+  background-color: #218838;
+}
+.parts-section {
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.parts-section h5 {
+  margin-bottom: 10px;
+}
+
+.parts-section table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.parts-section table th, 
+.parts-section table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.parts-section table th {
+  background-color: #0b2b61;
+  color: white;
+}
+
+.parts-section .details-button-container {
+  margin-top: 5px;
+  text-align: right;
+}
+
+.addPartModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+}
+
+.addPartModal-content {
+  background-color: white;
+  border: 2px solid #007bff;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  width: 60%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.addPartModal-header {
+  background-color: #0b2b61;
+  color: white;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.addPartModal-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.addPartModal-close {
+  color: white;
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-size: 1.25rem;
+}
+
+.addPartModal-body {
+  padding: 10px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.addPartModal-footer {
+  padding: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.addPartModal-footer .btn {
+  margin-left: 10px;
+}
+.edit-btn,
+.remove-btn {
+    padding: 5px 10px;
+    margin: 2px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.edit-btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.edit-btn:hover {
+    background-color: #45a049;
+}
+
+.remove-btn {
+    background-color: #f44336;
+    color: white;
+}
+
+.remove-btn:hover {
+    background-color: #da190b;
+}
+.filtering-box-jobs {
+  margin-bottom: 10px;
+  top: 0;
+  left: 0;
+  width: 33%;
+  padding: 10px;
+  background-color: #fff;
+  border: 2px solid #b3b3b3;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+.search-input-jobs {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+@media screen and (max-width: 1023px) {
+  .customers-main {
+    flex-direction: column;
+    display: flex;
+    padding-right: 0;
+    margin-top: 10px;
+    margin-left: 0px;
+    margin-bottom: 90px;
+  }
+
+  .customers-main::before,
+  .customers-main::after {
+    display: none;
+  }
+
+  .customer-table {
+    border: 2px solid #b3b3b3;
+    border-radius: 10px;
+    margin: 0;
+    width: 100%;
+  }
+
+  .table-header {
+    font-size: 16px;
+    padding: 10px;
+  }
+
+  .table-content-jobs {
+    font-size: 14px;
+  }
+
+  .table-content-jobs th, .table-content-jobs td {
+    padding: 8px;
+  }
+
+  .table-content-jobs tbody {
+    display: block;
+    overflow-y: auto;
+    max-height: calc(100vh - 210px);
+    width: 100%;
+}
+
+  .table-content-jobs tr:hover {
+    background-color: #eee;
+  }
+
+  .table-content-jobs th.ignore-column, .table-content-jobs td.ignore-column {
+    display: none;
+  }
+
+  .table-content-jobs th.address-column,
+  .table-content-jobs td.address-column,
+  .table-content-jobs th.actions-column,
+  .table-content-jobs td.actions-column {
+    display: table-cell;
+    padding: 8px;
+  }
+
+  .table-content-jobs td.actions-column button {
+    padding: 10px 15px;
+    font-size: 14px;
+  }
+
+  .actions-column {
+    display: table-cell;
+  }
+
+  .edit-btn,
+  .remove-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+    margin: 4px;
+  }
+
+  .details-button-container button {
+    display: block;
+    width: 100%;
+    margin-bottom: 5px;
+  }
+
+  .details-button-container button:last-child {
+    margin-bottom: 0;
+  }
+
+  .actions-column button {
+    display: block;
+    width: 100%;
+    margin-bottom: 5px;
+  }
+
+  .actions-column button:last-child {
+    margin-bottom: 0;
+  }
 }

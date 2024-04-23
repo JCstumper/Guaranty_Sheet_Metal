@@ -1,42 +1,126 @@
-/* Styles for the card container */
-.graph {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    background-color: #fff;
-    width: fit-content;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-around;
+.bar-card-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+  padding-bottom: 20px;
+}
+
+.bar-card {
+  width: calc(100% - 40px);
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.bar-content {
+  overflow-y: auto;
+ 
+  height: calc(100vh - 450px);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background-color: #f2f2f2;
+  border-bottom: 1px solid #ddd;
+  position: sticky;
+  top: 0;
+}
+
+tbody {
+  display: block;
+}
+
+th, td {
+  padding: 8px;
+  text-align: left;
+}
+
+tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.red {
+  background-color: #ff4c4c;
+}
+
+.yellow {
+  background-color: #fff200;
+}
+
+.status-box-dash {
+  display: inline-block;
+  padding: 5px 10px;
+  color: white;
+  font-weight: bold;
+  border-radius: 5px;
+  text-align: center;
+  min-width: 75px;
+}
+
+@media screen and (max-width: 1023px) {
+  .bar-card-container {
+    margin-top: 10px;
   }
-  
-  /* Title styling within the card */
-  .graph h2 {
-    margin: 0 0 20px 0;
-    color: #333;
-    font-size: 24px;
-    text-align: center;
-  }
-  
-  /* Ensure the graph fits within the card */
-  .recharts-wrapper {
-    box-sizing: border-box;
+
+  .bar-card {
     width: 100%;
-    max-width: 600px; /* Adjust based on your layout */
-  }
-  
-  /* Tooltip styling */
-  .recharts-tooltip-wrapper {
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    background-color: #fff;
+    margin-bottom: 0;
     padding: 10px;
   }
-  
-  /* Legend styling */
-  .recharts-legend-wrapper {
-    padding: 10px;
+
+  .bar-content {
+    height: calc(100vh - 70px - 120px);
+    overflow-y: auto;
   }
-  
-  /* Customize further as needed */
-  
+
+  .bar-card thead,
+  .bar-card tbody {
+    display: block;
+  }
+
+  .bar-card tbody {
+    overflow-y: auto;
+  }
+
+  .bar-card tr {
+    display: flex;
+    flex-wrap: nowrap;
+  }
+
+  .bar-card th,
+  .bar-card td {
+   
+    display: none;
+  }
+
+ 
+  .bar-card .part-number-column,
+  .bar-card .status-column {
+    display: flex;
+    flex-basis: 50%;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 8px;
+    box-sizing: border-box;
+  }
+
+  .bar-card th.part-number-column,
+  .bar-card td.part-number-column,
+  .bar-card th.status-column,
+  .bar-card td.status-column {
+    display: block;
+  }
+}
+
