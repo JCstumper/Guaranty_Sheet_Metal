@@ -65,6 +65,36 @@ describe('Logging the action of adding a new user to the database', () => {
         cy.contains('User successfully removed').should('be.visible');
     });
 
+    it('Successfully Updated User Informationa and Verify in the Logs Page', () => {
+        cy.get('.username').click();
+        cy.get('.edit-profile').contains('Edit Profile').click();
+
+        cy.get('input[id="Username"]').clear().type('brandNewUser');
+        cy.get('input[id="Password"]').clear().type('brandNewUser123!');
+        cy.get('input[id="Email"]').clear().type('brandNewUser123@gmail.com');
+
+        cy.get('.btn-primary').contains('Save Changes').click();
+
+        cy.get('.Toastify__toast-container').within(() => {
+            cy.get('.Toastify__close-button').click();
+        });
+
+        cy.contains('LOGS').click();
+
+        cy.contains('Update Profile').scrollIntoView().should('be.visible');
+        cy.contains('User Profile').should('be.visible');
+        cy.contains('Profile updated successfully').should('be.visible');
+
+        cy.get('.username').click();
+        cy.get('.edit-profile').contains('Edit Profile').click();
+
+        cy.get('input[id="Username"]').clear().type('admin');
+        cy.get('input[id="Password"]').clear().type('Admin123!');
+        cy.get('input[id="Email"]').clear().type('admin@gmail.com');
+
+        cy.get('.btn-primary').contains('Save Changes').click();
+    });
+
     it('Successfully Add Product and Verify in the Logs Page', () => {   
         cy.contains('INVENTORY').click();
         cy.get('.add-button').click();
@@ -385,6 +415,177 @@ describe('Logging the action of adding a new user to the database', () => {
         cy.contains('Product Quantity In Stock Updated quantity_in_stock: 20').should('be.visible');
     });
 
+    it('Successfully Add and Order and Verify in the Logs Page', () => {
+        cy.contains('PURCHASES').click();
+        cy.get('.add-button').click();
+
+        // Fill out the form
+        cy.get('input[name="supplier_name"]').type('Supplier 1');
+        cy.get('input[name="invoice_date"]').type('2024-04-22');
+
+        cy.get('button').contains('Add Order').click();
+        
+        cy.contains('Order added successfully.').should('be.visible');
+
+        cy.get('.Toastify__toast-container').within(() => {
+            cy.get('.Toastify__close-button').click();
+        });
+
+        cy.contains('LOGS').click();
+
+        // cy.contains('Add').scrollIntoView().should('be.visible');
+        cy.contains('Invoice').should('be.visible');
+        cy.contains('Added invoice supplier_name: Supplier 1 total_cost: null invoice_date: 2024-04-22 status: Building').should('be.visible');
+    });
+
+    it('Add a Single Item from Out of Stock and Verify in the Logs Page', () => {
+        cy.contains('PURCHASES').click();
+        cy.contains('Supplier 1').click();
+
+        // Optionally, assert the presence of at least one item before attempting to add
+        cy.get('.parts-subsection.out-of-stock .add-order').should('have.length.greaterThan', 0)
+            .then(($buttons) => {
+                const initialButtonsCount = $buttons.length;
+                cy.get('.parts-subsection.out-of-stock .add-order').first().click();
+
+                // Assert that a new item exists in the new order section
+                cy.get('.parts-subsection.new-order tbody tr').should('exist');
+            });
+
+        cy.contains('LOGS').click();
+
+        cy.contains('New Order').should('be.visible');
+        cy.contains('Added item to new order invoiceId: 1 partNumber: A25NEW889 quantity: 0 source: outOfStock amount_to_order: 15').should('be.visible');
+    });
+
+    it('Add a Single Item from Low Inventory and Verify in the Logs Page', () => {
+        cy.contains('PURCHASES').click();
+        cy.contains('Supplier 1').click();
+
+        // Optionally, assert the presence of at least one item before attempting to add
+        cy.get('.parts-subsection.low-stock .add-order').should('have.length.greaterThan', 0)
+            .then(($buttons) => {
+                const initialButtonsCount = $buttons.length;
+                cy.get('.parts-subsection.low-stock .add-order').first().click();
+
+                // Assert that a new item exists in the new order section
+                cy.get('.parts-subsection.new-order tbody tr').should('exist');
+            });
+
+        cy.contains('LOGS').click();
+
+        cy.contains('New Order').should('be.visible');
+        cy.contains('Added item to new order invoiceId: 1 partNumber: MBL5WGT5 quantity: 12 source: lowInventory amount_to_order: 15').should('be.visible');
+    });
+
+    it('Remove a Single Item from the Order and Verify in the Logs Page', () => {
+        cy.contains('PURCHASES').click();
+        cy.contains('Supplier 1').click();
+
+        // Assert the presence of at least one item before attempting to remove
+        cy.get('.parts-subsection.new-order tbody tr').should('have.length.greaterThan', 0)
+            .then(($rows) => {
+                const initialCount = $rows.length;
+                cy.get('.parts-subsection.new-order .remove-button').first().click();
+            });
+
+        cy.contains('LOGS').click();
+
+        cy.contains('Update').scrollIntoView().should('be.visible');
+        cy.contains('Out-of-Stock Inventory').should('be.visible');
+        cy.contains('Updated 1 out-of-stock items for invoice 1').should('be.visible');
+        // cy.contains('Item returned to out_of_stock invoiceId: 1 partNumber: A25NEW889 quantity: 0 source: outOfStock').should('be.visible');
+    });
+
+    it('Mark Order as Generated and Verify in the Logs Page', () => {
+        cy.contains('PURCHASES').click();
+        cy.contains('Supplier 1').parent('tr').within(() => {
+            cy.get('.mark-as-generated').click();
+        });
+
+        // New: Verify success message for order status update to Generated
+        cy.contains('Order status updated to Generated.').should('be.visible');
+
+        // Wait for the toast to appear and click the close button
+        cy.get('.Toastify__toast-container').within(() => {
+            cy.get('.Toastify__close-button').click();
+        });
+
+        cy.contains('LOGS').click();
+
+        cy.contains('Update Order Details').scrollIntoView().should('be.visible');
+        cy.contains('Order Status Update').should('be.visible');
+        cy.contains('Updated the order details invoiceId: 1 status: Generated total_cost: null').should('be.visible');
+    });
+
+    it('Add shipping Cost to the Order and Verify in the Logs Page', () => {
+        cy.contains('PURCHASES').click();
+        cy.contains('Supplier 1').click();
+
+        // Click the 'Add Shipping Cost' button to open the modal
+        cy.contains('tr', 'Supplier 1').find('.edit-button').click();
+
+        // Wait for the modal to appear and type in the new shipping cost
+        cy.get('.modal-number-input').as('shippingCostInput').should('be.visible').type('1000');
+
+        // Click the 'Submit' button on the modal
+        cy.get('button').contains('Submit').click();
+
+        // New: Verify success message for total cost update
+        cy.contains('Total cost updated successfully.').should('be.visible');
+
+        // Wait for the toast to appear and click the close button
+        cy.get('.Toastify__toast-container').within(() => {
+            cy.get('.Toastify__close-button').click();
+        });
+
+        cy.contains('LOGS').click();
+
+        cy.contains('Invoice Total Cost').scrollIntoView().should('be.visible');
+        cy.contains('Total cost updated invoiceId: 1 total_cost: 1000').should('be.visible');
+    });
+
+    it('Mark order as Received and Verify in the Logs Page', () => {
+        cy.contains('PURCHASES').click();
+        cy.contains('Supplier 1').parent('tr').within(() => {
+            cy.get('.mark-as-received').click();
+        });
+
+        // New: Verify success message for order status update to Received
+        cy.contains('Order status updated to Received.').should('be.visible');
+
+        // Wait for the toast to appear and click the close button
+        cy.get('.Toastify__toast-container').within(() => {
+            cy.get('.Toastify__close-button').click();
+        });
+
+        cy.contains('LOGS').click();
+
+        cy.contains('Update Order Details').scrollIntoView().should('be.visible');
+        cy.contains('Order Status Update').scrollIntoView().should('be.visible');
+        cy.contains('Updated the order details invoiceId: 1 status: Received total_cost: 1000').should('be.visible');
+    });
+
+    it('Delete an Order and Verify in the Logs Page', () => {
+        cy.contains('PURCHASES').click();
+
+        cy.get('.delete-button').click();
+
+        cy.get('.btn-primary').contains('Delete Order').click();
+
+        cy.contains('Order successfully deleted.').should('be.visible');
+
+        // Wait for the toast to appear and click the close button
+        cy.get('.Toastify__toast-container').within(() => {
+            cy.get('.Toastify__close-button').click();
+        });
+
+        cy.contains('LOGS').click();
+
+        cy.contains('Delete').scrollIntoView().should('be.visible');
+        cy.contains('Invoice Deletion').scrollIntoView().should('be.visible');
+        cy.contains('Invoice and all related records deleted invoiceId: 1').should('be.visible');
+    });
 
     it('Successfully Delete Product C5WGT15 and Verify in the Logs Page', () => {
         cy.contains('INVENTORY').click();
@@ -426,35 +627,5 @@ describe('Logging the action of adding a new user to the database', () => {
         cy.contains('Delete Product').scrollIntoView().should('be.visible');
         cy.contains('Inventory').should('be.visible');
         cy.contains('Product Deleted part_number: A25NEW889 supplier_part_number: BrandNewPart123 radius_size: 25 material_type: Aluminium color: Gray description: Updated item type: NewCategory quantity_of_item: 80.00 unit: pcs price: $60.00 mark_up_price: $300.00').should('be.visible');
-    });
-
-    it('Successfully Updated User Informationa and Verify in the Logs Page', () => {
-        cy.get('.username').click();
-        cy.get('.edit-profile').contains('Edit Profile').click();
-
-        cy.get('input[id="Username"]').clear().type('brandNewUser');
-        cy.get('input[id="Password"]').clear().type('brandNewUser123!');
-        cy.get('input[id="Email"]').clear().type('brandNewUser123@gmail.com');
-
-        cy.get('.btn-primary').contains('Save Changes').click();
-
-        cy.get('.Toastify__toast-container').within(() => {
-            cy.get('.Toastify__close-button').click();
-        });
-
-        cy.contains('LOGS').click();
-
-        cy.contains('Update Profile').scrollIntoView().should('be.visible');
-        cy.contains('User Profile').should('be.visible');
-        cy.contains('Profile updated successfully').should('be.visible');
-
-        cy.get('.username').click();
-        cy.get('.edit-profile').contains('Edit Profile').click();
-
-        cy.get('input[id="Username"]').clear().type('admin');
-        cy.get('input[id="Password"]').clear().type('Admin123!');
-        cy.get('input[id="Email"]').clear().type('admin@gmail.com');
-
-        cy.get('.btn-primary').contains('Save Changes').click();
     });
 });
