@@ -55,25 +55,28 @@ function Deliverables() {
       <div className="deliverable">
         <h3>Sprint 3 Deliverable</h3>
         <a href={`${process.env.PUBLIC_URL}/Sprint1PlanningDocument.pdf`} target="_blank" rel="noopener noreferrer" className="github-button">
-          Sprint Three Planning Document
+          Sprint 3 Planning Document
         </a>
         <a href={`${process.env.PUBLIC_URL}/Sprint1Backlog.pdf`} target="_blank" rel="noopener noreferrer" className="github-button">
-          Sprint Three Backlog
+          Sprint 3 Backlog
         </a>
         <a href={`${process.env.PUBLIC_URL}/DailyJournalDocument.pdf`} target="_blank" rel="noopener noreferrer" className="github-button">
           Updated Daily Journal
         </a>
         <a href={`${process.env.PUBLIC_URL}/Metals-Sprint1Slides.pptx`} target="_blank" rel="noopener noreferrer" className="github-button">
-          Sprint Three PowerPoint
+          Sprint 3 PowerPoint
         </a>
         <a href={`${process.env.PUBLIC_URL}/retro.pdf`} target="_blank" rel="noopener noreferrer" className="github-button">
-          Sprint Three Retrospective
+          Sprint 3 Retrospective
         </a>
         <a href={`${process.env.PUBLIC_URL}/Project1Backlog.pdf`} target="_blank" rel="noopener noreferrer" className="github-button">
           Project Backlog
         </a>
         <a href="https://github.com/JCstumper/Guaranty_Sheet_Metal/tree/sprint1snapshot" className="github-button">
           Guaranty Sheet Metal Development GitHub for Sprint 3
+        </a>
+        <a href={`${process.env.PUBLIC_URL}/Sprint1PlanningDocument.pdf`} target="_blank" rel="noopener noreferrer" className="github-button">
+          Sprint 3 Sponsor Feedback
         </a>
       </div>
     </div>
