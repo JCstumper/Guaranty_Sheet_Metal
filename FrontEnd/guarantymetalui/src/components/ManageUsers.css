@@ -12,6 +12,12 @@
     z-index: 1000;
 }
 
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
 .modal-backdrop {
     position: fixed;
     top: 0;
