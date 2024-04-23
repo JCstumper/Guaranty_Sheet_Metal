@@ -237,7 +237,7 @@ router.post('/necessary-parts', authorization, async (req, res) => {
         }
 
         const updatedPartData = await pool.query(`
-            SELECT np.*, CAST(p.price AS NUMERIC) AS price
+            SELECT np.*, CAST(p.mark_up_price AS NUMERIC) AS price
             FROM necessary_parts np
             JOIN products p ON np.part_number = p.part_number
             WHERE np.job_id = $1 AND np.part_number = $2;
@@ -261,7 +261,7 @@ router.get('/:job_id/necessary-parts', authorization, async (req, res) => {
 
     try {
         const necessaryPartsQuery = await pool.query(`
-            SELECT np.id, np.job_id, np.part_number, np.quantity_required, CAST(p.price AS NUMERIC) AS price, p.description
+            SELECT np.id, np.job_id, np.part_number, np.quantity_required, CAST(p.mark_up_price AS NUMERIC) AS price, p.description
             FROM necessary_parts np
             JOIN products p ON np.part_number = p.part_number
             WHERE np.job_id = $1;
@@ -462,7 +462,7 @@ router.post('/used-parts', authorization, async (req, res) => {
         }
 
         const updatedUsedPartData = await pool.query(`
-            SELECT up.*, CAST(p.price AS NUMERIC) AS price
+            SELECT up.*, CAST(p.mark_up_price AS NUMERIC) AS price
             FROM used_parts up
             JOIN products p ON up.part_number = p.part_number
             WHERE up.job_id = $1 AND up.part_number = $2;
@@ -494,7 +494,7 @@ router.get('/:job_id/used-parts', authorization, async (req, res) => {
 
     try {
         const usedPartsQuery = await pool.query(`
-            SELECT up.id, up.job_id, up.part_number, up.quantity_used, CAST(p.price AS NUMERIC) AS price, p.description
+            SELECT up.id, up.job_id, up.part_number, up.quantity_used, CAST(p.mark_up_price AS NUMERIC) AS price, p.description
             FROM used_parts up
             JOIN products p ON up.part_number = p.part_number
             WHERE up.job_id = $1;
