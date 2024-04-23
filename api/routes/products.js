@@ -73,7 +73,7 @@ router.post('/', authorization, async (req, res) => {
         `, [partNumber, 0]); 
         
         
-        await logInventoryAction('Add Product', req.username, 'inventory', { 
+        await logInventoryAction('Add Product', req.username, 'Inventory', { 
             message: 'Product Added', 
             details: { ...req.body } 
         });
@@ -95,14 +95,6 @@ router.post('/', authorization, async (req, res) => {
 router.delete('/:partNumber', authorization, async (req, res) => {
     try {
         const { partNumber } = req.params;
-
-        
-        
-        const inventoryDeletionResponse = await pool.query(`
-            DELETE FROM inventory
-            WHERE part_number = $1;
-        `, [partNumber]);
-
         
         const productDeletionResponse = await pool.query(`
             DELETE FROM products
@@ -111,7 +103,7 @@ router.delete('/:partNumber', authorization, async (req, res) => {
         `, [partNumber]);
         
         
-        await logInventoryAction('Delete Product', req.username, 'inventory', { 
+        await logInventoryAction('Delete Product', req.username, 'Inventory', { 
             message: 'Product Deleted',
             details: productDeletionResponse.rows[0]
         });
@@ -223,7 +215,7 @@ router.put('/:originalPartNumber', authorization, async (req, res) => {
         }
 
         
-        await logInventoryAction('Update Product', req.username, 'inventory', { 
+        await logInventoryAction('Update Product', req.username, 'Inventory', { 
             message: 'Product Information Updated', 
             details: { ...req.body } 
         });

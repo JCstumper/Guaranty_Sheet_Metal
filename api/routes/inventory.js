@@ -45,7 +45,7 @@ router.patch('/:part_number/quantity', authorization, async (req, res) => {
             return res.status(404).json({ message: "Inventory item not found for the given part number." });
         }
 
-        await logInventoryAction('Update Quantity', req.username, 'inventory', { 
+        await logInventoryAction('Update Quantity', req.username, 'Inventory', { 
             message: 'Product Quantity In Stock Updated', 
             details: { ...req.body } 
         });

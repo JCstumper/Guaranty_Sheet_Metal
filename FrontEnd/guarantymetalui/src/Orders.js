@@ -90,44 +90,44 @@ const Orders = ({ setAuth }) => {
         }
     };
 
-
-    const fetchNewOrderItems = async (invoiceId) => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/purchases/${invoiceId}/new-order-items`);
-            if (!response.ok) throw new Error('Failed to fetch new order items');
-            const data = await response.json();
-            const itemsWithAmount = data.map(item => ({
-                ...item,
-                amount_to_order: item.amount_to_order || 15 
-            }));
-            setNewOrderItems(itemsWithAmount);
-        } catch (error) {
-            console.error('Error fetching new order items:', error);
-            
-        }
-    };
-
     const fetchCurrentItems = async (invoiceId) => {
         try {
-            const [lowInventoryResponse, outOfStockResponse] = await Promise.all([
-                fetch(`${API_BASE_URL}/purchases/${invoiceId}/low-inventory`),
-                fetch(`${API_BASE_URL}/purchases/${invoiceId}/out-of-stock`)
+            const [lowInventoryResponse, outOfStockResponse, newOrderResponse] = await Promise.all([
+                fetch(`${API_BASE_URL}/purchases/${invoiceId}/low-inventory`, {
+                    method: "GET",
+                    headers: {token: localStorage.token}
+                }),
+                fetch(`${API_BASE_URL}/purchases/${invoiceId}/out-of-stock`, {
+                    method: "GET",
+                    headers: {token: localStorage.token}
+                }),
+                fetch(`${API_BASE_URL}/purchases/${invoiceId}/new-order-items`, {
+                    method: "GET",
+                    headers: {token: localStorage.token}
+                })
             ]);
-
-            if (!lowInventoryResponse.ok || !outOfStockResponse.ok) {
+    
+            if (!lowInventoryResponse.ok || !outOfStockResponse.ok || !newOrderResponse.ok) {
                 throw new Error('Failed to fetch order items');
             }
-
-            let lowInventoryData = await lowInventoryResponse.json();
-            let outOfStockData = await outOfStockResponse.json();
-
-            await fetchNewOrderItems(invoiceId);
-
-            const newOrderPartNumbers = new Set(newOrderItems.map(item => item.part_number));
-
+    
+            let [lowInventoryData, outOfStockData, newOrderData] = await Promise.all([
+                lowInventoryResponse.json(),
+                outOfStockResponse.json(),
+                newOrderResponse.json()
+            ]);
+    
+            // Setting new order items with default amount if not present
+            const itemsWithDefaultAmount = newOrderData.map(item => ({
+                ...item,
+                amount_to_order: item.amount_to_order || 15  // Ensure default value is set if not present
+            }));
+            setNewOrderItems(itemsWithDefaultAmount);
+    
+            const newOrderPartNumbers = new Set(itemsWithDefaultAmount.map(item => item.part_number));
             lowInventoryData = lowInventoryData.filter(item => !newOrderPartNumbers.has(item.part_number));
-            outOfStockData = outOfStockData.filter(item => !newOrderPartNumbers.has(item.part_number));
-
+            outOfStockData = outOfStockData.filter(item => !newOrderPartNumbers.has(item.part_number) && !lowInventoryData.some(lowItem => lowItem.part_number === item.part_number));
+    
             setLowInventoryItems(lowInventoryData);
             setOutOfStockItems(outOfStockData);
         } catch (error) {
@@ -137,7 +137,10 @@ const Orders = ({ setAuth }) => {
 
     const updateInventoryItems = async (invoiceId) => {
         try {
-            const orderDetailsResponse = await fetch(`${API_BASE_URL}/purchases/${invoiceId}`);
+            const orderDetailsResponse = await fetch(`${API_BASE_URL}/purchases/${invoiceId}`, {
+                method: "GET",
+                headers: {token: localStorage.token}
+            });
             if (!orderDetailsResponse.ok) {
                 throw new Error(`HTTP error! status: ${orderDetailsResponse.status}`);
             }
@@ -146,8 +149,20 @@ const Orders = ({ setAuth }) => {
             if (orderDetails && orderDetails.status === 'Building') {
                 
                 await Promise.all([
-                    fetch(`${API_BASE_URL}/purchases/${invoiceId}/update-low-inventory`, { method: 'POST' }),
-                    fetch(`${API_BASE_URL}/purchases/${invoiceId}/update-out-of-stock`, { method: 'POST' })
+                    fetch(`${API_BASE_URL}/purchases/${invoiceId}/update-low-inventory`, { 
+                        method: "POST",
+                        headers: {
+                            'Content-Type': 'application/json',
+                            token: localStorage.token
+                        }
+                     }),
+                    fetch(`${API_BASE_URL}/purchases/${invoiceId}/update-out-of-stock`, { 
+                        method: "POST",
+                        headers: {
+                            'Content-Type': 'application/json',
+                            token: localStorage.token
+                        }
+                     })
                 ]);
             }
 
@@ -160,8 +175,14 @@ const Orders = ({ setAuth }) => {
     const fetchInventoryAndOutOfStockItems = async (invoiceId) => {
         try {
             const [lowInventoryResponse, outOfStockResponse] = await Promise.all([
-                fetch(`${API_BASE_URL}/purchases/${invoiceId}/low-inventory`),
-                fetch(`${API_BASE_URL}/purchases/${invoiceId}/out-of-stock`)
+                fetch(`${API_BASE_URL}/purchases/${invoiceId}/low-inventory`, {
+                    method: "GET",
+                    headers: {token: localStorage.token}
+                }),
+                fetch(`${API_BASE_URL}/purchases/${invoiceId}/out-of-stock`, {
+                    method: "GET",
+                    headers: {token: localStorage.token}
+                })
             ]);
 
             if (!lowInventoryResponse.ok || !outOfStockResponse.ok) {
@@ -180,7 +201,10 @@ const Orders = ({ setAuth }) => {
 
     const fetchOrders = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/purchases`);
+            const response = await fetch(`${API_BASE_URL}/purchases`, {
+                method: "GET",
+                headers: {token: localStorage.token}
+            });
             const data = await response.json();
             if (response.ok) {
                 setOrders(data);
@@ -215,6 +239,7 @@ const Orders = ({ setAuth }) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    token: localStorage.token
                 },
                 body: JSON.stringify({
                     ...newOrder,
@@ -251,7 +276,10 @@ const Orders = ({ setAuth }) => {
         const formattedDate = invoice_date.replace(/[/\s]+/g, '-');
     
         try {
-            const response = await fetch(`${API_BASE_URL}/purchases/${selectedOrderId}/generate-xlsx`);
+            const response = await fetch(`${API_BASE_URL}/purchases/${selectedOrderId}/generate-xlsx`, {
+                method: "GET",
+                headers: {token: localStorage.token}
+            });
     
             if (response.ok) {
                 const blob = await response.blob();
@@ -271,43 +299,60 @@ const Orders = ({ setAuth }) => {
 
     const handleAddToNewOrder = async (item, source, amountToOrder = 15) => {
         try {
-            await fetch(`${API_BASE_URL}/purchases/add-to-new-order/${selectedOrderId}`, {
+            const newItem = {
+                ...item,
+                amount_to_order: item.amount_to_order || amountToOrder
+            };
+    
+            const response = await fetch(`${API_BASE_URL}/purchases/add-to-new-order/${selectedOrderId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    token: localStorage.token
                 },
                 body: JSON.stringify({
                     partNumber: item.part_number,
                     quantity: item.quantity,
                     source: source,
-                    amount_to_order: item.amount_to_order || 15, 
+                    amount_to_order: newItem.amount_to_order,
                 }),
             });
+    
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+    
+            setNewOrderItems(prevItems => [...prevItems, newItem]);
             
-            setNewOrderItems(prevItems => [...prevItems, item]);
+            // Update inventory lists after adding to new order
+            const filterItems = (items) => items.filter(i => i.part_number !== item.part_number);
             if (source === 'lowInventory') {
-                setLowInventoryItems(prevItems => prevItems.filter(i => i.part_number !== item.part_number));
+                setLowInventoryItems(filterItems);
             } else if (source === 'outOfStock') {
-                setOutOfStockItems(prevItems => prevItems.filter(i => i.part_number !== item.part_number));
+                setOutOfStockItems(filterItems);
             }
         } catch (error) {
             console.error('Error adding item to new order:', error);
         }
     };
+    
 
     const handleRemoveFromNewOrder = async (index) => {
-        const item = newOrderItems[index];
-        const source = item.quantity <= 30 ? 'lowInventory' : 'outOfStock';
+        const itemToRemove = newOrderItems[index];
+
+        // Determine the correct list to return the item to based on the actual stock quantity
+        const source = itemToRemove.quantity === 0 ? 'outOfStock' : 'lowInventory';
 
         try {
             const response = await fetch(`${API_BASE_URL}/purchases/remove-from-new-order/${selectedOrderId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    token: localStorage.token
                 },
                 body: JSON.stringify({
-                    partNumber: item.part_number,
-                    quantity: item.quantity,
+                    partNumber: itemToRemove.part_number,
+                    quantity: itemToRemove.quantity,
                     source: source,
                 }),
             });
@@ -316,71 +361,97 @@ const Orders = ({ setAuth }) => {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            setNewOrderItems((prevItems) => prevItems.filter((_, i) => i !== index));
+            // Remove the item from the new order items list
+            setNewOrderItems(prevItems => prevItems.filter((_, i) => i !== index));
 
-            await fetchInventoryAndOutOfStockItems(selectedOrderId);
+            // Add the removed item back to the appropriate list without re-fetching all items
+            if (source === 'lowInventory') {
+                setLowInventoryItems(prevItems => [...prevItems, itemToRemove]);
+            } else if (source === 'outOfStock') {
+                setOutOfStockItems(prevItems => [...prevItems, itemToRemove]);
+            }
+
         } catch (error) {
             console.error('Error removing item from new order:', error);
         }
     };
 
+
     const handleAddAllToNewOrder = async (items, source) => {
-        const addItemsPromises = items.map(item => {
+        const itemsWithDefaults = items.map(item => ({
+            ...item,
+            amount_to_order: item.amount_to_order || 15  // Ensure each item has a default amount if not already set
+        }));
+    
+        const addItemsPromises = itemsWithDefaults.map(item => {
             return fetch(`${API_BASE_URL}/purchases/add-to-new-order/${selectedOrderId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    token: localStorage.token
                 },
                 body: JSON.stringify({
                     partNumber: item.part_number,
                     quantity: item.quantity,
-                    amount_to_order: item.amount_to_order, 
+                    amount_to_order: item.amount_to_order, // Now each item should definitely have an amount
                     source: source,
                 }),
             });
         });
-
+    
         try {
             await Promise.all(addItemsPromises);
-
-            setNewOrderItems(prevItems => [...prevItems, ...items]);
+    
+            // Update the local state to reflect the new items added
+            setNewOrderItems(prevItems => [...prevItems, ...itemsWithDefaults]);
+    
+            // Clear the lists that have been added to the order
             if (source === 'lowInventory') {
                 setLowInventoryItems([]);
             } else if (source === 'outOfStock') {
                 setOutOfStockItems([]);
             }
-
+    
             await fetchInventoryAndOutOfStockItems(selectedOrderId);
         } catch (error) {
             console.error('Error adding all items to new order:', error);
         }
     };
+    
 
 
     const updateOrderStatus = async (orderId, newStatus) => {
-        await updateAmountsToOrder();
-
-        const itemsData = (newStatus === 'Generated' || newStatus === 'Received') ? newOrderItems.map(item => ({
+        await updateAmountsToOrder(); // Ensure any changes to order amounts are updated before changing status
+    
+        const orderToUpdate = orders.find(order => order.invoice_id === orderId);
+        const itemsData = newStatus === 'Generated' || newStatus === 'Received' ? newOrderItems.map(item => ({
             partNumber: item.part_number,
-            amountToOrder: item.amount_to_order 
+            amountToOrder: item.amount_to_order
         })) : [];
+    
+        // Ensure totalCost is a number and handle null/undefined gracefully
+        const totalCost = parseFloat(
+            orderToUpdate?.total_cost?.replace(/[,$]/g, '') ?? newTotalCost.replace(/[,$]/g, '') ?? "0"
+        );
     
         try {
             const response = await fetch(`${API_BASE_URL}/purchases/${orderId}/status`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
+                    token: localStorage.token
                 },
                 body: JSON.stringify({
                     status: newStatus,
                     items: itemsData,
+                    total_cost: totalCost  // Sending total_cost with the request
                 }),
             });
     
             if (!response.ok) {
                 throw new Error('Failed to update order status');
             }
-
+    
             fetchOrders();
             toast.success(`Order status updated to ${newStatus}.`);
         } catch (error) {
@@ -388,6 +459,8 @@ const Orders = ({ setAuth }) => {
             toast.error(`Failed to update order status: ${error.message}`);
         }
     };
+    
+    
     
     const handleAmountChange = async (event, partNumber) => {
         const newAmount = parseInt(event.target.value, 10);
@@ -404,6 +477,7 @@ const Orders = ({ setAuth }) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    token: localStorage.token
                 },
                 body: JSON.stringify({
                     items: newOrderItems.map(({ part_number, amount_to_order }) => ({
@@ -427,6 +501,7 @@ const Orders = ({ setAuth }) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    token: localStorage.token
                 },
                 body: JSON.stringify({
                     items: newOrderItems.map(({ part_number, amount_to_order }) => ({
@@ -450,6 +525,10 @@ const Orders = ({ setAuth }) => {
         try {
             const response = await fetch(`${API_BASE_URL}/purchases/${invoiceId}`, {
                 method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    token: localStorage.token
+                },
             });
             if (!response.ok) throw new Error('Failed to delete order');
     
@@ -471,7 +550,10 @@ const Orders = ({ setAuth }) => {
             try {
                 const response = await fetch(`${API_BASE_URL}/purchases/${editingInvoiceId}/edit-total-cost`, {
                     method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        token: localStorage.token
+                    },
                     body: JSON.stringify({ total_cost: newTotalCost }),
                 });
                 if (!response.ok) throw new Error('Failed to update total cost');
@@ -510,6 +592,7 @@ const Orders = ({ setAuth }) => {
                         <table>
                             <thead>
                                 <tr>
+                                    <th>Invoice ID</th> {/* No change needed */}  
                                     <th>Supplier Name</th> {/* No change needed */}
                                     <th>Shipping Costs</th>
                                     <th>Invoice Date</th>
@@ -521,6 +604,7 @@ const Orders = ({ setAuth }) => {
                                 {filteredOrders.map((order, index) => (
                                     <React.Fragment key={order.invoice_id}>
                                         <tr key={order.invoice_id} onClick={() => handleSelectOrder(order.invoice_id)}>
+                                            <td>{order.invoice_id}</td>
                                             <td>{order.supplier_name}</td>
                                             <td>{order.total_cost}
                                                 {order.status === "Generated" && (
