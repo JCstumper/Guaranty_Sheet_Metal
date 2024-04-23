@@ -263,7 +263,7 @@ User Acceptance Testing is the final stage before deployment where real-world sc
 #### 9. Logging Activities
 - **Goal**: Verify that all user-related actions are correctly logged in the system.
 
-    #### 9.1 Logging New User Addition
+    #### 9.1 Logging a New User Addition
     - **Steps**:
         - Log in as an admin.
         - Navigate to the user management section.
@@ -278,7 +278,7 @@ User Acceptance Testing is the final stage before deployment where real-world sc
         - The log should detail the username, email, and assigned role, displaying a message such as "Added User to Application Whitelist username: newUser123 email: newUser123@gmail.com role: employee."
         - Ensure that the log entry specifies the action was successful with visible identifiers like "Add User" and "Added User."
 
-    #### 9.2 Logging User Profile Updates
+    #### 9.2 Logging a User Profile Updates
     - **Steps**:
         - Stay logged in as an admin or log in if not already.
         - Navigate to the profile editing section by selecting a user profile.
@@ -291,6 +291,253 @@ User Acceptance Testing is the final stage before deployment where real-world sc
     - **Verify**:
         - Look for a log entry indicating the profile update.
         - Verify the log shows a detailed message like "Profile updated successfully" and includes details such as "Update Profile."
+        - Ensure the log records are comprehensive and indicate the specific fields that were changed.
+
+    #### 9.3 Logging a User Adding a Product
+    - **Steps**:
+        - Stay logged in as an admin or log in if not already.
+        - Navigate to the Inventory page.
+        - Click the plus sign at the top right to add a new product.
+        - Fill out the information for the new product.
+        - Then click "Add Item" to add the new product to the database.
+    - **Verify**:
+        - Look for a log entry indicating the product was added.
+        - Verify the log shows a detailed message like "Add Product" and includes details such as "Product Added."
+        - Ensure the log records are comprehensive and indicate the specific fields that were changed.
+
+    #### 9.4 Logging a User Adding a Job
+    - **Steps**:
+        - Stay logged in as an admin or log in if not already.
+        - Navigate to the Jobs page.
+        - Click the plus sign at the top right to add a new job.
+        - Fill out the information for the job.
+        - Then click "Add Job" to add the new product to the database.
+    - **Verify**:
+        - Look for a log entry indicating a job was added.
+        - Verify the log shows a detailed message like "Add Job" and includes details such as "Job Management."
+        - Ensure the log records are comprehensive and indicate the specific fields that were changed.
+
+    #### 9.5 Logging a User Adding a Product to Necessary Parts under a Job
+    - **Steps**:
+        - Stay logged in as an admin or log in if not already.
+        - Navigate to the Jobs page.
+        - Click on any job.
+        - Then under "Necessary Parts," click on "Add Part."
+        - Then click add on the part you would like to add.
+        - The part will now display under "Necessary Parts."
+    - **Verify**:
+        - Look for a log entry indicating a part was added to a job.
+        - Verify the log shows a detailed message like "Add Necessary Part" and includes details such as "Necessary Parts."
+        - Ensure the log records are comprehensive and indicate the specific fields that were changed.
+
+    #### 9.6 Logging a User Editing a Product under Necessary Parts under a Job
+    - **Steps**:
+        - Stay logged in as an admin or log in if not already.
+        - Navigate to the Jobs page.
+        - Click on any job.
+        - Then under "Necessary Parts," click on "Edit" on any of the parts.
+        - Then click on "Save" to save the new quantity.
+        - The part will now display with the new quantity under "Necessary Parts."
+    - **Verify**:
+        - Look for a log entry indicating a part was edited in a job.
+        - Verify the log shows a detailed message like "Update Necessary Part" and includes details such as "Necessary Parts."
+        - Ensure the log records are comprehensive and indicate the specific fields that were changed.
+
+    #### 9.7 Logging a User Moving a Product from Necessary Parts to Used Parts under a Job
+    - **Steps**:
+        - Stay logged in as an admin or log in if not already.
+        - Navigate to the Inventory page.
+        - Click on an existing product.
+        - Click on "Edit Quantity" and enter the new quantity value for the product.
+        - Then navigate to the Jobs page.
+        - Click on any job.
+        - Then under "Necessary Parts," click on "Moved to Used" on any of the parts.
+        - Then click on "Confirm" to indicate that you want the part to moved to "Used Parts."
+        - The part will now display under "Used Parts."
+    - **Verify**:
+        - Look for a log entry indicating a part was moved.
+        - Verify the log shows a detailed message like "Move to Used" and includes details such as "Part Movement."
+        - Ensure the log records are comprehensive and indicate the specific fields that were changed.
+
+    #### 9.8 Logging a User Moving a Product from Used Parts to Necessary Parts under a Job
+    - **Steps**:
+        - Stay logged in as an admin or log in if not already.
+        - Navigate to the Jobs page.
+        - Click on any job.
+        - Then under "Used Parts," click on "Return to Necessary" on any of the parts.
+        - Then click on "Confirm" to indicate that you want the part to moved to "Necessary Parts."
+        - The part will now display under "Necessary Parts."
+    - **Verify**:
+        - Look for a log entry indicating a part was moved.
+        - Verify the log shows a detailed message like "Return to Necessary" and includes details such as "Part Management."
+        - Ensure the log records are comprehensive and indicate the specific fields that were changed.
+
+    #### 9.9 Logging a User Removing a Product from Used Parts under a Job
+    - **Steps**:
+        - Stay logged in as an admin or log in if not already.
+        - Navigate to the Jobs page.
+        - Click on any job.
+        - Then under "Used Parts," click on "Remove" on any of the parts.
+        - Then click on "Remove" to confirm that you want the part to be removed from the job.
+        - The part will no longer be display under "Used Parts."
+    - **Verify**:
+        - Look for a log entry indicating a part was deleted.
+        - Verify the log shows a detailed message like "Delete From Used" and includes details such as "Part Management."
+        - Ensure the log records are comprehensive and indicate the specific fields that were changed.
+
+    #### 9.10 Logging a User Editing a Job
+    - **Steps**:
+        - Stay logged in as an admin or log in if not already.
+        - Navigate to the Jobs page.
+        - Click on "Edit" on any job.
+        - Then change any information about the job.
+        - The job will now display with the new edited information.
+    - **Verify**:
+        - Look for a log entry indicating a job was edited.
+        - Verify the log shows a detailed message like "Updated Job" and includes details such as "Job Management."
+        - Ensure the log records are comprehensive and indicate the specific fields that were changed.
+
+    #### 9.11 Logging a User Deleting a Job
+    - **Steps**:
+        - Stay logged in as an admin or log in if not already.
+        - Navigate to the Jobs page.
+        - Click on "Remove" on any job.
+        - Then click "Delete" to confirm that you want to delete the job.
+        - The job will no longer de displayed on the Jobs page.
+    - **Verify**:
+        - Look for a log entry indicating a job was deleted.
+        - Verify the log shows a detailed message like "Delete Job" and includes details such as "Job Management."
+        - Ensure the log records are comprehensive and indicate the specific fields that were changed.
+
+    #### 9.11 Logging a User Updating the Quantity of a Product
+    - **Steps**:
+        - Stay logged in as an admin or log in if not already.
+        - Navigate to the Inventory page.
+        - Click on any of products.
+        - Then click "Edit" and enter the new information for the product.
+        - The products "Part Number" will now be updated with a new part number.
+    - **Verify**:
+        - Look for a log entry indicating a product was updated.
+        - Verify the log shows a detailed message like "Update Product" and includes details such as "Inventory."
+        - Ensure the log records are comprehensive and indicate the specific fields that were changed.
+        
+    #### 9.12 Logging a User Editing a Product
+    - **Steps**:
+        - Stay logged in as an admin or log in if not already.
+        - Navigate to the Inventory page.
+        - Click on any of products.
+        - Then click "Edit Quantity" and enter the new quantity for the product.
+        - The product will now display the new in stock quantity.
+    - **Verify**:
+        - Look for a log entry indicating a product was updated.
+        - Verify the log shows a detailed message like "Update Quantity" and includes details such as "Inventory."
+        - Ensure the log records are comprehensive and indicate the specific fields that were changed.
+
+    #### 9.13 Logging a User Adding a new Order
+    - **Steps**:
+        - Stay logged in as an admin or log in if not already.
+        - Navigate to the Purchases page.
+        - Click the plus sign at the top right to add a new order.
+        - Enter the information about the new Order.
+        - Then click "Add Order" to confirm the new order.
+        - The new order will now be displayed in the Purchases page.
+    - **Verify**:
+        - Look for a log entry indicating an order was added.
+        - Verify the log shows a detailed message like "Add" and includes details such as "Invoice."
+        - Ensure the log records are comprehensive and indicate the specific fields that were changed.
+
+    #### 9.14 Logging a User Adding an Out of Stock Product under an Order
+    - **Steps**:
+        - Stay logged in as an admin or log in if not already.
+        - Navigate to the Purchases page.
+        - Click on any order.
+        - Then under "Our of Stock" click on "Add to Order" next to any of the products.
+        - The product will now be displayed under "New Order."
+    - **Verify**:
+        - Look for a log entry indicating an new order was added.
+        - Verify the log shows a detailed message like "New Order" and includes details such as "Added Item."
+        - Ensure the log records are comprehensive and indicate the specific fields that were changed.
+
+    #### 9.15 Logging a User Adding Low Inventory Product under an Order
+    - **Steps**:
+        - Stay logged in as an admin or log in if not already.
+        - Navigate to the Purchases page.
+        - Click on any order.
+        - Then under "Low Inventory" click on "Add to Order" next to any of the products.
+        - The product will now be displayed under "New Order."
+    - **Verify**:
+        - Look for a log entry indicating an new product was added.
+        - Verify the log shows a detailed message like "New Order" and includes details such as "Added Item."
+        - Ensure the log records are comprehensive and indicate the specific fields that were changed.
+
+    #### 9.16 Logging a User Removing a Product under an Order
+    - **Steps**:
+        - Stay logged in as an admin or log in if not already.
+        - Navigate to the Purchases page.
+        - Click on any order.
+        - Then under "New Order", click on "Remove" next to any of the products.
+        - The product will now be removed from "New Order."
+    - **Verify**:
+        - Look for a log entry indicating an order was removed.
+        - Verify the log shows a detailed message like "Update" and includes details such as "Out-Of-Stock Inventory."
+        - Ensure the log records are comprehensive and indicate the specific fields that were changed.
+
+    #### 9.17 Logging a User Marking an Order as Generated
+    - **Steps**:
+        - Stay logged in as an admin or log in if not already.
+        - Navigate to the Purchases page.
+        - Then next to any order click "Mark as Generated."
+        - The order status will now be updated to "Generated."
+    - **Verify**:
+        - Look for a log entry indicating an new order was updated.
+        - Verify the log shows a detailed message like "Update Order Details" and includes details such as "Order Status Updated."
+        - Ensure the log records are comprehensive and indicate the specific fields that were changed.
+
+    #### 9.18 Logging a User Adding a Shipping Cost to an Order
+    - **Steps**:
+        - Stay logged in as an admin or log in if not already.
+        - Navigate to the Purchases page.
+        - Then next to any order click "Add Shipping Cost."
+        - Enter the value of the orders shipping cost.
+        - Then click "Submit."
+        - The order will now appear with the new shipping cost.
+    - **Verify**:
+        - Look for a log entry indicating an order was updated.
+        - Verify the log shows a detailed message like "Invoice Total Cost" and includes details such as "Total Cost Updated."
+        - Ensure the log records are comprehensive and indicate the specific fields that were changed.
+
+    #### 9.19 Logging a User Marking an Order as Received
+    - **Steps**:
+        - Stay logged in as an admin or log in if not already.
+        - Navigate to the Purchases page.
+        - Then next to any order click "Mark as Received."
+        - The order status will now be updated to "Received."
+    - **Verify**:
+        - Look for a log entry indicating an order was updated.
+        - Verify the log shows a detailed message like "Update Order Details" and includes details such as "Order Status Update."
+        - Ensure the log records are comprehensive and indicate the specific fields that were changed.
+
+    #### 9.20 Logging a User Deleting an Order
+    - **Steps**:
+        - Stay logged in as an admin or log in if not already.
+        - Navigate to the Purchases page.
+        - Then next to any order click "Delete" and click on "Delete Order" to confirm that you want to delete the order.
+        - The order will no longer be displayed under the Purchases page. 
+    - **Verify**:
+        - Look for a log entry indicating an order was deleted.
+        - Verify the log shows a detailed message like "Delete" and includes details such as "Invoice Deletion."
+        - Ensure the log records are comprehensive and indicate the specific fields that were changed.
+
+    #### 9.21 Logging a User Deleting a Product
+    - **Steps**:
+        - Stay logged in as an admin or log in if not already.
+        - Navigate to the Inventory page.
+        - Click on any product and then click on "Delete".
+        - Click on "Delete" again to confirm that you want to delete the product.
+        - The product will no longer be displayed under the Inventory page. 
+    - **Verify**:
+        - Look for a log entry indicating an product was deleted.
+        - Verify the log shows a detailed message like "Delete Product" and includes details such as "Inventory."
         - Ensure the log records are comprehensive and indicate the specific fields that were changed.
 
 ### UAT Execution
