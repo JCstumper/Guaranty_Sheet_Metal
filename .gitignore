@@ -1,0 +1,15 @@
+################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+#### ROOT FOLDER ####
+
+.env
+
+#### API FOLDER ####
+
+/api/.env
+
+#### NGINX FOLDER ####
+
+/nginx/ssl/
