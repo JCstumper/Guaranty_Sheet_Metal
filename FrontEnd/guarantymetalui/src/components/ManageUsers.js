@@ -16,6 +16,8 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
     const [showConfirmUsers, setShowConfirmUsers] = useState(false);
     const [currentUserToDelete, setCurrentUserToDelete] = useState(null);
 
+    const currentUserId = jwtDecode(localStorage.token).user;
+
     useEffect(() => {
         if (isOpen) {
         const fetchUsers = async () => {
@@ -51,7 +53,7 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
             setCurrentUserToDelete(userId);
         };
 
-        const confirmDelete = async () => {
+    const confirmDelete = async () => {
         if (!currentUserToDelete) return;
     
         
@@ -109,30 +111,33 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
         setError(null);
     
         try {
-            
-            const currentUserId = jwtDecode(localStorage.token).user;  
-            console.log(currentUserId);
+            const currentUserId = jwtDecode(localStorage.token).user;
+            const originalAdmins = users.filter(user => user.role_name === 'admin');
     
+            // Filter updates where role actually changes
             const validUpdates = Object.values(tempUsers).filter(tempUser => {
                 const currentUser = users.find(user => user.user_id === tempUser.user_id);
                 return currentUser && currentUser.role_name !== tempUser.role_name;
             });
     
-            if (validUpdates.length === 0) {
-                toast.info('No changes to save');
-                onClose();
-                return;
-            }
+            // Calculate potential number of admins after changes
+            let potentialAdminCount = originalAdmins.length;
+            validUpdates.forEach(update => {
+                const currentUser = users.find(user => user.user_id === update.user_id);
+                if (currentUser.role_name === 'admin' && update.role_name !== 'admin') {
+                    potentialAdminCount -= 1; // Admin being demoted
+                } else if (currentUser.role_name !== 'admin' && update.role_name === 'admin') {
+                    potentialAdminCount += 1; // Non-admin being promoted
+                }
+            });
     
-            const adminCount = users.filter(user => user.role_name === 'admin').length;
-            const adminsBeingDemoted = validUpdates.filter(user => user.role_name !== 'admin').length;
-            const newAdminCount = adminCount - adminsBeingDemoted;
-    
-            if (newAdminCount <= 0) {
+            // Check for zero admin condition
+            if (potentialAdminCount <= 0) {
                 toast.error('At least one admin must remain.');
                 return;
             }
     
+            // Send updates to the server
             const updatePromises = validUpdates.map(user => (
                 fetch(`${API_BASE_URL}/users/updateRole`, {
                     method: 'POST',
@@ -140,7 +145,7 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
                         'Content-Type': 'application/json',
                         'token': localStorage.token
                     },
-                    body: JSON.stringify({ user_id: user.user_id, role: user.role_name })
+                    body: JSON.stringify({ user_id: user.user_id, role: tempUsers[user.user_id].role_name })
                 }).then(async response => {
                     const data = await response.json();
                     
@@ -151,7 +156,7 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
                     return {
                         success: response.ok,
                         user_id: user.user_id,
-                        role: user.role_name,
+                        role: tempUsers[user.user_id].role_name,
                         message: data.message || ''
                     };
                 })
@@ -165,10 +170,16 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
                 throw new Error('Some updates failed');
             }
     
+            // Update local state to reflect changes
             setUsers(prevUsers => prevUsers.map(user => {
                 const updatedUser = results.find(res => res.user_id === user.user_id);
                 return updatedUser ? { ...user, role_name: updatedUser.role } : user;
             }));
+
+            const currentUserUpdate = results.find(result => result.user_id === currentUserId);
+            if (currentUserUpdate && currentUserUpdate.role === 'employee') {
+                window.location.reload();  // Force a page reload to apply new user permissions
+            }
     
             toast.success('Changes saved successfully');
             onClose();
@@ -180,7 +191,7 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
             setLoading(false);
         }
     };
-
+    
     if (!isOpen) return null;
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
@@ -190,24 +201,33 @@ const ManageUsersModal = ({ isOpen, onSave, onClose }) => {
             <div className="manage-users-container">
                 <h2>Manage Users</h2>
                 {Object.values(tempUsers).map((user, index) => (
-                <div key={`${user.user_id}-${index}`} className="user-item">
-                    <span>{user.username}</span>
-                    <select
-                    value={user.role_name}
-                    onChange={(e) => handleChangeRole(user.user_id, e.target.value)}
-                    >
-                    <option value="admin">admin</option>
-                    <option value="employee">employee</option>
-                    </select>
-                    <button onClick={() => handleRemoveUser(user.user_id)}>Remove</button>
-                    <ConfirmUsers
-                        isOpen={showConfirmUsers}
-                        onClose={() => setShowConfirmUsers(false)}
-                        onConfirm={confirmDelete}
-                    >
-                        Are you sure you want to delete this user?
-                    </ConfirmUsers>
-                </div>
+                    <div key={`${user.user_id}-${index}`} className="user-item">
+                        <span>{user.username}</span>
+                        <select
+                            value={user.role_name}
+                            onChange={(e) => handleChangeRole(user.user_id, e.target.value)}
+                        >
+                            <option value="admin">admin</option>
+                            <option value="employee">employee</option>
+                        </select>
+                        <button
+                            onClick={() => handleRemoveUser(user.user_id)}
+                            disabled={user.user_id === currentUserId}
+                            style={{
+                                opacity: user.user_id === currentUserId ? 0.5 : 1,
+                                cursor: user.user_id === currentUserId ? 'not-allowed' : 'pointer'
+                            }}
+                        >
+                            Remove
+                        </button>
+                        <ConfirmUsers
+                            isOpen={showConfirmUsers}
+                            onClose={() => setShowConfirmUsers(false)}
+                            onConfirm={confirmDelete}
+                        >
+                            Are you sure you want to delete this user?
+                        </ConfirmUsers>
+                    </div>   
                 ))}
                 <div className='modal-actions'>
                     <button type="submit" onClick={saveChanges} className="btn-primary">Save Changes</button>

@@ -22,7 +22,6 @@ CREATE TABLE IF NOT EXISTS log (
     action_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
 CREATE TABLE IF NOT EXISTS products (
     part_number VARCHAR(50) NOT NULL,
     supplier_part_number VARCHAR(50) NOT NULL,
@@ -149,4 +148,6 @@ INSERT INTO app_settings (setting_key, setting_value)
 VALUES ('first_registration_completed', FALSE)
 ON CONFLICT (setting_key) DO NOTHING;
 
-
+INSERT INTO roles (role_name)
+VALUES ('admin'), ('employee')
+ON CONFLICT (role_name) DO NOTHING;
