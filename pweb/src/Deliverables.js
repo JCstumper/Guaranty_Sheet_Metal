@@ -75,7 +75,7 @@ function Deliverables() {
         <a href={`${process.env.PUBLIC_URL}/Sprint3PB.pdf`} target="_blank" rel="noopener noreferrer" className="github-button">
           Project Backlog
         </a>
-        <a href="https://github.com/JCstumper/Guaranty_Sheet_Metal/tree/sprint1snapshot" className="github-button">
+        <a href="https://github.com/JCstumper/Guaranty_Sheet_Metal/tree/S3snap" className="github-button">
           Guaranty Sheet Metal Development GitHub for Sprint 3
         </a>
         <a href={`${process.env.PUBLIC_URL}/Metals-Sprint3SponsorMeetings.pdf`} target="_blank" rel="noopener noreferrer" className="github-button">
