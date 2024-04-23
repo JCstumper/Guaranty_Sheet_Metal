@@ -415,7 +415,7 @@ describe('Logging the action of adding a new user to the database', () => {
         cy.contains('Product Quantity In Stock Updated quantity_in_stock: 20').should('be.visible');
     });
 
-    it('Successfully Add and Order and Verify in the Logs Page', () => {
+    it('Successfully Add an Order and Verify in the Logs Page', () => {
         cy.contains('PURCHASES').click();
         cy.get('.add-button').click();
 

@@ -24,7 +24,12 @@ const BarCard = () => {
 
     const fetchLowInventoryItems = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/purchases/low-inventory`);
+            const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+            const response = await fetch(`${API_BASE_URL}/purchases/low-inventory`, {
+                headers: {
+                    'Token': token // Set the Authorization header with the token
+                }
+            });
             const data = await response.json();
             if (response.ok) {
                 setLowInventoryItems(data);
@@ -35,10 +40,15 @@ const BarCard = () => {
             console.error('Error:', error);
         }
     };
-
+    
     const fetchOutOfStockItems = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/purchases/out-of-stock`);
+            const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+            const response = await fetch(`${API_BASE_URL}/purchases/out-of-stock`, {
+                headers: {
+                    'Token': token // Set the Authorization header with the token
+                }
+            });
             const data = await response.json();
             if (response.ok) {
                 setOutOfStockItems(data);
@@ -49,6 +59,7 @@ const BarCard = () => {
             console.error('Error:', error);
         }
     };
+    
 
     return (
         <div className="bar-card-container">
