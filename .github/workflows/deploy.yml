@@ -19,6 +19,7 @@ jobs:
         docker ps
         docker-compose down
         "echo 'Containers Shutdown Successfully'"
+        docker volume rm $(docker volume ls -q)
         git pull
         "echo 'Updated Main Successfully'"
         docker-compose -f docker-compose.production.yml up --build -d
