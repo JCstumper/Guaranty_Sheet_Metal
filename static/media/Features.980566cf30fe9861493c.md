@@ -2,14 +2,6 @@
 
 Welcome to the comprehensive feature guide for the Guaranty Sheet Metal Application. This document outlines the core functionalities and unique features that make GSM a powerful internal tool for tracking inventory, jobs, and customers.
 
-## Table of Contents
-1. [Real-Time Dashboard](#real-time-dashboard)
-2. [Inventory Management](#inventory-management)
-3. [Purchase Management](#purchase-management)
-4. [Job Management](#job-management)
-5. [Security and Audits](#security-and-audits)
-6. [Topbar Navigation and User Management](#Topbar-Navigation-and-User-Management)
-
 ## Real-Time Dashboard
 - **Persistent Tracking**: Instant updates ensure the dashboard reflects the latest entries—products, jobs, and customers.
 - **User-Friendly Interface**: An intuitive layout provides a comprehensive view of business operations at a glance.
