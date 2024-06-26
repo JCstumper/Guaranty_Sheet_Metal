@@ -1,6 +1,6 @@
 # === BASE STAGE ===
 # Use an official Node runtime as a parent image
-FROM node:20.11.1-bookworm-slim as base
+FROM node:20.15-bookworm-slim as base
 
 # Set the working directory in the container
 WORKDIR /app
